@@ -7,9 +7,12 @@ const Token = (props) => {
       <h2 className="typo-h2">
         Wallet
         {
+          props.profile.activeProfile && props.profile.mode === 'proxy' &&
+          <span> (proxy)</span>
+        }
+        {
           props.profile.activeProfile &&
           <span className="typo-c wallet-id">-{ props.profile.activeProfile ? etherscanAddress(props.network, props.profile.activeProfile.substring(2, 8), props.profile.activeProfile) : 'Loading...' }</span>
-            
         }
       </h2>
       {

@@ -596,20 +596,20 @@ class App extends Component {
     // const conditions = this.getCupsListConditions();
     if (this.state.profile.activeProfile) {
       const conditions = {on: {lad: this.state.profile.activeProfile}, off: {}};
-      // const me = this;
-      // if (settings.chain[this.state.network.network].service) {
-      //   Promise.resolve(this.getFromService('cups', Object.assign(conditions.on, conditions.off), { cupi: 'asc' })).then(response => {
-      //     const promises = [];
-      //     response.results.forEach(v => {
-      //       promises.push(me.getCup(v.cupi));
-      //     });
-      //     me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, response.lastBlockNumber, limit, skip, promises);
-      //   }).catch(error => {
-      //     me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, settings.chain[this.state.network.network].fromBlock, limit, skip);
-      //   });
-      // } else {
+      const me = this;
+      if (settings.chain[this.state.network.network].service) {
+        Promise.resolve(this.getFromService('cups', Object.assign(conditions.on, conditions.off), { cupi: 'asc' })).then(response => {
+          const promises = [];
+          response.results.forEach(v => {
+            promises.push(me.getCup(v.cupi));
+          });
+          me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, response.lastBlockNumber, limit, skip, promises);
+        }).catch(error => {
+          me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, settings.chain[this.state.network.network].fromBlock, limit, skip);
+        });
+      } else {
         this.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, settings.chain[this.state.network.network].fromBlock, limit, skip);
-      // }
+      }
     }
   }
 
@@ -764,6 +764,22 @@ class App extends Component {
         tub.cups = cups;
         system.tub = tub;
         return { system };
+      }, () => {
+        if (settings.chain[this.state.network.network].service) {
+          Promise.resolve(this.getFromService('cupHistoryActions', { cupi: id }, { timestamp:'asc' })).then(response => {
+            this.setState((prevState, props) => {
+              const system = {...prevState.system};
+              const tub = {...system.tub};
+              const cups = {...tub.cups};
+              cups[id].history = response.results
+              tub.cups = cups;
+              system.tub = tub;
+              return { system };
+            });
+          }).catch(error => {
+            // this.setState({});
+          });
+        }
       });
     }));
   }
@@ -2162,7 +2178,7 @@ class App extends Component {
       tab = 'home';
     }
     window.location.hash = tab;
-    this.setState({'params':tab});
+    this.setState({'params': [tab]});
   }
   //
 
@@ -2238,7 +2254,16 @@ class App extends Component {
           <main className={ this.state.params[0] === 'help' ? "main-column fullwidth" : "main-column" }>
             {
               this.state.params[0] === 'settings' &&
-              <Settings system={ this.state.system } profile={ this.state.profile } handleOpenModal={ this.handleOpenModal } approve={ this.approve } approveAll={ this.approveAll } />
+              <Settings
+                network={ this.state.network.network }
+                system={ this.state.system }
+                profile={ this.state.profile }
+                handleOpenModal={ this.handleOpenModal }
+                approve={ this.approve }
+                approveAll={ this.approveAll }
+                wrapUnwrap={ this.wrapUnwrap }
+                transferToken={ this.transferToken }
+                changeMode={ this.changeMode } />
             }
             {
               this.state.params[0] === 'help' &&

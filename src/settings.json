@@ -21,11 +21,11 @@
       "fromBlock": 5216602,
       "service": "https://devar.connaxis.com/dai-service/",
       "chart": false,
-      "proxyFactory": "",
+      "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
       "proxyContracts": {
-        "basicActions": "",
-        "customActions": "",
-        "tokenActions": ""
+        "basicActions": "0x4e81891f77064f98dc45a2d9028f7624e2ddceeb",
+        "customActions": "0x1fdf5b2336629875b4bf6b82bfca6a83428d510c",
+       "tokenActions": "0x6033bed276430424852f510277e8ab177eac76b0"
       }
     },
     "main": {

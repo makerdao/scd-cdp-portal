@@ -131,16 +131,36 @@ p.error {
 	height: 100%;
 }
 
+.allowance div {
+  clear: left;
+}
+
+.allowance span {
+  display: block;
+  float: left;
+}
+
+.allowance > div > span:first-child {
+  clear: left;
+  width: 40px;
+}
+
+.allowance > div > span:nth-child(2) {
+  width: 80px;
+}
+
 .onoffswitch {
   position: relative; width: 100px;
   -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
+
 .onoffswitch-checkbox {
   display: none;
 }
 .onoffswitch-label {
   display: block; overflow: hidden; cursor: pointer;
   border: 2px solid #999999; border-radius: 12px;
+  margin-top: 0px;
 }
 .onoffswitch-inner {
   display: block; width: 200%; margin-left: -100%;
@@ -154,7 +174,7 @@ p.error {
 .onoffswitch-inner:before {
   content: "Approved";
   padding-left: 10px;
-  background-color: #34A7C1; color: #FFFFFF;
+  background-color: #27AE60; color: #FFFFFF;
 }
 .onoffswitch-inner:after {
   content: "Denied";
@@ -178,20 +198,17 @@ p.error {
 }
 
 .onoffswitch.mode-box {
-  position: absolute;
-  right: 15px;
-  top: 30px;
   width: 125px;
 }
 
 .onoffswitch.mode-box .onoffswitch-switch {
   right: 105px;
   top: -4px;
-  bottom: 2px;
+  bottom: -4px;
 }
 
 .onoffswitch.mode-box .onoffswitch-inner:before {
-  content: "Proxy Profile";
+  content: "Proxy Account";
 }
 .onoffswitch.mode-box .onoffswitch-inner:after {
   content: "Main Account";

@@ -36,8 +36,7 @@ class CupHistory extends Component {
                   </thead>
                   <tbody>
                     {
-                    this.props.actions && this.props.actions.length > 0
-                    ?
+                      this.props.actions && this.props.actions.length > 0 &&
                       Object.keys(this.props.actions).map(key =>
                         <tr key={ key }>
                           <td>
@@ -76,8 +75,6 @@ class CupHistory extends Component {
                           </td>
                         </tr>
                       )
-                    :
-                      ''
                     }
                   </tbody>
                 </table>
