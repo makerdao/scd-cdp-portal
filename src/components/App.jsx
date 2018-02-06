@@ -270,10 +270,10 @@ class App extends Component {
     this.checkAccounts(false);
 
     this.setHashParams();
-    window.onhashchange = () => {
-      this.setHashParams();
-      this.initContracts(this.state.system.top.address);
-    }
+    // window.onhashchange = () => {
+    //   this.setHashParams();
+    //   this.initContracts(this.state.system.top.address);
+    // }
 
     if (localStorage.getItem('termsModal')) {
       const termsModal = JSON.parse(localStorage.getItem('termsModal'));
@@ -2225,6 +2225,7 @@ class App extends Component {
     //     helper: 'Exchange your ETH for DAI at the cage price (enabled upon cage)'
     //  }
     // };
+    const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
 
     return (
       <div className={ this.state.params[0] === 'help' ? "full-width-page" : "" }>
@@ -2257,6 +2258,7 @@ class App extends Component {
               <Settings
                 network={ this.state.network.network }
                 system={ this.state.system }
+                account={ this.state.network.defaultAccount }
                 profile={ this.state.profile }
                 handleOpenModal={ this.handleOpenModal }
                 approve={ this.approve }
@@ -2297,7 +2299,7 @@ class App extends Component {
                   {
                     !this.state.system.tub.cupsLoading && Object.keys(this.state.system.tub.cups).length > 1 &&
                     Object.keys(this.state.system.tub.cups).map(key =>
-                      <span key={ key }><a href="#action" data-cupId={ key } onClick={ this.changeCup }>CDP { key }</a> / </span>
+                      <button key={ key } className="text-btn disable-on-dialog" data-cupId={ key } disabled={ cupId === key } onClick={ this.changeCup }>CDP { key }</button>
                     )
                   }
                   {
@@ -2317,11 +2319,11 @@ class App extends Component {
           <aside className="right-column">
             <ReactNotify ref='notificator'/>
             {
-              this.state.params[0] === 'home' &&
+              this.state.params[0] !== 'help' &&
               <div className="right-column-content">
                 <div className="row-2col-m">
                   <Wallet system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } />
-                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val }  pepVal = { this.state.system.pep.val } />
+                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val } pepVal = { this.state.system.pep.val } />
                 </div>	
                 <div className="footer col col-no-border typo-cs typo-grid-grey">
                   <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="announcement">Dai Public Announcement</a> || <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="terms">Dai Terms of Service</a>

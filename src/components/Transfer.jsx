@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import web3 from '../web3';
+import { printNumber } from '../helpers';
 
 class Transfer extends Component {
   state = {
+    token: 'gem',
     to: '',
     error: ''
   };
@@ -12,8 +14,16 @@ class Transfer extends Component {
     this.setState({ to: e.target.getAttribute('data-address')});
   }
 
+  onChangeToken = () => {
+    this.setState((prevState, props) => {
+      return { token: this.token.value };
+    });
+  }
+
   onChangeTo = () => {
-    this.setState({ to: this.to.value});
+    this.setState((prevState, props) => {
+      return { to: this.to.value };
+    });
   }
 
   transfer = (e) => {
@@ -54,30 +64,26 @@ class Transfer extends Component {
         <div>
           <form className="transfer" ref={(input) => this.transferForm = input} onSubmit={(e) => this.transfer(e)}>
             <label>Token</label>
-            <select ref={(input) => this.token = input} >
+            <select ref={(input) => this.token = input} onChange={ this.onChangeToken }>
               <option value="gem">WETH</option>
               <option value="gov">MKR</option>
               <option value="dai">DAI</option>
               <option value="skr">PETH</option>
             </select>
-            {
-              this.props.proxyFactory
-              ? <label>&nbsp;</label>
-              : ''
-            }
-            {
-              this.props.proxyFactory
-              ?
-                this.props.profile.mode === 'proxy'
-                ? <a href="#acction" data-address={ this.props.account } onClick={ this.fillTo }>Send to your main account</a>
-                : <a href="#acction" data-address={ this.props.profile.proxy } onClick={ this.fillTo }>Send to your proxy profile</a>
-              :
-                ''
-            }
+            <label>Balance: { printNumber(this.props.system[this.state.token].myBalance) }</label>
             <label>
               To
             </label>
             <input ref={(input) => this.to = input} value={ this.state.to } onChange={ this.onChangeTo } type="text" placeholder="0x" />
+            {
+              this.props.proxyFactory
+              ?
+                this.props.profile.mode === 'proxy'
+                ? <a href="#acction" data-address={ this.props.account } onClick={ this.fillTo }>Send to my main account</a>
+                : <a href="#acction" data-address={ this.props.profile.proxy } onClick={ this.fillTo }>Send to my proxy profile</a>
+              :
+                ''
+            }
             <label>Amount</label>
             <input ref={(input) => this.amount = input} type="number" placeholder="0.00" step="0.000000000000000001" />
             <input type="submit" className="text-btn" />

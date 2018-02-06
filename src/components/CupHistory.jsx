@@ -4,9 +4,9 @@ import { etherscanAddress, etherscanTx, printNumber, formatDate } from '../helpe
 class CupHistory extends Component {
   render() {
     return (
-      <div>
+      <div className="col col-extra-padding">
         <h2>CDP History</h2>
-          <div className="content">
+          <div>
             {
               false
               ?
@@ -17,21 +17,11 @@ class CupHistory extends Component {
                 <table>
                   <thead>
                     <tr>
-                      <th>
-                        Date
-                      </th>
-                      <th>
-                        Sender
-                      </th>
-                      <th>
-                        Action
-                      </th>
-                      <th>
-                        Value
-                      </th>
-                      <th>
-                        Tx
-                      </th>
+                      <th>Date</th>
+                      <th>Sender</th>
+                      <th>Action</th>
+                      <th>Value</th>
+                      <th>Tx</th>
                     </tr>
                   </thead>
                   <tbody>

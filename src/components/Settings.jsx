@@ -40,7 +40,7 @@ class Settings extends Component {
         }
         {
           this.props.profile.activeProfile &&
-          <Transfer system={ this.props.system } profile={ this.props.profile } transferToken={ this.props.transferToken } proxyFactory={ settings.chain[this.props.network].proxyFactory } />
+          <Transfer system={ this.props.system } profile={ this.props.profile } transferToken={ this.props.transferToken } proxyFactory={ settings.chain[this.props.network].proxyFactory } account={ this.props.account } />
         }
         {
           this.props.profile.activeProfile &&
