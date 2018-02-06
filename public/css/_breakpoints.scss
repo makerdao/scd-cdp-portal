@@ -1,0 +1,45 @@
+
+
+
+// BREAKPOINTS
+@mixin respond-to($breakpoint) {
+	@if $breakpoint == "s" { // small size screens = iphones, smartphones, phablet
+		@media only screen and (max-width: 480px) {
+			@content;
+		}
+	}
+	@if $breakpoint == "m" { // medium size screens
+		@media only screen and (max-width: 1024px) {
+			@content;
+		}
+	}
+	@if $breakpoint == "l" { // large size screens = ipad portrait, laptops and above
+		@media only screen and (max-width: 1280px) {
+			@content;
+		}
+	}
+	// screen sizes in between 1281 and 1599 px are defined with no media  queries
+	
+	
+	@if $breakpoint == "xl" { // super size desktop screens ) dells workingstations, iMacs, etc.
+		@media only screen and (min-width: 1600px) {
+			@content;
+		}
+	}
+}
+
+// CSS clases
+@include respond-to(s) {
+	.hide-breakpoint-s { display: none !important; }
+}
+@include respond-to(m) {
+	.hide-breakpoint-m { display: none !important; }
+}
+@include respond-to(l) {
+	.hide-breakpoint-l { display: none !important; }
+}
+@include respond-to(xl) {
+	.hide-breakpoint-xl { display: none !important; }
+}
+
+

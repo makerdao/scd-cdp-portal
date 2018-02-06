@@ -1,0 +1,142 @@
+.menu-bar {
+	background-color: $black;
+	margin: 0;
+	padding: 0;
+	width: 65px;
+	width: 5rem;
+	height: 100%;
+	display: block;
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 1;
+	overflow: hidden;
+	user-select: none;
+	
+	.logo {
+		position: absolute;
+		top:0;
+		left:0;
+		z-index: 3;
+		display: block;
+		background: $white;
+		text-align: center;
+		height: 65px;
+		height: 5rem;
+		width: 100%;
+		padding: 26px 13px;
+		padding: 1.53846rem 1rem;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		img {
+			display: inline-block;
+			width: 100%;
+			height: auto;
+			min-width: 0;
+			min-height: 0;
+		}
+	}
+	.menu-label {
+		display: none;
+	}
+	nav {
+		position: absolute;
+		top:0;
+		left: 0;
+		display: inline;
+		padding: 0;
+		margin: 0;
+		height: 100%;
+		width: 100%;
+	}
+	.menu {
+		z-index: 2;
+		text-indent: 0;
+		padding: 65px 0 0;
+		padding: 5rem 0 0;
+		margin: 0 0 0;
+		position: relative;
+		height: 100%;
+		width: 100%;
+		
+		
+		li, &>* {
+			cursor: pointer;
+			list-style-type: none;
+			padding: 23px;
+			padding: 1.7692307rem;
+			margin: 0;
+			text-indent: 0;
+			width: 100%;
+			height: 65px;
+			height: 5rem;
+			text-align: center;
+			display: inline-block;
+			float: left;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			transition: background-color .2s linear, color .2s linear;
+			
+			&:hover, &.active {
+				background-color: $bg-darkgrey;
+				color: $white;
+				img { opacity: 1; }
+			}
+			&:active {
+				img { opacity: 0.5; }
+			}
+			&[value="settings"]{
+				position: absolute;
+				transform: translateY(-1px);
+				bottom: 65px;
+				bottom: 5rem;
+			}
+			&[value="help"]{
+				position: absolute;
+				bottom: 0;
+			}
+			
+			img {
+				width: 100%;
+				height: auto;
+				max-width: 100%;
+				opacity: 0.5;
+				transition: opacity .2s ease-in;
+			}
+		}
+	}
+	
+	@include respond-to(m) {
+		
+		width: 100%;
+		height: 50px;
+		position: relative;
+		padding: 0;
+		
+		.logo {
+			height: 50px;
+			width: 50px;
+			padding: 10px 12px;
+		}
+		.menu {
+			padding: 0 0 0 50px;
+			
+			li, &>* {
+				height: 100%;
+				width: 50px;
+				padding: 16px;
+				display: inline-block;
+				&[value="help"], &[value="settings"]{
+					transform: none;
+					position: relative;
+					bottom: auto;
+					float: right;
+					margin-left: 1px;
+				}
+			}
+		}
+	}
+}

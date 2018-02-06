@@ -1,0 +1,133 @@
+// LABELS
+
+label, .form-label {
+	margin-bottom: 0.5em;
+	display: block;
+	
+	input + & {
+		margin-top: 2em;
+	}
+}
+
+// FIELDSET
+
+fieldset {
+	border: 0;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+// TEXT/NUMBER INPUTS
+
+input[type="text"], input[type="number"] {
+	border: 0;
+	outline: 0;
+	padding: 0 .5em;
+	@include interactive("pushInAndCrush");
+	@include fontweight(bold);
+	line-height: 2.5em;
+	height: 2.5em;
+}
+
+input[type="text"].number-input {
+	float: left;
+	text-align: right;
+	border-radius: 2px 0px 0px 2px;
+	position: relative;
+	z-index: 1;
+	& + .unit {
+		position: relative;
+		z-index: 0;
+		display: inline-block;
+		float: left;
+		height: 2.5em;
+		line-height: 2.5em;
+		vertical-align: baseline;
+		padding: 0 1em;
+		background-color: $white-two;
+		min-width: 4em;
+		text-align: center;
+		border-radius: 0 2px 2px 0;
+	}
+}
+
+
+// CHECKBOXES
+
+input[type='checkbox']:checked,
+input[type='checkbox']:not(:checked),
+input[type='radio']:checked,
+input[type='radio']:not(:checked) {
+	background: transparent;
+	position: relative;
+	visibility: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+input[type='checkbox']+label,
+input[type='radio']+label {
+	cursor: pointer;
+}
+
+input[type="radio"] {
+	
+	/* remove standard-styles */
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+	border-radius: 0;
+	font-size: 1em;
+	
+	/* graceful degradation for ie8 */
+	width: auto;
+	float: left;
+	margin-right: .75em;
+	
+	// hide native radio button
+	background: transparent;
+	border: none;
+	display: inline-block;
+	line-height: inherit;
+	vertical-align: baseline;
+	
+	
+// add custom styles 
+	&:checked + label::before,
+	&:not(:checked) + label::before {
+		content:' ';
+		display:inline-block;
+		width: 16px;
+		width: 1.23077rem;
+		height:16px;
+		height: 1.23077rem;
+		position: relative;
+		top: 4px;
+		top: 0.3076rem;
+		border: 1px solid $mid-grey;
+		background: transparent;
+	 	//background: radial-gradient($white 0%, $white 0%, transparent 0%);
+		margin-right: 0.5em;
+		border-radius: 30px;
+		transition-property: border-color, background;
+		transition-duration: 0.2s;
+		transition-timing-function: ease-in;
+	}
+	&:checked  + label::before {
+	 	border-color: $white;
+	 	background: $white;
+	 	//background: radial-gradient($white 0%, $white 40%, transparent 40%);
+	}
+	
+	
+	// layout for labels 
+	&+label {
+		display: inline-block;
+		margin:0;
+		user-select: none;
+	}
+	&+label+&+label {
+		margin-left: 3em;
+	}
+}

@@ -1,0 +1,52 @@
+// Brand Colors
+$maker-green: #1abc9c;
+$maker-green-alpha: rgba(26, 188, 156, 0.15);
+$maker-green-light: #22d6b3;
+$maker-green-dark: #19a589;
+
+// Shades
+$white: #ffffff;
+$very-light-grey: #e8e8e8;
+$white-two: #dedede;
+$silver: #ced0d2;
+$text-grey: #9aa3ad;
+$mid-grey: #697077;
+$grid-grey: #3d4b56;
+$line-grey: #313d47;
+$bg-grey: #202930;
+$bg-darkgrey: #152128;
+$black: #0b1216;
+
+// blue-greys
+$blue-grey: #2b3943;
+$blue-grey-light: #495B68;
+
+// functional colors
+$error-red: #c0392b;
+$success-green: #27ae60;
+$neutral-blue: #3498db;
+$orangey-yellow: #fbae17;
+
+// graph colors
+$risk-red: #e74c3c;
+$loan-blue: #3498db;
+
+
+
+
+// general color settings
+body {
+	background-color: $black;
+	color: $text-grey;
+}
+.bright-style > *, .bright-style {
+	color: $black;
+}
+
+// CSS Font Color Classes
+.typo-white { color: $white; }
+.typo-mid-grey { color: $mid-grey; }
+.typo-grid-grey { color: $grid-grey; }
+
+// Background CSS-Classes
+// border CSS-Classes

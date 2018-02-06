@@ -1,0 +1,182 @@
+* {
+	box-sizing: border-box;
+}
+
+html {
+	background-color: $black;
+}
+
+body {
+	min-width: 768px;
+	margin: 0;
+	overflow: auto;
+	overflow-x: hidden;
+	
+	@media only screen and (max-width: 767px) {
+		overflow-x: auto;
+	}
+}
+
+#root {
+	padding: 0;
+	margin: 0;
+	display: inline;
+}
+
+.wrapper {
+	width: 100%;
+	min-height: 100vh;
+	overflow: hidden;
+	position: relative;
+	padding-left: 72px;
+	padding-right: 340px;
+	background-color: $bg-grey;
+	transition: padding-right .3s ease-in;
+		
+	@include respond-to(m) {
+		padding-left: 0;
+		padding-right: 0;
+	}
+	@include respond-to(xl) {
+		padding-right: 0;
+	}
+	
+	.full-width-page &, &.full-width-page {
+		padding-right: 0;
+		.right-column {
+			right: -50%;
+			@include respond-to(m) {
+				right: 0px;
+				bottom: -100%;
+			}
+		}
+		.main-column {
+			padding-right: 0;
+			margin-right: 0;
+			width: 100%;
+		}
+	}
+}
+
+
+
+.main-column {
+	z-index: 1;
+	background-color: $bg-grey;
+	min-height: 100%;
+	width: 100%;
+	display: block;
+	overflow: hidden;
+	
+	& > div {
+		width: 100%;
+		padding: 23px 44px 38px;
+		padding: 1.7em 3.3846153em 3em;
+	}
+	
+	// large Screen layout
+	@include respond-to(xl) {
+		width: 70%;
+	}
+	// medium Screen layout
+	@include respond-to(m) {
+		min-height: 0;
+	}
+}
+
+// ALIGNMENT
+
+.right {
+	float: right;
+}
+
+
+// GRID
+
+.col,
+.row {
+	border-color: $line-grey;
+	border-style: solid;
+	border-width: 0 0 1px 0;
+	display: inline-block;
+	width: 100%;
+	float: left;
+	
+	&.row-no-border {
+		border: 0;
+	} 
+}
+
+.row .col {
+	border-width: 0;
+}
+
+.col {
+	padding: 1em 0;
+	
+	@include respond-to(xl) {
+		padding: 1.5em 0;
+	}
+	
+	&.col-extra-padding {
+		padding-top: 4em;
+		padding-bottom: 4em;
+		
+		@include respond-to(xl) {
+			padding-top: 5em;
+			padding-bottom: 5em;
+		}
+	}
+	&.col-no-border {
+		border: 0;
+	} 
+}
+
+.col-2 {
+	width: 50%;
+	float: left;
+	padding-left: 1em;
+	
+	&:first-child {
+		border-right-width: 1px;
+		padding-left: 0px;
+		padding-right: 1em;
+	}
+	
+	@include respond-to(xl) {
+		padding-left: 1.5em;
+		&:first-child {;
+			padding-left: 0px;
+			padding-right: 1.5em;
+		}
+	}
+}
+
+// responsive columns
+
+@include respond-to(m) {
+	[foo], .row-2col-m {
+		display: flex;
+		flex-direction: row;
+		
+		& > * {
+			padding-left: 1em;
+			border-bottom-width: 0px;
+		}
+
+		& > *:first-child {
+			border-right-width: 1px;
+			padding-left: 0px;
+			padding-right: 1em;
+		}
+	}
+}
+
+.inner-row {
+	clear: both;
+	display: block;
+	margin-top: 1em;
+	line-height: 3em;
+	vertical-align: baseline;
+}
+

@@ -1,0 +1,389 @@
+.legend {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+    user-select: none;
+	padding-top: 0.5em;
+	li {
+		display: inline-block; 
+		list-style-type: none;
+		margin-left: 1em;
+	}
+	.dot {
+		display: inline-block;
+		width: 10px; 
+		height: 10px;
+		border-radius: 5px;
+		border-radius: 100%;
+		margin-right: 1px;
+		position: relative;
+		top: 1px;
+		&.dot-redlines {background-image: repeating-linear-gradient(45deg, 
+			transparent 0px, 
+			transparent 2px, $error-red 2px, 
+			$error-red 3px, transparent 3px);}
+		&.dot-reddots {
+			background-image: -webkit-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+			background-image: -moz-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+			background-image: -ms-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+			background-image: repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+			-webkit-background-size: 5px 5px;
+			-moz-background-size: 5px 5px;
+			background-size: 5px 5px;
+			border-radius: 0;
+		}
+		&.dot-red {background-color: $error-red;}
+		&.dot-white {background-color: $white;}
+		&.dot-blue {background-color: $neutral-blue;}
+	}
+}
+
+#chart {
+	user-select: none;
+	margin-left: 0px;
+	width: calc(100% + 52px);
+	
+	@include respond-to(xl) {
+		margin-top: 3em;
+	}
+	svg {
+		width: 100%;
+	}
+}
+
+
+// from framework:
+.chart-container {
+	// https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
+	font-family: 'Cairo', 'Arial', sans-serif;
+	
+	.graph-focus-margin {
+		margin: 0px 5%;
+	}
+	&>.title {
+		margin-top: 25px;
+		margin-left: 25px;
+		text-align: left;
+		font-weight: normal;
+		font-size: 12px;
+		color: #6c7680;
+	}
+	.graphics {
+		margin-top: 10px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+		position: relative;
+	}
+	.graph-stats-group {
+		display: flex;
+		justify-content: space-around;
+		flex: 1;
+	}
+	.graph-stats-container {
+		display: flex;
+		justify-content: space-around;
+		padding-top: 10px;
+		.stats {
+			padding-bottom: 15px;
+		}
+		.stats-title {
+			color: #8D99A6;
+		}
+		.stats-value {
+			font-size: 20px;
+			font-weight: 300;
+		}
+		.stats-description {
+			font-size: 12px;
+			color: #8D99A6;
+		}
+		.graph-data {
+			.stats-value {
+				color: #98d85b;
+			}
+		}
+	}
+	.axis, .chart-label {
+		font-size: 11px;
+		fill: #555b51;
+		line {
+			stroke: $line-grey;
+		}
+	}
+	.percentage-graph {
+		.progress {
+			margin-bottom: 0px;
+		}
+	}
+	.data-points {
+		circle {
+			stroke: $line-grey;
+			stroke-width: 2;
+		}
+	}
+	.path-group {
+		path {
+			fill: none;
+			stroke-opacity: 1;
+			stroke-width: 2px;
+		}
+	}
+	line.dashed {
+		stroke-dasharray: 5,3;
+	}
+	.tick {
+		&.x-axis-label {
+			display: block;
+			
+		}
+		.specific-value {
+			text-anchor: start;
+		}
+		.y-value-text {
+			text-anchor: end;
+		}
+		.x-value-text {
+			text-anchor: middle;
+		}
+	}
+	.progress {
+		height: 20px;
+		margin-bottom: 20px;
+		overflow: hidden;
+		background-color: #f5f5f5;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+		box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+	}
+	.progress-bar {
+		float: left;
+		width: 0;
+		height: 100%;
+		font-size: 12px;
+		line-height: 20px;
+		color: #fff;
+		text-align: center;
+		background-color: #36414c;
+		-webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+		box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+		-webkit-transition: width .6s ease;
+		-o-transition: width .6s ease;
+		transition: width .6s ease;
+	}
+
+	.graph-svg-tip {
+		position: absolute;
+		z-index: 99999;
+		padding: 10px;
+		font-size: 12px;
+		color: #959da5;
+		text-align: center;
+		background: rgba(0, 0, 0, 0.8);
+		border-radius: 3px;
+		ul {
+			padding-left: 0;
+			display: flex;
+		}
+		ol {
+			padding-left: 0;
+			display: flex;
+		}
+		ul.data-point-list {
+			li {
+				min-width: 90px;
+				flex: 1;
+				font-weight: 600;
+			}
+		}
+		strong {
+			color: #dfe2e5;
+			font-weight: 600;
+		}
+		.svg-pointer {
+			position: absolute;
+			height: 5px;
+			margin: 0 0 0 -5px;
+			content: " ";
+			border: 5px solid transparent;
+			border-top-color: rgba(0, 0, 0, 0.8);
+		}
+		&.comparison {
+			padding: 0;
+			text-align: left;
+			pointer-events: none;
+			.title {
+				display: block;
+				padding: 10px;
+				margin: 0;
+				font-weight: 600;
+				line-height: 1;
+				pointer-events: none;
+			}
+			ul {
+				margin: 0;
+				white-space: nowrap;
+				list-style: none;
+			}
+			li {
+				display: inline-block;
+				padding: 5px 10px;
+			}
+		}
+	}
+
+	/*Indicators*/
+	.indicator,
+	.indicator-right {
+		background: none;
+		font-size: 12px;
+		vertical-align: middle;
+		font-weight: bold;
+		color: #6c7680;
+	}
+	.indicator i {
+		content: '';
+		display: inline-block;
+		height: 8px;
+		width: 8px;
+		border-radius: 8px;
+	}
+	.indicator::before,.indicator i {
+		margin: 0 4px 0 0px;
+	}
+	.indicator-right::after {
+		margin: 0 0 0 4px;
+	}
+	
+	
+	// OWN STYLES ---------------------------
+	
+	.title, .sub-title { display: none; }
+	.chart .line-chart .y.axis .tick line {
+		stroke: $line-grey;
+	}
+	.chart .line-chart .x.axis .tick line {
+		stroke: none;
+	}
+	.chart .line-chart .axis .tick text {
+		fill: $text-grey;
+	}
+	.chart .line-chart .data-points circle {
+		stroke: none;
+		/*
+		&:hover {
+			stroke: #fff;
+			stroke-width: 8;
+			stroke-opacity: 0.25;
+		}
+		*/
+	}
+	
+	// css for dotted line (high risc)
+	g.data-points-2 circle {
+		visibility: hidden;
+	}
+	g.path-group-2 path {
+		stroke-dasharray: 2 6;
+		stroke-opacity: 0.5;
+		stroke-width: 2px;
+	}
+	
+	// Tooltip
+	.graph-svg-tip, .graph-svg-tip.comparison { // tooltip
+		margin-top: -0.5em;
+		z-index: 9999999999;
+		font-family: 'Cairo', 'Arial', sans-serif;
+		background: $white;
+		color: $mid-grey;
+		border-radius: 2px;
+		box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, .5);
+		
+		// amimation 
+		#chart:hover & {
+			transition: top 0.1s ease-in, left 0.1s ease-in, opacity 0.2s ease-in 0.25s;
+		}		
+		
+		.svg-pointer {
+			border-top-color: $white;
+		}
+		.title {
+			text-align: left;
+			@include fontsize(c);
+			@include fontweight(light);
+			position: relative;
+			padding-bottom: 0.25em;
+			strong { // line under headline
+				position: relative;
+				display: block;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: 1px;
+				padding-top: 0.5em;
+				border-bottom: 1px solid $silver;
+			}
+		}
+		ul.data-point-list {
+			display: block;
+			padding-top: 0em;
+			margin-top: 0em;
+			padding-bottom: 0.5em;
+			
+			li {
+				@include fontsize(sc);
+				@include fontweight(light);
+				display: block;
+				border-top-color: transparent;
+				border-top-width: 0 !important;
+				vertical-align: baseline;
+				line-height: 1em;
+					
+				// adding the color dots
+				&:before { 
+					content: '';
+					display: inline-block;
+					float: left; 
+					font-size: inherit;
+					margin-right: 0.3em;
+					height: 0.5em;
+					width: 0.5em;
+					border-radius: 0.25em;
+					border-radius: 100%;
+					position: relative;
+					top: 0.2em;
+				}
+				&:nth-child(1n):before{ background-color:$white; border: 1px solid $silver; box-sizing: border-box; }
+				&:nth-child(2n):before{ background-color: $risk-red; border: 0; }
+				&:nth-child(3n):before{ 
+					border: none; 
+					border-radius: 0;
+					background-image: -webkit-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+					background-image: -moz-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+					background-image: -ms-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+					background-image: repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
+					-webkit-background-size: 3px 3px;
+					-moz-background-size: 3px 3px;
+					background-size: 3px 3px;
+					
+				}
+				&:nth-child(4n):before{ background-color:$loan-blue; border: 0; }
+				
+				// values
+				strong {
+					color: $black;
+					@include fontsize(c);
+					@include fontweight(normal);
+					line-height: 16px;
+					line-height: 1.2rem;
+					display: inline-block !important;
+					vertical-align: baseline;
+					float: right;
+					margin-left: 1em;
+				}
+			}
+		}
+	}
+	
+}
+
+

@@ -1,0 +1,225 @@
+// CoBa Typography
+// requires SCSS for color and breakpoints
+
+
+// Font-Size-Mixins -------------------------------
+@mixin fontsize($styletype) {
+	
+	@if $styletype == h1 {
+		font-size: 36px;
+		line-height: 0.8;
+		letter-spacing: 0.1px;
+		
+		@include respond-to(xl) {
+			font-size: 40px;
+		}
+		@include respond-to(m) {
+			font-size:32px;
+		}
+	}	
+	@if $styletype == h2 {
+		font-size: 24px;
+		line-height: 1.3;
+		
+		@include respond-to(xl) {
+			font-size: 28px;
+		}
+		@include respond-to(m) {
+			font-size:24px;
+		}
+	}					
+	@if $styletype == h3 {
+		font-size: 18px;
+		line-height: 1.3;
+		
+		@include respond-to(xl) {
+			font-size: 21px;
+		}
+	}				
+	@if $styletype == cl { // copy large
+		font-size: 16px;
+		line-height: 1.5;
+		
+		@include respond-to(xl) {
+			font-size: 18px;
+		}
+		
+	}				
+	@if $styletype == c { // copy
+		font-size: 13px;
+		line-height: 1.5;
+		
+		@include respond-to(xl) {
+			font-size: 16px;
+		}
+		
+	}				
+	@if $styletype == cs { // copy small
+		font-size: 10px;
+		line-height: 1.5;
+		
+		@include respond-to(xl) {
+			font-size: 14px;
+		}
+		
+	}				
+	@if $styletype == cxs { // copy small
+		font-size: 8px;
+		line-height: 1.5;
+		
+		@include respond-to(xl) {
+			font-size: 10px;
+		}
+		
+	}
+	@if $styletype == inherit {
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		letter-spacing: inherit;
+	}	
+} 
+
+// Font-Weight-Mixins -------------------------------
+@mixin fontweight($styletype) {
+	
+	@if $styletype == light {
+		font-family: 'Cairo', 'Arial', sans-serif;
+		font-weight: 300;
+		letter-spacing: 0em;
+	}	
+	@if $styletype == medium {
+		font-family: 'Cairo', 'Arial', sans-serif;
+		font-weight: normal;
+		letter-spacing: 0.0025em;
+	}	
+	@if $styletype == bold {
+		font-family: 'Cairo', 'Arial', sans-serif;
+		font-weight: 600;
+		letter-spacing: 0.005em;
+	}	
+}
+
+// CSS Font Size Classes -------------------------------
+.typo-h1 { @include fontsize(h1); margin-bottom: 0.4em; }
+.typo-h2 { @include fontsize(h2); }
+.typo-h3 { @include fontsize(h3); }
+.typo-cl, .typo-cl p { @include fontsize(cl); }
+.typo-c, .typo-c p { @include fontsize(c); }
+.typo-cs, .typo-cs p { @include fontsize(cs); }
+
+
+// CSS Font Weight Classes -------------------------------
+.typo-light { 
+	@include fontweight(light);
+}
+.typo-medium { 
+	@include fontweight(medium); 
+}
+.typo-bold, bold, b { 
+	 @include fontweight(bold);
+}
+
+
+// Generic styles for HTML-Elements -------------------------------
+
+html {
+	@include fontsize(c); 
+}
+body {
+	font-family: 'Cairo', 'Arial', sans-serif;
+	font-size: 1em;
+	@include fontweight(light)
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	user-select: none;
+	padding: 0;
+	margin: 0;
+	font-weight: 300;
+	color: inherit;
+	display: block;
+	
+	* + & {
+		margin-top: 2.5em;
+	}
+	
+	&.inline-headline {
+		display: inline-block;
+		margin: 0 !important;
+	}
+}
+
+
+h1 {
+	font-size: 36px;
+	@include fontsize(h1);
+}
+
+h2 {
+	@include fontsize(h2);
+	margin-bottom: 1em;
+}
+
+h3 {
+	@include fontsize(cl);
+}
+
+p {
+	max-width: 40em;
+	white-space: normal;
+	margin-left: 0;
+	margin-right: 0;
+	@include fontweight(light);
+	text-align: inherit;
+}
+
+a, .typo-text-link {
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	text-decoration: underline;	
+	transition: color .2s ease-in;
+	
+	&:hover {
+		cursor: pointer;
+		color: $white;
+		text-decoration: underline;
+	}
+	
+}
+
+
+// Text Selection 
+
+.disable-text-select {
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+::selection {
+  background: rgba(0,0,0,0.4); /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: rgba(0,0,0,0.4); /* Gecko Browsers */
+}
+
+.bright-style > *, .bright-style {
+	::selection {
+	  background: $maker-green-alpha; /* WebKit/Blink Browsers */
+	}
+	::-moz-selection {
+	  background: $maker-green-alpha; /* Gecko Browsers */
+	}
+	
+}

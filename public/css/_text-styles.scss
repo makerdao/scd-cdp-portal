@@ -1,0 +1,46 @@
+
+
+.value {
+	display: inline-block;
+	color: $white;
+	user-select: text;
+	position: relative;
+	
+	&.block {
+		display: block;
+	}
+	
+	.unit {
+		margin-left: 0.4em;
+		font-weight: 300;
+		color: $text-grey;
+		user-select: none;
+	}
+}
+
+
+ul {
+	margin: 1em 0;
+	padding: 0;
+	list-style-type: none;
+	line-height: inherit;
+	
+	&.expandable {
+		line-height: 2;
+		li {
+			display: block;
+			a {
+				margin-left: 0.5em;
+			}
+			&:before {
+				content: '+';
+				display: inline-block;
+				font-weight: 600;
+			}
+		}
+	}
+	
+	
+}
+
+

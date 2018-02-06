@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Prototype" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dashboard-CDP-Notification-red" transform="translate(-1144.000000, -31.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="Notification" transform="translate(1126.000000, 0.000000)">
+                <path d="M26,31 C21.584,31 18,34.584 18,39 C18,43.416 21.584,47 26,47 C30.416,47 34,43.416 34,39 C34,34.584 30.416,31 26,31 Z M30,39.8 L22,39.8 L22,38.2 L30,38.2 L30,39.8 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

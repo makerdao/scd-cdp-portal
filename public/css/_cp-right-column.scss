@@ -1,0 +1,135 @@
+
+.right-column {
+	z-index: 0;
+	background-color: $bg-darkgrey;
+	width: 340px;
+	min-height: 100%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	transition: right 0.3s ease-in;
+	
+	@include respond-to(m) {
+		width: 100%;
+		position: relative;
+		display: inline-block;
+	}
+	// large Screen layout
+	@include respond-to(xl) {
+		width: 30%;
+	}
+	
+	// headlines in right column
+	h1, h2, h3, h4, h5, h6 {
+		display: block;
+		margin-top: 0;
+	}
+	
+	
+	// boxes in right column
+	.right-column-content {
+		padding: 32px 44px;
+		
+		@include respond-to(m) {
+			display: inline-block;
+			width: 100%;
+		}
+		
+		h3 {
+			padding-top: 1em;
+		}
+	}
+	
+	// boxes in alerts 
+	.notifications-container {
+		& > * {
+			padding: 32px 44px;
+			position: relative;
+			border: 0;
+			
+			p {
+				max-width: 30em;
+			}
+		}
+		.nf-error {
+			background-color: $error-red;
+			color: $white;
+			.notification-headline {
+				&:after {
+					content: url('../img/icon-stop.svg');
+					position: absolute;
+					left: -1.5em;
+					top: auto;
+					margin-top: 0.05em;
+				}
+			}
+		}
+		.nf-info {
+			background-color: $neutral-blue;
+			color: $white;
+			.notification-headline {
+				&:after {
+					content: url('../img/icon-clock.svg');
+					position: absolute;
+					left: -1.5em;
+					top: auto;
+					margin-top: 0.05em;
+				}
+			}
+		}
+		.nf-success {
+			background-color: $success-green;
+			color: $white;
+			.notification-headline {
+				&:after {
+					content: url('../img/icon-check.svg');
+					position: absolute;
+					left: -1.5em;
+					top: auto;
+					margin-top: 0.05em;
+				}
+			}
+		}
+		.close-box {
+			position: absolute;
+			top: 0.785em;
+			right: 0.785em;
+		}
+		.notification-headline {
+			@include fontweight(bold);
+			position: relative;
+		}
+	}	
+	
+	// Wallet 
+	ul.wallet {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		li {
+			font-size: 14px;
+			margin-bottom: 4px;
+		}
+	}
+	.wallet-id {
+		text-align: right;
+		float: right;
+	}
+	
+	// footer
+	.footer {
+		@include respond-to(m) {
+			text-align: left;
+			margin-top: 2em;
+		}
+	}
+	
+	
+	
+	// medium Screen layout
+	@include respond-to(m) {
+		.dialog-open & {
+			padding-bottom: 300px;
+		}
+	}
+}

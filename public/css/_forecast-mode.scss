@@ -1,0 +1,32 @@
+
+
+.forecast-mode {
+	
+	.value {
+		
+		&:before {
+			content: 'forecast *';
+			white-space: nowrap;
+			position: absolute;
+			right: 100%;
+			padding-right: 0.5em;
+			top: -0.5em;
+			@include fontsize(cxs);
+			color: $maker-green;
+		}
+	}
+	
+	
+	.chart-container .chart .line-chart .x.axis g.tick:last-child  {
+		text {
+			fill: $maker-green;
+		}
+		line {
+			stroke: $maker-green-alpha;
+			stroke-width: 4em;
+			stroke-linecap: butt;
+			stroke-dasharray: 0.1% 0.1%;
+		}
+	}
+	
+}

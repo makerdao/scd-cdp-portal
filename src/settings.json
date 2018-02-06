@@ -1,0 +1,45 @@
+{
+  "nodeURL" : "https://rpc3.makerdao.com",
+  "CDPsPerPage": 15,
+  "chain": {
+    "private": {
+      "top": "",
+      "faucet": "",
+      "fromBlock": 0,
+      "service": "",
+      "chart": false,
+      "proxyFactory": "",
+      "proxyContracts": {
+        "basicActions": "",
+        "customActions": "",
+        "tokenActions": ""
+      }
+    },
+    "kovan": {
+      "top": "0x5f00393547561da3030ebf30e52f5dc0d5d3362c",
+      "faucet": "",
+      "fromBlock": 5216602,
+      "service": "https://devar.connaxis.com/dai-service/",
+      "chart": false,
+      "proxyFactory": "",
+      "proxyContracts": {
+        "basicActions": "",
+        "customActions": "",
+        "tokenActions": ""
+      }
+    },
+    "main": {
+      "top": "0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3",
+      "faucet": "",
+      "fromBlock": 4752013,
+      "service": "https://dai-service.makerdao.com/",
+      "chart": false,
+      "proxyFactory": "",
+      "proxyContracts": {
+        "basicActions": "",
+        "customActions": "",
+        "tokenActions": ""
+      }
+    }
+  }
+}
