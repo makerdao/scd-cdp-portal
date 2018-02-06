@@ -51,7 +51,7 @@ class Settings extends Component {
               <p>
                 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. 
               </p>
-              <button className="text-btn" data-method="shut" data-cup={ cupId } onClick={ this.props.handleOpenModal }>Close my CDP</button>
+              <button className="text-btn" data-method="shut" data-cup={ cupId } onClick={ this.props.handleOpenDialog }>Close my CDP</button>
             </div>
           </div>
         }

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import ReactModal from 'react-modal';
-import web3 from  '../../web3';
-import { wmul, wdiv } from '../../helpers';
+import web3 from  '../web3';
+import { wmul, wdiv } from '../helpers';
 
-class Modal extends Component {
+class Dialog extends Component {
   constructor() {
     super();
     this.state = {
@@ -24,7 +23,7 @@ class Modal extends Component {
   setMax = (e) => {
     e.preventDefault();
     let value = web3.toBigNumber(0);
-    switch(this.props.modal.method) {
+    switch(this.props.dialog.method) {
       case 'join':
         value = wdiv(this.props.system.gem.myBalance, wmul(this.props.system.tub.per, this.props.system.tub.gap));
         break;
@@ -33,13 +32,13 @@ class Modal extends Component {
         value = this.props.system.skr.myBalance;
         break;
       case 'free':
-        value = this.props.system.tub.cups[this.props.modal.cup].avail_skr_with_margin;
+        value = this.props.system.tub.cups[this.props.dialog.cup].avail_skr_with_margin;
         break;
       // case 'draw':
-      //   value = this.props.system.tub.cups[this.props.modal.cup].avail_dai_with_margin;
+      //   value = this.props.system.tub.cups[this.props.dialog.cup].avail_dai_with_margin;
       //   break;
       case 'wipe':
-        value = web3.BigNumber.min(this.props.system.dai.myBalance, this.props.tab(this.props.system.tub.cups[this.props.modal.cup]));
+        value = web3.BigNumber.min(this.props.system.dai.myBalance, this.props.tab(this.props.system.tub.cups[this.props.dialog.cup]));
         break;
       case 'boom':
         value = this.props.system.tub.avail_boom_skr.floor();
@@ -64,11 +63,11 @@ class Modal extends Component {
     return (
       <form>
         <p id="warningMessage" className="error">
-          { this.props.modal.error }
+          { this.props.dialog.error }
         </p>
         <div className="yesno">
           <button type="submit" onClick={(e) => this.updateValue(e)}>Yes</button>
-          <button type="submit" onClick={(e) => this.props.handleCloseModal(e)}>No</button>
+          <button type="submit" onClick={(e) => this.props.handleClosedialog(e)}>No</button>
         </div>
       </form>
     )
@@ -87,48 +86,26 @@ class Modal extends Component {
       <form ref={(input) => this.updateValueForm = input} onSubmit={(e) => this.updateValue(e)}>
         <input ref={(input) => this.updateVal = input} type={type} id="inputValue" required step="0.000000000000000001" onChange={ (e) => { this.cond(e.target.value) } } />
         {
-          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.modal.cup].art.eq(0))
+          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.cup].art.eq(0))
           ? <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
           : ''
         }
         <p id="warningMessage" className="error">
-          { this.props.modal.error }
+          { this.props.dialog.error }
         </p>
         <br />
         <input type="submit" />
       </form>
     )
   }
-
+  
   render() {
-    const modal = this.props.modal;
-    const style = {
-      overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-      },
-      content: {
-        backgroundColor: '#202930',
-        border: 1,
-        borderStyle: 'solid',
-        borderRadius: '4px',
-        borderColor: '#d2d6de',
-        bottom: 'auto',
-        height: 'auto',  // set height
-        left: '50%',
-        padding: '2rem',
-        position: 'fixed',
-        right: 'auto',
-        top: '50%', // start from center
-        transform: 'translate(-50%,-50%)', // adjust top "up" based on height
-        width: '90%',
-        maxWidth: '400px'
-      }
-    };
+    const dialog = this.props.dialog;
 
     let text = '';
     let renderForm = '';
     this.cond = () => { return false };
-    switch(modal.method) {
+    switch(dialog.method) {
       case 'proxy':
         text = '';
         text = '[ADD EXPLANATION WHAT A PROFILE IS].<br />' +
@@ -142,7 +119,7 @@ class Modal extends Component {
         this.submitEnabled = true;
         break;
       case 'shut':
-        text = `Are you sure you want to close CDP ${modal.cup}?.`;
+        text = `Are you sure you want to close CDP ${dialog.cup}?`;
         if (!this.props.proxyEnabled) {
           text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';;
         }
@@ -150,7 +127,7 @@ class Modal extends Component {
         this.submitEnabled = true;
         break;
       case 'bite':
-        text = `Are you sure you want to bite CDP ${modal.cup}?`;
+        text = `Are you sure you want to bite CDP ${dialog.cup}?`;
         renderForm = 'renderYesNoForm';
         this.submitEnabled = true;
         break;
@@ -240,7 +217,7 @@ class Modal extends Component {
         }
         break;
       case 'lock':
-        text = `Please set amount of collateral (PETH) you want to lock in CDP ${modal.cup}.`;
+        text = `Please set amount of collateral (PETH) you want to lock in CDP ${dialog.cup}.`;
         if (!this.props.proxyEnabled) {
           text += '<br />You might be requested for signing two transactions if there is not enough allowance in PETH to complete this transaction.';
         }
@@ -249,7 +226,7 @@ class Modal extends Component {
           const valueWei = web3.toBigNumber(web3.toWei(value));
           let error = '';
           this.submitEnabled = true;
-          const cup = this.props.modal.cup;
+          const cup = this.props.dialog.cup;
           if (this.props.system.skr.myBalance.lt(valueWei)) {
             error = 'Not enough balance to lock this amount of PETH.';
             this.submitEnabled = false;
@@ -262,15 +239,15 @@ class Modal extends Component {
         break;
       case 'free':
         if (this.props.system.tub.off) {
-          text = `Are you sure you want to free your available PETH from CUP ${modal.cup}?`;
+          text = `Are you sure you want to free your available PETH from CUP ${dialog.cup}?`;
           renderForm = 'renderYesNoForm';
           this.submitEnabled = true;
         } else {
-          text = `Please set amount of collateral (PETH) you want to withdraw from CDP ${modal.cup}`;
+          text = `Please set amount of collateral (PETH) you want to withdraw from CDP ${dialog.cup}`;
           renderForm = 'renderInputNumberForm';
           this.cond = (value) => {
             const valueWei = web3.toBigNumber(web3.toWei(value));
-            const cup = this.props.modal.cup;
+            const cup = this.props.dialog.cup;
             let error = '';
             this.submitEnabled = true;
             if (this.props.system.tub.cups[cup].avail_skr.lt(valueWei)) {
@@ -287,11 +264,11 @@ class Modal extends Component {
         }
         break;
       case 'draw':
-        text = `Please set amount of DAI you want to mint from your locked collateral (PETH) in CDP ${modal.cup}`;
+        text = `Please set amount of DAI you want to mint from your locked collateral (PETH) in CDP ${dialog.cup}`;
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = web3.toBigNumber(web3.toWei(value));
-          const cup = this.props.modal.cup;
+          const cup = this.props.dialog.cup;
           let error = '';
           this.submitEnabled = true;
           if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
@@ -307,14 +284,14 @@ class Modal extends Component {
         }
         break;
       case 'wipe':
-        text = `Please set amount of DAI you want to burn to recover your collateral (PETH) from CDP ${modal.cup}.`;
+        text = `Please set amount of DAI you want to burn to recover your collateral (PETH) from CDP ${dialog.cup}.`;
         if (!this.props.proxyEnabled) {
           text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';
         }
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = web3.toBigNumber(web3.toWei(value));
-          const cup = this.props.modal.cup;
+          const cup = this.props.dialog.cup;
           let error = '';
           this.submitEnabled = true;
           if (this.props.system.dai.myBalance.lt(valueWei)) {
@@ -347,7 +324,7 @@ class Modal extends Component {
         }
         break;
       case 'give':
-        text = `Please set the new address to be owner of CDP ${modal.cup}`;
+        text = `Please set the new address to be owner of CDP ${dialog.cup}`;
         renderForm = 'renderInputTextForm';
         this.submitEnabled = true;
         break;
@@ -405,18 +382,38 @@ class Modal extends Component {
     }
 
     return (
-      <ReactModal
-          isOpen={ modal.show }
-          contentLabel="Action Modal"
-          style={ style } >
-        <a href="#action" className="close" onClick={ this.props.handleCloseModal }>X</a>
-        <div>
-          <p dangerouslySetInnerHTML={{__html: text}} />
-          { renderForm ? this[renderForm](modal.method) : '' }
+      <div id="dialog" className="dialog bright-style">
+        <button id="dialog-close-caller" className="close-box" onClick={ this.props.handleCloseDialog }></button>
+        <div className="dialog-content">
+          <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
+          <div>
+            <p dangerouslySetInnerHTML={{__html: text}} />
+            { renderForm ? this[renderForm](dialog.method) : '' }
+          </div>
+          {/* <form>
+            <fieldset>
+              <label htmlFor="lend-sai" className="typo-h3">How much SAI do you want to lend?</label>
+              <div className="field-container">
+                <input type="text" name="sai" id="lend-sai" className="number-input" value="350,00" />
+                <span className="unit">SAI</span>
+              </div>
+            </fieldset>
+            <fieldset>
+              <label htmlFor="lend-sai" className="typo-h3">How much ETH do you want to put as collateral?</label>
+              <div className="field-container">
+                <input type="text" name="sai" id="lend-sai" className="number-input" value="1.000" />
+                <span className="unit">ETH</span>
+              </div>	
+            </fieldset>
+            <div className="dialog-action-area">
+              <button className="text-btn">Cancel</button>
+              <button className="text-btn text-btn-primary">OK</button>
+            </div>
+          </form> */}
         </div>
-      </ReactModal>
+      </div>
     )
   }
 }
 
-export default Modal;
+export default Dialog;

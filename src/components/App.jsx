@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import NoConnection from './NoConnection';
 import TermsModal from './modals/TermsModal';
-import Modal from './modals/Modal';
+import Dialog from './Dialog';
 import VideoModal from './modals/VideoModal';
 import TerminologyModal from './modals/TerminologyModal';
 import SystemInfo from './SystemInfo';
@@ -51,7 +51,7 @@ class App extends Component {
       terminologyModal: {
         show: false
       },
-      modal: {
+      dialog: {
         show: false
       },
       params: ''
@@ -1445,16 +1445,16 @@ class App extends Component {
   }
 
   // Modals
-  handleOpenModal = e => {
+  handleOpenDialog = e => {
     e.preventDefault();
     const method = e.target.getAttribute('data-method');
     const cup = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
-    this.setState({ modal: { show: true, method, cup } });
+    this.setState({ dialog: { show: true, method, cup } });
   }
 
-  handleCloseModal = e => {
+  handleCloseDialog = e => {
     e.preventDefault();
-    this.setState({ modal: { show: false } });
+    this.setState({ dialog: { show: false } });
   }
 
   handleOpenVideoModal = e => {
@@ -1719,8 +1719,8 @@ class App extends Component {
   }
 
   updateValue = (value, token) => {
-    const method = this.state.modal.method;
-    const cup = this.state.modal.cup;
+    const method = this.state.dialog.method;
+    const cup = this.state.dialog.cup;
     let error = false;
     switch(method) {
       case 'proxy':
@@ -1980,11 +1980,11 @@ class App extends Component {
     }
 
     if (error) {
-      const modal = { ...this.state.modal }
-      modal.error = error;
-      this.setState({ modal });
+      const dialog = { ...this.state.dialog }
+      dialog.error = error;
+      this.setState({ dialog });
     } else {
-      this.setState({ modal: { show: false } });
+      this.setState({ dialog: { show: false } });
     }
   }
 
@@ -2106,7 +2106,7 @@ class App extends Component {
     profile.activeProfile = profile.mode === 'proxy' ? profile.proxy : this.state.network.defaultAccount;
     profile.accountBalance = web3.toBigNumber(-1);
     if (profile.mode === 'proxy' && !web3.isAddress(profile.proxy)) {
-      this.setState({ modal: { show: true, method: 'proxy' } });
+      this.setState({ dialog: { show: true, method: 'proxy' } });
     } else {
       this.setState({ profile }, () => {
         localStorage.setItem('mode', profile.mode);
@@ -2228,7 +2228,7 @@ class App extends Component {
     const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
 
     return (
-      <div className={ this.state.params[0] === 'help' ? "full-width-page" : "" }>
+      <div className={ this.state.params[0] === 'help' ? "full-width-page" : this.state.dialog.show ? "dialog-open" : "" }>
         <div className="wrapper">
           <div className="menu-bar">
             <div className="logo">
@@ -2260,7 +2260,7 @@ class App extends Component {
                 system={ this.state.system }
                 account={ this.state.network.defaultAccount }
                 profile={ this.state.profile }
-                handleOpenModal={ this.handleOpenModal }
+                handleOpenDialog={ this.handleOpenDialog }
                 approve={ this.approve }
                 approveAll={ this.approveAll }
                 wrapUnwrap={ this.wrapUnwrap }
@@ -2292,8 +2292,8 @@ class App extends Component {
                   <header className="col">
                     <h1 className="typo-h1 inline-headline">Dashboard <span className="typo-c typo-mid-grey">Collateralized Debt Position</span></h1>
                     <div className="btn-group">
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.join.active } data-method="join" onClick={ this.handleOpenModal }>Convert WETH to PETH</button>
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.exit.active } data-method="exit" onClick={ this.handleOpenModal }>Convert PETH to WETH</button>
+                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.join.active } data-method="join" onClick={ this.handleOpenDialog }>Convert WETH to PETH</button>
+                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.exit.active } data-method="exit" onClick={ this.handleOpenDialog }>Convert PETH to WETH</button>
                     </div>
                   </header>
                   {
@@ -2309,9 +2309,9 @@ class App extends Component {
                     :
                       Object.keys(this.state.system.tub.cups).length > 0
                       ?
-                        <Cup system={ this.state.system } tab={ this.tab } handleOpenModal={ this.handleOpenModal } />
+                        <Cup system={ this.state.system } tab={ this.tab } handleOpenDialog={ this.handleOpenDialog } />
                       :
-                      <button className="text-btn disable-on-dialog" disabled={ !openAction.active } data-method="open" onClick={ this.handleOpenModal }>Open Your CDP</button>
+                      <button className="text-btn disable-on-dialog" disabled={ !openAction.active } data-method="open" onClick={ this.handleOpenDialog }>Open Your CDP</button>
                   }
                 </div>
             }
@@ -2332,36 +2332,10 @@ class App extends Component {
             }
           </aside>
         </div>
-        {/* <div id="dialog" className="dialog bright-style">
-          <button id="dialog-close-caller" className="close-box"></button>
-          <div className="dialog-content">
-            <h2 className="typo-h1">Lend SAI</h2>
-            <form>
-              <fieldset>
-                <label htmlFor="lend-sai" className="typo-h3">How much SAI do you want to lend?</label>
-                <div className="field-container">
-                  <input type="text" name="sai" id="lend-sai" className="number-input" value="350,00" />
-                  <span className="unit">SAI</span>
-                </div>
-              </fieldset>
-              <fieldset>
-                <label htmlFor="lend-sai" className="typo-h3">How much ETH do you want to put as collateral?</label>
-                <div className="field-container">
-                  <input type="text" name="sai" id="lend-sai" className="number-input" value="1.000" />
-                  <span className="unit">ETH</span>
-                </div>	
-              </fieldset>
-              <div className="dialog-action-area">
-                <button className="text-btn">Cancel</button>
-                <button className="text-btn text-btn-primary">OK</button>
-              </div>
-            </form>
-          </div>
-        </div> */}
+        <Dialog system={ this.state.system } dialog={ this.state.dialog } updateValue={ this.updateValue } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } />
         <TermsModal modal={ this.state.termsModal } markAsAccepted={ this.markAsAccepted } />
         <VideoModal modal={ this.state.videoModal } termsModal={ this.state.termsModal } handleCloseVideoModal={ this.handleCloseVideoModal } />
         <TerminologyModal modal={ this.state.terminologyModal } handleCloseTerminologyModal={ this.handleCloseTerminologyModal } />
-        <Modal system={ this.state.system } modal={ this.state.modal } updateValue={ this.updateValue } handleCloseModal={ this.handleCloseModal } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } />
       </div>
     );
   }

@@ -75,7 +75,7 @@ const Cup = (props) => {
             <h4 className="typo-c inline-headline">Locked</h4>
             <div className="right">
               <span className="value typo-cl">{ printNumber(cup.ink) }<span className="unit">PETH</span></span>
-              <button className="text-btn disable-on-dialog" disabled={ !actions.lock.active } data-method="lock" data-cup={ cupId } onClick={ props.handleOpenModal }>Lock</button>
+              <button className="text-btn disable-on-dialog" disabled={ !actions.lock.active } data-method="lock" data-cup={ cupId } onClick={ props.handleOpenDialog }>Lock</button>
             </div>	
           </div>
           <div className="inner-row">
@@ -90,7 +90,7 @@ const Cup = (props) => {
                     '-'
                 }
               </span>
-              <button className="text-btn disable-on-dialog" disabled={ !actions.free.active } data-method="free" data-cup={ cupId } onClick={ props.handleOpenModal }>Free</button>
+              <button className="text-btn disable-on-dialog" disabled={ !actions.free.active } data-method="free" data-cup={ cupId } onClick={ props.handleOpenDialog }>Free</button>
             </div>	
           </div>
         </div>
@@ -100,7 +100,7 @@ const Cup = (props) => {
             <h4 className="typo-c inline-headline">Debt</h4>
             <div className="right">
               <span className="value typo-cl">{ printNumber(props.tab(cup)) }<span className="unit">DAI</span></span>
-              <button className="text-btn disable-on-dialog" disabled={ !actions.draw.active } data-method="draw" data-cup={ cupId } onClick={ props.handleOpenModal }>Draw</button>
+              <button className="text-btn disable-on-dialog" disabled={ !actions.draw.active } data-method="draw" data-cup={ cupId } onClick={ props.handleOpenDialog }>Draw</button>
             </div>	
           </div>
           <div className="inner-row">
@@ -115,7 +115,7 @@ const Cup = (props) => {
                     '-'
                 }
               </span>
-              <button className="text-btn disable-on-dialog" disabled={ !actions.wipe.active } data-method="wipe" data-cup={ cupId } onClick={ props.handleOpenModal }>Wipe</button>
+              <button className="text-btn disable-on-dialog" disabled={ !actions.wipe.active } data-method="wipe" data-cup={ cupId } onClick={ props.handleOpenDialog }>Wipe</button>
             </div>
           </div>
         </div>
