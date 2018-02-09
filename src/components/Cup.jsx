@@ -1,5 +1,6 @@
 import React from 'react';
 import web3 from '../web3';
+import CupChart from './CupChart'
 import CupHistory from './CupHistory';
 import { printNumber } from '../helpers';
 
@@ -120,26 +121,18 @@ const Cup = (props) => {
           </div>
         </div>
       </div>
-      <CupHistory actions={ cup.history }/>
-      {/* <div className="row row-no-border">
+      {
+        Object.keys(props.system.chartData.cupPrices).length > 0 &&
         <div className="col">
           <div>
-            <div className="button-switch disable-on-dialog">
-              <button id="graph-view-days" className="disable-on-dialog active">Days</button>
-              <button id="graph-view-hours" className="disable-on-dialog">Hours</button>
-            </div>
             <ul className="legend typo-cs right">
               <li>
                 <span className="dot dot-white"></span>
                 <span>Collateral</span>
               </li>
               <li>
-                <span className="dot dot-reddots"></span>
-                <span>High risk</span>
-              </li>
-              <li>
                 <span className="dot dot-red"></span>
-                <span>Liquidation price</span>
+                <span>Liquidation limit</span>
               </li>
               <li>
                 <span className="dot dot-blue"></span>
@@ -147,9 +140,13 @@ const Cup = (props) => {
               </li>
             </ul>
           </div>
-          <div id="chart"></div>
+          <CupChart prices={ props.system.chartData.cupPrices } highestValue={ props.system.chartData.highestValue } />
         </div>
-      </div> */}
+      }
+      {
+        cup.history &&
+        <CupHistory actions={ cup.history }/>
+      }
     </div>
   )
 }

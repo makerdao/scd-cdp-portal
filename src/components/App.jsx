@@ -160,10 +160,9 @@ class App extends Component {
           val: web3.toBigNumber(-1),
         },
         chartData: {
-          ethusd: {},
-          skreth: {},
-          daiusd: {},
-          ethdai: {},
+          prices: {},
+          cupPrices: {},
+          highestValue: 0,
         },
         stats: {
           error: false
@@ -692,6 +691,8 @@ class App extends Component {
                       tub.cups = cups;
                       system.tub = tub;
                       return { system };
+                    }, () => {
+                      this.calculateCupChart();
                     });
                   }).catch(error => {
                     // this.setState({});
@@ -784,7 +785,7 @@ class App extends Component {
     }));
   }
 
-  getFromService = (service, conditions = {}, sort = {}) => {
+  getFromService = (service, conditions = {}, sort = {}, limit = null) => {
     const p = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       let conditionsString = '';
@@ -801,7 +802,7 @@ class App extends Component {
         return false;
       });
       sortString = sortString !== '' ? `/sort=${sortString}` : '';
-      const url = `${settings.chain[this.state.network.network].service}${settings.chain[this.state.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}`;
+      const url = `${settings.chain[this.state.network.network].service}${settings.chain[this.state.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}${limit ? `/limit=${limit}` : ''}`;
       xhr.open('GET', url, true);
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -1033,7 +1034,7 @@ class App extends Component {
     this.getAccountBalance();
     if (settings.chain[this.state.network.network].service) {
       if (settings.chain[this.state.network.network].chart) {
-        this.getChartData();
+        this.getPricesFromService();
       }
       this.getStats();
     }
@@ -1236,181 +1237,112 @@ class App extends Component {
     }
   }
 
-  parseCandleData = data => {
-    const dataParsed = [];
-    data.forEach(value => {
-      const timestamp = (new Date(value.timestamp * 1000)).setHours(0,0,0);
-      const index = dataParsed.length - 1;
-      const noWei = value.value / 10 ** 18;
-      if (dataParsed.length === 0 || timestamp !== dataParsed[index].date.getTime()) {
-        dataParsed.push({
-                          date: new Date(timestamp),
-                          open: noWei,
-                          high: noWei,
-                          low: noWei,
-                          close: noWei,
-                        });
-      } else {
-        dataParsed[index].high = dataParsed[index].high > noWei ? dataParsed[index].high : noWei;
-        dataParsed[index].low = dataParsed[index].low < noWei ? dataParsed[index].low : noWei;
-        dataParsed[index].close = noWei;
-      }
-    });
+  calculateCupChart = () => {
+    const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
+    if (this.state.system.tub.cups[cupId].history.length > 0 && typeof this.state.system.chartData.prices !== 'undefined') {
+      let prices = Object.keys(this.state.system.chartData.prices).map(key => this.state.system.chartData.prices[key]);
 
-    return dataParsed;
-  }
+      this.state.system.tub.cups[cupId].history.forEach(registry => {
+        if (['lock', 'free', 'draw', 'wipe', 'shut'].indexOf(registry.action) !== -1) {
+          prices.push({timestamp: registry.timestamp, type: registry.action, value: registry.param})
+        }
+      });
+      prices = prices.sort((a, b) => a.timestamp - b.timestamp);
 
-  setChartState = (key, value) => {
-    return new Promise((resolve, reject) => {
+      let lastETHUSD = web3.toBigNumber(0);
+      let lastDAIUSD = web3.toBigNumber(1);
+      let lastSKRETH = web3.toBigNumber(1);
+      const cupPrices = [];
+      let lastCollateral = web3.toBigNumber(0);
+      let lastDebt = web3.toBigNumber(0);
+      let highestValue = 0;
+      prices.forEach(price => {
+        switch (price.type) {
+          case 'ethusd':
+            lastETHUSD = web3.toBigNumber(price.value / 10**18);
+            break;
+          case 'daiusd':
+            lastDAIUSD = web3.toBigNumber(price.value / 10**18);
+            break;
+          case 'skreth':
+            lastSKRETH = web3.toBigNumber(price.value / 10**18);
+            break;
+          case 'lock':
+            lastCollateral = lastCollateral.add(price.value);
+            break;
+          case 'free':
+            lastCollateral = lastCollateral.minus(price.value);
+            break;
+          case 'draw':
+            lastDebt = lastDebt.add(price.value);
+            break;
+          case 'wipe':
+            lastDebt = lastDebt.minus(price.value);
+            break;
+          case 'shut':
+            lastCollateral = web3.toBigNumber(0);
+            lastDebt = web3.toBigNumber(0);
+            break;
+          default:
+            break;
+        }
+        if (price.timestamp >= this.state.system.chartData.timeLimit) {
+          cupPrices.push({
+            date: new Date(price.timestamp * 1000),
+            ethusd: lastETHUSD.toNumber(),
+            skreth: lastSKRETH.toNumber(),
+            daiusd: lastDAIUSD.toNumber(),
+            collateral: web3.fromWei(lastCollateral.times(lastSKRETH).times(lastETHUSD)).toNumber(),
+            debt: web3.fromWei(lastDebt.times(lastDAIUSD)).toNumber(),
+            risk: web3.fromWei(lastDebt.times(lastDAIUSD).times(1.5)).toNumber()
+          });
+          highestValue = cupPrices[cupPrices.length - 1].collateral > highestValue ? cupPrices[cupPrices.length - 1].collateral : highestValue;
+          highestValue = cupPrices[cupPrices.length - 1].risk > highestValue ? cupPrices[cupPrices.length - 1].risk : highestValue;
+        }
+      });
       this.setState((prevState, props) => {
         const system = {...prevState.system};
         const chartData = {...system.chartData};
-        chartData[key] = value;
+        chartData.cupPrices = cupPrices;
+        chartData.highestValue = highestValue;
         system.chartData = chartData;
         return { system };
-      }, () => {
-        resolve(value);
       });
-    });
-  }
-
-  getETHUSDPrice = timestamps => {
-    return new Promise((resolve, reject) => {
-      Promise.resolve(this.getFromService('pips', { 'timestamp.gte': timestamps[30] }, { 'timestamp': 'asc' })).then(response => {
-        response.results = this.parseCandleData(response.results);
-        Promise.resolve(this.setChartState('ethusd', response)).then(() => {
-          resolve(response);
-        }).catch(error => {
-          reject(error);
-        });
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-
-  getSKRETHPrice = timestamps => {
-    return new Promise((resolve, reject) => {
-      Promise.resolve(this.getFromService('pers', {}, { 'timestamp': 'asc' })).then(response => {
-        const finalResponse = { lastBlockNumber: response.lastBlockNumber, results: [] };
-
-        // If there is not result before 30 days ago, we assume that the value of PETH/ETH was 1 at that moment
-        finalResponse.results.push({ value: 10 ** 18, timestamp: timestamps[30] });
-
-        let lastIndex = 30;
-        response.results.forEach(value => {
-          if (value.timestamp <= timestamps[30]) {
-            finalResponse.results[0] = { value: value.value, timestamp: timestamps[30] };
-          } else {
-            for (let i = lastIndex; i >= 0; i--) {
-              if (value.timestamp > timestamps[i]) {
-                finalResponse.results.push({ value: finalResponse.results[finalResponse.results.length - 1].value, timestamp: timestamps[i] });
-                lastIndex = i;
-              }
-            }
-            finalResponse.results.push({ value: value.value, timestamp: value.timestamp });
-          }
-        });
-        for (let i = lastIndex; i >= 0; i--) {
-          finalResponse.results.push({ value: finalResponse.results[finalResponse.results.length - 1].value, timestamp: timestamps[i] });
-          lastIndex = i - 1;
-        }
-        finalResponse.results = this.parseCandleData(finalResponse.results);
-        Promise.resolve(this.setChartState('skreth', finalResponse)).then(() => {
-          resolve(finalResponse);
-        }).catch(error => {
-          reject(error);
-        });
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-
-  getDAIUSDPrice = timestamps => {
-    return new Promise((resolve, reject) => {
-      Promise.resolve(this.getFromService('ways')).then(response => {
-        const finalResponse = { lastBlockNumber: response.lastBlockNumber, results: [] };
-
-        let lastIndex = 30;
-        let lastTimestamp = -1;
-        let lastRate = -1;
-        let price = web3.toBigNumber(10).pow(18);
-        // response.results = [{ timestamp: 1500662100, value: '999999999350000000000000000' }, { timestamp: 1501556300, value: '1000000000750000000000000000' }, { timestamp: 1502161100, value: '999999999350000000000000000' }, { timestamp: 1502852300, value: '1000000000350000000000000000' }];
-
-        if (response.results.length === 0) {
-          lastTimestamp = timestamps[30];
-          lastRate = web3.toBigNumber(1);
-        }
-        response.results.forEach(value => {
-          for (let i = lastIndex; i >= 0; i--) {
-            if (value.timestamp > timestamps[i]) {
-              price = price.times(lastRate.pow(timestamps[i] - lastTimestamp));
-              lastTimestamp = timestamps[i];
-              if (i !== 30) {
-                finalResponse.results.push({ value: price.valueOf(), timestamp: timestamps[i] - 1 });
-              }
-              finalResponse.results.push({ value: price.valueOf(), timestamp: timestamps[i] });
-              lastIndex = i - 1;
-            }
-          }
-          if (lastTimestamp !== -1) {
-            price = price.times(lastRate.pow(value.timestamp - lastTimestamp));
-          }
-          lastTimestamp = value.timestamp;
-          lastRate = web3.toBigNumber(value.value).div(web3.toBigNumber(10).pow(27));
-          if (value.timestamp >= timestamps[30]) {
-            finalResponse.results.push({ value: price.valueOf(), timestamp: value.timestamp });
-          }
-        });
-        for (let i = lastIndex; i >= 0; i--) {
-          price = price.times(lastRate.pow(timestamps[i] - lastTimestamp));
-          lastTimestamp = timestamps[i];
-          if (i !== 30) {
-            finalResponse.results.push({ value: price.valueOf(), timestamp: timestamps[i] - 1 });
-          }
-          finalResponse.results.push({ value: price.valueOf(), timestamp: timestamps[i] });
-          lastIndex = i - 1;
-        }
-
-        finalResponse.results = this.parseCandleData(finalResponse.results);
-        Promise.resolve(this.setChartState('daiusd', finalResponse)).then(() => {
-          resolve(finalResponse);
-        }).catch(error => {
-          reject(error);
-        });
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-
-  getChartData = () => {
-    const timestamps = [];
-    for (let i = 0; i <= 30; i++) {
-      timestamps[i] = parseInt(((new Date()).setHours(0,0,0) - i*24*60*60*1000) / 1000, 10);
     }
+  }
+
+  getPricesFromService = () => {
+    const timeLimit = parseInt(((new Date()).setHours(0,0,0) - 10*24*60*60*1000) / 1000, 10);
     const promises = [];
     // ETH/USD
-    promises.push(this.getETHUSDPrice(timestamps));
+    promises.push(this.getFromService('pips', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
+    promises.push(this.getFromService('pips', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
     // DAI/USD
-    promises.push(this.getDAIUSDPrice(timestamps));
+    promises.push(this.getFromService('ways', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
+    promises.push(this.getFromService('ways', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
     // PETH/ETH
-    this.getSKRETHPrice(timestamps);
+    promises.push(this.getFromService('pers', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
+    promises.push(this.getFromService('pers', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
 
     Promise.all(promises).then(r => {
-      if (r[0] && r[1]) {
-        const ethdai = { results: [] };
-        r[0].results.forEach((value, index) => {
-          ethdai.results.push({
-            date: value.date,
-            open: value.open / r[1].results[index].open,
-            high: value.high / r[1].results[index].high,
-            low: value.low / r[1].results[index].low,
-            close: value.close / r[1].results[index].close,
-          });
+      if (r[0] && r[1] && r[2] && r[3] && r[4] && r[5]) {
+        const prices = r[0].results.map(val => { val.type = "ethusd"; return val; })
+                       .concat(r[1].results.map(val => { val.type = "ethusd"; return val; }))
+                       .concat(r[2].results.map(val => { val.type = "daiusd"; return val; }))
+                       .concat(r[3].results.map(val => { val.type = "daiusd"; return val; }))
+                       .concat(r[4].results.map(val => { val.type = "skreth"; return val; }))
+                       .concat(r[5].results.map(val => { val.type = "skreth"; return val; }))
+                       .sort((a, b) => a.timestamp - b.timestamp);
+        this.setState((prevState, props) => {
+          const system = {...prevState.system};
+          const chartData = {...system.chartData};
+          chartData.prices = prices;
+          chartData.timeLimit = timeLimit;
+          system.chartData = chartData;
+          return { system };
+        }, () => {
+          this.calculateCupChart();
         });
-        this.setChartState('ethdai', ethdai);
       }
     }).catch(error => {
     });
@@ -2164,9 +2096,14 @@ class App extends Component {
     this.setState((prevState, props) => {
       const system = {...prevState.system};
       const tub = {...system.tub};
+      const chartData = {...system.chartData};
       tub.cupId = cupId;
+      chartData.cupPrices = [];
       system.tub = tub;
+      system.chartData = chartData;
       return { system };
+    }, () => {
+      this.calculateCupChart();
     });
   }
 

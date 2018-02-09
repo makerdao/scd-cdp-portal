@@ -20,7 +20,7 @@
       "faucet": "",
       "fromBlock": 5216602,
       "service": "https://devar.connaxis.com/dai-service/",
-      "chart": false,
+      "chart": true,
       "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
       "proxyContracts": {
         "basicActions": "0x4e81891f77064f98dc45a2d9028f7624e2ddceeb",

@@ -213,3 +213,7 @@ p.error {
 .onoffswitch.mode-box .onoffswitch-inner:after {
   content: "Main Account";
 }
+
+.react-stockchart {
+  float: left;
+}
