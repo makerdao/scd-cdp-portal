@@ -576,32 +576,34 @@ class App extends Component {
 
   getProxyAddress = () => {
     const network = this.state.network;
-    const addrs = settings.chain[network.network];
-    const me = this;
-    return new Promise((resolve, reject) => {
-      if (addrs.proxyDirectoryService) {
-        Promise.resolve(me.getFromDirectoryService({owner: network.defaultAccount}, {blockNumber: 'asc'})).then(r => {
-          Promise.resolve(me.getProxyAddressFromChain(r.lastBlockNumber + 1, r.results)).then(r2 => {
-            resolve(r2);
-          }).catch(e2 => {
-            reject(e2);
+    if (network.defaultAccount) {
+      const addrs = settings.chain[network.network];
+      const me = this;
+      return new Promise((resolve, reject) => {
+        if (addrs.proxyDirectoryService) {
+          Promise.resolve(me.getFromDirectoryService({owner: network.defaultAccount}, {blockNumber: 'asc'})).then(r => {
+            Promise.resolve(me.getProxyAddressFromChain(r.lastBlockNumber + 1, r.results)).then(r2 => {
+              resolve(r2);
+            }).catch(e2 => {
+              reject(e2);
+            });
+          }).catch(e => {
+            Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
+              resolve(r2);
+            }).catch(e2 => {
+              reject(e2);
+            });
           });
-        }).catch(e => {
+        } else {
           Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
+            console.log('getProxyAddressFromChain', r2);
             resolve(r2);
           }).catch(e2 => {
             reject(e2);
           });
-        });
-      } else {
-        Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
-          console.log('getProxyAddressFromChain', r2);
-          resolve(r2);
-        }).catch(e2 => {
-          reject(e2);
-        });
-      }
-    });
+        }
+      });
+    }
   }
 
   setProxyAddress = () => {
