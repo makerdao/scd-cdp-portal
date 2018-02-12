@@ -20,7 +20,8 @@ const tub = require('../abi/saitub');
 const top = require('../abi/saitop');
 const tap = require('../abi/saitap');
 const vox = require('../abi/saivox');
-const dsproxyfactory = require('../abi/dsproxyfactory');
+const proxyregistry = require('../abi/proxyregistry');
+// const dsproxyfactory = require('../abi/dsproxyfactory');
 const dsproxy = require('../abi/dsproxy');
 const dsethtoken = require('../abi/dsethtoken');
 const dstoken = require('../abi/dstoken');
@@ -314,8 +315,10 @@ class App extends Component {
       const addrs = settings.chain[this.state.network.network];
 
       const setUpPromises = [this.getTubAddress(), this.getTapAddress()];
+
       if (addrs.proxyFactory) {
-        window.proxyFactoryObj = this.proxyFactoryObj = this.loadObject(dsproxyfactory.abi, addrs.proxyFactory);
+        window.proxyRegistryObj = this.proxyRegistryObj = this.loadObject(proxyregistry.abi, addrs.proxyRegistry);
+        // window.proxyFactoryObj = this.proxyFactoryObj = this.loadObject(dsproxyfactory.abi, addrs.proxyFactory);
         setUpPromises.push(this.getProxyAddress());
       }
       Promise.all(setUpPromises).then(r => {
@@ -470,6 +473,52 @@ class App extends Component {
     return p;
   }
 
+  getFromDirectoryService = (conditions = {}, sort = {}) => {
+    const p = new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      let conditionsString = '';
+      let sortString = '';
+      Object.keys(conditions).map(key => {
+        conditionsString += `${key}:${conditions[key]}`;
+        conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
+        return false;
+      });
+      conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
+      Object.keys(sort).map(key => {
+        sortString += `${key}:${sort[key]}`;
+        sortString += Object.keys(sort).pop() !== key ? '&' : '';
+        return false;
+      });
+      sortString = sortString !== '' ? `/sort=${sortString}` : '';
+      let serviceURL = settings.chain[this.state.network.network].proxyDirectoryService;
+      serviceURL = serviceURL.slice(-1) === '/' ? serviceURL.substring(0, serviceURL.length - 1) : serviceURL;
+      const url = `${serviceURL}${conditionsString}${sortString}`;
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response);
+        } else if (xhr.readyState === 4 && xhr.status !== 200) {
+          reject(xhr.status);
+        }
+      }
+      xhr.send();
+    });
+    return p;
+  }
+
+  getProxy = (i) => {
+    return new Promise((resolve, reject) => {
+      this.proxyRegistryObj.proxies(this.state.network.defaultAccount, i, (e, r) => {
+        if (!e) {
+          resolve(r);
+        } else {
+          reject(e);
+        }
+      });
+    });
+  }
+
   getProxyOwner = (proxy) => {
     return new Promise((resolve, reject) => {
       this.loadObject(dsproxy.abi, proxy).owner((e, r) => {
@@ -482,16 +531,35 @@ class App extends Component {
     });
   }
 
-  getProxyAddress = () => {
+  getProxyAddressFromChain = (blockNumber = 0, proxies = []) => {
     const network = this.state.network;
+    const me = this;
     return new Promise((resolve, reject) => {
-      const addrs = settings.chain[network.network];
-      this.proxyFactoryObj.Created({ sender: network.defaultAccount }, { fromBlock: addrs.fromBlock }).get(async (e, r) => {
+      // me.proxyFactoryObj.Created({sender: network.defaultAccount}, {fromBlock: blockNumber}).get(async (e, r) => {
+      //   if (!e) {
+      //     const allProxies = proxies.concat(r.map(val => val.args));
+      //     if (allProxies.length > 0) {
+      //       for (let i = allProxies.length - 1; i >= 0; i--) {
+      //         if (await me.getProxyOwner(allProxies[i].proxy) === network.defaultAccount) {
+      //           resolve(allProxies[i].proxy);
+      //           break;
+      //         }
+      //       }
+      //       resolve(null);
+      //     } else {
+      //       resolve(null);
+      //     }
+      //   } else {
+      //     reject(e);
+      //   }
+      // });
+      me.proxyRegistryObj.proxiesCount(network.defaultAccount, async (e, r) => {
         if (!e) {
-          if (r.length > 0) {
-            for (let i = r.length - 1; i >= 0; i--) {
-              if (await this.getProxyOwner(r[i].args.proxy) === network.defaultAccount) {
-                resolve(r[i].args.proxy);
+          if (r.gt(0)) {
+            for (let i = r.toNumber() - 1; i >= 0; i--) {
+              const proxyAddr = await this.getProxy(i);
+              if (await me.getProxyOwner(proxyAddr) === network.defaultAccount) {
+                resolve(proxyAddr);
                 break;
               }
             }
@@ -503,6 +571,51 @@ class App extends Component {
           reject(e);
         }
       });
+    });
+  }
+
+  getProxyAddress = () => {
+    const network = this.state.network;
+    const addrs = settings.chain[network.network];
+    const me = this;
+    return new Promise((resolve, reject) => {
+      if (addrs.proxyDirectoryService) {
+        Promise.resolve(me.getFromDirectoryService({owner: network.defaultAccount}, {blockNumber: 'asc'})).then(r => {
+          Promise.resolve(me.getProxyAddressFromChain(r.lastBlockNumber + 1, r.results)).then(r2 => {
+            resolve(r2);
+          }).catch(e2 => {
+            reject(e2);
+          });
+        }).catch(e => {
+          Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
+            resolve(r2);
+          }).catch(e2 => {
+            reject(e2);
+          });
+          ;
+        });
+      } else {
+        Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
+          console.log('getProxyAddressFromChain', r2);
+          resolve(r2);
+        }).catch(e2 => {
+          reject(e2);
+        });
+      }
+    });
+  }
+
+  setProxyAddress = () => {
+    Promise.resolve(this.getProxyAddress()).then(proxy => {
+      if (proxy) {
+        this.setState((prevState, props) => {
+          const profile = {...prevState.profile};
+          profile.proxy = proxy;
+          return {profile};
+        }, () => {
+          this.changeMode();
+        });
+      }
     });
   }
 
@@ -1620,20 +1733,9 @@ class App extends Component {
         const id = Math.random();
         const title = 'PROXY: create new profile';
         this.logRequestTransaction(id, title);
-        this.proxyFactoryObj.build((e, tx) => {
+        this.proxyRegistryObj.build((e, tx) => {
           if (!e) {
-            this.logPendingTransaction(id, tx, title);
-            this.proxyFactoryObj.Created({ sender: this.state.network.defaultAccount }, { fromBlock: 'latest' }, (e, r) => {
-              if (!e) {
-                const profile = { ...this.state.profile }
-                profile.proxy = r.args.proxy;
-                this.setState({ profile }, () => {
-                  this.changeMode();
-                });
-              } else {
-                console.log(e);
-              }
-            });
+            this.logPendingTransaction(id, tx, title, [['setProxyAddress']]);
           } else {
             console.log(e);
             this.logTransactionRejected(id, title);

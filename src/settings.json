@@ -8,6 +8,7 @@
       "fromBlock": 0,
       "service": "",
       "chart": false,
+      "proxyRegistry": "",
       "proxyFactory": "",
       "proxyContracts": {
         "basicActions": "",
@@ -21,6 +22,7 @@
       "fromBlock": 5216602,
       "service": "https://devar.connaxis.com/dai-service/",
       "chart": true,
+      "proxyRegistry": "0x383a7fc29edde64aec7f776e2517ec8819e147f1",
       "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
       "proxyContracts": {
         "basicActions": "0x4e81891f77064f98dc45a2d9028f7624e2ddceeb",
@@ -34,6 +36,7 @@
       "fromBlock": 4752013,
       "service": "https://dai-service.makerdao.com/",
       "chart": false,
+      "proxyRegistry": "",
       "proxyFactory": "",
       "proxyContracts": {
         "basicActions": "",
