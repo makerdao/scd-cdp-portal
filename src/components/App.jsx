@@ -350,7 +350,7 @@ class App extends Component {
               this.setUpToken('dai');
               this.setUpToken('sin');
 
-              this.getCups(settings['CDPsPerPage']);
+              this.getMyCups();
 
               this.setFiltersTub();
               this.setFiltersTap();
@@ -591,32 +591,31 @@ class App extends Component {
     }
   }
 
-  getCups = (limit, skip = 0) => {
-    // const conditions = this.getCupsListConditions();
+  getMyCups = () => {
     if (this.state.profile.activeProfile) {
-      const conditions = {on: {lad: this.state.profile.activeProfile}, off: {}};
       const me = this;
       if (settings.chain[this.state.network.network].service) {
-        Promise.resolve(this.getFromService('cups', Object.assign(conditions.on, conditions.off), { cupi: 'asc' })).then(response => {
+        Promise.resolve(this.getFromService('cups', {lad: this.state.profile.activeProfile}, { cupi: 'asc' })).then(response => {
           const promises = [];
           response.results.forEach(v => {
             promises.push(me.getCup(v.cupi));
           });
-          me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, response.lastBlockNumber, limit, skip, promises);
+          me.getMyCupsFromChain(response.lastBlockNumber, promises);
         }).catch(error => {
-          me.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, settings.chain[this.state.network.network].fromBlock, limit, skip);
+          me.getMyCupsFromChain(settings.chain[this.state.network.network].fromBlock);
         });
       } else {
-        this.getCupsFromChain(this.state.system.tub.cupsList, conditions.on, conditions.off, settings.chain[this.state.network.network].fromBlock, limit, skip);
+        this.getMyCupsFromChain(settings.chain[this.state.network.network].fromBlock);
       }
     }
   }
 
-  getCupsFromChain = (cupsList, onConditions, offConditions, fromBlock, limit, skip, promises = []) => {
+  getMyCupsFromChain = (fromBlock, promises = []) => {
+    const conditions = {lad: this.state.profile.activeProfile};
     const promisesLogs = [];
     promisesLogs.push(
       new Promise((resolve, reject) => {
-        this.tubObj.LogNewCup(onConditions, { fromBlock }).get((e, r) => {
+        this.tubObj.LogNewCup(conditions, { fromBlock }).get((e, r) => {
           if (!e) {
             for (let i = 0; i < r.length; i++) {
               promises.push(this.getCup(parseInt(r[i].args.cup, 16)));
@@ -628,55 +627,41 @@ class App extends Component {
         });
       })
     );
-    if (typeof onConditions.lad !== 'undefined') {
-      promisesLogs.push(
-        new Promise((resolve, reject) => {
-          // Get cups given to address (only if not seeing all cups).
-          this.tubObj.LogNote({ sig: this.methodSig('give(bytes32,address)'), bar: toBytes32(onConditions.lad) }, { fromBlock }).get((e, r) => {
-            if (!e) {
-              for (let i = 0; i < r.length; i++) {
-                promises.push(this.getCup(parseInt(r[i].args.foo, 16), Object.assign(onConditions, offConditions)));
-              }
-              resolve();
-            } else {
-              reject(e);
+    promisesLogs.push(
+      new Promise((resolve, reject) => {
+        this.tubObj.LogNote({ sig: this.methodSig('give(bytes32,address)'), bar: toBytes32(conditions.lad) }, { fromBlock }).get((e, r) => {
+          if (!e) {
+            for (let i = 0; i < r.length; i++) {
+              promises.push(this.getCup(parseInt(r[i].args.foo, 16)));
             }
-          });
-        })
-      );
-    }
+            resolve();
+          } else {
+            reject(e);
+          }
+        });
+      })
+    );
     Promise.all(promisesLogs).then(r => {
-      if (cupsList === this.state.system.tub.cupsList && this.state.system.tub.cupsLoading) {
+      conditions.closed = false;
+      if (this.state.system.tub.cupsLoading) {
         Promise.all(promises).then(cups => {
-          const conditions = Object.assign(onConditions, offConditions);
-          const cupsToShow = {};
           const cupsFiltered = {};
-          let ownCup = this.state.system.tub.ownCup;
           for (let i = 0; i < cups.length; i++) {
             if ((typeof conditions.lad === 'undefined' || conditions.lad === cups[i].lad) &&
                 (typeof conditions.closed === 'undefined' ||
                   (conditions.closed && cups[i].lad === '0x0000000000000000000000000000000000000000') ||
-                  (!conditions.closed && cups[i].lad !== '0x0000000000000000000000000000000000000000' && cups[i].ink.gt(0))) &&
-                (typeof conditions.safe === 'undefined' ||
-                  (conditions.safe && cups[i].safe) ||
-                  (!conditions.safe && !cups[i].safe))
-                ) {
+                  (!conditions.closed && cups[i].lad !== '0x0000000000000000000000000000000000000000' && cups[i].ink.gt(0)))
+               ) {
                 cupsFiltered[cups[i].id] = cups[i];
             }
-            ownCup = ownCup || cups[i].lad === this.state.profile.activeProfile;
           }
           const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-          for (let i = skip; i < Math.min(skip + limit, keys.length); i++) {
-            cupsToShow[keys[i]] = cupsFiltered[keys[i]];
-          }
-          if (cupsList === this.state.system.tub.cupsList && this.state.system.tub.cupsLoading) {
+          if (this.state.system.tub.cupsLoading) {
             this.setState((prevState, props) => {
               const system = {...prevState.system};
               const tub = {...system.tub};
               tub.cupsLoading = false;
-              tub.cupsCount = keys.length;
-              tub.cups = cupsToShow;
-              tub.ownCup = ownCup;
+              tub.cups = cupsFiltered;
               system.tub = tub;
               return { system };
             }, () => {
@@ -815,30 +800,6 @@ class App extends Component {
       xhr.send();
     });
     return p;
-  }
-
-  getCupsListConditions = () => {
-    const conditions = { on: {}, off: {} };
-    switch (this.state.system.tub.cupsList) {
-      case 'open':
-        conditions.off.closed = false;
-        conditions.off['ink.gt'] = 0;
-        break;
-      case 'unsafe':
-        conditions.off.closed = false;
-        conditions.off.safe = false;
-        break;
-      case 'closed':
-        conditions.off.closed = true;
-        break;
-      case 'all':
-        break;
-      case 'mine':
-      default:
-        conditions.on.lad = this.state.profile.activeProfile;
-        break;
-    }
-    return conditions;
   }
 
   setFiltersTub = () => {
@@ -2059,7 +2020,7 @@ class App extends Component {
       return { system };
     }, () => {
       localStorage.setItem('cupsList', cupsList);
-      this.getCups(settings['CDPsPerPage']);
+      this.getMyCups();
     });
   }
 
@@ -2086,7 +2047,7 @@ class App extends Component {
       system.tub = tub;
       return { system };
     }, () => {
-      this.getCups(settings['CDPsPerPage'], settings['CDPsPerPage'] * (page - 1));
+      this.getMyCups();
     });
   }
 
