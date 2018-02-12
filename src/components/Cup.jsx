@@ -2,7 +2,7 @@ import React from 'react';
 import web3 from '../web3';
 import CupChart from './CupChart'
 import CupHistory from './CupHistory';
-import { printNumber } from '../helpers';
+import {printNumber} from '../helpers';
 
 const Cup = (props) => {
   const cupId = props.system.tub.cupId ? props.system.tub.cupId : Object.keys(props.system.tub.cups)[0];

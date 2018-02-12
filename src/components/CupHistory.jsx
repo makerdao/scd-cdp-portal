@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { etherscanAddress, etherscanTx, printNumber, formatDate } from '../helpers';
+import React, {Component} from 'react';
+import {etherscanAddress, etherscanTx, printNumber, formatDate} from '../helpers';
 
 class CupHistory extends Component {
   render() {

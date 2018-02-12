@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Proxy from './Proxy';
 import TokenAllowance from './TokenAllowance';
 import Wrap from './Wrap';

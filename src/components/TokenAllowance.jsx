@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 class TokenAllowance extends Component {
   changeAllowance = (e) => {
@@ -20,7 +20,7 @@ class TokenAllowance extends Component {
     const dst = token === 'all' ? 'all' : dstAux;
     return (
       <div className="onoffswitch">
-        <input type="checkbox" name="onoffswitch" className="onoffswitch-checkbox" id={`myonoffswitchp${token}${dst}`} checked={ check } data-token={ token } data-dst={ dst } data-val={ !check } onChange={ this.changeAllowance } />
+        <input type="checkbox" name="onoffswitch" className="onoffswitch-checkbox" id={ `myonoffswitchp${token}${dst}` } checked={ check } data-token={ token } data-dst={ dst } data-val={ !check } onChange={ this.changeAllowance } />
         <label className="onoffswitch-label" htmlFor={`myonoffswitchp${token}${dst}`}>
             <span className="onoffswitch-inner"></span>
             <span className="onoffswitch-switch"></span>

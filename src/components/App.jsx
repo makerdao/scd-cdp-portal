@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import NoConnection from './NoConnection';
 import TermsModal from './modals/TermsModal';
 import Dialog from './Dialog';
@@ -9,9 +9,9 @@ import Wallet from './Wallet';
 import Settings from './Settings';
 import Help from './Help';
 import Cup from './Cup';
-import web3, { initWeb3 } from  '../web3';
+import web3, {initWeb3} from  '../web3';
 import ReactNotify from '../notify';
-import { WAD, toBytes32, addressToBytes32, fromRaytoWad, wmul, wdiv, etherscanTx } from '../helpers';
+import {WAD, toBytes32, addressToBytes32, fromRaytoWad, wmul, wdiv, etherscanTx} from '../helpers';
 import './App.css';
 
 const settings = require('../settings');
@@ -183,10 +183,10 @@ class App extends Component {
             console.debug('YIKES! getBlock returned undefined!');
           }
           if (res.number >= this.state.network.latestBlock) {
-            const networkState = { ...this.state.network };
+            const networkState = {...this.state.network};
             networkState.latestBlock = res.number;
             networkState.outOfSync = e != null || ((new Date().getTime() / 1000) - res.timestamp) > 600;
-            this.setState({ network: networkState });
+            this.setState({network: networkState});
           } else {
             // XXX MetaMask frequently returns old blocks
             // https://github.com/MetaMask/metamask-plugin/issues/504
@@ -220,11 +220,11 @@ class App extends Component {
             }
           });
         } else {
-          const networkState = { ...this.state.network };
+          const networkState = {...this.state.network};
           networkState.isConnected = isConnected;
           networkState.network = false;
           networkState.latestBlock = 0;
-          this.setState({ network: networkState });
+          this.setState({network: networkState});
         }
       }
     });
@@ -232,11 +232,11 @@ class App extends Component {
 
   initNetwork = newNetwork => {
     //checkAccounts();
-    const networkState = { ...this.state.network };
+    const networkState = {...this.state.network};
     networkState.network = newNetwork;
     networkState.isConnected = true;
     networkState.latestBlock = 0;
-    this.setState({ network: networkState }, () => {
+    this.setState({network: networkState}, () => {
       const addrs = settings.chain[this.state.network.network];
       this.initContracts(addrs.top);
     });
@@ -245,12 +245,12 @@ class App extends Component {
   checkAccounts = (checkAccountChange = true) => {
     web3.eth.getAccounts((error, accounts) => {
       if (!error) {
-        const networkState = { ...this.state.network };
+        const networkState = {...this.state.network};
         networkState.accounts = accounts;
         const oldDefaultAccount = networkState.defaultAccount;
         networkState.defaultAccount = accounts[0];
         web3.eth.defaultAccount = networkState.defaultAccount;
-        this.setState({ network: networkState }, () => {
+        this.setState({network: networkState}, () => {
           if (checkAccountChange && oldDefaultAccount !== networkState.defaultAccount) {
             this.initContracts(this.state.system.top.address);
           }
@@ -277,7 +277,7 @@ class App extends Component {
 
     if (localStorage.getItem('termsModal')) {
       const termsModal = JSON.parse(localStorage.getItem('termsModal'));
-      this.setState({ termsModal });
+      this.setState({termsModal});
     }
 
     this.checkAccountsInterval = setInterval(this.checkAccounts, 3000);
@@ -289,7 +289,7 @@ class App extends Component {
     if (['home', 'settings', 'help'].indexOf(params[0]) === -1) {
       params[0] = 'home';
     }
-    this.setState({ params });
+    this.setState({params});
   }
 
   loadObject = (abi, address) => {
@@ -309,7 +309,7 @@ class App extends Component {
     if (typeof this.pendingTxInterval !== 'undefined') clearInterval(this.pendingTxInterval);
     const initialState = this.getInitialState();
     this.setState((prevState, props) => {
-      return { system: {...initialState}.system };
+      return {system: {...initialState}.system};
     }, () => {
       window.topObj = this.topObj = this.loadObject(top.abi, topAddress);
       const addrs = settings.chain[this.state.network.network];
@@ -325,8 +325,8 @@ class App extends Component {
         if (r[0] && r[1] && web3.isAddress(r[0]) && web3.isAddress(r[1])) {
           window.tubObj = this.tubObj = this.loadObject(tub.abi, r[0]);
           window.tapObj = this.tapObj = this.loadObject(tap.abi, r[1]);
-          const system = { ...this.state.system };
-          const profile = { ...this.state.profile };
+          const system = {...this.state.system};
+          const profile = {...this.state.profile};
 
           system.top.address = topAddress;
           system.tub.address = r[0];
@@ -342,7 +342,7 @@ class App extends Component {
             localStorage.setItem('mode', 'account');
           }
 
-          this.setState({ system, profile }, () => {
+          this.setState({system, profile}, () => {
             const promises = [this.setUpVox(), this.setUpPit()];
             Promise.all(promises).then(r => {
               this.initializeSystemStatus();
@@ -386,7 +386,7 @@ class App extends Component {
           const sin = {...system.sin};
           sin.issuerFee = system.sin.tubBalance.times(web3.fromWei(system.tub.tax).pow(system.vox.era.minus(system.tub.rho))).minus(system.sin.tubBalance).round(0);
           system.sin = sin;
-          return { system };
+          return {system};
         });
       }
     });
@@ -440,9 +440,9 @@ class App extends Component {
   getAccountBalance = () => {
     if (web3.isAddress(this.state.profile.activeProfile)) {
       web3.eth.getBalance(this.state.profile.activeProfile, (e, r) => {
-        const profile = { ...this.state.profile };
+        const profile = {...this.state.profile};
         profile.accountBalance = r;
-        this.setState({ profile });
+        this.setState({profile});
       });
     }
   }
@@ -592,7 +592,6 @@ class App extends Component {
           }).catch(e2 => {
             reject(e2);
           });
-          ;
         });
       } else {
         Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
@@ -628,7 +627,7 @@ class App extends Component {
             const vox = {...system.vox};
             vox.address = r;
             system.vox = vox;
-            return { system };
+            return {system};
           }, () => {
             window.voxObj = this.voxObj = this.loadObject(vox.abi, r);
             resolve(true);
@@ -650,7 +649,7 @@ class App extends Component {
             const pit = {...system.pit};
             pit.address = r;
             system.pit = pit;
-            return { system };
+            return {system};
           }, () => {
             resolve(true);
           });
@@ -670,7 +669,7 @@ class App extends Component {
           const tok = {...system[token]};
           tok.address = r;
           system[token] = tok;
-          return { system };
+          return {system};
         }, () => {
           window[`${token}Obj`] = this[`${token}Obj`] = this.loadObject(token === 'gem' ? dsethtoken.abi : dstoken.abi, r);
           this.getDataFromToken(token);
@@ -694,7 +693,7 @@ class App extends Component {
     for (let i = 0; i < filters.length; i++) {
       const conditions = {};
       if (this[`${token}Obj`][filters[i]]) {
-        this[`${token}Obj`][filters[i]](conditions, { fromBlock: 'latest' }, (e, r) => {
+        this[`${token}Obj`][filters[i]](conditions, {fromBlock: 'latest'}, (e, r) => {
           if (!e) {
             this.logTransactionConfirmed(r.transactionHash);
             this.getDataFromToken(token);
@@ -708,7 +707,7 @@ class App extends Component {
     if (this.state.profile.activeProfile) {
       const me = this;
       if (settings.chain[this.state.network.network].service) {
-        Promise.resolve(this.getFromService('cups', {lad: this.state.profile.activeProfile}, { cupi: 'asc' })).then(response => {
+        Promise.resolve(this.getFromService('cups', {lad: this.state.profile.activeProfile}, {cupi: 'asc'})).then(response => {
           const promises = [];
           response.results.forEach(v => {
             promises.push(me.getCup(v.cupi));
@@ -728,7 +727,7 @@ class App extends Component {
     const promisesLogs = [];
     promisesLogs.push(
       new Promise((resolve, reject) => {
-        this.tubObj.LogNewCup(conditions, { fromBlock }).get((e, r) => {
+        this.tubObj.LogNewCup(conditions, {fromBlock}).get((e, r) => {
           if (!e) {
             for (let i = 0; i < r.length; i++) {
               promises.push(this.getCup(parseInt(r[i].args.cup, 16)));
@@ -742,7 +741,7 @@ class App extends Component {
     );
     promisesLogs.push(
       new Promise((resolve, reject) => {
-        this.tubObj.LogNote({ sig: this.methodSig('give(bytes32,address)'), bar: toBytes32(conditions.lad) }, { fromBlock }).get((e, r) => {
+        this.tubObj.LogNote({sig: this.methodSig('give(bytes32,address)'), bar: toBytes32(conditions.lad)}, {fromBlock}).get((e, r) => {
           if (!e) {
             for (let i = 0; i < r.length; i++) {
               promises.push(this.getCup(parseInt(r[i].args.foo, 16)));
@@ -776,11 +775,11 @@ class App extends Component {
               tub.cupsLoading = false;
               tub.cups = cupsFiltered;
               system.tub = tub;
-              return { system };
+              return {system};
             }, () => {
               if (keys.length > 0 && settings.chain[this.state.network.network].service) {
                 keys.forEach(key => {
-                  Promise.resolve(this.getFromService('cupHistoryActions', { cupi: key }, { timestamp:'asc' })).then(response => {
+                  Promise.resolve(this.getFromService('cupHistoryActions', {cupi: key}, {timestamp:'asc'})).then(response => {
                     this.setState((prevState, props) => {
                       const system = {...prevState.system};
                       const tub = {...system.tub};
@@ -788,7 +787,7 @@ class App extends Component {
                       cups[key].history = response.results
                       tub.cups = cups;
                       system.tub = tub;
-                      return { system };
+                      return {system};
                     }, () => {
                       this.calculateCupChart();
                     });
@@ -862,10 +861,10 @@ class App extends Component {
         cups[id] = {...cup};
         tub.cups = cups;
         system.tub = tub;
-        return { system };
+        return {system};
       }, () => {
         if (settings.chain[this.state.network.network].service) {
-          Promise.resolve(this.getFromService('cupHistoryActions', { cupi: id }, { timestamp:'asc' })).then(response => {
+          Promise.resolve(this.getFromService('cupHistoryActions', {cupi: id}, {timestamp:'asc'})).then(response => {
             this.setState((prevState, props) => {
               const system = {...prevState.system};
               const tub = {...system.tub};
@@ -873,7 +872,7 @@ class App extends Component {
               cups[id].history = response.results
               tub.cups = cups;
               system.tub = tub;
-              return { system };
+              return {system};
             });
           }).catch(error => {
             // this.setState({});
@@ -926,7 +925,7 @@ class App extends Component {
       'give(bytes32,address)',
     ].map(v => this.methodSig(v));
 
-    this.tubObj.LogNote({}, { fromBlock: 'latest' }, (e, r) => {
+    this.tubObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.state.system.tub.cups[r.args.foo] !== 'undefined') {
@@ -958,7 +957,7 @@ class App extends Component {
   }
 
   setFiltersTap = () => {
-    this.tapObj.LogNote({}, { fromBlock: 'latest' }, (e, r) => {
+    this.tapObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === this.methodSig('mold(bytes32,uint256)')) {
@@ -969,7 +968,7 @@ class App extends Component {
   }
 
   setFiltersVox = () => {
-    this.voxObj.LogNote({}, { fromBlock: 'latest' }, (e, r) => {
+    this.voxObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === this.methodSig('mold(bytes32,uint256)')) {
@@ -987,12 +986,12 @@ class App extends Component {
           const feed = {...system[obj]};
           feed.address = r;
           system[obj] = feed;
-          return { system };
+          return {system};
         }, () => {
           window[`${obj}Obj`] = this[`${obj}Obj`] = this.loadObject(dsvalue.abi, r);
           this.getValFromFeed(obj);
 
-          this[`${obj}Obj`].LogNote({}, { fromBlock: 'latest' }, (e, r) => {
+          this[`${obj}Obj`].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
             if (!e) {
               if (
                 r.args.sig === this.methodSig('poke(bytes32)') ||
@@ -1044,7 +1043,7 @@ class App extends Component {
         const tok = {...system[token]};
         tok[`${dst}Approved`] = r.eq(web3.toBigNumber(2).pow(256).minus(1));
         system[token] = tok;
-        return { system };
+        return {system};
       });
     }, () => {});
   }
@@ -1057,7 +1056,7 @@ class App extends Component {
           const tok = {...system[name]};
           tok.totalSupply = r;
           system[name] = tok;
-          return { system };
+          return {system};
         }, () => {
           if (name === 'sin') {
             this.calculateSafetyAndDeficit();
@@ -1075,7 +1074,7 @@ class App extends Component {
           const tok = {...system[name]};
           tok[field] = r;
           system[name] = tok;
-          return { system };
+          return {system};
         }, () => {
           if ((name === 'skr' || name === 'dai') && field === 'tubBalance') {
             this.calculateSafetyAndDeficit();
@@ -1128,7 +1127,7 @@ class App extends Component {
         tub.safe = pro.gte(min);
 
         system.tub = tub;
-        return { system };
+        return {system};
       });
     }
   }
@@ -1142,7 +1141,7 @@ class App extends Component {
             const tub = {...system.tub};
             tub[field] = ray ? fromRaytoWad(value) : value;
             system.tub = tub;
-            return { system };
+            return {system};
           }, () => {
             this.getBoomBustValues();
             const promises = [];
@@ -1169,7 +1168,7 @@ class App extends Component {
                   }
                   tub.cups = cups;
                   system.tub = tub;
-                  return { system };
+                  return {system};
                 });
               }
             });
@@ -1195,7 +1194,7 @@ class App extends Component {
             const tap = {...system.tap};
             tap[field] = ray ? fromRaytoWad(value) : value;
             system.tap = tap;
-            return { system };
+            return {system};
           }, () => {
             resolve(true);
           });
@@ -1216,7 +1215,7 @@ class App extends Component {
             const vox = {...system.vox};
             vox[field] = ray ? fromRaytoWad(value) : value;
             system.vox = vox;
-            return { system };
+            return {system};
           }, () => {
             resolve(true);
           });
@@ -1237,7 +1236,7 @@ class App extends Component {
             const feed = {...system[obj]};
             feed.val = web3.toBigNumber(r[1] ? parseInt(r[0], 16) : -2);
             system[obj] = feed;
-            return { system };
+            return {system};
           }, () => {
             if (obj === 'pip') {
               this.getBoomBustValues();
@@ -1306,7 +1305,7 @@ class App extends Component {
           }
         }
         system.tub = tub;
-        return { system };
+        return {system};
       });
     }
   }
@@ -1380,7 +1379,7 @@ class App extends Component {
         chartData.cupPrices = cupPrices;
         chartData.highestValue = highestValue;
         system.chartData = chartData;
-        return { system };
+        return {system};
       });
     }
   }
@@ -1389,14 +1388,14 @@ class App extends Component {
     const timeLimit = parseInt(((new Date()).setHours(0,0,0) - 10*24*60*60*1000) / 1000, 10);
     const promises = [];
     // ETH/USD
-    promises.push(this.getFromService('pips', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
-    promises.push(this.getFromService('pips', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
+    promises.push(this.getFromService('pips', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
+    promises.push(this.getFromService('pips', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
     // DAI/USD
-    promises.push(this.getFromService('ways', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
-    promises.push(this.getFromService('ways', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
+    promises.push(this.getFromService('ways', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
+    promises.push(this.getFromService('ways', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
     // PETH/ETH
-    promises.push(this.getFromService('pers', {'timestamp.lt': timeLimit}, { 'timestamp': 'asc' }, 1));
-    promises.push(this.getFromService('pers', {'timestamp.gte': timeLimit}, { 'timestamp': 'asc' }));
+    promises.push(this.getFromService('pers', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
+    promises.push(this.getFromService('pers', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
 
     Promise.all(promises).then(r => {
       if (r[0] && r[1] && r[2] && r[3] && r[4] && r[5]) {
@@ -1413,7 +1412,7 @@ class App extends Component {
           chartData.prices = prices;
           chartData.timeLimit = timeLimit;
           system.chartData = chartData;
-          return { system };
+          return {system};
         }, () => {
           this.calculateCupChart();
         });
@@ -1426,14 +1425,14 @@ class App extends Component {
     Promise.resolve(this.getFromService('cupStats')).then(response => {
       this.setState((prevState, props) => {
         const system = {...prevState.system};
-        system.stats = { error: false, results: response.results };
-        return { system };
+        system.stats = {error: false, results: response.results};
+        return {system};
       });
     }).catch(error => {
       this.setState((prevState, props) => {
         const system = {...prevState.system};
-        system.stats = { error: true };
-        return { system };
+        system.stats = {error: true};
+        return {system};
       });
     });
   }
@@ -1455,46 +1454,46 @@ class App extends Component {
     e.preventDefault();
     const method = e.target.getAttribute('data-method');
     const cup = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
-    this.setState({ dialog: { show: true, method, cup } });
+    this.setState({dialog: {show: true, method, cup}});
   }
 
   handleCloseDialog = e => {
     e.preventDefault();
-    this.setState({ dialog: { show: false } });
+    this.setState({dialog: {show: false}});
   }
 
   handleOpenVideoModal = e => {
     e.preventDefault();
-    this.setState({ videoModal: { show: true } });
+    this.setState({videoModal: {show: true}});
   }
 
   handleOpenTermsModal = e => {
     e.preventDefault();
     const termsModal = {...this.state.termsModal};
     termsModal[e.target.getAttribute('data-modal')] = true;
-    this.setState({ termsModal: termsModal });
+    this.setState({termsModal: termsModal});
   }
 
   handleCloseVideoModal = e => {
     e.preventDefault();
     this.markAsAccepted('video');
-    this.setState({ videoModal: { show: false } });
+    this.setState({videoModal: {show: false}});
   }
 
   handleOpenTerminologyModal = e => {
     e.preventDefault();
-    this.setState({ terminologyModal: { show: true } });
+    this.setState({terminologyModal: {show: true}});
   }
 
   handleCloseTerminologyModal = e => {
     e.preventDefault();
-    this.setState({ terminologyModal: { show: false } });
+    this.setState({terminologyModal: {show: false}});
   }
 
   markAsAccepted = type => {
-    const termsModal = { ...this.state.termsModal };
+    const termsModal = {...this.state.termsModal};
     termsModal[type] = false;
-    this.setState({ termsModal }, () => {
+    this.setState({termsModal}, () => {
       localStorage.setItem('termsModal', JSON.stringify(termsModal));
     });
   }
@@ -1502,7 +1501,7 @@ class App extends Component {
 
   // Transactions
   checkPendingTransactions = () => {
-    const transactions = { ...this.state.transactions };
+    const transactions = {...this.state.transactions};
     Object.keys(transactions).map(tx => {
       if (transactions[tx].pending) {
         web3.eth.getTransactionReceipt(tx, (e, r) => {
@@ -1526,9 +1525,9 @@ class App extends Component {
 
   logPendingTransaction = (id, tx, title, callbacks = []) => {
     const msgTemp = 'Transaction TX was created. Waiting for confirmation...';
-    const transactions = { ...this.state.transactions };
-    transactions[tx] = { pending: true, title, callbacks }
-    this.setState({ transactions });
+    const transactions = {...this.state.transactions};
+    transactions[tx] = {pending: true, title, callbacks}
+    this.setState({transactions});
     console.log(msgTemp.replace('TX', tx));
     this.refs.notificator.hideNotification(id);
     this.refs.notificator.info(tx, title, etherscanTx(this.state.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
@@ -1536,10 +1535,10 @@ class App extends Component {
 
   logTransactionConfirmed = tx => {
     const msgTemp = 'Transaction TX was confirmed.';
-    const transactions = { ...this.state.transactions };
+    const transactions = {...this.state.transactions};
     if (transactions[tx] && transactions[tx].pending) {
       transactions[tx].pending = false;
-      this.setState({ transactions }, () => {
+      this.setState({transactions}, () => {
         console.log(msgTemp.replace('TX', tx));
         this.refs.notificator.hideNotification(tx);
         this.refs.notificator.success(tx, transactions[tx].title, etherscanTx(this.state.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 4000);
@@ -1552,10 +1551,10 @@ class App extends Component {
 
   logTransactionFailed = tx => {
     const msgTemp = 'Transaction TX failed.';
-    const transactions = { ...this.state.transactions };
+    const transactions = {...this.state.transactions};
     if (transactions[tx]) {
       transactions[tx].pending = false;
-      this.setState({ transactions });
+      this.setState({transactions});
       this.refs.notificator.error(tx, transactions[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
     }
   }
@@ -1975,11 +1974,11 @@ class App extends Component {
     }
 
     if (error) {
-      const dialog = { ...this.state.dialog }
+      const dialog = {...this.state.dialog}
       dialog.error = error;
-      this.setState({ dialog });
+      this.setState({dialog});
     } else {
-      this.setState({ dialog: { show: false } });
+      this.setState({dialog: {show: false}});
     }
   }
 
@@ -2023,7 +2022,7 @@ class App extends Component {
           `${this.methodSig(`deposit(address,uint256)`)}${addressToBytes32(this.gemObj.address, false)}${toBytes32(web3.toWei(amount), false)}`,
           log);
       } else {
-        this.gemObj.deposit({ value: web3.toWei(amount) }, log);
+        this.gemObj.deposit({value: web3.toWei(amount)}, log);
       }
     } else if (operation === 'unwrap') {
       if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
@@ -2096,14 +2095,14 @@ class App extends Component {
   //
 
   changeMode = () => {
-    const profile = { ...this.state.profile };
+    const profile = {...this.state.profile};
     profile.mode = profile.mode !== 'proxy' ? 'proxy' : 'account';
     profile.activeProfile = profile.mode === 'proxy' ? profile.proxy : this.state.network.defaultAccount;
     profile.accountBalance = web3.toBigNumber(-1);
     if (profile.mode === 'proxy' && !web3.isAddress(profile.proxy)) {
-      this.setState({ dialog: { show: true, method: 'proxy' } });
+      this.setState({dialog: {show: true, method: 'proxy'}});
     } else {
-      this.setState({ profile }, () => {
+      this.setState({profile}, () => {
         localStorage.setItem('mode', profile.mode);
         this.initContracts(this.state.system.top.address);
       });
@@ -2119,7 +2118,7 @@ class App extends Component {
       tub.cupsPage = 1;
       tub.cupsList = cupsList;
       system.tub = tub;
-      return { system };
+      return {system};
     }, () => {
       localStorage.setItem('cupsList', cupsList);
       this.getMyCups();
@@ -2147,7 +2146,7 @@ class App extends Component {
       tub.cupsLoading = true;
       tub.cupsPage = page;
       system.tub = tub;
-      return { system };
+      return {system};
     }, () => {
       this.getMyCups();
     });
@@ -2164,7 +2163,7 @@ class App extends Component {
       chartData.cupPrices = [];
       system.tub = tub;
       system.chartData = chartData;
-      return { system };
+      return {system};
     }, () => {
       this.calculateCupChart();
     });

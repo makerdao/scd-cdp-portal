@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import web3 from '../web3';
-import { printNumber } from '../helpers';
+import {printNumber} from '../helpers';
 
 class Wrap extends Component {
   state = {
@@ -41,7 +41,7 @@ class Wrap extends Component {
           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. 
         </p>
         <div>
-          <form className="transfer" ref={(input) => this.wrapUnwrapForm = input} onSubmit={(e) => this.wrapUnwrap(e)}>
+          <form className="transfer" ref={ input => this.wrapUnwrapForm = input } onSubmit={ e => this.wrapUnwrap(e) }>
             <p>
               <strong>ETH Balance</strong> <span>{ this.props.profile.accountBalance.gte(0) ? printNumber(this.props.profile.accountBalance) : 'Loading...' }</span>
             </p>

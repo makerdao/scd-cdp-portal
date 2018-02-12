@@ -1,5 +1,5 @@
 import React from 'react';
-import { printNumber, etherscanAddress } from '../helpers';
+import {printNumber, etherscanAddress} from '../helpers';
 
 const Token = (props) => {
   return (

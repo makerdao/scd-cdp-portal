@@ -1,34 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { format } from "d3-format";
-import { timeFormat } from "d3-time-format";
+import {format} from "d3-format";
+import {timeFormat} from "d3-time-format";
 
 import {
 	curveStepAfter,
 } from "d3-shape";
 
-import { ChartCanvas, Chart } from "react-stockcharts";
+import {ChartCanvas, Chart} from "react-stockcharts";
 import {
 	LineSeries,
 } from "react-stockcharts/lib/series";
-import { XAxis, YAxis } from "react-stockcharts/lib/axes";
+import {XAxis, YAxis} from "react-stockcharts/lib/axes";
 import {
 	CrossHairCursor,
 	MouseCoordinateX,
 	MouseCoordinateY,
 } from "react-stockcharts/lib/coordinates";
 
-import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
+import {discontinuousTimeScaleProvider} from "react-stockcharts/lib/scale";
 import {
 	OHLCTooltip,
 } from "react-stockcharts/lib/tooltip";
-import { fitWidth } from "react-stockcharts/lib/helper";
-import { last } from "react-stockcharts/lib/utils";
+import {fitWidth} from "react-stockcharts/lib/helper";
+import {last} from "react-stockcharts/lib/utils";
 
 class CupChart extends React.Component {
 	render() {
-	const { type, width, ratio } = this.props;
+	const {type, width, ratio} = this.props;
 
   const interpolation = curveStepAfter;
   
@@ -55,22 +55,22 @@ class CupChart extends React.Component {
 	const xExtents = [start, end];
 
 	return (
-    <ChartCanvas height={height}
-			ratio={ratio}
-			width={width}
-			margin={margin}
-			type={type}
+    <ChartCanvas height={ height }
+			ratio={ ratio }
+			width={ width }
+			margin={ margin }
+			type={ type }
 			seriesName="MSFT"
-			data={data}
-			xScale={xScale}
-			xAccessor={xAccessor}
-			displayXAccessor={displayXAccessor}
-      xExtents={xExtents}
-      panEvent={false}
-      zoomEvent={false}
+			data={ data }
+			xScale={ xScale }
+			xAccessor={ xAccessor }
+			displayXAccessor={ displayXAccessor }
+      xExtents={ xExtents }
+      panEvent={ false }
+      zoomEvent={ false }
 		>
-			<Chart id={1}
-        yExtents={[0, this.props.highestValue * 1.1]}
+			<Chart id={ 1 }
+        yExtents={ [0, this.props.highestValue * 1.1] }
 			>
 				<XAxis
 					axisAt="bottom"
@@ -90,30 +90,30 @@ class CupChart extends React.Component {
 				<MouseCoordinateX
 					at="bottom"
 					orient="bottom"
-					displayFormat={timeFormat("%Y-%m-%d")} />
+					displayFormat={ timeFormat("%Y-%m-%d") } />
 				<MouseCoordinateY
 					at="left"
 					orient="right"
-					displayFormat={format(".2f")} />
+					displayFormat={ format(".2f") } />
 				<LineSeries
-					yAccessor={d => d.collateral}
-					interpolation={interpolation}
+					yAccessor={ d => d.collateral }
+					interpolation={ interpolation }
           stroke="#FFF"
-          strokeWidth={2}
+          strokeWidth={ 2 }
 				/>
         <LineSeries
-					yAccessor={d => d.debt}
-					interpolation={interpolation}
+					yAccessor={ d => d.debt }
+					interpolation={ interpolation }
           stroke="#3498DB"
-          strokeWidth={2}
+          strokeWidth={ 2 }
 				/>
         <LineSeries
-					yAccessor={d => d.risk}
-					interpolation={interpolation}
+					yAccessor={ d => d.risk }
+					interpolation={ interpolation }
           stroke="#E74C3C"
-          strokeWidth={2}
+          strokeWidth={ 2 }
 				/>
-				<OHLCTooltip forChart={1} origin={[-40, 0]}/>
+				<OHLCTooltip forChart={ 1 } origin={ [-40, 0] }/>
 			</Chart>
 			<CrossHairCursor />
 		</ChartCanvas>

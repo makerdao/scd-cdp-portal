@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import web3 from  '../web3';
-import { wmul, wdiv } from '../helpers';
+import {wmul, wdiv} from '../helpers';
 
 class Dialog extends Component {
   constructor() {
@@ -10,7 +10,7 @@ class Dialog extends Component {
     }
   }
 
-  updateValue = (e) => {
+  updateValue = e => {
     e.preventDefault();
     const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? this.updateVal.value : false;
     const token = this.token !== 'undefined' && this.token && typeof this.token.value !== 'undefined' ? this.token.value : false;
@@ -20,7 +20,7 @@ class Dialog extends Component {
     }
   }
 
-  setMax = (e) => {
+  setMax = e => {
     e.preventDefault();
     let value = web3.toBigNumber(0);
     switch(this.props.dialog.method) {
@@ -66,8 +66,8 @@ class Dialog extends Component {
           { this.props.dialog.error }
         </p>
         <div className="yesno">
-          <button type="submit" onClick={(e) => this.updateValue(e)}>Yes</button>
-          <button type="submit" onClick={(e) => this.props.handleClosedialog(e)}>No</button>
+          <button type="submit" onClick={ e => this.updateValue(e) }>Yes</button>
+          <button type="submit" onClick={ e => this.props.handleClosedialog(e) }>No</button>
         </div>
       </form>
     )
@@ -83,8 +83,8 @@ class Dialog extends Component {
 
   renderInputForm = (type, method) => {
     return (
-      <form ref={(input) => this.updateValueForm = input} onSubmit={(e) => this.updateValue(e)}>
-        <input ref={(input) => this.updateVal = input} type={type} id="inputValue" required step="0.000000000000000001" onChange={ (e) => { this.cond(e.target.value) } } />
+      <form ref={ input => this.updateValueForm = input } onSubmit={ e => this.updateValue(e) }>
+        <input ref={ input => this.updateVal = input } type={ type } id="inputValue" required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } />
         {
           type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.cup].art.eq(0))
           ? <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
@@ -387,7 +387,7 @@ class Dialog extends Component {
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
           <div>
-            <p dangerouslySetInnerHTML={{__html: text}} />
+            <p dangerouslySetInnerHTML={ {__html: text} } />
             { renderForm ? this[renderForm](dialog.method) : '' }
           </div>
           {/* <form>

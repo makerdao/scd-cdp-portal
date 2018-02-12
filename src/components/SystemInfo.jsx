@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { printNumber, wdiv, wmul } from '../helpers';
+import React, {Component} from 'react';
+import {printNumber, wdiv, wmul} from '../helpers';
 
 class SystemInfo extends Component {
   state = {

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import web3 from '../web3';
-import { printNumber } from '../helpers';
+import {printNumber} from '../helpers';
 
 class Transfer extends Component {
   state = {
@@ -62,7 +62,7 @@ class Transfer extends Component {
           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. 
         </p>
         <div>
-          <form className="transfer" ref={(input) => this.transferForm = input} onSubmit={(e) => this.transfer(e)}>
+          <form className="transfer" ref={ input => this.transferForm = input } onSubmit={ e => this.transfer(e) }>
             <label>Token</label>
             <select ref={(input) => this.token = input} onChange={ this.onChangeToken }>
               <option value="gem">WETH</option>
