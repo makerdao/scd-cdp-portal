@@ -70,7 +70,7 @@ class CupChart extends React.Component {
       zoomEvent={false}
 		>
 			<Chart id={1}
-        yExtents={[0, this.props.highestValue]}
+        yExtents={[0, this.props.highestValue * 1.1]}
 			>
 				<XAxis
 					axisAt="bottom"

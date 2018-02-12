@@ -98,13 +98,6 @@ const Cup = (props) => {
         <div className="col col-2">
           <h3 className="typo-cl inline-headline">Loan</h3>
           <div className="inner-row">
-            <h4 className="typo-c inline-headline">Debt</h4>
-            <div className="right">
-              <span className="value typo-cl">{ printNumber(props.tab(cup)) }<span className="unit">DAI</span></span>
-              <button className="text-btn disable-on-dialog" disabled={ !actions.draw.active } data-method="draw" data-cup={ cupId } onClick={ props.handleOpenDialog }>Draw</button>
-            </div>	
-          </div>
-          <div className="inner-row">
             <h4 className="typo-c inline-headline">Available</h4>
             <div className="right">
               <span className="value typo-cl">
@@ -116,6 +109,13 @@ const Cup = (props) => {
                     '-'
                 }
               </span>
+              <button className="text-btn disable-on-dialog" disabled={ !actions.draw.active } data-method="draw" data-cup={ cupId } onClick={ props.handleOpenDialog }>Draw</button>
+            </div>
+          </div>
+          <div className="inner-row">
+            <h4 className="typo-c inline-headline">Debt</h4>
+            <div className="right">
+              <span className="value typo-cl">{ printNumber(props.tab(cup)) }<span className="unit">DAI</span></span>
               <button className="text-btn disable-on-dialog" disabled={ !actions.wipe.active } data-method="wipe" data-cup={ cupId } onClick={ props.handleOpenDialog }>Wipe</button>
             </div>
           </div>
