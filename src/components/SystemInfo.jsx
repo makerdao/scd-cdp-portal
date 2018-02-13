@@ -6,20 +6,6 @@ class SystemInfo extends Component {
     viewMore: false
   };
 
-  saveStorage = (e) => {
-    localStorage.setItem('statusCollapsed', localStorage.getItem('statusCollapsed') === "true" ? false : true)
-  }
-
-  viewMore = (e) => {
-    e.preventDefault();
-    this.setState({ viewMore: true });
-  }
-
-  hide = (e) => {
-    e.preventDefault();
-    this.setState({ viewMore: false });
-  }
-
   render = () => {
     return (
       <div className="col col-2-m">
@@ -75,7 +61,7 @@ class SystemInfo extends Component {
               <span>Loading...</span>
           } 
         </div>
-        <h3 className="typo-c">Total Liquidity Available from forced CDP liquidations (via bust)</h3>
+        <h3 className="typo-c">Total Liquidity Available from forced CDP liquidations</h3>
         <div className="value">
           {
             this.props.system.tub.off === -1
@@ -84,35 +70,37 @@ class SystemInfo extends Component {
             :
               this.props.system.tub.off === false
               ?
-                this.props.system.tub.avail_bust_skr.gte(0) && this.props.system.tub.avail_bust_dai.gte(0)
-                ?
+                <span>
                   <span>
-                    Sell { printNumber(this.props.system.tub.avail_bust_dai) } DAI<br />
-                    Buy { printNumber(this.props.system.tub.avail_bust_skr) } PETH
+                    {
+                      this.props.system.tub.avail_bust_skr.gte(0) && this.props.system.tub.avail_bust_dai.gte(0)
+                      ?
+                        <span>
+                          Sell { printNumber(this.props.system.tub.avail_bust_dai) } DAI<br />
+                          Buy { printNumber(this.props.system.tub.avail_bust_skr) } PETH
+                        </span>
+                      :
+                        'Loading...'
+                    }
                   </span>
-                :
-                  'Loading...'
-              :
-                '-'
-          }
-        </div>
-        <h3 className="typo-c">Total Liquidity Available from forced CDP liquidations (via boom)</h3>
-        <div className="value">
-          {
-            this.props.system.tub.off === -1
-            ?
-              'Loading...'
-            :
-              this.props.system.tub.off === false
-              ?
-                this.props.system.tub.avail_boom_skr.gte(0) && this.props.system.tub.avail_boom_dai.gte(0)
-                ?
+                  <br />
+                  <button className="text-btn disable-on-dialog" disabled={ !this.props.bustBoomActions.bust.active } data-method="bust" onClick={ this.props.handleOpenDialog }>{ this.props.bustBoomActions.bust.display }</button>
+                  <br />
                   <span>
-                    Sell { printNumber(this.props.system.tub.avail_boom_skr) } PETH<br />
-                    Buy { printNumber(this.props.system.tub.avail_boom_dai) } DAI
+                    {
+                      this.props.system.tub.avail_boom_skr.gte(0) && this.props.system.tub.avail_boom_dai.gte(0)
+                      ?
+                        <span>
+                          Sell { printNumber(this.props.system.tub.avail_boom_skr) } PETH<br />
+                          Buy { printNumber(this.props.system.tub.avail_boom_dai) } DAI
+                        </span>
+                      :
+                        'Loading...'
+                    }
                   </span>
-                :
-                  'Loading...'
+                  <br />
+                  <button className="text-btn disable-on-dialog" disabled={ !this.props.bustBoomActions.boom.active } data-method="boom" onClick={ this.props.handleOpenDialog }>{ this.props.bustBoomActions.boom.display }</button>
+                </span>
               :
                 '-'
           }

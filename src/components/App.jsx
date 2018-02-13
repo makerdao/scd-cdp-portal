@@ -2190,16 +2190,16 @@ class App extends Component {
       helper: 'Open a new CDP'
     }
 
-    // const bustBoomActions = {
-    //   bust: {
-    //     display: 'Buy PETH with DAI',
-    //     active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_bust_dai && this.state.system.tub.avail_bust_dai.gt(0),
-    //   },
-    //   boom: {
-    //     display: 'Buy Dai with PETH',
-    //     active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_boom_dai && this.state.system.tub.avail_boom_dai.gt(0),
-    //   },
-    // }
+    const bustBoomActions = {
+      bust: {
+        display: 'Buy PETH with DAI',
+        active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_bust_dai && this.state.system.tub.avail_bust_dai.gt(0),
+      },
+      boom: {
+        display: 'Buy Dai with PETH',
+        active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_boom_dai && this.state.system.tub.avail_boom_dai.gt(0),
+      },
+    }
 
     const skrActions = {
       join: {
@@ -2293,8 +2293,8 @@ class App extends Component {
                   <header className="col">
                     <h1 className="typo-h1 inline-headline">Dashboard <span className="typo-c typo-mid-grey">Collateralized Debt Position</span></h1>
                     <div className="btn-group">
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.join.active } data-method="join" onClick={ this.handleOpenDialog }>Convert WETH to PETH</button>
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.exit.active } data-method="exit" onClick={ this.handleOpenDialog }>Convert PETH to WETH</button>
+                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.join.active } data-method="join" onClick={ this.handleOpenDialog }>{ skrActions.join.display }</button>
+                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.exit.active } data-method="exit" onClick={ this.handleOpenDialog }>{ skrActions.exit.display }</button>
                     </div>
                   </header>
                   {
@@ -2324,7 +2324,7 @@ class App extends Component {
               <div className="right-column-content">
                 <div className="row-2col-m">
                   <Wallet system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } />
-                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val } pepVal = { this.state.system.pep.val } />
+                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val } pepVal = { this.state.system.pep.val } bustBoomActions={ bustBoomActions } handleOpenDialog={ this.handleOpenDialog } />
                 </div>	
                 <div className="footer col col-no-border typo-cs typo-grid-grey">
                   <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="announcement">Dai Public Announcement</a> || <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="terms">Dai Terms of Service</a>
