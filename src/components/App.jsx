@@ -829,7 +829,7 @@ class App extends Component {
     });
   }
 
-  addExtraCupData = (cup) => {
+  calculateCupData = cup => {
     cup.pro = wmul(cup.ink, this.state.system.tub.tag).round(0);
     cup.ratio = cup.pro.div(wmul(this.tab(cup), this.state.system.vox.par));
     // This is to give a window margin to get the maximum value (as 'chi' is dynamic value per second)
@@ -841,7 +841,11 @@ class App extends Component {
     cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(this.tab(cup).times(marginTax), this.state.system.tub.mat), this.state.system.vox.par), this.state.system.tub.tag)).round(0);
     cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? web3.toBigNumber(0) : cup.avail_skr_with_margin;
     cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(this.tab(cup), this.state.system.tub.mat), this.state.system.tub.per), cup.ink) : web3.toBigNumber(0);
+    return cup;
+  }
 
+  addExtraCupData = cup => {
+    cup = this.calculateCupData(cup);
     return new Promise((resolve, reject) => {
       this.tubObj.safe['bytes32'].call(toBytes32(cup.id), (e, safe) => {
         if (!e) {
@@ -1451,12 +1455,14 @@ class App extends Component {
     return web3.sha3(method).substring(0, 10)
   }
 
-  // Modals
+  // Dialog
   handleOpenDialog = e => {
     e.preventDefault();
     const method = e.target.getAttribute('data-method');
-    const cup = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
-    this.setState({dialog: {show: true, method, cup}});
+    const cupId = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
+    const forecast = cupId ? {...this.state.system.tub.cups[cupId]} : false;
+    console.log({dialog: {show: true, method, cup: cupId, forecast}});
+    this.setState({dialog: {show: true, method, cup: cupId, forecast}});
   }
 
   handleCloseDialog = e => {
@@ -1464,6 +1470,15 @@ class App extends Component {
     this.setState({dialog: {show: false}});
   }
 
+  updateForecast = cup => {
+    this.setState((prevState, props) => {
+      const dialog = {...prevState.dialog};
+      dialog.forecast = cup;
+      return {dialog};
+    });
+  }
+
+  // Modals
   handleOpenVideoModal = e => {
     e.preventDefault();
     this.setState({videoModal: {show: true}});
@@ -2253,7 +2268,18 @@ class App extends Component {
               </ul>
             </nav>
           </div>
-          <main className={ this.state.params[0] === 'help' ? "main-column fullwidth" : "main-column" }>
+          <main
+            className={
+                        this.state.params[0] === 'help'
+                        ?
+                          "main-column fullwidth"
+                        :
+                          this.state.dialog.show && ['lock', 'free', 'draw', 'wipe'].indexOf(this.state.dialog.method) !== -1
+                          ?
+                            "main-column forecast-mode"
+                          :
+                            "main-column"
+                      }>
             {
               this.state.params[0] === 'settings' &&
               <Settings
@@ -2310,7 +2336,7 @@ class App extends Component {
                     :
                       Object.keys(this.state.system.tub.cups).length > 0
                       ?
-                        <Cup system={ this.state.system } tab={ this.tab } handleOpenDialog={ this.handleOpenDialog } />
+                        <Cup system={ this.state.system } tab={ this.tab } handleOpenDialog={ this.handleOpenDialog } dialog={ this.state.dialog } />
                       :
                       <button className="text-btn disable-on-dialog" disabled={ !openAction.active } data-method="open" onClick={ this.handleOpenDialog }>Open Your CDP</button>
                   }
@@ -2333,7 +2359,7 @@ class App extends Component {
             }
           </aside>
         </div>
-        <Dialog system={ this.state.system } dialog={ this.state.dialog } updateValue={ this.updateValue } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } />
+        <Dialog system={ this.state.system } dialog={ this.state.dialog } updateValue={ this.updateValue } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } calculateCupData={ this.calculateCupData } updateForecast={ this.updateForecast } />
         <TermsModal modal={ this.state.termsModal } markAsAccepted={ this.markAsAccepted } />
         <VideoModal modal={ this.state.videoModal } termsModal={ this.state.termsModal } handleCloseVideoModal={ this.handleCloseVideoModal } />
         <TerminologyModal modal={ this.state.terminologyModal } handleCloseTerminologyModal={ this.handleCloseTerminologyModal } />

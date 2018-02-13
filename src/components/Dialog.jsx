@@ -234,6 +234,12 @@ class Dialog extends Component {
             error = 'It is not allowed to lock a low amount of PETH in a CDP. It needs to be higher than 0.005 PETH.';
             this.submitEnabled = false;
           }
+
+          let forecastCup = {...this.props.system.tub.cups[cup]};
+          forecastCup.ink = forecastCup.ink.add(valueWei);
+          forecastCup = this.props.calculateCupData(forecastCup);
+          this.props.updateForecast(forecastCup);
+
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
@@ -259,6 +265,12 @@ class Dialog extends Component {
             } else if (this.props.system.tub.off === false && this.props.system.tub.cups[cup].art.gt(0) && valueWei.gt(this.props.system.tub.cups[cup].avail_skr.times(0.9))) {
               error = 'This amount puts your CDP in risk to be liquidated';
             }
+
+            let forecastCup = {...this.props.system.tub.cups[cup]};
+            forecastCup.ink = forecastCup.ink.minus(valueWei);
+            forecastCup = this.props.calculateCupData(forecastCup);
+            this.props.updateForecast(forecastCup);
+
             document.getElementById('warningMessage').innerHTML = error;
           }
         }
@@ -280,6 +292,12 @@ class Dialog extends Component {
           } else if (valueWei.gt(this.props.system.tub.cups[cup].avail_dai.times(0.9))) {
             error = 'This amount puts your CDP in risk to be liquidated';
           }
+
+          let forecastCup = {...this.props.system.tub.cups[cup]};
+          forecastCup.art = forecastCup.art.add(wdiv(valueWei, this.props.system.tub.chi));
+          forecastCup = this.props.calculateCupData(forecastCup);
+          this.props.updateForecast(forecastCup);
+
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
@@ -320,6 +338,12 @@ class Dialog extends Component {
               this.submitEnabled = false;
             }
           }
+
+          let forecastCup = {...this.props.system.tub.cups[cup]};
+          forecastCup.art = forecastCup.art.minus(wdiv(valueWei, this.props.system.tub.chi));
+          forecastCup = this.props.calculateCupData(forecastCup);
+          this.props.updateForecast(forecastCup);
+
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
