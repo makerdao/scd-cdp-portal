@@ -65,9 +65,9 @@ class Dialog extends Component {
         <p id="warningMessage" className="error">
           { this.props.dialog.error }
         </p>
-        <div className="yesno">
-          <button type="submit" onClick={ e => this.updateValue(e) }>Yes</button>
-          <button type="submit" onClick={ e => this.props.handleClosedialog(e) }>No</button>
+        <div>
+          <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
+          <button className="text-btn" type="submit" onClick={ this.props.handleCloseDialog }>No</button>
         </div>
       </form>
     )
@@ -83,8 +83,20 @@ class Dialog extends Component {
 
   renderInputForm = (type, method) => {
     return (
-      <form ref={ input => this.updateValueForm = input } onSubmit={ e => this.updateValue(e) }>
-        <input ref={ input => this.updateVal = input } type={ type } id="inputValue" required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } />
+      <form ref={ input => this.updateValueForm = input } onSubmit={ this.updateValue }>
+        <input ref={ input => this.updateVal = input } type={ type } id="inputValue" className="number-input" required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } />
+        {
+          type === 'number' &&
+          <span className="unit">
+            {
+              ['draw', 'wipe'].indexOf(method) !== -1
+              ?
+                'DAI'
+              :
+                'PETH'
+            }
+          </span>
+        }
         {
           type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.cup].art.eq(0))
           ? <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
@@ -94,7 +106,10 @@ class Dialog extends Component {
           { this.props.dialog.error }
         </p>
         <br />
-        <input type="submit" />
+        <div>
+          <button className="text-btn" type="submit" onClick={ this.props.handleCloseDialog }>Cancel</button>
+          <button className="text-btn text-btn-primary" type="submit" >Submit</button>
+        </div>
       </form>
     )
   }
@@ -411,8 +426,11 @@ class Dialog extends Component {
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
           <div>
-            <p dangerouslySetInnerHTML={ {__html: text} } />
-            { renderForm ? this[renderForm](dialog.method) : '' }
+            {/* <p dangerouslySetInnerHTML={ {__html: text} } /> */}
+            <fieldset>
+              <label htmlFor="lend-sai" className="typo-h3" dangerouslySetInnerHTML={ {__html: text} }></label>
+              { renderForm ? this[renderForm](dialog.method) : '' }
+            </fieldset>
           </div>
           {/* <form>
             <fieldset>

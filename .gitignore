@@ -10,6 +10,8 @@
 /build
 /.publish
 
+public/css/.sass-cache/
+
 # misc
 .DS_Store
 .env

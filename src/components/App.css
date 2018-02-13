@@ -1,22 +1,3 @@
-.yesno {
-  display: block;
-  margin: auto;
-  margin-top: 25px;
-  overflow: hidden;
-  width: 110px;
-}
-
-.yesno button {
-  display: block;
-  float: right;
-  margin-right: 5px;
-  width: 45px;
-}
-
-.yesno button:first-child {
-  float: left;
-}
-
 p.error {
   clear: left;
   color: red;

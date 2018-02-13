@@ -29,7 +29,7 @@ input[type="text"], input[type="number"] {
 	height: 2.5em;
 }
 
-input[type="text"].number-input {
+input[type="text"].number-input, input[type="number"].number-input {
 	float: left;
 	text-align: right;
 	border-radius: 2px 0px 0px 2px;
