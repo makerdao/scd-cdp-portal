@@ -1759,7 +1759,7 @@ class App extends Component {
         });
       break;
       case 'open':
-        this.executeMethod('tub', method, [['showNewCup']]);
+        this.executeMethod('tub', method, [['getMyCups']]);
         break;
       case 'drip':
         this.executeMethod('tub', method);
@@ -2126,49 +2126,6 @@ class App extends Component {
     }
   }
 
-  setNewCupsTab = (cupsList) => {
-    this.setState((prevState, props) => {
-      const system = {...prevState.system};
-      const tub = {...system.tub};
-      tub.cups = {};
-      tub.cupsLoading = true;
-      tub.cupsPage = 1;
-      tub.cupsList = cupsList;
-      system.tub = tub;
-      return {system};
-    }, () => {
-      localStorage.setItem('cupsList', cupsList);
-      this.getMyCups();
-    });
-  }
-
-  showNewCup = () => {
-    this.setNewCupsTab('mine');
-  }
-
-  listCups = e => {
-    e.preventDefault();
-    const cupsList = e.target.getAttribute('data-value');
-    this.setNewCupsTab(cupsList);
-  }
-
-  moveCupsPage = e => {
-    e.preventDefault();
-    const page = parseInt(e.target.getAttribute('data-page'), 10);
-
-    this.setState((prevState, props) => {
-      const system = {...prevState.system};
-      const tub = {...system.tub};
-      tub.cups = {};
-      tub.cupsLoading = true;
-      tub.cupsPage = page;
-      system.tub = tub;
-      return {system};
-    }, () => {
-      this.getMyCups();
-    });
-  }
-
   changeCup = e => {
     e.preventDefault();
     let cupId = e.target.getAttribute('data-cupId');
@@ -2211,7 +2168,7 @@ class App extends Component {
         active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_bust_dai && this.state.system.tub.avail_bust_dai.gt(0),
       },
       boom: {
-        display: 'Buy Dai with PETH',
+        display: 'Buy DAI with PETH',
         active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_boom_dai && this.state.system.tub.avail_boom_dai.gt(0),
       },
     }
