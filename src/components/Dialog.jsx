@@ -108,7 +108,7 @@ class Dialog extends Component {
         <br />
         <div>
           <button className="text-btn" type="submit" onClick={ this.props.handleCloseDialog }>Cancel</button>
-          <button className="text-btn text-btn-primary" type="submit" >Submit</button>
+          <button className="text-btn text-btn-primary" type="submit">Submit</button>
         </div>
       </form>
     )
@@ -426,32 +426,11 @@ class Dialog extends Component {
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
           <div>
-            {/* <p dangerouslySetInnerHTML={ {__html: text} } /> */}
             <fieldset>
               <label htmlFor="lend-sai" className="typo-h3" dangerouslySetInnerHTML={ {__html: text} }></label>
               { renderForm ? this[renderForm](dialog.method) : '' }
             </fieldset>
           </div>
-          {/* <form>
-            <fieldset>
-              <label htmlFor="lend-sai" className="typo-h3">How much SAI do you want to lend?</label>
-              <div className="field-container">
-                <input type="text" name="sai" id="lend-sai" className="number-input" value="350,00" />
-                <span className="unit">SAI</span>
-              </div>
-            </fieldset>
-            <fieldset>
-              <label htmlFor="lend-sai" className="typo-h3">How much ETH do you want to put as collateral?</label>
-              <div className="field-container">
-                <input type="text" name="sai" id="lend-sai" className="number-input" value="1.000" />
-                <span className="unit">ETH</span>
-              </div>	
-            </fieldset>
-            <div className="dialog-action-area">
-              <button className="text-btn">Cancel</button>
-              <button className="text-btn text-btn-primary">OK</button>
-            </div>
-          </form> */}
         </div>
       </div>
     )
