@@ -1,5 +1,16 @@
-## SAI UI Explorer
+## DAI Dashboard
 
-1) npm install
+Prerequisites:
 
-2) npm start
+- Git
+- Node
+
+Installation
+
+1) `git clone git@github.com:makerdao/dai-dashboard.git`
+
+2) `cd dai-dashoboard && npm install`
+
+Execute server
+
+`npm start`
