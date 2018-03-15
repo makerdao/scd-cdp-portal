@@ -4,6 +4,7 @@ import TermsModal from './modals/TermsModal';
 import Dialog from './Dialog';
 import VideoModal from './modals/VideoModal';
 import TerminologyModal from './modals/TerminologyModal';
+import Wizard from './Wizard';
 import SystemInfo from './SystemInfo';
 import Wallet from './Wallet';
 import Settings from './Settings';
@@ -35,9 +36,7 @@ class App extends Component {
       ...initialState,
       network: {},
       profile: {
-        mode: localStorage.getItem('mode') || 'account',
-        proxy: null,
-        activeProfile: null,
+        proxy: -1,
         accountBalance: web3.toBigNumber(-1),
       },
       transactions: {},
@@ -86,11 +85,10 @@ class App extends Component {
           avail_bust_skr: web3.toBigNumber(-1),
           avail_bust_dai: web3.toBigNumber(-1),
           cups: {},
-          cupsList: localStorage.getItem('cupsList') || 'mine',
           cupsLoading: true,
           cupsCount: 0,
           cupsPage: 1,
-          ownCup: false,
+          legacyCups: {}
         },
         top: {
           address: null,
@@ -334,12 +332,9 @@ class App extends Component {
 
           if (addrs.proxyFactory && r[2]) {
             profile.proxy = r[2];
-            profile.activeProfile = localStorage.getItem('mode') === 'proxy' ? profile.proxy : this.state.network.defaultAccount;
             window.proxyObj = this.proxyObj = this.loadObject(dsproxy.abi, profile.proxy);
           } else {
-            profile.activeProfile = this.state.network.defaultAccount;
-            profile.mode = 'account';
-            localStorage.setItem('mode', 'account');
+            profile.proxy = null;
           }
 
           this.setState({system, profile}, () => {
@@ -354,6 +349,7 @@ class App extends Component {
               this.setUpToken('sin');
 
               this.getMyCups();
+              this.getMyLegacyCups();
 
               this.setFiltersTub();
               this.setFiltersTap();
@@ -438,8 +434,8 @@ class App extends Component {
   }
 
   getAccountBalance = () => {
-    if (web3.isAddress(this.state.profile.activeProfile)) {
-      web3.eth.getBalance(this.state.profile.activeProfile, (e, r) => {
+    if (web3.isAddress(this.state.network.defaultAccount)) {
+      web3.eth.getBalance(this.state.network.defaultAccount, (e, r) => {
         const profile = {...this.state.profile};
         profile.accountBalance = r;
         this.setState({profile});
@@ -519,7 +515,7 @@ class App extends Component {
     });
   }
 
-  getProxyOwner = (proxy) => {
+  getProxyOwner = proxy => {
     return new Promise((resolve, reject) => {
       this.loadObject(dsproxy.abi, proxy).owner((e, r) => {
         if (!e) {
@@ -606,7 +602,7 @@ class App extends Component {
     }
   }
 
-  setProxyAddress = () => {
+  setProxyAddress = callbacks => {
     Promise.resolve(this.getProxyAddress()).then(proxy => {
       if (proxy) {
         this.setState((prevState, props) => {
@@ -614,7 +610,8 @@ class App extends Component {
           profile.proxy = proxy;
           return {profile};
         }, () => {
-          this.changeMode();
+          window.proxyObj = this.proxyObj = this.loadObject(dsproxy.abi, this.state.profile.proxy);
+          callbacks.forEach(callback => this.executeCallback(callback))
         });
       }
     });
@@ -706,26 +703,42 @@ class App extends Component {
   }
 
   getMyCups = () => {
-    if (this.state.profile.activeProfile) {
-      const me = this;
-      if (settings.chain[this.state.network.network].service) {
-        Promise.resolve(this.getFromService('cups', {lad: this.state.profile.activeProfile}, {cupi: 'asc'})).then(response => {
-          const promises = [];
-          response.results.forEach(v => {
-            promises.push(me.getCup(v.cupi));
-          });
-          me.getMyCupsFromChain(response.lastBlockNumber, promises);
-        }).catch(error => {
-          me.getMyCupsFromChain(settings.chain[this.state.network.network].fromBlock);
-        });
-      } else {
-        this.getMyCupsFromChain(settings.chain[this.state.network.network].fromBlock);
-      }
+    if (this.state.profile.proxy) {
+      this.setState(prevState => {
+        const system = {...prevState.system};
+        const tub = {...system.tub};
+        tub.cupsLoading = true;
+        system.tub = tub;
+        return {system};
+      }, () => this.getCups('new'));
     }
   }
 
-  getMyCupsFromChain = (fromBlock, promises = []) => {
-    const conditions = {lad: this.state.profile.activeProfile};
+  getMyLegacyCups = () => {
+    this.getCups('legacy');
+  }
+
+  getCups = type => {
+    const lad = type === 'new' ? this.state.profile.proxy : this.state.network.defaultAccount;
+    const me = this;
+    if (settings.chain[this.state.network.network].service) {
+      Promise.resolve(this.getFromService('cups', {lad}, {cupi: 'asc'})).then(response => {
+        const promises = [];
+        response.results.forEach(v => {
+          promises.push(me.getCup(v.cupi));
+        });
+        me.getCupsFromChain(type, response.lastBlockNumber, promises);
+      }).catch(error => {
+        me.getCupsFromChain(type, settings.chain[this.state.network.network].fromBlock);
+      });
+    } else {
+      this.getCupsFromChain(type, settings.chain[this.state.network.network].fromBlock);
+    }
+  }
+
+  getCupsFromChain = (type, fromBlock, promises = []) => {
+    const lad = type === 'new' ? this.state.profile.proxy : this.state.network.defaultAccount;
+    const conditions = {lad};
     const promisesLogs = [];
     promisesLogs.push(
       new Promise((resolve, reject) => {
@@ -757,47 +770,53 @@ class App extends Component {
     );
     Promise.all(promisesLogs).then(r => {
       conditions.closed = false;
-      if (this.state.system.tub.cupsLoading) {
+      if (type === 'legacy' || this.state.system.tub.cupsLoading) {
         Promise.all(promises).then(cups => {
           const cupsFiltered = {};
           for (let i = 0; i < cups.length; i++) {
-            if ((typeof conditions.lad === 'undefined' || conditions.lad === cups[i].lad) &&
-                (typeof conditions.closed === 'undefined' ||
-                  (conditions.closed && cups[i].lad === '0x0000000000000000000000000000000000000000') ||
-                  (!conditions.closed && cups[i].lad !== '0x0000000000000000000000000000000000000000' && cups[i].ink.gt(0)))
-               ) {
+            if (conditions.lad === cups[i].lad) {
                 cupsFiltered[cups[i].id] = cups[i];
             }
           }
           const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-          if (this.state.system.tub.cupsLoading) {
+          if (type === 'new') {
+            if (this.state.system.tub.cupsLoading) {
+              this.setState((prevState, props) => {
+                const system = {...prevState.system};
+                const tub = {...system.tub};
+                tub.cupsLoading = false;
+                tub.cups = cupsFiltered;
+                system.tub = tub;
+                return {system};
+              }, () => {
+                if (keys.length > 0 && settings.chain[this.state.network.network].service) {
+                  keys.forEach(key => {
+                    Promise.resolve(this.getFromService('cupHistoryActions', {cupi: key}, {timestamp:'asc'})).then(response => {
+                      this.setState((prevState, props) => {
+                        const system = {...prevState.system};
+                        const tub = {...system.tub};
+                        const cups = {...tub.cups};
+                        cups[key].history = response.results
+                        tub.cups = cups;
+                        system.tub = tub;
+                        return {system};
+                      }, () => {
+                        this.calculateCupChart();
+                      });
+                    }).catch(error => {
+                      // this.setState({});
+                    });
+                  });
+                }
+              });
+            }
+          } else if (type === 'legacy') {
             this.setState((prevState, props) => {
               const system = {...prevState.system};
               const tub = {...system.tub};
-              tub.cupsLoading = false;
-              tub.cups = cupsFiltered;
+              tub.legacyCups = cupsFiltered;
               system.tub = tub;
               return {system};
-            }, () => {
-              if (keys.length > 0 && settings.chain[this.state.network.network].service) {
-                keys.forEach(key => {
-                  Promise.resolve(this.getFromService('cupHistoryActions', {cupi: key}, {timestamp:'asc'})).then(response => {
-                    this.setState((prevState, props) => {
-                      const system = {...prevState.system};
-                      const tub = {...system.tub};
-                      const cups = {...tub.cups};
-                      cups[key].history = response.results
-                      tub.cups = cups;
-                      system.tub = tub;
-                      return {system};
-                    }, () => {
-                      this.calculateCupChart();
-                    });
-                  }).catch(error => {
-                    // this.setState({});
-                  });
-                });
-              }
             });
           }
         });
@@ -1018,8 +1037,8 @@ class App extends Component {
   getDataFromToken = token => {
     this.getTotalSupply(token);
 
-    if (token !== 'sin' && web3.isAddress(this.state.profile.activeProfile)) {
-      this.getBalanceOf(token, this.state.profile.activeProfile, 'myBalance');
+    if (token !== 'sin' && web3.isAddress(this.state.network.defaultAccount)) {
+      this.getBalanceOf(token, this.state.network.defaultAccount, 'myBalance');
     }
     if (token === 'gem' || token === 'skr' || token === 'sin') {
       this.getBalanceOf(token, this.state.system.tub.address, 'tubBalance');
@@ -1317,77 +1336,77 @@ class App extends Component {
   }
 
   calculateCupChart = () => {
-    const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
-    if (this.state.system.tub.cups[cupId].history.length > 0 && typeof this.state.system.chartData.prices !== 'undefined') {
-      let prices = Object.keys(this.state.system.chartData.prices).map(key => this.state.system.chartData.prices[key]);
+    // const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
+    // if (this.state.system.tub.cups[cupId].history.length > 0 && typeof this.state.system.chartData.prices !== 'undefined') {
+    //   let prices = Object.keys(this.state.system.chartData.prices).map(key => this.state.system.chartData.prices[key]);
 
-      this.state.system.tub.cups[cupId].history.forEach(registry => {
-        if (['lock', 'free', 'draw', 'wipe', 'shut'].indexOf(registry.action) !== -1) {
-          prices.push({timestamp: registry.timestamp, type: registry.action, value: registry.param})
-        }
-      });
-      prices = prices.sort((a, b) => a.timestamp - b.timestamp);
+    //   this.state.system.tub.cups[cupId].history.forEach(registry => {
+    //     if (['lock', 'free', 'draw', 'wipe', 'shut'].indexOf(registry.action) !== -1) {
+    //       prices.push({timestamp: registry.timestamp, type: registry.action, value: registry.param})
+    //     }
+    //   });
+    //   prices = prices.sort((a, b) => a.timestamp - b.timestamp);
 
-      let lastETHUSD = web3.toBigNumber(0);
-      let lastDAIUSD = web3.toBigNumber(1);
-      let lastSKRETH = web3.toBigNumber(1);
-      const cupPrices = [];
-      let lastCollateral = web3.toBigNumber(0);
-      let lastDebt = web3.toBigNumber(0);
-      let highestValue = 0;
-      prices.forEach(price => {
-        switch (price.type) {
-          case 'ethusd':
-            lastETHUSD = web3.toBigNumber(price.value / 10**18);
-            break;
-          case 'daiusd':
-            lastDAIUSD = web3.toBigNumber(price.value / 10**18);
-            break;
-          case 'skreth':
-            lastSKRETH = web3.toBigNumber(price.value / 10**18);
-            break;
-          case 'lock':
-            lastCollateral = lastCollateral.add(price.value);
-            break;
-          case 'free':
-            lastCollateral = lastCollateral.minus(price.value);
-            break;
-          case 'draw':
-            lastDebt = lastDebt.add(price.value);
-            break;
-          case 'wipe':
-            lastDebt = lastDebt.minus(price.value);
-            break;
-          case 'shut':
-            lastCollateral = web3.toBigNumber(0);
-            lastDebt = web3.toBigNumber(0);
-            break;
-          default:
-            break;
-        }
-        if (price.timestamp >= this.state.system.chartData.timeLimit) {
-          cupPrices.push({
-            date: new Date(price.timestamp * 1000),
-            ethusd: lastETHUSD.toNumber(),
-            skreth: lastSKRETH.toNumber(),
-            daiusd: lastDAIUSD.toNumber(),
-            collateral: web3.fromWei(lastCollateral.times(lastSKRETH).times(lastETHUSD)).toNumber(),
-            debt: web3.fromWei(lastDebt.times(lastDAIUSD)).toNumber(),
-            risk: web3.fromWei(lastDebt.times(lastDAIUSD).times(1.5)).toNumber()
-          });
-          highestValue = cupPrices[cupPrices.length - 1].collateral > highestValue ? cupPrices[cupPrices.length - 1].collateral : highestValue;
-          highestValue = cupPrices[cupPrices.length - 1].risk > highestValue ? cupPrices[cupPrices.length - 1].risk : highestValue;
-        }
-      });
-      this.setState((prevState, props) => {
-        const system = {...prevState.system};
-        const chartData = {...system.chartData};
-        chartData.cupPrices = cupPrices;
-        chartData.highestValue = highestValue;
-        system.chartData = chartData;
-        return {system};
-      });
-    }
+    //   let lastETHUSD = web3.toBigNumber(0);
+    //   let lastDAIUSD = web3.toBigNumber(1);
+    //   let lastSKRETH = web3.toBigNumber(1);
+    //   const cupPrices = [];
+    //   let lastCollateral = web3.toBigNumber(0);
+    //   let lastDebt = web3.toBigNumber(0);
+    //   let highestValue = 0;
+    //   prices.forEach(price => {
+    //     switch (price.type) {
+    //       case 'ethusd':
+    //         lastETHUSD = web3.toBigNumber(price.value / 10**18);
+    //         break;
+    //       case 'daiusd':
+    //         lastDAIUSD = web3.toBigNumber(price.value / 10**18);
+    //         break;
+    //       case 'skreth':
+    //         lastSKRETH = web3.toBigNumber(price.value / 10**18);
+    //         break;
+    //       case 'lock':
+    //         lastCollateral = lastCollateral.add(price.value);
+    //         break;
+    //       case 'free':
+    //         lastCollateral = lastCollateral.minus(price.value);
+    //         break;
+    //       case 'draw':
+    //         lastDebt = lastDebt.add(price.value);
+    //         break;
+    //       case 'wipe':
+    //         lastDebt = lastDebt.minus(price.value);
+    //         break;
+    //       case 'shut':
+    //         lastCollateral = web3.toBigNumber(0);
+    //         lastDebt = web3.toBigNumber(0);
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //     if (price.timestamp >= this.state.system.chartData.timeLimit) {
+    //       cupPrices.push({
+    //         date: new Date(price.timestamp * 1000),
+    //         ethusd: lastETHUSD.toNumber(),
+    //         skreth: lastSKRETH.toNumber(),
+    //         daiusd: lastDAIUSD.toNumber(),
+    //         collateral: web3.fromWei(lastCollateral.times(lastSKRETH).times(lastETHUSD)).toNumber(),
+    //         debt: web3.fromWei(lastDebt.times(lastDAIUSD)).toNumber(),
+    //         risk: web3.fromWei(lastDebt.times(lastDAIUSD).times(1.5)).toNumber()
+    //       });
+    //       highestValue = cupPrices[cupPrices.length - 1].collateral > highestValue ? cupPrices[cupPrices.length - 1].collateral : highestValue;
+    //       highestValue = cupPrices[cupPrices.length - 1].risk > highestValue ? cupPrices[cupPrices.length - 1].risk : highestValue;
+    //     }
+    //   });
+    //   this.setState((prevState, props) => {
+    //     const system = {...prevState.system};
+    //     const chartData = {...system.chartData};
+    //     chartData.cupPrices = cupPrices;
+    //     chartData.highestValue = highestValue;
+    //     system.chartData = chartData;
+    //     return {system};
+    //   });
+    // }
   }
 
   getPricesFromService = () => {
@@ -1460,22 +1479,12 @@ class App extends Component {
     e.preventDefault();
     const method = e.target.getAttribute('data-method');
     const cupId = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
-    const forecast = cupId ? {...this.state.system.tub.cups[cupId]} : false;
-    console.log({dialog: {show: true, method, cup: cupId, forecast}});
-    this.setState({dialog: {show: true, method, cup: cupId, forecast}});
+    this.setState({dialog: {show: true, method, cup: cupId}});
   }
 
   handleCloseDialog = e => {
     e.preventDefault();
     this.setState({dialog: {show: false}});
-  }
-
-  updateForecast = cup => {
-    this.setState((prevState, props) => {
-      const dialog = {...prevState.dialog};
-      dialog.forecast = cup;
-      return {dialog};
-    });
   }
 
   // Modals
@@ -1583,96 +1592,21 @@ class App extends Component {
   //
 
   // Actions
-  executeMethod = (object, method, callbacks = []) => {
-    const id = Math.random();
-    const title = `${object.toUpperCase()}: ${method}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title, callbacks);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.basicActions,
-                            `${this.methodSig(`${method}(address)`)}${addressToBytes32(this.state.system[object].address, false)}`,
-                            log);
-    } else {
-      this[`${object}Obj`][method]({}, log);
-    }
+  executeCallback = args => {
+    const method = args.shift();
+    // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
+    const timeout = ['checkProxy', 'checkAllowance', 'lockAndDraw', 'wipeAndFree', 'lock', 'draw', 'wipe', 'free', 'shut', 'give', 'migrateCDP'].indexOf(method) !== -1 ? 0 : 3000;
+    // console.log(method, args, timeout);
+    setTimeout(() => {
+      console.log('executeCallback', method, args);
+      this[method](...args);
+    }, timeout);
   }
 
-  executeMethodCup = (method, cup, callbacks = []) => {
-    const id = Math.random();
-    const title = `TUB: ${method} ${cup}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        callbacks.push(['reloadCupData', cup]);
-        this.logPendingTransaction(id, tx, title, callbacks);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.basicActions,
-                            `${this.methodSig(`${method}(address,bytes32)`)}${addressToBytes32(this.tubObj.address, false)}${toBytes32(cup, false)}`,
-                            log);
-    } else {
-      this.tubObj[method](toBytes32(cup), {}, log);
-    }
-  }
-
-  executeMethodValue = (object, method, value, callbacks = []) => {
-    const id = Math.random();
-    const title = `${object.toUpperCase()}: ${method} ${value}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title, callbacks);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.basicActions,
-                            `${this.methodSig(`${method}(address,uint256)`)}${addressToBytes32(this.state.system[object].address, false)}${toBytes32(web3.toWei(value), false)}`,
-                            log);
-    } else {
-      this[`${object}Obj`][method](web3.toWei(value), {}, log);
-    }
-  }
-
-  executeMethodCupValue = (method, cup, value, toWei = true, callbacks = []) => {
-    const id = Math.random();
-    const title = `TUB: ${method} ${cup} ${value}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        callbacks.push(['reloadCupData', cup]);
-        this.logPendingTransaction(id, tx, title, callbacks);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.basicActions,
-                            `${this.methodSig(`${method}(address,bytes32,uint256)`)}${addressToBytes32(this.tubObj.address, false)}${toBytes32(cup, false)}${toBytes32(toWei ? web3.toWei(value) : value, false)}`,
-                            log);
-    } else {
-      this.tubObj[method](toBytes32(cup), toWei ? web3.toWei(value) : value, {}, log);
-    }
-  }
-
-  allowance = (token, dst) => {
+  allowance = (token, dstAddr) => {
     return new Promise((resolve, reject) => {
-      if (this.state.profile.activeProfile) {
-        this[`${token}Obj`].allowance.call(this.state.profile.activeProfile, this[`${dst}Obj`].address, (e, r) => {
+      if (this.state.profile.proxy) {
+        this[`${token}Obj`].allowance.call(this.state.network.defaultAccount, dstAddr, (e, r) => {
           if (!e) {
             resolve(r);
           } else {
@@ -1685,306 +1619,206 @@ class App extends Component {
     });
   }
 
-  executeCallback = args => {
-    const method = args.shift();
-    // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
-    const timeout = ['executeMethod', 'executeMethodValue', 'executeMethodCup', 'executeMethodCupValue', 'checkAllowance'].indexOf(method) !== -1 ? 0 : 3000;
-    // console.log(method, args, timeout);
-    setTimeout(() => {
-      this[method](...args);
-    }, timeout);
+  saiProxyAddr = () => settings.chain[this.state.network.network].proxyContracts.sai;
+
+  log = (e, tx, id, title, callbacks = []) => {
+    if (!e) {
+      this.logPendingTransaction(id, tx, title, callbacks);
+    } else {
+      console.log(e);
+      this.logTransactionRejected(id, title);
+    }
   }
 
-  checkAllowance = (token, dst, callbacks) => {
-    let promise;
-    let valueObj;
-    valueObj = web3.toBigNumber(2).pow(256).minus(1); // uint(-1)
+  checkProxy = callbacks => {
+    if (this.state.profile.proxy) {
+      callbacks.forEach(callback => this.executeCallback(callback));
+    } else {
+      const id = Math.random();
+      const title = 'Create Proxy';
+      this.logRequestTransaction(id, title);
+      this.proxyRegistryObj.build((e, tx) => this.log(e, tx, id, title, [['setProxyAddress', callbacks]]));
+    }
+  }
 
-    promise = this.allowance(token, dst);
+  checkAllowance = (token, callbacks) => {
+    console.log('checkAllowance', token);
+    let promise;
+    const valueObj = web3.toBigNumber(2).pow(256).minus(1); // uint(-1)
+
+    promise = this.allowance(token, this.state.profile.proxy);
 
     Promise.resolve(promise).then(r => {
-      if (r.gte(valueObj)) {
+      if (r.equals(valueObj)) {
         callbacks.forEach(callback => this.executeCallback(callback));
       } else {
         const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
-        const action = {
-          gem: {
-            tub: 'Join',
-            tap: 'Mock'
-          },
-          skr: {
-            tub: 'Exit/Lock',
-            tap: 'Boom'
-          },
-          dai: {
-            tub: 'Wipe/Shut',
-            tap: 'Bust/Cash'
-          },
-          gov: {
-            tub: 'Wipe/Shut'
-          }
-        }
         const id = Math.random();
-        const title = `${tokenName}: approve ${action[token][dst]}`;
+        const title = `${tokenName}: approve`;
         this.logRequestTransaction(id, title);
-        const log = (e, tx) => {
-          if (!e) {
-            this.logPendingTransaction(id, tx, title, callbacks);
-          } else {
-            console.log(e);
-            this.logTransactionRejected(id, title);
-          }
-        }
-        this[`${token}Obj`].approve(this.state.system[dst].address, -1, {}, log);
+        this[`${token}Obj`].approve(this.state.profile.proxy, -1, {}, (e, tx) => this.log(e, tx, id, title, callbacks));
       }
     }, () => {});
   }
 
-  updateValue = (value, token) => {
-    const method = this.state.dialog.method;
-    const cup = this.state.dialog.cup;
+  open = () => {
+    const id = Math.random();
+    const title = 'Open CDP';
+    this.logRequestTransaction(id, title);
+    this.proxyObj.execute['address,bytes'](
+      this.saiProxyAddr(),
+      `${this.methodSig(`open()`)}`,
+      (e, tx) => this.log(e, tx, id, title, [['getMyCups']])
+    );  
+  }
+
+  shut = cup => {
+    const id = Math.random();
+    const title = `Shut CDP ${cup}`;
+    this.logRequestTransaction(id, title);
+    this.proxyObj.execute['address,bytes'](
+      this.saiProxyAddr(),
+      `${this.methodSig(`shut(bytes32)`)}${toBytes32(cup, false)}`,
+      (e, tx) => this.log(e, tx, id, title, [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
+    );
+  }
+
+  give = (cup, newOwner) => {
+    const id = Math.random();
+    const title = `Transfer CDP ${cup} to ${newOwner}`;
+    this.logRequestTransaction(id, title);
+    this.proxyObj.execute['address,bytes'](
+      this.saiProxyAddr(),
+      `${this.methodSig(`give(bytes32, address)`)}${toBytes32(cup, false)}${addressToBytes32(newOwner, false)}`,
+      (e, tx) => this.log(e, tx, id, title, [['getMyCups']])
+    );
+  }
+
+  lockAndDraw = (cup, eth, dai) => {
+    let action = false;
+    let title = '';
+
+    if (eth.gt(0) || dai.gt(0)) {
+      if (!cup) {
+        title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+        action = `${this.methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(web3.toWei(dai), false)}`;
+      } else {
+        if (dai.equals(0)) {
+          title = `Lock ${eth.valueOf()} ETH`;
+          action = `${this.methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}`;
+        } else if (eth.equals(0)) {
+          title = `Draw ${dai.valueOf()} DAI`;
+          action = `${this.methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
+        } else {
+          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          action = `${this.methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
+        }
+      }
+
+      const id = Math.random();
+      this.logRequestTransaction(id, title);
+      this.proxyObj.execute['address,bytes'](
+        this.saiProxyAddr(),
+        action,
+        {value: web3.toWei(eth)},
+        (e, tx) => this.log(e, tx, id, title, cup ? [['reloadCupData', cup], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']] : [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
+      );
+    }
+  }
+
+  wipeAndFree = (cup, eth, dai) => {
+    let action = false;
+    let title = '';
+    if (eth.gt(0) || dai.gt(0)) {
+      if (dai.equals(0)) {
+        title = `Withdraw ${eth.valueOf()} ETH`;
+        action = `${this.methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(eth), false)}`;
+      } else if (eth.equals(0)) {
+        title = `Wipe ${dai.valueOf()} DAI`;
+        action = `${this.methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
+      } else {
+        title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
+        action = `${this.methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(eth), false)}${toBytes32(web3.toWei(dai), false)}`;
+      }
+      const id = Math.random();
+      this.logRequestTransaction(id, title);
+      this.proxyObj.execute['address,bytes'](
+        this.saiProxyAddr(),
+        action,
+        (e, tx) => this.log(e, tx, id, title, [['reloadCupData', cup], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
+      );
+    }
+  }
+
+  migrateCDP = async cup => {
+    // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
+    const proxy = this.state.profile.proxy;
+    if (proxy && web3.isAddress(proxy) && await this.getProxyOwner(proxy) === this.state.network.defaultAccount) {
+      const id = Math.random();
+      const title = `Migrate CDP ${cup}`;
+      this.logRequestTransaction(id, title);
+      this.tubObj.give(toBytes32(cup), proxy, (e, tx) => this.log(e, tx, id, title, [['getMyCups'], ['getMyLegacyCups']]));
+    }
+  }
+
+  executeAction = value => {
+    let callbacks = [];
     let error = false;
-    switch(method) {
-      case 'proxy':
-        const id = Math.random();
-        const title = 'PROXY: create new profile';
-        this.logRequestTransaction(id, title);
-        this.proxyRegistryObj.build((e, tx) => {
-          if (!e) {
-            this.logPendingTransaction(id, tx, title, [['setProxyAddress']]);
-          } else {
-            console.log(e);
-            this.logTransactionRejected(id, title);
-          }
-        });
-      break;
+    switch (this.state.dialog.method) {
       case 'open':
-        this.executeMethod('tub', method, [['getMyCups']]);
-        break;
-      case 'drip':
-        this.executeMethod('tub', method);
-        break;
-      case 'shut':
-        // We calculate debt with some margin before shutting cup (to avoid failures)
-        const debt = this.tab(this.state.system.tub.cups[cup]).times(web3.fromWei(this.state.system.tub.tax).pow(120));
-        if (this.state.system.dai.myBalance.lt(debt)) {
-          error = `Not enough balance of DAI to shut CDP ${cup}.`;
-        } else {
-          const futureGovFee = web3.fromWei(wdiv(this.state.system.tub.fee, this.state.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
-          const govDebt = wmul(wdiv(this.rap(this.state.system.tub.cups[cup]), this.state.system.pep.val), futureGovFee);
-          if (govDebt.gt(this.state.system.gov.myBalance)) {
-            error = `Not enough balance of MKR to shut CDP ${cup}.`;
-          } else {
-            if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-              this.executeMethodCup(method, cup, [
-                                                   ['setUpToken', 'sai'],
-                                                   ['setUpToken', 'sin'],
-                                                   ['setUpToken', 'gov'],
-                                                   ['setUpToken', 'skr']
-                                                 ]);
-            } else {
-              this.checkAllowance('dai', 'tub', [
-                                                  ['getApproval', 'dai', 'tub'],
-                                                  ['checkAllowance', 'gov', 'tub',
-                                                    [
-                                                      ['getApproval', 'gov', 'tub'],
-                                                      ['executeMethodCup', method, cup,
-                                                        [
-                                                          ['setUpToken', 'sai'],
-                                                          ['setUpToken', 'sin'],
-                                                          ['setUpToken', 'gov'],
-                                                          ['setUpToken', 'skr']
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]);
-            }
-          }
-        }
-        break;
-      case 'bite':
-        this.executeMethodCup(method, cup);
-        break;
-      case 'join':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tub', method, value, [
-                                                          ['setUpToken', 'gem'],
-                                                          ['setUpToken', 'skr']
-                                                        ]);
-        } else {
-          // const valAllowanceJoin = web3.fromWei(web3.toBigNumber(value).times(this.state.system.tub.per).round().add(1).valueOf());
-          this.checkAllowance('gem', 'tub', [
-                                              ['getApproval', 'gem', 'tub'],
-                                              ['executeMethodValue', 'tub', method, value,
-                                                [
-                                                  ['setUpToken', 'gem'],
-                                                  ['setUpToken', 'skr']
-                                                ]
-                                              ]
-                                            ]);
-        }
-        break;
-      case 'exit':
-        value = this.state.system.tub.off === true ? web3.fromWei(this.state.system.skr.myBalance) : value;
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tub', method, value, [
-                                                          ['setUpToken', 'gem'],
-                                                          ['setUpToken', 'skr']
-                                                        ]);
-        } else {
-          this.checkAllowance('skr', 'tub', [
-                                              ['getApproval', 'skr', 'tub'],
-                                              ['executeMethodValue', 'tub', method, value,
-                                                [
-                                                  ['setUpToken', 'gem'],
-                                                  ['setUpToken', 'skr']
-                                                ]
-                                              ]
-                                            ]);
-        }
-        break;
-      case 'boom':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tap', method, value, [
-                                                          ['setUpToken', 'skr'],
-                                                          ['setUpToken', 'sai'],
-                                                          ['setUpToken', 'sin']
-                                                        ]);
-        } else {
-          this.checkAllowance('skr', 'tap', [
-                                              ['getApproval', 'skr', 'tap'],
-                                              ['executeMethodValue', 'tap', method, value,
-                                                [
-                                                  ['setUpToken', 'skr'],
-                                                  ['setUpToken', 'sai'],
-                                                  ['setUpToken', 'sin']
-                                                ]
-                                              ]
-                                            ]);
-        }
-        break;
-      case 'bust':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tap', method, value, [
-                                                          ['setUpToken', 'skr'],
-                                                          ['setUpToken', 'sai'],
-                                                          ['setUpToken', 'sin']
-                                                        ]);
-        } else {
-          // const valueDAI = wmul(web3.toBigNumber(value), this.state.system.tub.avail_bust_ratio).ceil();
-          this.checkAllowance('dai', 'tap', [
-                                              ['getApproval', 'dai', 'tap'],
-                                              ['executeMethodValue', 'tap', method, value,
-                                                [
-                                                  ['setUpToken', 'skr'],
-                                                  ['setUpToken', 'sai'],
-                                                  ['setUpToken', 'sin']
-                                                ]
-                                              ]
-                                            ]);
-        }
+        callbacks = [
+                      ['open']
+                    ];
         break;
       case 'lock':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodCupValue(method, cup, value, true, [
-                                                                 ['setUpToken', 'skr']
-                                                               ]);
-        } else {
-          this.checkAllowance('skr', 'tub', [
-                                              ['getApproval', 'skr', 'tub'],
-                                              ['executeMethodCupValue', method, cup, value, true,
-                                                [
-                                                  ['setUpToken', 'skr']
-                                                ]
-                                              ]
-                                            ]);
-        }
-        break;
-      case 'free':
-        if (this.state.system.tub.off) {
-          this.executeMethodCupValue(method, cup, web3.fromWei(this.state.system.tub.cups[cup].avail_skr), true, [
-                                                                                                                   ['setUpToken', 'skr']
-                                                                                                                 ]);
-        } else {
-          this.executeMethodCupValue(method, cup, value, true, [
-                                                                 ['setUpToken', 'skr']
-                                                               ]);
-        }
+        callbacks = [
+                      ['lockAndDraw', this.state.dialog.cup, value, web3.toBigNumber(0)]
+                    ];
         break;
       case 'draw':
-        this.executeMethodCupValue(method, cup, value, true, [
-                                                               ['setUpToken', 'sai'],
-                                                               ['setUpToken', 'sin']
-                                                             ]);
+        callbacks = [
+                      ['lockAndDraw', this.state.dialog.cup, web3.toBigNumber(0), value]
+                    ];
         break;
       case 'wipe':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodCupValue(method, cup, value, true, [
-                                                                 ['setUpToken', 'sai'],
-                                                                 ['setUpToken', 'sin'],
-                                                                 ['setUpToken', 'gov']
-                                                               ]);
-        } else {
-          this.checkAllowance('dai', 'tub', [
-                                              ['getApproval', 'dai', 'tub'],
-                                              ['checkAllowance', 'gov', 'tub',
-                                                [
-                                                  ['getApproval', 'gov', 'tub'],
-                                                  ['executeMethodCupValue', method, cup, value, true,
-                                                    [
-                                                      ['setUpToken', 'sai'],
-                                                      ['setUpToken', 'sin'],
-                                                      ['setUpToken', 'gov']
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]);
-        }
+        callbacks = [
+                      ['checkAllowance', 'gov',
+                        [
+                          ['checkAllowance', 'dai',
+                            [
+                              ['wipeAndFree', this.state.dialog.cup, web3.toBigNumber(0), value]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ];
         break;
-      case 'give':
-        this.executeMethodCupValue(method, cup, value, false);
+      case 'free':
+        callbacks = [
+                      ['wipeAndFree', this.state.dialog.cup, value, web3.toBigNumber(0)]
+                    ];
         break;
-      case 'cash':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tap', method, value, [
-                                                          ['setUpToken', 'sai'],
-                                                          ['setUpToken', 'gem']
-                                                        ]);
-        } else {
-          this.checkAllowance('dai', 'tap', [
-                                              ['getApproval', 'dai', 'tap'],
-                                              ['executeMethodValue', 'tap', method, value,
-                                                [
-                                                  ['setUpToken', 'sai'],
-                                                  ['setUpToken', 'gem']
-                                                ]
-                                              ]
-                                            ]);
-        }
+      case 'shut':
+        callbacks = [
+                      ['checkAllowance', 'gov',
+                        [
+                          ['checkAllowance', 'dai',
+                            [
+                              ['shut', this.state.dialog.cup]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ];
         break;
-      case 'mock':
-        if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-          this.executeMethodValue('tap', method, value, [
-                                                          ['setUpToken', 'sai'],
-                                                          ['setUpToken', 'gem']
-                                                        ]);
-        } else {
-          this.checkAllowance('gem', 'tap', [
-                                              ['getApproval', 'gem', 'tap'],
-                                              ['executeMethodValue', 'tap', method, value,
-                                                [
-                                                  ['setUpToken', 'sai'],
-                                                  ['setUpToken', 'gem']
-                                                ]
-                                              ]
-                                            ]);
-        }
-        break;
-      case 'vent':
-      case 'heal':
-        this.executeMethod('tap', method);
+      case 'migrate':
+        callbacks = [
+                      ['checkProxy',
+                        [
+                          ['migrateCDP', this.state.dialog.cup]
+                        ]
+                      ]
+                    ];
         break;
       default:
         break;
@@ -1995,12 +1829,14 @@ class App extends Component {
       dialog.error = error;
       this.setState({dialog});
     } else {
-      this.setState({dialog: {show: false}});
+      this.setState({dialog: {show: false}}, () => {
+        this.checkProxy(callbacks);
+      });
     }
   }
 
   transferToken = (token, to, amount) => {
-    const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
+    const tokenName = token.replace('gov', 'mkr').toUpperCase();
     const id = Math.random();
     const title = `${tokenName}: transfer ${to} ${amount}`;
     this.logRequestTransaction(id, title);
@@ -2012,118 +1848,7 @@ class App extends Component {
         this.logTransactionRejected(id, title);
       }
     }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.tokenActions,
-                            `${this.methodSig(`transfer(address,address,uint256)`)}${addressToBytes32(this[`${token}Obj`].address, false)}${addressToBytes32(to, false)}${toBytes32(web3.toWei(amount), false)}`,
-                            log);
-    } else {
-      this[`${token}Obj`].transfer(to, web3.toWei(amount), {}, log);
-    }
-  }
-
-  wrapUnwrap = (operation, amount) => {
-    const id = Math.random();
-    const title = `WETH: ${operation} ${amount}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title, [['setUpToken', 'gem'], ['getAccountBalance']]);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (operation === 'wrap') {
-      if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-        this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.tokenActions,
-          `${this.methodSig(`deposit(address,uint256)`)}${addressToBytes32(this.gemObj.address, false)}${toBytes32(web3.toWei(amount), false)}`,
-          log);
-      } else {
-        this.gemObj.deposit({value: web3.toWei(amount)}, log);
-      }
-    } else if (operation === 'unwrap') {
-      if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-        this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.tokenActions,
-          `${this.methodSig(`withdraw(address,uint256)`)}${addressToBytes32(this.gemObj.address, false)}${toBytes32(web3.toWei(amount), false)}`,
-          log);
-      } else {
-        this.gemObj.withdraw(web3.toWei(amount), {}, log);
-      }
-    }
-  }
-
-  approve = (token, dst, val) => {
-    const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
-    const action = {
-      gem: {
-        tub: 'Join',
-        tap: 'Mock'
-      },
-      skr: {
-        tub: 'Exit/Lock',
-        tap: 'Boom'
-      },
-      dai: {
-        tub: 'Wipe/Shut',
-        tap: 'Bust/Cash'
-      },
-      gov: {
-        tub: 'Wipe/Shut'
-      }
-    }
-    const id = Math.random();
-    const title = `${tokenName}: ${val ? 'approve': 'deny'} ${action[token][dst]}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title, [['getApproval', token, dst]]);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.tokenActions,
-        `${this.methodSig('approve(address,address,bool)')}${addressToBytes32(this[`${token}Obj`].address, false)}${addressToBytes32(this[`${dst}Obj`].address, false)}${toBytes32(val ? web3.toBigNumber(2).pow(256).minus(1).valueOf() : 0, false)}`,
-        log);
-    } else {
-      this[`${token}Obj`].approve(this[`${dst}Obj`].address, val ? -1 : 0, (e, tx) => log(e, tx));
-    }
-  }
-
-  approveAll = val => {
-    const id = Math.random();
-    const title = `WETH/MKR/PETH/DAI: ${val ? 'approve': 'deny'} all`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    if (this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy)) {
-      this.proxyObj.execute['address,bytes'](settings.chain[this.state.network.network].proxyContracts.customActions,
-                            `${this.methodSig('approveAll(address,address,bool)')}${addressToBytes32(this.tubObj.address, false)}${addressToBytes32(this.tapObj.address, false)}${toBytes32(val, false)}`,
-                            log);
-    }
-  }
-  //
-
-  changeMode = () => {
-    const profile = {...this.state.profile};
-    profile.mode = profile.mode !== 'proxy' ? 'proxy' : 'account';
-    profile.activeProfile = profile.mode === 'proxy' ? profile.proxy : this.state.network.defaultAccount;
-    profile.accountBalance = web3.toBigNumber(-1);
-    if (profile.mode === 'proxy' && !web3.isAddress(profile.proxy)) {
-      this.setState({dialog: {show: true, method: 'proxy'}});
-    } else {
-      this.setState({profile}, () => {
-        localStorage.setItem('mode', profile.mode);
-        this.initContracts(this.state.system.top.address);
-      });
-    }
+    this[`${token}Obj`].transfer(to, web3.toWei(amount), {}, log);
   }
 
   changeCup = e => {
@@ -2156,48 +1881,6 @@ class App extends Component {
   //
 
   renderMain() {
-    const openAction = {
-      display: 'Open Your CDP',
-      active: this.state.network.defaultAccount && this.state.system.tub.off === false && !this.state.system.tub.ownCup && !this.state.system.tub.cupsLoading,
-      helper: 'Open a new CDP'
-    }
-
-    const bustBoomActions = {
-      bust: {
-        display: 'Buy PETH with DAI',
-        active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_bust_dai && this.state.system.tub.avail_bust_dai.gt(0),
-      },
-      boom: {
-        display: 'Buy DAI with PETH',
-        active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.tub.avail_boom_dai && this.state.system.tub.avail_boom_dai.gt(0),
-      },
-    }
-
-    const skrActions = {
-      join: {
-        display: 'Convert WETH to PETH',
-        active: this.state.network.defaultAccount && this.state.system.tub.off === false && this.state.system.gem.myBalance.gt(0),
-      },
-      exit: {
-        display: 'Convert PETH to WETH',
-        active: this.state.network.defaultAccount && this.state.system.skr.myBalance.gt(0)
-                    && (this.state.system.tub.off === false ||
-                       (this.state.system.tub.off === true && this.state.system.tub.out === true && this.state.system.sin.tubBalance.eq(0) && this.state.system.skr.tapBalance.eq(0))),
-      },
-    };
-
-    // const daiActions = {
-    //   cash: {
-    //     display: 'Convert DAI to WETH',
-    //     active: this.state.system.tub.off === true && this.state.system.dai.myBalance.gt(0),
-    //     helper: 'Exchange your DAI for ETH at the cage price (enabled upon cage)'
-    //   },
-    //   mock: {
-    //     display: 'Convert WETH to DAI',
-    //     active: this.state.system.tub.off === true && this.state.system.gem.myBalance.gt(0),
-    //     helper: 'Exchange your ETH for DAI at the cage price (enabled upon cage)'
-    //  }
-    // };
     const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
 
     return (
@@ -2214,6 +1897,14 @@ class App extends Component {
                   <img src="img/icon-home.svg" draggable="false" alt="" data-tab="home" />
                   <span className="menu-label" data-tab="home">Dashboard</span>
                 </li>
+                {
+                  !this.state.system.tub.cupsLoading && Object.keys(this.state.system.tub.cups).length > 1 &&
+                  Object.keys(this.state.system.tub.cups).map(key =>
+                    <li key={ key } data-cupId={ key } className={ cupId === key ? 'active' : '' } onClick={ this.changeCup }>
+                      CDP #{ key }
+                    </li>
+                  )
+                }
                 <li value="settings" className={ this.state.params[0] === 'settings' ? 'active' : '' } data-tab="settings" onClick={ this.changeTab }>
                   <img src="img/icon-settings.svg" draggable="false" alt="" data-tab="settings" />
                   <span className="menu-label" data-tab="settings">Settings</span>
@@ -2231,11 +1922,7 @@ class App extends Component {
                         ?
                           "main-column fullwidth"
                         :
-                          this.state.dialog.show && ['lock', 'free', 'draw', 'wipe'].indexOf(this.state.dialog.method) !== -1
-                          ?
-                            "main-column forecast-mode"
-                          :
-                            "main-column"
+                          "main-column"
                       }>
             {
               this.state.params[0] === 'settings' &&
@@ -2248,15 +1935,14 @@ class App extends Component {
                 approve={ this.approve }
                 approveAll={ this.approveAll }
                 wrapUnwrap={ this.wrapUnwrap }
-                transferToken={ this.transferToken }
-                changeMode={ this.changeMode } />
+                transferToken={ this.transferToken } />
             }
             {
               this.state.params[0] === 'help' &&
               <Help />
             }
             {
-              !this.state.profile.activeProfile
+              !this.state.network.defaultAccount
               ?
                 <div>
                   <header className="col">
@@ -2275,27 +1961,37 @@ class App extends Component {
                 <div>
                   <header className="col">
                     <h1 className="typo-h1 inline-headline">Dashboard <span className="typo-c typo-mid-grey">Collateralized Debt Position</span></h1>
-                    <div className="btn-group">
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.join.active } data-method="join" onClick={ this.handleOpenDialog }>{ skrActions.join.display }</button>
-                      <button className="text-btn disable-on-dialog" disabled={ !skrActions.exit.active } data-method="exit" onClick={ this.handleOpenDialog }>{ skrActions.exit.display }</button>
-                    </div>
                   </header>
                   {
-                    !this.state.system.tub.cupsLoading && Object.keys(this.state.system.tub.cups).length > 1 &&
-                    Object.keys(this.state.system.tub.cups).map(key =>
-                      <button key={ key } className="text-btn disable-on-dialog" data-cupId={ key } disabled={ cupId === key } onClick={ this.changeCup }>CDP { key }</button>
-                    )
+                    Object.keys(this.state.system.tub.legacyCups).length > 0 &&
+                    <div>
+                      You have legacy CDPs to migrate:
+                      {
+                        Object.keys(this.state.system.tub.legacyCups).map(cupId => 
+                          <a href="#action" style={ {display: 'block'} } key={ cupId } data-method="migrate" data-cup={ cupId } onClick={ this.handleOpenDialog }>Migrate CDP {cupId}</a>
+                        )
+                      }
+                      <hr />
+                    </div>
                   }
                   {
-                    this.state.system.tub.cupsLoading
+                    this.state.profile.proxy === -1
                     ?
                       'Loading...'
                     :
-                      Object.keys(this.state.system.tub.cups).length > 0
+                      this.state.profile.proxy
                       ?
-                        <Cup system={ this.state.system } tab={ this.tab } handleOpenDialog={ this.handleOpenDialog } dialog={ this.state.dialog } />
+                        this.state.system.tub.cupsLoading
+                        ?
+                          'Loading...'
+                        :
+                          Object.keys(this.state.system.tub.cups).length > 0
+                          ?
+                            <Cup system={ this.state.system } profile={ this.state.profile } tab={ this.tab } handleOpenDialog={ this.handleOpenDialog } dialog={ this.state.dialog } />
+                          :
+                            <Wizard system={ this.state.system } checkProxy={ this.checkProxy } />
                       :
-                      <button className="text-btn disable-on-dialog" disabled={ !openAction.active } data-method="open" onClick={ this.handleOpenDialog }>Open Your CDP</button>
+                        <Wizard system={ this.state.system } checkProxy={ this.checkProxy } />
                   }
                 </div>
             }
@@ -2306,8 +2002,8 @@ class App extends Component {
               this.state.params[0] !== 'help' &&
               <div className="right-column-content">
                 <div className="row-2col-m">
-                  <Wallet system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } />
-                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val } pepVal = { this.state.system.pep.val } bustBoomActions={ bustBoomActions } handleOpenDialog={ this.handleOpenDialog } />
+                  <Wallet system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } account={ this.state.network.defaultAccount } />
+                  <SystemInfo system={ this.state.system } network={ this.state.network.network } profile={ this.state.profile } pipVal = { this.state.system.pip.val } pepVal = { this.state.system.pep.val } handleOpenDialog={ this.handleOpenDialog } />
                 </div>	
                 <div className="footer col col-no-border typo-cs typo-grid-grey">
                   <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="announcement">Dai Public Announcement</a> || <a href="#action" onClick={ this.handleOpenTermsModal } data-modal="terms">Dai Terms of Service</a>
@@ -2316,7 +2012,7 @@ class App extends Component {
             }
           </aside>
         </div>
-        <Dialog system={ this.state.system } dialog={ this.state.dialog } updateValue={ this.updateValue } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } calculateCupData={ this.calculateCupData } updateForecast={ this.updateForecast } />
+        <Dialog system={ this.state.system } profile={ this.state.profile } dialog={ this.state.dialog } executeAction={ this.executeAction } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } calculateCupData={ this.calculateCupData } />
         <TermsModal modal={ this.state.termsModal } markAsAccepted={ this.markAsAccepted } />
         <VideoModal modal={ this.state.videoModal } termsModal={ this.state.termsModal } handleCloseVideoModal={ this.handleCloseVideoModal } />
         <TerminologyModal modal={ this.state.terminologyModal } handleCloseTerminologyModal={ this.handleCloseTerminologyModal } />

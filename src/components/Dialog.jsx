@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import web3 from  '../web3';
-import {wmul, wdiv} from '../helpers';
+import {wmul, wdiv, formatNumber} from '../helpers';
 
 class Dialog extends Component {
   constructor() {
@@ -12,11 +12,9 @@ class Dialog extends Component {
 
   updateValue = e => {
     e.preventDefault();
-    const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? this.updateVal.value : false;
-    const token = this.token !== 'undefined' && this.token && typeof this.token.value !== 'undefined' ? this.token.value : false;
-
     if (this.submitEnabled) {
-      this.props.updateValue(value, token);
+      const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? web3.toBigNumber(this.updateVal.value) : false;
+      this.props.executeAction(value);
     }
   }
 
@@ -29,10 +27,11 @@ class Dialog extends Component {
         break;
       case 'exit':
       case 'lock':
-        value = this.props.system.skr.myBalance;
+        value = this.props.profile.accountBalance;
         break;
       case 'free':
-        value = this.props.system.tub.cups[this.props.dialog.cup].avail_skr_with_margin;
+        // value = this.props.system.tub.cups[this.props.dialog.cup].avail_skr_with_margin;
+        value = wmul(this.props.system.tub.cups[this.props.dialog.cup].avail_skr, this.props.system.tub.per).round(0);
         break;
       // case 'draw':
       //   value = this.props.system.tub.cups[this.props.dialog.cup].avail_dai_with_margin;
@@ -93,7 +92,7 @@ class Dialog extends Component {
               ?
                 'DAI'
               :
-                'PETH'
+                'ETH'
             }
           </span>
         }
@@ -121,13 +120,6 @@ class Dialog extends Component {
     let renderForm = '';
     this.cond = () => { return false };
     switch(dialog.method) {
-      case 'proxy':
-        text = '';
-        text = '[ADD EXPLANATION WHAT A PROFILE IS].<br />' +
-        'Are you sure you want to create a Profile?';
-        renderForm = 'renderYesNoForm';
-        this.submitEnabled = true;
-        break;
       case 'open':
         text = 'Are you sure you want to open a new CDP?';
         renderForm = 'renderYesNoForm';
@@ -141,157 +133,54 @@ class Dialog extends Component {
         renderForm = 'renderYesNoForm';
         this.submitEnabled = true;
         break;
-      case 'bite':
-        text = `Are you sure you want to bite CDP ${dialog.cup}?`;
-        renderForm = 'renderYesNoForm';
-        this.submitEnabled = true;
-        break;
-      case 'join':
-        text = 'Please set amount of PETH you want to get in exchange of your WETH.';
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in WETH to complete this transaction.';
-        }
-        renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.gem.myBalance.lt(wmul(valueWei, wmul(this.props.system.tub.per, this.props.system.tub.gap)))) {
-            error = 'Not enough balance of WETH to join this amount of PETH.';
-            this.submitEnabled = false;
-          }
-          document.getElementById('warningMessage').innerHTML = error;
-        }
-        break;
-      case 'exit':
-        if (this.props.system.tub.off === true) {
-          text = 'Are you sure you want to exit all your PETH?';
-          if (!this.props.proxyEnabled) {
-            text += '<br />You might be requested for signing two transactions if there is not enough allowance in PETH to complete this transaction.';
-          }
-          renderForm = 'renderYesNoForm';
-          this.submitEnabled = true;
-        } else {
-          text = 'Please set amount of collateral (PETH) you want to convert to WETH.';
-          if (!this.props.proxyEnabled) {
-            text += '<br />You might be requested for signing two transactions if there is not enough allowance in PETH to complete this transaction.';
-          }
-          renderForm = 'renderInputNumberForm';
-
-          this.cond = (value) => {
-            const valueWei = web3.toBigNumber(web3.toWei(value));
-            let error = '';
-            this.submitEnabled = true;
-            if (this.props.system.skr.myBalance.lt(valueWei)) {
-              error = 'Not enough balance to exit this amount of PETH.';
-              this.submitEnabled = false;
-            }
-            document.getElementById('warningMessage').innerHTML = error;
-          }
-        }
-        break;
-      case 'boom':
-        text = 'Please set amount of PETH you want to transfer to get DAI.';
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in PETH to complete this transaction.';
-        }
-        renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.tub.avail_boom_skr.lt(valueWei)) {
-            error = 'Not enough PETH in the system to boom this amount of PETH.';
-            this.submitEnabled = false;
-          } else if (this.props.system.skr.myBalance.lt(valueWei)) {
-            error = 'Not enough balance of PETH to boom this amount of PETH.';
-            this.submitEnabled = false;
-          }
-          document.getElementById('warningMessage').innerHTML = error;
-        }
-        break;
-      case 'bust':
-        text = 'Please set amount of PETH you want to get in exchange of DAI.';
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in DAI to complete this transaction.';
-        }
-        renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
-          const valueDAI = wmul(web3.toBigNumber(value), this.props.system.tub.avail_bust_ratio);
-          const valueDAIWei = web3.toBigNumber(web3.toWei(valueDAI)).floor();
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.tub.avail_bust_dai.lt(valueDAIWei)) {
-            error = 'Not enough DAI in the system to bust this amount of PETH.';
-            this.submitEnabled = false;
-          } else if (this.props.system.dai.myBalance.lt(valueDAIWei)) {
-            error = 'Not enough balance of DAI to bust this amount of PETH.';
-            this.submitEnabled = false;
-          }
-          document.getElementById('warningMessage').innerHTML = error;
-        }
-        break;
       case 'lock':
-        text = `Please set amount of collateral (PETH) you want to lock in CDP ${dialog.cup}.`;
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in PETH to complete this transaction.';
-        }
+        text = `Please set amount of collateral (ETH) you want to lock in CDP ${dialog.cup}.`;
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = web3.toBigNumber(web3.toWei(value));
+          const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
           let error = '';
           this.submitEnabled = true;
           const cup = this.props.dialog.cup;
-          if (this.props.system.skr.myBalance.lt(valueWei)) {
-            error = 'Not enough balance to lock this amount of PETH.';
+          if (this.props.profile.accountBalance.lt(valueWei)) {
+            error = 'Not enough balance to lock this amount of ETH.';
             this.submitEnabled = false;
-          } else if (this.props.system.tub.cups[cup].avail_skr.round(0).add(valueWei).gt(0) && this.props.system.tub.cups[cup].avail_skr.add(valueWei).round(0).lte(web3.toWei(0.005))) {
-            error = 'It is not allowed to lock a low amount of PETH in a CDP. It needs to be higher than 0.005 PETH.';
+          } else if (this.props.system.tub.cups[cup].avail_skr.round(0).add(skrValue).gt(0) && this.props.system.tub.cups[cup].avail_skr.add(skrValue).round(0).lte(web3.toWei(0.005))) {
+            error = `It is not allowed to lock a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(web3.toBigNumber(web3.toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
             this.submitEnabled = false;
           }
-
-          let forecastCup = {...this.props.system.tub.cups[cup]};
-          forecastCup.ink = forecastCup.ink.add(valueWei);
-          forecastCup = this.props.calculateCupData(forecastCup);
-          this.props.updateForecast(forecastCup);
-
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
       case 'free':
         if (this.props.system.tub.off) {
-          text = `Are you sure you want to free your available PETH from CUP ${dialog.cup}?`;
+          text = `Are you sure you want to free your available ETH from CUP ${dialog.cup}?`;
           renderForm = 'renderYesNoForm';
           this.submitEnabled = true;
         } else {
-          text = `Please set amount of collateral (PETH) you want to withdraw from CDP ${dialog.cup}`;
+          text = `Please set amount of collateral (ETH) you want to withdraw from CDP ${dialog.cup}`;
           renderForm = 'renderInputNumberForm';
           this.cond = (value) => {
             const valueWei = web3.toBigNumber(web3.toWei(value));
+            const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
             const cup = this.props.dialog.cup;
             let error = '';
             this.submitEnabled = true;
-            if (this.props.system.tub.cups[cup].avail_skr.lt(valueWei)) {
-              error = 'This amount of PETH exceeds the maximum available to free.';
+            if (this.props.system.tub.cups[cup].avail_skr.lt(skrValue)) {
+              error = 'This amount of ETH exceeds the maximum available to free.';
               this.submitEnabled = false;
-            } else if (this.props.system.tub.cups[cup].avail_skr.minus(valueWei).round(0).lte(web3.toWei(0.005)) && !this.props.system.tub.cups[cup].avail_skr.round(0).eq(valueWei)) {
+            } else if (this.props.system.tub.cups[cup].avail_skr.minus(skrValue).lte(web3.toWei(0.005)) && !this.props.system.tub.cups[cup].avail_skr.round(0).eq(skrValue)) {
               error = 'CDP can not be left with a dust amount lower or equal than 0.005 PETH. You have to either leave more or free the whole amount.';
               this.submitEnabled = false;
-            } else if (this.props.system.tub.off === false && this.props.system.tub.cups[cup].art.gt(0) && valueWei.gt(this.props.system.tub.cups[cup].avail_skr.times(0.9))) {
+            } else if (this.props.system.tub.off === false && this.props.system.tub.cups[cup].art.gt(0) && skrValue.gt(this.props.system.tub.cups[cup].avail_skr.times(0.9))) {
               error = 'This amount puts your CDP in risk to be liquidated';
             }
-
-            let forecastCup = {...this.props.system.tub.cups[cup]};
-            forecastCup.ink = forecastCup.ink.minus(valueWei);
-            forecastCup = this.props.calculateCupData(forecastCup);
-            this.props.updateForecast(forecastCup);
-
             document.getElementById('warningMessage').innerHTML = error;
           }
         }
         break;
       case 'draw':
-        text = `Please set amount of DAI you want to mint from your locked collateral (PETH) in CDP ${dialog.cup}`;
+        text = `Please set amount of DAI you want to mint from your CDP ${dialog.cup}`;
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = web3.toBigNumber(web3.toWei(value));
@@ -307,20 +196,12 @@ class Dialog extends Component {
           } else if (valueWei.gt(this.props.system.tub.cups[cup].avail_dai.times(0.9))) {
             error = 'This amount puts your CDP in risk to be liquidated';
           }
-
-          let forecastCup = {...this.props.system.tub.cups[cup]};
-          forecastCup.art = forecastCup.art.add(wdiv(valueWei, this.props.system.tub.chi));
-          forecastCup = this.props.calculateCupData(forecastCup);
-          this.props.updateForecast(forecastCup);
-
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
       case 'wipe':
-        text = `Please set amount of DAI you want to burn to recover your collateral (PETH) from CDP ${dialog.cup}.`;
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';
-        }
+        text = `Please set amount of DAI you want to retrieve to CDP ${dialog.cup}.`;
+        text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = web3.toBigNumber(web3.toWei(value));
@@ -353,12 +234,6 @@ class Dialog extends Component {
               this.submitEnabled = false;
             }
           }
-
-          let forecastCup = {...this.props.system.tub.cups[cup]};
-          forecastCup.art = forecastCup.art.minus(wdiv(valueWei, this.props.system.tub.chi));
-          forecastCup = this.props.calculateCupData(forecastCup);
-          this.props.updateForecast(forecastCup);
-
           document.getElementById('warningMessage').innerHTML = error;
         }
         break;
@@ -367,52 +242,8 @@ class Dialog extends Component {
         renderForm = 'renderInputTextForm';
         this.submitEnabled = true;
         break;
-      case 'cash':
-        text = `Please set amount of DAI you want to cash`;
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in DAI to complete this transaction.';
-        }
-        renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.dai.myBalance.lt(valueWei)) {
-            error = 'Not enough balance to cash this amount of DAI.';
-            this.submitEnabled = false;
-          }
-          document.getElementById('warningMessage').innerHTML = error;
-        }
-        break;
-      case 'mock':
-        text = `Please set amount of DAI you mock to cash`;
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing two transactions if there is not enough allowance in WETH to complete this transaction.';
-        }
-        renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
-          let error = '';
-          this.submitEnabled = true;
-          if (wdiv(this.props.system.gem.myBalance, this.props.system.tap.fix).lt(valueWei)) {
-            error = 'Not enough balance of WETH to mock this amount of DAI.';
-            this.submitEnabled = false;
-          }
-          document.getElementById('warningMessage').innerHTML = error;
-        }
-        break;
-      case 'vent':
-        text = 'Are you sure you want to vent the system?';
-        renderForm = 'renderYesNoForm';
-        this.submitEnabled = true;
-        break;
-      case 'drip':
-        text = 'Are you sure you want to drip the system?';
-        renderForm = 'renderYesNoForm';
-        this.submitEnabled = true;
-        break;
-      case 'heal':
-        text = 'Are you sure you want to heal the system?';
+      case 'migrate':
+        text = `Are you sure you want to migrate your CDP ${dialog.cup} for being used in this Dashboard? (you will not be able to use it in the old one anymore)`;
         renderForm = 'renderYesNoForm';
         this.submitEnabled = true;
         break;

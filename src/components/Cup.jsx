@@ -1,16 +1,16 @@
 import React from 'react';
 import web3 from '../web3';
-import CupChart from './CupChart'
+// import CupChart from './CupChart'
 import CupHistory from './CupHistory';
-import {printNumber} from '../helpers';
+import {printNumber, wmul} from '../helpers';
 
-const Cup = (props) => {
+const Cup = props => {
   const cupId = props.system.tub.cupId ? props.system.tub.cupId : Object.keys(props.system.tub.cups)[0];
   const cup = props.system.tub.cups[cupId];
 
   const actions = {
     lock: {
-            active: props.system.tub.off === false && props.system.skr.myBalance && props.system.skr.myBalance.gt(0),
+            active: props.system.tub.off === false && props.profile.accountBalance && props.profile.accountBalance.gt(0),
             helper: 'Add collateral to a CDP'
           },
     free: {
@@ -47,7 +47,7 @@ const Cup = (props) => {
                 cup.art.gt(web3.toBigNumber(0)) && cup.pro
                   ?
                     <span>
-                      { printNumber(web3.toWei(props.dialog.show && props.dialog.forecast ? props.dialog.forecast.ratio : cup.ratio).times(100)) }<span className="unit">%</span>
+                      { printNumber(web3.toWei(cup.ratio).times(100)) }<span className="unit">%</span>
                     </span>
                   :
                     '-'
@@ -62,7 +62,7 @@ const Cup = (props) => {
             {
               props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0)
               ?
-                <span>{ printNumber(props.dialog.show && props.dialog.forecast ? props.dialog.forecast.liq_price : cup.liq_price) }<span className="unit">&#36;</span></span>
+                <span>{ printNumber(cup.liq_price) }<span className="unit">&#36;</span></span>
               :
                 '-'
             }
@@ -75,7 +75,7 @@ const Cup = (props) => {
           <div className="inner-row">
             <h4 className="typo-c inline-headline">Locked</h4>
             <div className="right">
-              <span className="value typo-cl">{ printNumber(props.dialog.show && props.dialog.forecast ? props.dialog.forecast.ink : cup.ink) }<span className="unit">PETH</span></span>
+              <span className="value typo-cl">{ printNumber(wmul(cup.ink, props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.ink) }<span className="unit">PETH</span></span>
               <button className="text-btn disable-on-dialog" disabled={ !actions.lock.active } data-method="lock" data-cup={ cupId } onClick={ props.handleOpenDialog }>Lock</button>
             </div>	
           </div>
@@ -86,7 +86,7 @@ const Cup = (props) => {
                 {
                   props.system.tub.off === false
                   ?
-                    <span>{ printNumber(props.dialog.show && props.dialog.forecast ? props.dialog.forecast.avail_skr : cup.avail_skr) }<span className="unit">PETH</span></span>
+                    <span>{ printNumber(wmul(cup.avail_skr, props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.avail_skr) }<span className="unit">PETH</span></span>
                   :
                     '-'
                 }
@@ -104,7 +104,7 @@ const Cup = (props) => {
                 {
                   props.system.tub.off === false
                   ?
-                    <span>{ printNumber(props.dialog.show && props.dialog.forecast ? props.dialog.forecast.avail_dai : cup.avail_dai) }<span className="unit">DAI</span></span>
+                    <span>{ printNumber(cup.avail_dai) }<span className="unit">DAI</span></span>
                   :
                     '-'
                 }
@@ -115,7 +115,7 @@ const Cup = (props) => {
           <div className="inner-row">
             <h4 className="typo-c inline-headline">Debt</h4>
             <div className="right">
-              <span className="value typo-cl">{ printNumber(props.tab(props.dialog.show && props.dialog.forecast ? props.dialog.forecast : cup)) }<span className="unit">DAI</span></span>
+              <span className="value typo-cl">{ printNumber(props.tab(cup)) }<span className="unit">DAI</span></span>
               <button className="text-btn disable-on-dialog" disabled={ !actions.wipe.active } data-method="wipe" data-cup={ cupId } onClick={ props.handleOpenDialog }>Wipe</button>
             </div>
           </div>
@@ -140,7 +140,7 @@ const Cup = (props) => {
               </li>
             </ul>
           </div>
-          <CupChart prices={ props.system.chartData.cupPrices } highestValue={ props.system.chartData.highestValue } />
+          {/* <CupChart prices={ props.system.chartData.cupPrices } highestValue={ props.system.chartData.highestValue } /> */}
         </div>
       }
       {

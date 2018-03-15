@@ -1,7 +1,4 @@
 import React, {Component} from 'react';
-import Proxy from './Proxy';
-import TokenAllowance from './TokenAllowance';
-import Wrap from './Wrap';
 import Transfer from './Transfer';
 
 const settings = require('../settings');
@@ -15,23 +12,11 @@ class Settings extends Component {
           <h1 className="typo-h1">Settings</h1>
         </header>
         {
-          this.props.profile.activeProfile && settings.chain[this.props.network].proxyFactory &&
-          <Proxy profile={ this.props.profile } changeMode={ this.props.changeMode } />
-        }
-        {
-          this.props.profile.activeProfile &&
-          <TokenAllowance system={ this.props.system } profile={ this.props.profile } approve={ this.props.approve } approveAll={ this.props.approveAll } />
-        }
-        {
-          this.props.profile.activeProfile &&
-          <Wrap system={ this.props.system } profile={ this.props.profile } wrapUnwrap={ this.props.wrapUnwrap } />
-        }
-        {
-          this.props.profile.activeProfile &&
+          this.props.profile.proxy &&
           <Transfer system={ this.props.system } profile={ this.props.profile } transferToken={ this.props.transferToken } proxyFactory={ settings.chain[this.props.network].proxyFactory } account={ this.props.account } />
         }
         {
-          this.props.profile.activeProfile &&
+          this.props.profile.proxy &&
           Object.keys(this.props.system.tub.cups).length > 0 &&
           <div className="row">
             <div className="col col-extra-padding">
