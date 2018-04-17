@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
-import web3 from '../web3';
-import {wmul, wdiv} from '../helpers';
+import {wmul, wdiv, toBigNumber, toWei} from '../helpers';
 
 class Wizard extends Component {
   constructor() {
     super();
     this.state = {
-      eth: web3.toBigNumber(0),
+      eth: toBigNumber(0),
       ethText: "",
-      dai: web3.toBigNumber(0),
+      dai: toBigNumber(0),
       daiText: "",
       error: false,
       submitEnabled: false,
@@ -16,7 +15,7 @@ class Wizard extends Component {
   }
 
   checkValues = (token, amount) => {
-    const amountBN = web3.toBigNumber(amount);
+    const amountBN = toBigNumber(amount);
     const state = {...this.state};
     state[token] = amountBN;
     state[`${token}Text`] = amount;
@@ -24,8 +23,8 @@ class Wizard extends Component {
     this.setState(state, () => {
       this.setState(prevState => {
         const state = {...this.state};
-        const eth = web3.toWei(state.eth);
-        const dai = web3.toWei(state.dai);
+        const eth = toWei(state.eth);
+        const dai = toWei(state.dai);
 
         state.submitEnabled = false;
         state.error = false;

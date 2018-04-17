@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {observer} from 'mobx-react';
 import {printNumber, wdiv, wmul} from '../helpers';
 
-class SystemInfo extends Component {
+class SystemInfo extends React.Component {
   state = {
     viewMore: false
   };
@@ -66,4 +67,4 @@ class SystemInfo extends Component {
   }
 }
 
-export default SystemInfo;
+export default observer(SystemInfo);

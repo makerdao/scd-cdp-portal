@@ -1,107 +1,28 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {observer} from 'mobx-react';
+
 // import CupChart from './CupChart'
 import CupHistory from './CupHistory';
 // import {printNumber, toBytes32, wmul, toBigNumber, toWei, methodSig} from '../helpers';
 import {printNumber, wmul, toBigNumber, toWei} from '../helpers';
 
 
-class Cup extends Component {
-  cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
-  cup = this.props.system.tub.cups[this.cupId];
-
-  // shut = () => {
-  //   const id = Math.random();
-  //   const title = `Shut CDP ${this.cupId}`;
-  //   this.logRequestTransaction(id, title);
-  //   this.proxyObj.execute['address,bytes'](
-  //     this.saiProxyAddr(),
-  //     `${methodSig(`shut(bytes32)`)}${toBytes32(this.cupId, false)}`,
-  //     (e, tx) => this.log(e, tx, id, title, [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-  //   );
-  // }
-
-  // give = newOwner => {
-  //   const id = Math.random();
-  //   const title = `Transfer CDP ${this.cupId} to ${newOwner}`;
-  //   this.logRequestTransaction(id, title);
-  //   this.proxyObj.execute['address,bytes'](
-  //     this.saiProxyAddr(),
-  //     `${methodSig(`give(bytes32, address)`)}${toBytes32(this.cupId, false)}${addressToBytes32(newOwner, false)}`,
-  //     (e, tx) => this.log(e, tx, id, title, [['getMyCups']])
-  //   );
-  // }
-
-  // lockAndDraw = (eth, dai) => {
-  //   let action = false;
-  //   let title = '';
-
-  //   if (eth.gt(0) || dai.gt(0)) {
-  //     if (!this.cupId) {
-  //       title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-  //       action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(toWei(dai), false)}`;
-  //     } else {
-  //       if (dai.equals(0)) {
-  //         title = `Lock ${eth.valueOf()} ETH`;
-  //         action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}`;
-  //       } else if (eth.equals(0)) {
-  //         title = `Draw ${dai.valueOf()} DAI`;
-  //         action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}${toBytes32(toWei(dai), false)}`;
-  //       } else {
-  //         title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-  //         action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}${toBytes32(toWei(dai), false)}`;
-  //       }
-  //     }
-
-  //     const id = Math.random();
-  //     this.logRequestTransaction(id, title);
-  //     this.proxyObj.execute['address,bytes'](
-  //       this.saiProxyAddr(),
-  //       action,
-  //       {value: toWei(eth)},
-  //       (e, tx) => this.log(e, tx, id, title, this.cupId ? [['reloadCupData', this.cupId], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']] : [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-  //     );
-  //   }
-  // }
-
-  // wipeAndFree = (eth, dai) => {
-  //   let action = false;
-  //   let title = '';
-  //   if (eth.gt(0) || dai.gt(0)) {
-  //     if (dai.equals(0)) {
-  //       title = `Withdraw ${eth.valueOf()} ETH`;
-  //       action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}${toBytes32(toWei(eth), false)}`;
-  //     } else if (eth.equals(0)) {
-  //       title = `Wipe ${dai.valueOf()} DAI`;
-  //       action = `${methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}${toBytes32(toWei(dai), false)}`;
-  //     } else {
-  //       title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-  //       action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(this.cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}`;
-  //     }
-  //     const id = Math.random();
-  //     this.logRequestTransaction(id, title);
-  //     this.proxyObj.execute['address,bytes'](
-  //       this.saiProxyAddr(),
-  //       action,
-  //       (e, tx) => this.log(e, tx, id, title, [['reloadCupData', this.cupId], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-  //     );
-  //   }
-  // }
-
+class Cup extends React.Component {
   actions = {
     lock: {
             active: this.props.system.tub.off === false && this.props.profile.accountBalance && this.props.profile.accountBalance.gt(0),
             helper: 'Add collateral to a CDP'
           },
     free: {
-            active: this.props.system.pip.val.gt(0) && this.cup.ink.gt(0) && this.cup.safe && (this.props.system.tub.off === false || this.cup.art.eq(0)),
+            active: this.props.system.pip.val.gt(0) && this.props.system.tub.cups[this.props.cupId].ink.gt(0) && this.props.system.tub.cups[this.props.cupId].safe && (this.props.system.tub.off === false || this.props.system.tub.cups[this.props.cupId].art.eq(0)),
             helper: 'Remove collateral from a CDP'
           },
     draw: {
-            active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && this.cup.ink.gt(0) && this.cup.safe,
+            active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && this.props.system.tub.cups[this.props.cupId].ink.gt(0) && this.props.system.tub.cups[this.props.cupId].safe,
             helper: 'Create Dai against a CDP'
           },
     wipe: {
-            active: this.props.system.tub.off === false && this.cup.art.gt(0),
+            active: this.props.system.tub.off === false && this.props.system.tub.cups[this.props.cupId].art.gt(0),
             helper: 'Use Dai to cancel CDP debt'
           },
     shut: {
@@ -114,7 +35,9 @@ class Cup extends Component {
           },
   };
 
-  render(){ 
+  render() {
+    const cup = this.props.system.tub.cups[this.props.cupId];
+
     return (
       <div>
         <div className="row">
@@ -124,10 +47,10 @@ class Cup extends Component {
               {
                 this.props.system.tub.off === false
                 ? 
-                  this.cup.art.gt(toBigNumber(0)) && this.cup.pro
+                  cup.art.gt(toBigNumber(0)) && cup.pro
                     ?
                       <span>
-                        { printNumber(toWei(this.cup.ratio).times(100)) }<span className="unit">%</span>
+                        { printNumber(toWei(cup.ratio).times(100)) }<span className="unit">%</span>
                       </span>
                     :
                       '-'
@@ -140,9 +63,9 @@ class Cup extends Component {
             <h3 className="typo-c inline-headline">Liquidation price</h3>
             <div className="value typo-cl right">
               {
-                this.props.system.tub.off === false && this.cup.liq_price && this.cup.liq_price.gt(0)
+                this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0)
                 ?
-                  <span>{ printNumber(this.cup.liq_price) }<span className="unit">&#36;</span></span>
+                  <span>{ printNumber(cup.liq_price) }<span className="unit">&#36;</span></span>
                 :
                   '-'
               }
@@ -155,8 +78,8 @@ class Cup extends Component {
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Locked</h4>
               <div className="right">
-                <span className="value typo-cl">{ printNumber(wmul(this.cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(this.cup.ink) }<span className="unit">PETH</span></span>
-                <button className="text-btn disable-on-dialog" disabled={ !this.actions.lock.active } data-method="lock" data-cup={ this.cupId } onClick={ this.props.handleOpenDialog }>Lock</button>
+                <span className="value typo-cl">{ printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.ink) }<span className="unit">PETH</span></span>
+                <button className="text-btn disable-on-dialog" disabled={ !this.actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Lock</button>
               </div>	
             </div>
             <div className="inner-row">
@@ -166,13 +89,13 @@ class Cup extends Component {
                   {
                     this.props.system.tub.off === false
                     ?
-                      <span>{ printNumber(wmul(this.cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(this.cup.avail_skr) }<span className="unit">PETH</span></span>
+                      <span>{ printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.avail_skr) }<span className="unit">PETH</span></span>
                     :
                       '-'
                   }
                 </span>
-                <button className="text-btn disable-on-dialog" disabled={ !this.actions.free.active } data-method="free" data-cup={ this.cupId } onClick={ this.props.handleOpenDialog }>Free</button>
-              </div>	
+                <button className="text-btn disable-on-dialog" disabled={ !this.actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Free</button>
+              </div>
             </div>
           </div>
           <div className="col col-2">
@@ -184,52 +107,30 @@ class Cup extends Component {
                   {
                     this.props.system.tub.off === false
                     ?
-                      <span>{ printNumber(this.cup.avail_dai) }<span className="unit">DAI</span></span>
+                      <span>{ printNumber(cup.avail_dai) }<span className="unit">DAI</span></span>
                     :
                       '-'
                   }
                 </span>
-                <button className="text-btn disable-on-dialog" disabled={ !this.actions.draw.active } data-method="draw" data-cup={ this.cupId } onClick={ this.props.handleOpenDialog }>Draw</button>
+                <button className="text-btn disable-on-dialog" disabled={ !this.actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Draw</button>
               </div>
             </div>
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Debt</h4>
               <div className="right">
-                <span className="value typo-cl">{ printNumber(this.props.tab(this.cup)) }<span className="unit">DAI</span></span>
-                <button className="text-btn disable-on-dialog" disabled={ !this.actions.wipe.active } data-method="wipe" data-cup={ this.cupId } onClick={ this.props.handleOpenDialog }>Wipe</button>
+                <span className="value typo-cl">{ printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span></span>
+                <button className="text-btn disable-on-dialog" disabled={ !this.actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Wipe</button>
               </div>
             </div>
           </div>
         </div>
         {
-          Object.keys(this.props.system.chartData.cupPrices).length > 0 &&
-          <div className="col">
-            <div>
-              <ul className="legend typo-cs right">
-                <li>
-                  <span className="dot dot-white"></span>
-                  <span>Collateral</span>
-                </li>
-                <li>
-                  <span className="dot dot-red"></span>
-                  <span>Liquidation limit</span>
-                </li>
-                <li>
-                  <span className="dot dot-blue"></span>
-                  <span>Loan</span>
-                </li>
-              </ul>
-            </div>
-            {/* <CupChart prices={ this.props.system.chartData.cupPrices } highestValue={ this.props.system.chartData.highestValue } /> */}
-          </div>
-        }
-        {
-          this.cup.history &&
-          <CupHistory actions={ this.cup.history }/>
+          cup.history &&
+          <CupHistory actions={ cup.history }/>
         }
       </div>
     )
   }
 }
 
-export default Cup;
+export default observer(Cup);

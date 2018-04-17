@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import web3 from  '../web3';
-import {wmul, wdiv, formatNumber} from '../helpers';
+import React from 'react';
+import {observer} from 'mobx-react';
+import {wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min} from '../helpers';
 
-class Dialog extends Component {
+class Dialog extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -13,14 +13,14 @@ class Dialog extends Component {
   updateValue = e => {
     e.preventDefault();
     if (this.submitEnabled) {
-      const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? web3.toBigNumber(this.updateVal.value) : false;
-      this.props.executeAction(value);
+      const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? toBigNumber(this.updateVal.value) : false;
+      this.props.system.executeAction(value);
     }
   }
 
   setMax = e => {
     e.preventDefault();
-    let value = web3.toBigNumber(0);
+    let value = toBigNumber(0);
     switch(this.props.dialog.method) {
       case 'join':
         value = wdiv(this.props.system.gem.myBalance, wmul(this.props.system.tub.per, this.props.system.tub.gap));
@@ -37,7 +37,7 @@ class Dialog extends Component {
       //   value = this.props.system.tub.cups[this.props.dialog.cup].avail_dai_with_margin;
       //   break;
       case 'wipe':
-        value = web3.BigNumber.min(this.props.system.dai.myBalance, this.props.tab(this.props.system.tub.cups[this.props.dialog.cup]));
+        value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cup]));
         break;
       case 'boom':
         value = this.props.system.tub.avail_boom_skr.floor();
@@ -54,7 +54,7 @@ class Dialog extends Component {
       default:
         break;
     }
-    document.getElementById('inputValue').value = web3.fromWei(value).valueOf();
+    document.getElementById('inputValue').value = fromWei(value).valueOf();
     this.cond(document.getElementById('inputValue').value);
   }
 
@@ -137,7 +137,7 @@ class Dialog extends Component {
         text = `Please set amount of collateral (ETH) you want to lock in CDP ${dialog.cup}.`;
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
+          const valueWei = toBigNumber(toWei(value));
           const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
           let error = '';
           this.submitEnabled = true;
@@ -145,8 +145,8 @@ class Dialog extends Component {
           if (this.props.profile.accountBalance.lt(valueWei)) {
             error = 'Not enough balance to lock this amount of ETH.';
             this.submitEnabled = false;
-          } else if (this.props.system.tub.cups[cup].avail_skr.round(0).add(skrValue).gt(0) && this.props.system.tub.cups[cup].avail_skr.add(skrValue).round(0).lte(web3.toWei(0.005))) {
-            error = `It is not allowed to lock a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(web3.toBigNumber(web3.toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
+          } else if (this.props.system.tub.cups[cup].avail_skr.round(0).add(skrValue).gt(0) && this.props.system.tub.cups[cup].avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
+            error = `It is not allowed to lock a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
             this.submitEnabled = false;
           }
           document.getElementById('warningMessage').innerHTML = error;
@@ -161,7 +161,7 @@ class Dialog extends Component {
           text = `Please set amount of collateral (ETH) you want to withdraw from CDP ${dialog.cup}`;
           renderForm = 'renderInputNumberForm';
           this.cond = (value) => {
-            const valueWei = web3.toBigNumber(web3.toWei(value));
+            const valueWei = toBigNumber(toWei(value));
             const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
             const cup = this.props.dialog.cup;
             let error = '';
@@ -169,7 +169,7 @@ class Dialog extends Component {
             if (this.props.system.tub.cups[cup].avail_skr.lt(skrValue)) {
               error = 'This amount of ETH exceeds the maximum available to free.';
               this.submitEnabled = false;
-            } else if (this.props.system.tub.cups[cup].avail_skr.minus(skrValue).lte(web3.toWei(0.005)) && !this.props.system.tub.cups[cup].avail_skr.round(0).eq(skrValue)) {
+            } else if (this.props.system.tub.cups[cup].avail_skr.minus(skrValue).lte(toWei(0.005)) && !this.props.system.tub.cups[cup].avail_skr.round(0).eq(skrValue)) {
               error = 'CDP can not be left with a dust amount lower or equal than 0.005 PETH. You have to either leave more or free the whole amount.';
               this.submitEnabled = false;
             } else if (this.props.system.tub.off === false && this.props.system.tub.cups[cup].art.gt(0) && skrValue.gt(this.props.system.tub.cups[cup].avail_skr.times(0.9))) {
@@ -183,7 +183,7 @@ class Dialog extends Component {
         text = `Please set amount of DAI you want to mint from your CDP ${dialog.cup}`;
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
+          const valueWei = toBigNumber(toWei(value));
           const cup = this.props.dialog.cup;
           let error = '';
           this.submitEnabled = true;
@@ -204,25 +204,25 @@ class Dialog extends Component {
         text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
-          const valueWei = web3.toBigNumber(web3.toWei(value));
+          const valueWei = toBigNumber(toWei(value));
           const cup = this.props.dialog.cup;
           let error = '';
           this.submitEnabled = true;
           if (this.props.system.dai.myBalance.lt(valueWei)) {
             error = 'Not enough balance of DAI to wipe this amount.';
             this.submitEnabled = false;
-          } else if (this.props.tab(this.props.system.tub.cups[cup]).lt(valueWei)) {
+          } else if (this.props.system.tab(this.props.system.tub.cups[cup]).lt(valueWei)) {
             error = `Debt in CDP ${cup} is lower than this amount of DAI.`;
             this.submitEnabled = false;
           } else {
-            const futureGovFee = web3.fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
+            const futureGovFee = fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
             const govDebt = wmul(
                               wmul(
                                 wmul(
                                   valueWei,
                                   wdiv(
-                                    this.props.rap(this.props.system.tub.cups[cup]),
-                                    this.props.tab(this.props.system.tub.cups[cup])
+                                    this.props.system.rap(this.props.system.tub.cups[cup]),
+                                    this.props.system.tab(this.props.system.tub.cups[cup])
                                   )
                                 ),
                                 this.props.system.pep.val
@@ -268,4 +268,4 @@ class Dialog extends Component {
   }
 }
 
-export default Dialog;
+export default observer(Dialog);

@@ -1,4 +1,5 @@
 import React from 'react';
+import {observer} from 'mobx-react';
 import {printNumber, etherscanAddress} from '../helpers';
 
 const Token = props => {
@@ -25,4 +26,4 @@ const Token = props => {
   )
 }
 
-export default Token;
+export default observer(Token);

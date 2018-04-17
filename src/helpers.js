@@ -33,12 +33,12 @@ export const addressToBytes32 = (x, prefix = true) => {
 export const formatNumber = (number, decimals = false, isWei = true) => {
   web3.BigNumber.config({ ROUNDING_MODE: 4 });
 
-  let object = web3.toBigNumber(number);
+  let object = toBigNumber(number);
 
   if (isWei) object = web3.fromWei(object.round(0));
 
   if (decimals) {
-    const d = web3.toBigNumber(10).pow(decimals);
+    const d = toBigNumber(10).pow(decimals);
     object = object.mul(d).trunc().div(d).toFixed(decimals);
   } else {
     object = object.valueOf();
@@ -58,7 +58,7 @@ const addZero = value => {
 }
 
 export const fromRaytoWad = x => {
-  const y = web3.toBigNumber(x).div(web3.toBigNumber(10).pow(9))
+  const y = toBigNumber(x).div(toBigNumber(10).pow(9))
   return y;
 }
 
@@ -90,12 +90,12 @@ export const printNumber = number => {
 
 // Multiply WAD values
 export const wmul = (a, b) => {
-  return web3.toBigNumber(a).times(b).div(WAD);
+  return toBigNumber(a).times(b).div(WAD);
 }
 
 //Divide WAD values
 export const wdiv = (a, b) => {
-  return web3.toBigNumber(a).times(WAD).div(b);
+  return toBigNumber(a).times(WAD).div(b);
 }
 
 const etherscanUrl = network => {
@@ -116,6 +116,10 @@ export const etherscanToken = (network, text, token, holder = false) => {
 
 export const methodSig = method => {
   return web3.sha3(method).substring(0, 10)
+}
+
+export const min = (num1, num2) => {
+  return web3.BigNumber.min(num1, num2);
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii} = web3;

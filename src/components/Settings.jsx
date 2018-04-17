@@ -1,9 +1,10 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {observer} from 'mobx-react';
 import Transfer from './Transfer';
 
 const settings = require('../settings');
 
-class Settings extends Component {
+class Settings extends React.Component {
   render() {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
@@ -13,7 +14,7 @@ class Settings extends Component {
         </header>
         {
           this.props.profile.proxy &&
-          <Transfer system={ this.props.system } profile={ this.props.profile } transferToken={ this.props.transferToken } proxyFactory={ settings.chain[this.props.network].proxyFactory } account={ this.props.account } />
+          <Transfer system={ this.props.system } profile={ this.props.profile } proxyFactory={ settings.chain[this.props.network].proxyFactory } account={ this.props.account } />
         }
         {
           this.props.profile.proxy &&
@@ -33,4 +34,4 @@ class Settings extends Component {
   }
 }
 
-export default Settings;
+export default observer(Settings);

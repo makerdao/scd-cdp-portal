@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {observer} from 'mobx-react';
 import {etherscanAddress, etherscanTx, printNumber, formatDate} from '../helpers';
 
-class CupHistory extends Component {
+class CupHistory extends React.Component {
   render() {
     return (
       <div className="col col-extra-padding">
@@ -75,4 +76,4 @@ class CupHistory extends Component {
   }
 }
 
-export default CupHistory;
+export default observer(CupHistory);

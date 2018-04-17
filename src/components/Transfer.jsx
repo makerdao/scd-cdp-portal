@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import web3 from '../web3';
-import {printNumber} from '../helpers';
+import React from 'react';
+import {observer} from 'mobx-react';
+import {printNumber, isAddress, toWei} from '../helpers';
 
-class Transfer extends Component {
+class Transfer extends React.Component {
   state = {
     token: 'gem',
     to: '',
@@ -29,7 +29,7 @@ class Transfer extends Component {
   transfer = (e) => {
     e.preventDefault();
     const token = this.token.value;
-    const to = web3.isAddress(this.to.value) ? this.to.value : false;
+    const to = isAddress(this.to.value) ? this.to.value : false;
     const amount = this.amount.value
     this.setState({ error: '' });
 
@@ -37,10 +37,10 @@ class Transfer extends Component {
       this.setState({ error: 'Invalid Address' });
     } else if (!amount) {
       this.setState({ error: 'Invalid Amount' });
-    } else if (this.props.system[token].myBalance.lt(web3.toWei(amount))) {
+    } else if (this.props.system[token].myBalance.lt(toWei(amount))) {
       this.setState({ error: `Not enough balance to transfer ${amount} ${token}` });
     } else if (token) {
-      this.props.transferToken(token, to, amount);
+      this.props.system.transferToken(token, to, amount);
       this.to.value = '';
       this.amount.value = '';
     }
@@ -97,4 +97,4 @@ class Transfer extends Component {
   }
 }
 
-export default Transfer;
+export default observer(Transfer);
