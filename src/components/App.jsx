@@ -10,23 +10,21 @@ import Wallet from './Wallet';
 import Settings from './Settings';
 import Help from './Help';
 import Cup from './Cup';
-import web3, {initWeb3} from  '../web3';
+import {initWeb3} from  '../web3';
 import ReactNotify from '../notify';
-import {WAD, toBytes32, addressToBytes32, fromRaytoWad, wmul, wdiv, etherscanTx} from '../helpers';
+import {WAD, fromRaytoWad, wmul, wdiv, toBigNumber, fromWei, isAddress, toAscii, methodSig} from '../helpers';
 import './App.css';
 
-const settings = require('../settings');
+import * as Blockchain from "../blockchainHandler";
 
-const tub = require('../abi/saitub');
-const top = require('../abi/saitop');
-const tap = require('../abi/saitap');
-const vox = require('../abi/saivox');
-const proxyregistry = require('../abi/proxyregistry');
-// const dsproxyfactory = require('../abi/dsproxyfactory');
-const dsproxy = require('../abi/dsproxy');
-const dsethtoken = require('../abi/dsethtoken');
-const dstoken = require('../abi/dstoken');
-const dsvalue = require('../abi/dsvalue');
+import * as NetworkActions from "../actions/network";
+import * as TransactionActions from "../actions/transaction";
+import * as ProxyActions from "../actions/proxy";
+import * as TokenActions from "../actions/token";
+import * as CupActions from "../actions/cup";
+
+
+const settings = require('../settings');
 
 class App extends Component {
   constructor() {
@@ -37,7 +35,7 @@ class App extends Component {
       network: {},
       profile: {
         proxy: -1,
-        accountBalance: web3.toBigNumber(-1),
+        accountBalance: toBigNumber(-1),
       },
       transactions: {},
       termsModal: {
@@ -56,6 +54,23 @@ class App extends Component {
       },
       params: ''
     }
+
+    // Bindings functions imported from actions source
+    Object.keys(NetworkActions).forEach(key => {
+      this[key] = NetworkActions[key].bind(this);
+    });
+    Object.keys(TransactionActions).forEach(key => {
+      this[key] = TransactionActions[key].bind(this);
+    });
+    Object.keys(ProxyActions).forEach(key => {
+      this[key] = ProxyActions[key].bind(this);
+    });
+    Object.keys(TokenActions).forEach(key => {
+      this[key] = TokenActions[key].bind(this);
+    });
+    Object.keys(CupActions).forEach(key => {
+      this[key] = CupActions[key].bind(this);
+    });
   }
 
   getInitialState = () => {
@@ -68,22 +83,22 @@ class App extends Component {
           safe: 'undefined',
           off: -1,
           out: -1,
-          axe: web3.toBigNumber(-1),
-          mat: web3.toBigNumber(-1),
-          cap: web3.toBigNumber(-1),
-          fit: web3.toBigNumber(-1),
-          tax: web3.toBigNumber(-1),
-          fee: web3.toBigNumber(-1),
-          chi: web3.toBigNumber(-1),
-          rhi: web3.toBigNumber(-1),
-          rho: web3.toBigNumber(-1),
-          gap: web3.toBigNumber(-1),
-          tag: web3.toBigNumber(-1),
-          per: web3.toBigNumber(-1),
-          avail_boom_skr: web3.toBigNumber(-1),
-          avail_boom_dai: web3.toBigNumber(-1),
-          avail_bust_skr: web3.toBigNumber(-1),
-          avail_bust_dai: web3.toBigNumber(-1),
+          axe: toBigNumber(-1),
+          mat: toBigNumber(-1),
+          cap: toBigNumber(-1),
+          fit: toBigNumber(-1),
+          tax: toBigNumber(-1),
+          fee: toBigNumber(-1),
+          chi: toBigNumber(-1),
+          rhi: toBigNumber(-1),
+          rho: toBigNumber(-1),
+          gap: toBigNumber(-1),
+          tag: toBigNumber(-1),
+          per: toBigNumber(-1),
+          avail_boom_skr: toBigNumber(-1),
+          avail_boom_dai: toBigNumber(-1),
+          avail_bust_skr: toBigNumber(-1),
+          avail_bust_dai: toBigNumber(-1),
           cups: {},
           cupsLoading: true,
           cupsCount: 0,
@@ -95,68 +110,61 @@ class App extends Component {
         },
         tap: {
           address: null,
-          fix: web3.toBigNumber(-1),
-          gap: web3.toBigNumber(-1),
+          fix: toBigNumber(-1),
+          gap: toBigNumber(-1),
         },
         vox: {
           address: null,
-          era: web3.toBigNumber(-1),
-          tau: web3.toBigNumber(-1),
-          par: web3.toBigNumber(-1),
-          way: web3.toBigNumber(-1),
+          era: toBigNumber(-1),
+          tau: toBigNumber(-1),
+          par: toBigNumber(-1),
+          way: toBigNumber(-1),
         },
         pit: {
           address: null,
         },
         gem: {
           address: null,
-          totalSupply: web3.toBigNumber(-1),
-          myBalance: web3.toBigNumber(-1),
-          tubBalance: web3.toBigNumber(-1),
-          tapBalance: web3.toBigNumber(-1),
-          tubApproved: -1,
-          tapApproved: -1,
+          totalSupply: toBigNumber(-1),
+          myBalance: toBigNumber(-1),
+          tubBalance: toBigNumber(-1),
+          tapBalance: toBigNumber(-1),
         },
         gov: {
           address: null,
-          totalSupply: web3.toBigNumber(-1),
-          myBalance: web3.toBigNumber(-1),
-          pitBalance: web3.toBigNumber(-1),
-          tubApproved: -1,
+          totalSupply: toBigNumber(-1),
+          myBalance: toBigNumber(-1),
+          pitBalance: toBigNumber(-1),
         },
         skr: {
           address: null,
-          totalSupply: web3.toBigNumber(-1),
-          myBalance: web3.toBigNumber(-1),
-          tubBalance: web3.toBigNumber(-1),
-          tapBalance: web3.toBigNumber(-1),
-          tubApproved: -1,
-          tapApproved: -1,
+          totalSupply: toBigNumber(-1),
+          myBalance: toBigNumber(-1),
+          tubBalance: toBigNumber(-1),
+          tapBalance: toBigNumber(-1),
         },
         dai: {
           address: null,
-          totalSupply: web3.toBigNumber(-1),
-          myBalance: web3.toBigNumber(-1),
-          tapBalance: web3.toBigNumber(-1),
-          tubApproved: -1,
-          tapApproved: -1,
+          totalSupply: toBigNumber(-1),
+          myBalance: toBigNumber(-1),
+          tapBalance: toBigNumber(-1),
         },
         sin: {
           address: null,
-          totalSupply: web3.toBigNumber(-1),
-          tubBalance: web3.toBigNumber(-1),
-          tapBalance: web3.toBigNumber(-1),
+          totalSupply: toBigNumber(-1),
+          tubBalance: toBigNumber(-1),
+          tapBalance: toBigNumber(-1),
           // This field will keep an estimated value of new sin which is being generated due the 'stability/issuer fee'.
           // It will return to zero each time 'drip' is called
-          issuerFee: web3.toBigNumber(0),
+          issuerFee: toBigNumber(0),
         },
         pip: {
           address: null,
-          val: web3.toBigNumber(-1),
+          val: toBigNumber(-1),
         },
         pep: {
           address: null,
-          val: web3.toBigNumber(-1),
+          val: toBigNumber(-1),
         },
         chartData: {
           prices: {},
@@ -170,108 +178,17 @@ class App extends Component {
     };
   }
 
-  checkNetwork = () => {
-    web3.version.getNode(error => {
-      const isConnected = !error;
-
-      // Check if we are synced
-      if (isConnected) {
-        web3.eth.getBlock('latest', (e, res) => {
-          if (typeof(res) === 'undefined') {
-            console.debug('YIKES! getBlock returned undefined!');
-          }
-          if (res.number >= this.state.network.latestBlock) {
-            const networkState = {...this.state.network};
-            networkState.latestBlock = res.number;
-            networkState.outOfSync = e != null || ((new Date().getTime() / 1000) - res.timestamp) > 600;
-            this.setState({network: networkState});
-          } else {
-            // XXX MetaMask frequently returns old blocks
-            // https://github.com/MetaMask/metamask-plugin/issues/504
-            console.debug('Skipping old block');
-          }
-        });
-      }
-
-      // Check which network are we connected to
-      // https://github.com/ethereum/meteor-dapp-wallet/blob/90ad8148d042ef7c28610115e97acfa6449442e3/app/client/lib/ethereum/walletInterface.js#L32-L46
-      if (this.state.network.isConnected !== isConnected) {
-        if (isConnected === true) {
-          web3.eth.getBlock(0, (e, res) => {
-            let network = false;
-            if (!e) {
-              switch (res.hash) {
-                case '0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9':
-                  network = 'kovan';
-                  break;
-                case '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3':
-                  network = 'main';
-                  break;
-                default:
-                  console.log('setting network to private');
-                  console.log('res.hash:', res.hash);
-                  network = 'private';
-              }
-            }
-            if (this.state.network.network !== network) {
-              this.initNetwork(network);
-            }
-          });
-        } else {
-          const networkState = {...this.state.network};
-          networkState.isConnected = isConnected;
-          networkState.network = false;
-          networkState.latestBlock = 0;
-          this.setState({network: networkState});
-        }
-      }
-    });
-  }
-
-  initNetwork = newNetwork => {
-    //checkAccounts();
-    const networkState = {...this.state.network};
-    networkState.network = newNetwork;
-    networkState.isConnected = true;
-    networkState.latestBlock = 0;
-    this.setState({network: networkState}, () => {
-      const addrs = settings.chain[this.state.network.network];
-      this.initContracts(addrs.top);
-    });
-  }
-
-  checkAccounts = (checkAccountChange = true) => {
-    web3.eth.getAccounts((error, accounts) => {
-      if (!error) {
-        const networkState = {...this.state.network};
-        networkState.accounts = accounts;
-        const oldDefaultAccount = networkState.defaultAccount;
-        networkState.defaultAccount = accounts[0];
-        web3.eth.defaultAccount = networkState.defaultAccount;
-        this.setState({network: networkState}, () => {
-          if (checkAccountChange && oldDefaultAccount !== networkState.defaultAccount) {
-            this.initContracts(this.state.system.top.address);
-          }
-        });
-      }
-    });
-  }
-
   componentDidMount = () => {
     setTimeout(this.init, 500);
   }
 
   init = () => {
-    initWeb3(web3);
+    initWeb3();
 
     this.checkNetwork();
     this.checkAccounts(false);
 
     this.setHashParams();
-    // window.onhashchange = () => {
-    //   this.setHashParams();
-    //   this.initContracts(this.state.system.top.address);
-    // }
 
     if (localStorage.getItem('termsModal')) {
       const termsModal = JSON.parse(localStorage.getItem('termsModal'));
@@ -290,78 +207,75 @@ class App extends Component {
     this.setState({params});
   }
 
-  loadObject = (abi, address) => {
-    return web3.eth.contract(abi).at(address);
-  }
-
-  validateAddresses = topAddress => {
-    return web3.isAddress(topAddress);
-  }
-
   initContracts = topAddress => {
-    if (!this.validateAddresses(topAddress)) {
+    if (!isAddress(topAddress)) {
       return;
     }
-    web3.reset(true);
+    Blockchain.resetFilters(true);
     if (typeof this.timeVariablesInterval !== 'undefined') clearInterval(this.timeVariablesInterval);
     if (typeof this.pendingTxInterval !== 'undefined') clearInterval(this.pendingTxInterval);
     const initialState = this.getInitialState();
     this.setState((prevState, props) => {
       return {system: {...initialState}.system};
     }, () => {
-      window.topObj = this.topObj = this.loadObject(top.abi, topAddress);
-      const addrs = settings.chain[this.state.network.network];
+      Blockchain.loadObject('top', topAddress, 'top');
+      const proxyRegistryAddr = settings.chain[this.state.network.network].proxyRegistry;
 
-      const setUpPromises = [this.getTubAddress(), this.getTapAddress()];
-
-      if (addrs.proxyFactory) {
-        window.proxyRegistryObj = this.proxyRegistryObj = this.loadObject(proxyregistry.abi, addrs.proxyRegistry);
-        // window.proxyFactoryObj = this.proxyFactoryObj = this.loadObject(dsproxyfactory.abi, addrs.proxyFactory);
-        setUpPromises.push(this.getProxyAddress());
+      const setUpPromises = [Blockchain.getContractAddr('top', 'tub'), Blockchain.getContractAddr('top', 'tap')];
+      if (proxyRegistryAddr) {
+        Blockchain.loadObject('proxyregistry', proxyRegistryAddr, 'proxyRegistry');
+        setUpPromises.push(Blockchain.getProxyAddress(this.state.network.defaultAccount));
       }
+
       Promise.all(setUpPromises).then(r => {
-        if (r[0] && r[1] && web3.isAddress(r[0]) && web3.isAddress(r[1])) {
-          window.tubObj = this.tubObj = this.loadObject(tub.abi, r[0]);
-          window.tapObj = this.tapObj = this.loadObject(tap.abi, r[1]);
-          const system = {...this.state.system};
-          const profile = {...this.state.profile};
+        if (r[0] && r[1] && isAddress(r[0]) && isAddress(r[1])) {
+          const setUpPromises2 = [Blockchain.getContractAddr('tub', 'vox'), Blockchain.getContractAddr('tub', 'pit')];
 
-          system.top.address = topAddress;
-          system.tub.address = r[0];
-          system.tap.address = r[1];
+          Promise.all(setUpPromises2).then(r2 => {
+            if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
+              this.setState(prevState => {
+                const system = {...prevState.system};
+                const profile = {...prevState.profile};
+                system.top.address = topAddress;
+                system.tub.address = r[0];
+                system.tap.address = r[1];
 
-          if (addrs.proxyFactory && r[2]) {
-            profile.proxy = r[2];
-            window.proxyObj = this.proxyObj = this.loadObject(dsproxy.abi, profile.proxy);
-          } else {
-            profile.proxy = null;
-          }
+                if (proxyRegistryAddr && r[2]) {
+                  profile.proxy = r[2];
+                  console.log('proxy', profile.proxy);
+                  Blockchain.loadObject('dsproxy', profile.proxy, 'proxy');
+                } else {
+                  profile.proxy = null;
+                }
 
-          this.setState({system, profile}, () => {
-            const promises = [this.setUpVox(), this.setUpPit()];
-            Promise.all(promises).then(r => {
-              this.initializeSystemStatus();
-
-              this.setUpToken('gem');
-              this.setUpToken('gov');
-              this.setUpToken('skr');
-              this.setUpToken('dai');
-              this.setUpToken('sin');
-
-              this.getMyCups();
-              this.getMyLegacyCups();
-
-              this.setFiltersTub();
-              this.setFiltersTap();
-              this.setFiltersVox();
-              this.setFilterFeedValue('pip');
-              this.setFilterFeedValue('pep');
-              this.setTimeVariablesInterval();
-              this.setNonTimeVariablesInterval();
-
-              // This is necessary to finish transactions that failed after signing
-              this.setPendingTxInterval();
-            });
+                system.vox.address = r2[0];
+                system.pit.address = r2[1];
+  
+                return {system, profile};
+              }, () => {
+                this.initializeSystemStatus();
+  
+                this.setUpToken('gem');
+                this.setUpToken('gov');
+                this.setUpToken('skr');
+                this.setUpToken('dai');
+                this.setUpToken('sin');
+  
+                this.getMyCups();
+                this.getMyLegacyCups();
+  
+                this.setFiltersTub();
+                this.setFiltersTap();
+                this.setFiltersVox();
+                this.setFilterFeedValue('pip');
+                this.setFilterFeedValue('pep');
+                this.setTimeVariablesInterval();
+                this.setNonTimeVariablesInterval();
+  
+                // This is necessary to finish transactions that failed after signing
+                this.setPendingTxInterval();
+              });
+            }
           });
         } else {
           alert('This is not a Top address');
@@ -380,7 +294,7 @@ class App extends Component {
         this.setState((prevState, props) => {
           const system = {...prevState.system};
           const sin = {...system.sin};
-          sin.issuerFee = system.sin.tubBalance.times(web3.fromWei(system.tub.tax).pow(system.vox.era.minus(system.tub.rho))).minus(system.sin.tubBalance).round(0);
+          sin.issuerFee = system.sin.tubBalance.times(fromWei(system.tub.tax).pow(system.vox.era.minus(system.tub.rho))).minus(system.sin.tubBalance).round(0);
           system.sin = sin;
           return {system};
         });
@@ -434,509 +348,13 @@ class App extends Component {
   }
 
   getAccountBalance = () => {
-    if (web3.isAddress(this.state.network.defaultAccount)) {
-      web3.eth.getBalance(this.state.network.defaultAccount, (e, r) => {
+    if (isAddress(this.state.network.defaultAccount)) {
+      Blockchain.getEthBalanceOf(this.state.network.defaultAccount).then(r => {
         const profile = {...this.state.profile};
         profile.accountBalance = r;
         this.setState({profile});
-      });
+      }, () => {});
     }
-  }
-
-  getTubAddress = () => {
-    const p = new Promise((resolve, reject) => {
-      this.topObj.tub.call((e, r) => {
-        if (!e) {
-          resolve(r);
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
-  }
-
-  getTapAddress = () => {
-    const p = new Promise((resolve, reject) => {
-      this.topObj.tap.call((e, r) => {
-        if (!e) {
-          resolve(r);
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
-  }
-
-  getFromDirectoryService = (conditions = {}, sort = {}) => {
-    const p = new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      let conditionsString = '';
-      let sortString = '';
-      Object.keys(conditions).map(key => {
-        conditionsString += `${key}:${conditions[key]}`;
-        conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
-        return false;
-      });
-      conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
-      Object.keys(sort).map(key => {
-        sortString += `${key}:${sort[key]}`;
-        sortString += Object.keys(sort).pop() !== key ? '&' : '';
-        return false;
-      });
-      sortString = sortString !== '' ? `/sort=${sortString}` : '';
-      let serviceURL = settings.chain[this.state.network.network].proxyDirectoryService;
-      serviceURL = serviceURL.slice(-1) === '/' ? serviceURL.substring(0, serviceURL.length - 1) : serviceURL;
-      const url = `${serviceURL}${conditionsString}${sortString}`;
-      xhr.open('GET', url, true);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          resolve(response);
-        } else if (xhr.readyState === 4 && xhr.status !== 200) {
-          reject(xhr.status);
-        }
-      }
-      xhr.send();
-    });
-    return p;
-  }
-
-  getProxy = (i) => {
-    return new Promise((resolve, reject) => {
-      this.proxyRegistryObj.proxies(this.state.network.defaultAccount, i, (e, r) => {
-        if (!e) {
-          resolve(r);
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  getProxyOwner = proxy => {
-    return new Promise((resolve, reject) => {
-      this.loadObject(dsproxy.abi, proxy).owner((e, r) => {
-        if (!e) {
-          resolve(r);
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  getProxyAddressFromChain = (blockNumber = 0, proxies = []) => {
-    const network = this.state.network;
-    const me = this;
-    return new Promise((resolve, reject) => {
-      // me.proxyFactoryObj.Created({sender: network.defaultAccount}, {fromBlock: blockNumber}).get(async (e, r) => {
-      //   if (!e) {
-      //     const allProxies = proxies.concat(r.map(val => val.args));
-      //     if (allProxies.length > 0) {
-      //       for (let i = allProxies.length - 1; i >= 0; i--) {
-      //         if (await me.getProxyOwner(allProxies[i].proxy) === network.defaultAccount) {
-      //           resolve(allProxies[i].proxy);
-      //           break;
-      //         }
-      //       }
-      //       resolve(null);
-      //     } else {
-      //       resolve(null);
-      //     }
-      //   } else {
-      //     reject(e);
-      //   }
-      // });
-      me.proxyRegistryObj.proxiesCount(network.defaultAccount, async (e, r) => {
-        if (!e) {
-          if (r.gt(0)) {
-            for (let i = r.toNumber() - 1; i >= 0; i--) {
-              const proxyAddr = await this.getProxy(i);
-              if (await me.getProxyOwner(proxyAddr) === network.defaultAccount) {
-                resolve(proxyAddr);
-                break;
-              }
-            }
-            resolve(null);
-          } else {
-            resolve(null);
-          }
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  getProxyAddress = () => {
-    const network = this.state.network;
-    if (network.defaultAccount) {
-      const addrs = settings.chain[network.network];
-      const me = this;
-      return new Promise((resolve, reject) => {
-        if (addrs.proxyDirectoryService) {
-          Promise.resolve(me.getFromDirectoryService({owner: network.defaultAccount}, {blockNumber: 'asc'})).then(r => {
-            Promise.resolve(me.getProxyAddressFromChain(r.lastBlockNumber + 1, r.results)).then(r2 => {
-              resolve(r2);
-            }).catch(e2 => {
-              reject(e2);
-            });
-          }).catch(e => {
-            Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
-              resolve(r2);
-            }).catch(e2 => {
-              reject(e2);
-            });
-          });
-        } else {
-          Promise.resolve(me.getProxyAddressFromChain(addrs.fromBlock)).then(r2 => {
-            console.log('getProxyAddressFromChain', r2);
-            resolve(r2);
-          }).catch(e2 => {
-            reject(e2);
-          });
-        }
-      });
-    }
-  }
-
-  setProxyAddress = callbacks => {
-    Promise.resolve(this.getProxyAddress()).then(proxy => {
-      if (proxy) {
-        this.setState((prevState, props) => {
-          const profile = {...prevState.profile};
-          profile.proxy = proxy;
-          return {profile};
-        }, () => {
-          window.proxyObj = this.proxyObj = this.loadObject(dsproxy.abi, this.state.profile.proxy);
-          callbacks.forEach(callback => this.executeCallback(callback))
-        });
-      }
-    });
-  }
-
-  setUpVox = () => {
-    const p = new Promise((resolve, reject) => {
-      this.tubObj.vox.call((e, r) => {
-        if (!e) {
-          this.setState((prevState, props) => {
-            const system = {...prevState.system};
-            const vox = {...system.vox};
-            vox.address = r;
-            system.vox = vox;
-            return {system};
-          }, () => {
-            window.voxObj = this.voxObj = this.loadObject(vox.abi, r);
-            resolve(true);
-          });
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
-  }
-
-  setUpPit = () => {
-    const p = new Promise((resolve, reject) => {
-      this.tubObj.pit.call((e, r) => {
-        if (!e) {
-          this.setState((prevState, props) => {
-            const system = {...prevState.system};
-            const pit = {...system.pit};
-            pit.address = r;
-            system.pit = pit;
-            return {system};
-          }, () => {
-            resolve(true);
-          });
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
-  }
-
-  setUpToken = (token) => {
-    this.tubObj[token.replace('dai', 'sai')].call((e, r) => {
-      if (!e) {
-        this.setState((prevState, props) => {
-          const system = {...prevState.system};
-          const tok = {...system[token]};
-          tok.address = r;
-          system[token] = tok;
-          return {system};
-        }, () => {
-          window[`${token}Obj`] = this[`${token}Obj`] = this.loadObject(token === 'gem' ? dsethtoken.abi : dstoken.abi, r);
-          this.getDataFromToken(token);
-          this.setFilterToken(token);
-        });
-      }
-    })
-  }
-
-  setFilterToken = (token) => {
-    const filters = ['Transfer', 'Approval'];
-
-    if (token === 'gem') {
-      filters.push('Deposit');
-      filters.push('Withdrawal');
-    } else {
-      filters.push('Mint');
-      filters.push('Burn');
-    }
-
-    for (let i = 0; i < filters.length; i++) {
-      const conditions = {};
-      if (this[`${token}Obj`][filters[i]]) {
-        this[`${token}Obj`][filters[i]](conditions, {fromBlock: 'latest'}, (e, r) => {
-          if (!e) {
-            this.logTransactionConfirmed(r.transactionHash);
-            this.getDataFromToken(token);
-          }
-        });
-      }
-    }
-  }
-
-  getMyCups = () => {
-    if (this.state.profile.proxy) {
-      this.setState(prevState => {
-        const system = {...prevState.system};
-        const tub = {...system.tub};
-        tub.cupsLoading = true;
-        system.tub = tub;
-        return {system};
-      }, () => this.getCups('new'));
-    }
-  }
-
-  getMyLegacyCups = () => {
-    this.getCups('legacy');
-  }
-
-  getCups = type => {
-    const lad = type === 'new' ? this.state.profile.proxy : this.state.network.defaultAccount;
-    const me = this;
-    if (settings.chain[this.state.network.network].service) {
-      Promise.resolve(this.getFromService('cups', {lad}, {cupi: 'asc'})).then(response => {
-        const promises = [];
-        response.results.forEach(v => {
-          promises.push(me.getCup(v.cupi));
-        });
-        me.getCupsFromChain(type, response.lastBlockNumber, promises);
-      }).catch(error => {
-        me.getCupsFromChain(type, settings.chain[this.state.network.network].fromBlock);
-      });
-    } else {
-      this.getCupsFromChain(type, settings.chain[this.state.network.network].fromBlock);
-    }
-  }
-
-  getCupsFromChain = (type, fromBlock, promises = []) => {
-    const lad = type === 'new' ? this.state.profile.proxy : this.state.network.defaultAccount;
-    const conditions = {lad};
-    const promisesLogs = [];
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        this.tubObj.LogNewCup(conditions, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promises.push(this.getCup(parseInt(r[i].args.cup, 16)));
-            }
-            resolve();
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        this.tubObj.LogNote({sig: this.methodSig('give(bytes32,address)'), bar: toBytes32(conditions.lad)}, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promises.push(this.getCup(parseInt(r[i].args.foo, 16)));
-            }
-            resolve();
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    Promise.all(promisesLogs).then(r => {
-      conditions.closed = false;
-      if (type === 'legacy' || this.state.system.tub.cupsLoading) {
-        Promise.all(promises).then(cups => {
-          const cupsFiltered = {};
-          for (let i = 0; i < cups.length; i++) {
-            if (conditions.lad === cups[i].lad) {
-                cupsFiltered[cups[i].id] = cups[i];
-            }
-          }
-          const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-          if (type === 'new') {
-            if (this.state.system.tub.cupsLoading) {
-              this.setState((prevState, props) => {
-                const system = {...prevState.system};
-                const tub = {...system.tub};
-                tub.cupsLoading = false;
-                tub.cups = cupsFiltered;
-                system.tub = tub;
-                return {system};
-              }, () => {
-                if (keys.length > 0 && settings.chain[this.state.network.network].service) {
-                  keys.forEach(key => {
-                    Promise.resolve(this.getFromService('cupHistoryActions', {cupi: key}, {timestamp:'asc'})).then(response => {
-                      this.setState((prevState, props) => {
-                        const system = {...prevState.system};
-                        const tub = {...system.tub};
-                        const cups = {...tub.cups};
-                        cups[key].history = response.results
-                        tub.cups = cups;
-                        system.tub = tub;
-                        return {system};
-                      }, () => {
-                        this.calculateCupChart();
-                      });
-                    }).catch(error => {
-                      // this.setState({});
-                    });
-                  });
-                }
-              });
-            }
-          } else if (type === 'legacy') {
-            this.setState((prevState, props) => {
-              const system = {...prevState.system};
-              const tub = {...system.tub};
-              tub.legacyCups = cupsFiltered;
-              system.tub = tub;
-              return {system};
-            });
-          }
-        });
-      }
-    });
-  }
-
-  getCup = id => {
-    return new Promise((resolve, reject) => {
-      this.tubObj.cups.call(toBytes32(id), (e, cupData) => {
-        if (!e) {
-          let cupBaseData = {
-            id: parseInt(id, 10),
-            lad: cupData[0],
-            ink: cupData[1],
-            art: cupData[2],
-            ire: cupData[3],
-          };
-
-          Promise.resolve(this.addExtraCupData(cupBaseData)).then(cup => {
-            resolve(cup);
-          }, e => {
-            reject(e);
-          });
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  calculateCupData = cup => {
-    cup.pro = wmul(cup.ink, this.state.system.tub.tag).round(0);
-    cup.ratio = cup.pro.div(wmul(this.tab(cup), this.state.system.vox.par));
-    // This is to give a window margin to get the maximum value (as 'chi' is dynamic value per second)
-    const marginTax = web3.fromWei(this.state.system.tub.tax).pow(120);
-    cup.avail_dai = wdiv(cup.pro, wmul(this.state.system.tub.mat, this.state.system.vox.par)).minus(this.tab(cup)).round(0).minus(1); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
-    cup.avail_dai_with_margin = wdiv(cup.pro, wmul(this.state.system.tub.mat, this.state.system.vox.par)).minus(this.tab(cup).times(marginTax)).round(0).minus(1);
-    cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? web3.toBigNumber(0) : cup.avail_dai_with_margin;
-    cup.avail_skr = cup.ink.minus(wdiv(wmul(wmul(this.tab(cup), this.state.system.tub.mat), this.state.system.vox.par), this.state.system.tub.tag)).round(0);
-    cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(this.tab(cup).times(marginTax), this.state.system.tub.mat), this.state.system.vox.par), this.state.system.tub.tag)).round(0);
-    cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? web3.toBigNumber(0) : cup.avail_skr_with_margin;
-    cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(this.tab(cup), this.state.system.tub.mat), this.state.system.tub.per), cup.ink) : web3.toBigNumber(0);
-    return cup;
-  }
-
-  addExtraCupData = cup => {
-    cup = this.calculateCupData(cup);
-    return new Promise((resolve, reject) => {
-      this.tubObj.safe['bytes32'].call(toBytes32(cup.id), (e, safe) => {
-        if (!e) {
-          cup.safe = safe;
-          resolve(cup);
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  reloadCupData = id => {
-    Promise.resolve(this.getCup(id).then(cup => {
-      this.setState((prevState, props) => {
-        const system = {...prevState.system};
-        const tub = {...system.tub};
-        const cups = {...tub.cups};
-        cups[id] = {...cup};
-        tub.cups = cups;
-        system.tub = tub;
-        return {system};
-      }, () => {
-        if (settings.chain[this.state.network.network].service) {
-          Promise.resolve(this.getFromService('cupHistoryActions', {cupi: id}, {timestamp:'asc'})).then(response => {
-            this.setState((prevState, props) => {
-              const system = {...prevState.system};
-              const tub = {...system.tub};
-              const cups = {...tub.cups};
-              cups[id].history = response.results
-              tub.cups = cups;
-              system.tub = tub;
-              return {system};
-            });
-          }).catch(error => {
-            // this.setState({});
-          });
-        }
-      });
-    }));
-  }
-
-  getFromService = (service, conditions = {}, sort = {}, limit = null) => {
-    const p = new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      let conditionsString = '';
-      let sortString = '';
-      Object.keys(conditions).map(key => {
-        conditionsString += `${key}:${conditions[key]}`;
-        conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
-        return false;
-      });
-      conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
-      Object.keys(sort).map(key => {
-        sortString += `${key}:${sort[key]}`;
-        sortString += Object.keys(sort).pop() !== key ? '&' : '';
-        return false;
-      });
-      sortString = sortString !== '' ? `/sort=${sortString}` : '';
-      const url = `${settings.chain[this.state.network.network].service}${settings.chain[this.state.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}${limit ? `/limit=${limit}` : ''}`;
-      xhr.open('GET', url, true);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          resolve(response);
-        } else if (xhr.readyState === 4 && xhr.status !== 200) {
-          reject(xhr.status);
-        }
-      }
-      xhr.send();
-    });
-    return p;
   }
 
   setFiltersTub = () => {
@@ -948,31 +366,31 @@ class App extends Component {
       'bite(bytes32)',
       'shut(bytes32)',
       'give(bytes32,address)',
-    ].map(v => this.methodSig(v));
+    ].map(v => methodSig(v));
 
-    this.tubObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+    Blockchain.objects.tub.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.state.system.tub.cups[r.args.foo] !== 'undefined') {
           this.reloadCupData(parseInt(r.args.foo, 16));
-        } else if (r.args.sig === this.methodSig('mold(bytes32,uint256)')) {
-          const ray = ['axe', 'mat', 'tax', 'fee'].indexOf(web3.toAscii(r.args.foo).substring(0,3)) !== -1;
-          const callback = ['mat'].indexOf(web3.toAscii(r.args.foo).substring(0,3)) !== -1 ? this.calculateSafetyAndDeficit: () => {};
-          this.getParameterFromTub(web3.toAscii(r.args.foo).substring(0,3), ray, callback);
-        } else if (r.args.sig === this.methodSig('cage(uint256,uint256)')) {
+        } else if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
+          const ray = ['axe', 'mat', 'tax', 'fee'].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1;
+          const callback = ['mat'].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1 ? this.calculateSafetyAndDeficit: () => {};
+          this.getParameterFromTub(toAscii(r.args.foo).substring(0,3), ray, callback);
+        } else if (r.args.sig === methodSig('cage(uint256,uint256)')) {
           this.getParameterFromTub('off');
           this.getParameterFromTub('fit');
           this.getParameterFromTap('fix', true);
-        } else if (r.args.sig === this.methodSig('flow()')) {
+        } else if (r.args.sig === methodSig('flow()')) {
           this.getParameterFromTub('out');
         }
-        if (r.args.sig === this.methodSig('drip()') ||
-            r.args.sig === this.methodSig('chi()') ||
-            r.args.sig === this.methodSig('rhi()') ||
-            r.args.sig === this.methodSig('draw(bytes32,uint256)') ||
-            r.args.sig === this.methodSig('wipe(bytes32,uint256)') ||
-            r.args.sig === this.methodSig('shut(bytes32)') ||
-            (r.args.sig === this.methodSig('mold(bytes32,uint256)') && web3.toAscii(r.args.foo).substring(0,3) === 'tax')) {
+        if (r.args.sig === methodSig('drip()') ||
+            r.args.sig === methodSig('chi()') ||
+            r.args.sig === methodSig('rhi()') ||
+            r.args.sig === methodSig('draw(bytes32,uint256)') ||
+            r.args.sig === methodSig('wipe(bytes32,uint256)') ||
+            r.args.sig === methodSig('shut(bytes32)') ||
+            (r.args.sig === methodSig('mold(bytes32,uint256)') && toAscii(r.args.foo).substring(0,3) === 'tax')) {
           this.getParameterFromTub('chi', true);
           this.getParameterFromTub('rhi', true);
           this.loadEraRho();
@@ -982,10 +400,10 @@ class App extends Component {
   }
 
   setFiltersTap = () => {
-    this.tapObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+    Blockchain.objects.tap.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
-        if (r.args.sig === this.methodSig('mold(bytes32,uint256)')) {
+        if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
           this.getParameterFromTap('gap', false, this.getBoomBustValues());
         }
       }
@@ -993,10 +411,10 @@ class App extends Component {
   }
 
   setFiltersVox = () => {
-    this.voxObj.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+    Blockchain.objects.vox.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.logTransactionConfirmed(r.transactionHash);
-        if (r.args.sig === this.methodSig('mold(bytes32,uint256)')) {
+        if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
           this.getParameterFromVox('way', true);
         }
       }
@@ -1004,7 +422,7 @@ class App extends Component {
   }
 
   setFilterFeedValue = obj => {
-    this.tubObj[obj].call((e, r) => {
+    Blockchain.objects.tub[obj].call((e, r) => {
       if (!e) {
         this.setState((prevState, props) => {
           const system = {...prevState.system};
@@ -1013,14 +431,14 @@ class App extends Component {
           system[obj] = feed;
           return {system};
         }, () => {
-          window[`${obj}Obj`] = this[`${obj}Obj`] = this.loadObject(dsvalue.abi, r);
+          Blockchain.loadObject('dsvalue', r, obj);
           this.getValFromFeed(obj);
 
-          this[`${obj}Obj`].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+          Blockchain.objects[obj].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
             if (!e) {
               if (
-                r.args.sig === this.methodSig('poke(bytes32)') ||
-                r.args.sig === this.methodSig('poke()')
+                r.args.sig === methodSig('poke(bytes32)') ||
+                r.args.sig === methodSig('poke()')
               ) {
                 this.getValFromFeed(obj);
                 if (obj === 'pip') {
@@ -1029,81 +447,6 @@ class App extends Component {
               }
             }
           });
-        });
-      }
-    })
-  }
-
-  getDataFromToken = token => {
-    this.getTotalSupply(token);
-
-    if (token !== 'sin' && web3.isAddress(this.state.network.defaultAccount)) {
-      this.getBalanceOf(token, this.state.network.defaultAccount, 'myBalance');
-    }
-    if (token === 'gem' || token === 'skr' || token === 'sin') {
-      this.getBalanceOf(token, this.state.system.tub.address, 'tubBalance');
-    }
-    if (token === 'gem' || token === 'skr' || token === 'dai' || token === 'sin') {
-      this.getBalanceOf(token, this.state.system.tap.address, 'tapBalance');
-      this.getBoomBustValues();
-    }
-    if (token === 'gem' || token === 'skr') {
-      this.getParameterFromTub('per', true);
-    }
-    if (token === 'gem' || token === 'skr' || token === 'dai' || token === 'gov') {
-      this.getApproval(token, 'tub');
-      if (token !== 'gov') {
-        this.getApproval(token, 'tap');
-      }
-    }
-    if (token === 'gov') {
-      this.getBalanceOf(token, this.state.system.pit.address, 'pitBalance');
-    }
-  }
-
-  getApproval = (token, dst) => {
-    Promise.resolve(this.allowance(token, dst)).then(r => {
-      this.setState((prevState, props) => {
-        const system = {...prevState.system};
-        const tok = {...system[token]};
-        tok[`${dst}Approved`] = r.eq(web3.toBigNumber(2).pow(256).minus(1));
-        system[token] = tok;
-        return {system};
-      });
-    }, () => {});
-  }
-
-  getTotalSupply = name => {
-    this[`${name}Obj`].totalSupply.call((e, r) => {
-      if (!e) {
-        this.setState((prevState, props) => {
-          const system = {...prevState.system};
-          const tok = {...system[name]};
-          tok.totalSupply = r;
-          system[name] = tok;
-          return {system};
-        }, () => {
-          if (name === 'sin') {
-            this.calculateSafetyAndDeficit();
-          }
-        });
-      }
-    })
-  }
-
-  getBalanceOf = (name, address, field) => {
-    this[`${name}Obj`].balanceOf.call(address, (e, r) => {
-      if (!e) {
-        this.setState((prevState, props) => {
-          const system = {...prevState.system};
-          const tok = {...system[name]};
-          tok[field] = r;
-          system[name] = tok;
-          return {system};
-        }, () => {
-          if ((name === 'skr' || name === 'dai') && field === 'tubBalance') {
-            this.calculateSafetyAndDeficit();
-          }
         });
       }
     })
@@ -1132,9 +475,9 @@ class App extends Component {
     this.getAccountBalance();
     if (settings.chain[this.state.network.network].service) {
       if (settings.chain[this.state.network.network].chart) {
-        this.getPricesFromService();
+        // this.getPricesFromService();
       }
-      this.getStats();
+      // this.getStats();
     }
   }
 
@@ -1159,7 +502,7 @@ class App extends Component {
 
   getParameterFromTub = (field, ray = false, callback = false) => {
     const p = new Promise((resolve, reject) => {
-      this.tubObj[field].call((e, value) => {
+      Blockchain.objects.tub[field].call((e, value) => {
         if (!e) {
           this.setState((prevState, props) => {
             const system = {...prevState.system};
@@ -1212,7 +555,7 @@ class App extends Component {
 
   getParameterFromTap = (field, ray = false) => {
     const p = new Promise((resolve, reject) => {
-      this.tapObj[field].call((e, value) => {
+      Blockchain.objects.tap[field].call((e, value) => {
         if (!e) {
           this.setState((prevState, props) => {
             const system = {...prevState.system};
@@ -1233,7 +576,7 @@ class App extends Component {
 
   getParameterFromVox = (field, ray = false) => {
     const p = new Promise((resolve, reject) => {
-      this.voxObj[field].call((e, value) => {
+      Blockchain.objects.vox[field].call((e, value) => {
         if (!e) {
           this.setState((prevState, props) => {
             const system = {...prevState.system};
@@ -1254,12 +597,12 @@ class App extends Component {
 
   getValFromFeed = (obj) => {
     const p = new Promise((resolve, reject) => {
-      this[`${obj}Obj`].peek.call((e, r) => {
+      Blockchain.objects[obj].peek.call((e, r) => {
         if (!e) {
           this.setState((prevState, props) => {
             const system = {...prevState.system};
             const feed = {...system[obj]};
-            feed.val = web3.toBigNumber(r[1] ? parseInt(r[0], 16) : -2);
+            feed.val = toBigNumber(r[1] ? parseInt(r[0], 16) : -2);
             system[obj] = feed;
             return {system};
           }, () => {
@@ -1278,30 +621,30 @@ class App extends Component {
 
   getBoomBustValues = () => {
     if (this.state.system.dai.tapBalance.gte(0)
-        //&& this.state.system.sin.issuerFee.gte(0)
-        && this.state.system.sin.tapBalance.gte(0)
-        && this.state.system.vox.par.gte(0)
-        && this.state.system.tub.tag.gte(0)
-        && this.state.system.tap.gap.gte(0)
-        && this.state.system.pip.val.gte(0)
-        && this.state.system.skr.tapBalance.gte(0)
-        && this.state.system.sin.tubBalance.gte(0)
-        && this.state.system.tub.tax.gte(0)
-        && this.state.system.skr.tapBalance.gte(0)
-        && this.state.system.skr.totalSupply.gte(0)
-        && this.state.system.gem.tubBalance.gte(0)) {
+    //&& this.state.system.sin.issuerFee.gte(0)
+    && this.state.system.sin.tapBalance.gte(0)
+    && this.state.system.vox.par.gte(0)
+    && this.state.system.tub.tag.gte(0)
+    && this.state.system.tap.gap.gte(0)
+    && this.state.system.pip.val.gte(0)
+    && this.state.system.skr.tapBalance.gte(0)
+    && this.state.system.sin.tubBalance.gte(0)
+    && this.state.system.tub.tax.gte(0)
+    && this.state.system.skr.tapBalance.gte(0)
+    && this.state.system.skr.totalSupply.gte(0)
+    && this.state.system.gem.tubBalance.gte(0)) {
       this.setState((prevState, props) => {
         const system = {...prevState.system};
         const tub = {...system.tub};
 
         // const dif = system.dai.tapBalance.add(system.sin.issuerFee).minus(system.sin.tapBalance); bust & boom don't execute drip anymore so we do not need to do the estimation
         const dif = system.dai.tapBalance.minus(system.sin.tapBalance);
-        tub.avail_boom_dai = tub.avail_boom_skr = web3.toBigNumber(0);
-        tub.avail_bust_dai = tub.avail_bust_skr = web3.toBigNumber(0);
+        tub.avail_boom_dai = tub.avail_boom_skr = toBigNumber(0);
+        tub.avail_bust_dai = tub.avail_bust_skr = toBigNumber(0);
 
         // if higher or equal, it means vox.par is static or increases over the time
         // if lower, it means it decreases over the time, so we calculate a future par (in 10 minutes) to reduce risk of tx failures
-        const futurePar = system.vox.way.gte(WAD) ? system.vox.par : system.vox.par.times(web3.fromWei(system.vox.way).pow(10*60));
+        const futurePar = system.vox.way.gte(WAD) ? system.vox.par : system.vox.par.times(fromWei(system.vox.way).pow(10*60));
 
         if (dif.gt(0)) {
           // We can boom
@@ -1313,9 +656,9 @@ class App extends Component {
           // We can bust
 
           // This is a margin we need to take into account as bust quantity goes down per second
-          // const futureFee = system.sin.tubBalance.times(web3.fromWei(tub.tax).pow(120)).minus(system.sin.tubBalance).round(0); No Drip anymore!!!
+          // const futureFee = system.sin.tubBalance.times(fromWei(tub.tax).pow(120)).minus(system.sin.tubBalance).round(0); No Drip anymore!!!
           // const daiNeeded = dif.abs().minus(futureFee);
-          const daiNeeded = dif.gte(0) ? web3.toBigNumber(0) : dif.abs();
+          const daiNeeded = dif.gte(0) ? toBigNumber(0) : dif.abs();
           const equivalentSKR = wdiv(wdiv(wmul(daiNeeded, futurePar), system.tub.tag), system.tap.gap);
 
           if (system.skr.tapBalance.gte(equivalentSKR)) {
@@ -1333,145 +676,6 @@ class App extends Component {
         return {system};
       });
     }
-  }
-
-  calculateCupChart = () => {
-    // const cupId = this.state.system.tub.cupId ? this.state.system.tub.cupId : Object.keys(this.state.system.tub.cups)[0];
-    // if (this.state.system.tub.cups[cupId].history.length > 0 && typeof this.state.system.chartData.prices !== 'undefined') {
-    //   let prices = Object.keys(this.state.system.chartData.prices).map(key => this.state.system.chartData.prices[key]);
-
-    //   this.state.system.tub.cups[cupId].history.forEach(registry => {
-    //     if (['lock', 'free', 'draw', 'wipe', 'shut'].indexOf(registry.action) !== -1) {
-    //       prices.push({timestamp: registry.timestamp, type: registry.action, value: registry.param})
-    //     }
-    //   });
-    //   prices = prices.sort((a, b) => a.timestamp - b.timestamp);
-
-    //   let lastETHUSD = web3.toBigNumber(0);
-    //   let lastDAIUSD = web3.toBigNumber(1);
-    //   let lastSKRETH = web3.toBigNumber(1);
-    //   const cupPrices = [];
-    //   let lastCollateral = web3.toBigNumber(0);
-    //   let lastDebt = web3.toBigNumber(0);
-    //   let highestValue = 0;
-    //   prices.forEach(price => {
-    //     switch (price.type) {
-    //       case 'ethusd':
-    //         lastETHUSD = web3.toBigNumber(price.value / 10**18);
-    //         break;
-    //       case 'daiusd':
-    //         lastDAIUSD = web3.toBigNumber(price.value / 10**18);
-    //         break;
-    //       case 'skreth':
-    //         lastSKRETH = web3.toBigNumber(price.value / 10**18);
-    //         break;
-    //       case 'lock':
-    //         lastCollateral = lastCollateral.add(price.value);
-    //         break;
-    //       case 'free':
-    //         lastCollateral = lastCollateral.minus(price.value);
-    //         break;
-    //       case 'draw':
-    //         lastDebt = lastDebt.add(price.value);
-    //         break;
-    //       case 'wipe':
-    //         lastDebt = lastDebt.minus(price.value);
-    //         break;
-    //       case 'shut':
-    //         lastCollateral = web3.toBigNumber(0);
-    //         lastDebt = web3.toBigNumber(0);
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //     if (price.timestamp >= this.state.system.chartData.timeLimit) {
-    //       cupPrices.push({
-    //         date: new Date(price.timestamp * 1000),
-    //         ethusd: lastETHUSD.toNumber(),
-    //         skreth: lastSKRETH.toNumber(),
-    //         daiusd: lastDAIUSD.toNumber(),
-    //         collateral: web3.fromWei(lastCollateral.times(lastSKRETH).times(lastETHUSD)).toNumber(),
-    //         debt: web3.fromWei(lastDebt.times(lastDAIUSD)).toNumber(),
-    //         risk: web3.fromWei(lastDebt.times(lastDAIUSD).times(1.5)).toNumber()
-    //       });
-    //       highestValue = cupPrices[cupPrices.length - 1].collateral > highestValue ? cupPrices[cupPrices.length - 1].collateral : highestValue;
-    //       highestValue = cupPrices[cupPrices.length - 1].risk > highestValue ? cupPrices[cupPrices.length - 1].risk : highestValue;
-    //     }
-    //   });
-    //   this.setState((prevState, props) => {
-    //     const system = {...prevState.system};
-    //     const chartData = {...system.chartData};
-    //     chartData.cupPrices = cupPrices;
-    //     chartData.highestValue = highestValue;
-    //     system.chartData = chartData;
-    //     return {system};
-    //   });
-    // }
-  }
-
-  getPricesFromService = () => {
-    const timeLimit = parseInt(((new Date()).setHours(0,0,0) - 10*24*60*60*1000) / 1000, 10);
-    const promises = [];
-    // ETH/USD
-    promises.push(this.getFromService('pips', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
-    promises.push(this.getFromService('pips', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
-    // DAI/USD
-    promises.push(this.getFromService('ways', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
-    promises.push(this.getFromService('ways', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
-    // PETH/ETH
-    promises.push(this.getFromService('pers', {'timestamp.lt': timeLimit}, {'timestamp': 'asc'}, 1));
-    promises.push(this.getFromService('pers', {'timestamp.gte': timeLimit}, {'timestamp': 'asc'}));
-
-    Promise.all(promises).then(r => {
-      if (r[0] && r[1] && r[2] && r[3] && r[4] && r[5]) {
-        const prices = r[0].results.map(val => { val.type = "ethusd"; return val; })
-                       .concat(r[1].results.map(val => { val.type = "ethusd"; return val; }))
-                       .concat(r[2].results.map(val => { val.type = "daiusd"; return val; }))
-                       .concat(r[3].results.map(val => { val.type = "daiusd"; return val; }))
-                       .concat(r[4].results.map(val => { val.type = "skreth"; return val; }))
-                       .concat(r[5].results.map(val => { val.type = "skreth"; return val; }))
-                       .sort((a, b) => a.timestamp - b.timestamp);
-        this.setState((prevState, props) => {
-          const system = {...prevState.system};
-          const chartData = {...system.chartData};
-          chartData.prices = prices;
-          chartData.timeLimit = timeLimit;
-          system.chartData = chartData;
-          return {system};
-        }, () => {
-          this.calculateCupChart();
-        });
-      }
-    }).catch(error => {
-    });
-  }
-
-  getStats = () => {
-    Promise.resolve(this.getFromService('cupStats')).then(response => {
-      this.setState((prevState, props) => {
-        const system = {...prevState.system};
-        system.stats = {error: false, results: response.results};
-        return {system};
-      });
-    }).catch(error => {
-      this.setState((prevState, props) => {
-        const system = {...prevState.system};
-        system.stats = {error: true};
-        return {system};
-      });
-    });
-  }
-
-  tab = cup => {
-    return wmul(cup.art, this.state.system.tub.chi).round(0);
-  }
-
-  rap = cup => {
-    return wmul(cup.ire, this.state.system.tub.rhi).minus(this.tab(cup)).round(0);
-  }
-
-  methodSig = method => {
-    return web3.sha3(method).substring(0, 10)
   }
 
   // Dialog
@@ -1524,349 +728,6 @@ class App extends Component {
     });
   }
   //
-
-  // Transactions
-  checkPendingTransactions = () => {
-    const transactions = {...this.state.transactions};
-    Object.keys(transactions).map(tx => {
-      if (transactions[tx].pending) {
-        web3.eth.getTransactionReceipt(tx, (e, r) => {
-          if (!e && r !== null) {
-            if (r.logs.length === 0) {
-              this.logTransactionFailed(tx);
-            } else if (r.blockNumber)  {
-              this.logTransactionConfirmed(tx);
-            }
-          }
-        });
-      }
-      return false;
-    });
-  }
-
-  logRequestTransaction = (id, title) => {
-    const msgTemp = 'Waiting for transaction signature...';
-    this.refs.notificator.info(id, title, msgTemp, false);
-  }
-
-  logPendingTransaction = (id, tx, title, callbacks = []) => {
-    const msgTemp = 'Transaction TX was created. Waiting for confirmation...';
-    const transactions = {...this.state.transactions};
-    transactions[tx] = {pending: true, title, callbacks}
-    this.setState({transactions});
-    console.log(msgTemp.replace('TX', tx));
-    this.refs.notificator.hideNotification(id);
-    this.refs.notificator.info(tx, title, etherscanTx(this.state.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
-  }
-
-  logTransactionConfirmed = tx => {
-    const msgTemp = 'Transaction TX was confirmed.';
-    const transactions = {...this.state.transactions};
-    if (transactions[tx] && transactions[tx].pending) {
-      transactions[tx].pending = false;
-      this.setState({transactions}, () => {
-        console.log(msgTemp.replace('TX', tx));
-        this.refs.notificator.hideNotification(tx);
-        this.refs.notificator.success(tx, transactions[tx].title, etherscanTx(this.state.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 4000);
-        if (typeof transactions[tx].callbacks !== 'undefined' && transactions[tx].callbacks.length > 0) {
-          transactions[tx].callbacks.forEach(callback => this.executeCallback(callback));
-        }
-      });
-    }
-  }
-
-  logTransactionFailed = tx => {
-    const msgTemp = 'Transaction TX failed.';
-    const transactions = {...this.state.transactions};
-    if (transactions[tx]) {
-      transactions[tx].pending = false;
-      this.setState({transactions});
-      this.refs.notificator.error(tx, transactions[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
-    }
-  }
-
-  logTransactionRejected = (tx, title) => {
-    const msgTemp = 'User denied transaction signature.';
-    this.refs.notificator.error(tx, title, msgTemp, 4000);
-  }
-  //
-
-  // Actions
-  executeCallback = args => {
-    const method = args.shift();
-    // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
-    const timeout = ['checkProxy', 'checkAllowance', 'lockAndDraw', 'wipeAndFree', 'lock', 'draw', 'wipe', 'free', 'shut', 'give', 'migrateCDP'].indexOf(method) !== -1 ? 0 : 3000;
-    // console.log(method, args, timeout);
-    setTimeout(() => {
-      console.log('executeCallback', method, args);
-      this[method](...args);
-    }, timeout);
-  }
-
-  allowance = (token, dstAddr) => {
-    return new Promise((resolve, reject) => {
-      if (this.state.profile.proxy) {
-        this[`${token}Obj`].allowance.call(this.state.network.defaultAccount, dstAddr, (e, r) => {
-          if (!e) {
-            resolve(r);
-          } else {
-            reject(e);
-          }
-        });
-      } else {
-        reject(true);
-      }
-    });
-  }
-
-  saiProxyAddr = () => settings.chain[this.state.network.network].proxyContracts.sai;
-
-  log = (e, tx, id, title, callbacks = []) => {
-    if (!e) {
-      this.logPendingTransaction(id, tx, title, callbacks);
-    } else {
-      console.log(e);
-      this.logTransactionRejected(id, title);
-    }
-  }
-
-  checkProxy = callbacks => {
-    if (this.state.profile.proxy) {
-      callbacks.forEach(callback => this.executeCallback(callback));
-    } else {
-      const id = Math.random();
-      const title = 'Create Proxy';
-      this.logRequestTransaction(id, title);
-      this.proxyRegistryObj.build((e, tx) => this.log(e, tx, id, title, [['setProxyAddress', callbacks]]));
-    }
-  }
-
-  checkAllowance = (token, callbacks) => {
-    console.log('checkAllowance', token);
-    let promise;
-    const valueObj = web3.toBigNumber(2).pow(256).minus(1); // uint(-1)
-
-    promise = this.allowance(token, this.state.profile.proxy);
-
-    Promise.resolve(promise).then(r => {
-      if (r.equals(valueObj)) {
-        callbacks.forEach(callback => this.executeCallback(callback));
-      } else {
-        const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
-        const id = Math.random();
-        const title = `${tokenName}: approve`;
-        this.logRequestTransaction(id, title);
-        this[`${token}Obj`].approve(this.state.profile.proxy, -1, {}, (e, tx) => this.log(e, tx, id, title, callbacks));
-      }
-    }, () => {});
-  }
-
-  open = () => {
-    const id = Math.random();
-    const title = 'Open CDP';
-    this.logRequestTransaction(id, title);
-    this.proxyObj.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${this.methodSig(`open()`)}`,
-      (e, tx) => this.log(e, tx, id, title, [['getMyCups']])
-    );  
-  }
-
-  shut = cup => {
-    const id = Math.random();
-    const title = `Shut CDP ${cup}`;
-    this.logRequestTransaction(id, title);
-    this.proxyObj.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${this.methodSig(`shut(bytes32)`)}${toBytes32(cup, false)}`,
-      (e, tx) => this.log(e, tx, id, title, [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-    );
-  }
-
-  give = (cup, newOwner) => {
-    const id = Math.random();
-    const title = `Transfer CDP ${cup} to ${newOwner}`;
-    this.logRequestTransaction(id, title);
-    this.proxyObj.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${this.methodSig(`give(bytes32, address)`)}${toBytes32(cup, false)}${addressToBytes32(newOwner, false)}`,
-      (e, tx) => this.log(e, tx, id, title, [['getMyCups']])
-    );
-  }
-
-  lockAndDraw = (cup, eth, dai) => {
-    let action = false;
-    let title = '';
-
-    if (eth.gt(0) || dai.gt(0)) {
-      if (!cup) {
-        title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-        action = `${this.methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(web3.toWei(dai), false)}`;
-      } else {
-        if (dai.equals(0)) {
-          title = `Lock ${eth.valueOf()} ETH`;
-          action = `${this.methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}`;
-        } else if (eth.equals(0)) {
-          title = `Draw ${dai.valueOf()} DAI`;
-          action = `${this.methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
-        } else {
-          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          action = `${this.methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
-        }
-      }
-
-      const id = Math.random();
-      this.logRequestTransaction(id, title);
-      this.proxyObj.execute['address,bytes'](
-        this.saiProxyAddr(),
-        action,
-        {value: web3.toWei(eth)},
-        (e, tx) => this.log(e, tx, id, title, cup ? [['reloadCupData', cup], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']] : [['getMyCups'], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-      );
-    }
-  }
-
-  wipeAndFree = (cup, eth, dai) => {
-    let action = false;
-    let title = '';
-    if (eth.gt(0) || dai.gt(0)) {
-      if (dai.equals(0)) {
-        title = `Withdraw ${eth.valueOf()} ETH`;
-        action = `${this.methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(eth), false)}`;
-      } else if (eth.equals(0)) {
-        title = `Wipe ${dai.valueOf()} DAI`;
-        action = `${this.methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(dai), false)}`;
-      } else {
-        title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-        action = `${this.methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.state.system.tub.address, false)}${toBytes32(cup, false)}${toBytes32(web3.toWei(eth), false)}${toBytes32(web3.toWei(dai), false)}`;
-      }
-      const id = Math.random();
-      this.logRequestTransaction(id, title);
-      this.proxyObj.execute['address,bytes'](
-        this.saiProxyAddr(),
-        action,
-        (e, tx) => this.log(e, tx, id, title, [['reloadCupData', cup], ['getAccountBalance'], ['setUpToken', 'sai'], ['setUpToken', 'sin']])
-      );
-    }
-  }
-
-  migrateCDP = async cup => {
-    // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
-    const proxy = this.state.profile.proxy;
-    if (proxy && web3.isAddress(proxy) && await this.getProxyOwner(proxy) === this.state.network.defaultAccount) {
-      const id = Math.random();
-      const title = `Migrate CDP ${cup}`;
-      this.logRequestTransaction(id, title);
-      this.tubObj.give(toBytes32(cup), proxy, (e, tx) => this.log(e, tx, id, title, [['getMyCups'], ['getMyLegacyCups']]));
-    }
-  }
-
-  executeAction = value => {
-    let callbacks = [];
-    let error = false;
-    switch (this.state.dialog.method) {
-      case 'open':
-        callbacks = [
-                      ['open']
-                    ];
-        break;
-      case 'lock':
-        callbacks = [
-                      ['lockAndDraw', this.state.dialog.cup, value, web3.toBigNumber(0)]
-                    ];
-        break;
-      case 'draw':
-        callbacks = [
-                      ['lockAndDraw', this.state.dialog.cup, web3.toBigNumber(0), value]
-                    ];
-        break;
-      case 'wipe':
-        callbacks = [
-                      ['checkAllowance', 'gov',
-                        [
-                          ['checkAllowance', 'dai',
-                            [
-                              ['wipeAndFree', this.state.dialog.cup, web3.toBigNumber(0), value]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ];
-        break;
-      case 'free':
-        callbacks = [
-                      ['wipeAndFree', this.state.dialog.cup, value, web3.toBigNumber(0)]
-                    ];
-        break;
-      case 'shut':
-        callbacks = [
-                      ['checkAllowance', 'gov',
-                        [
-                          ['checkAllowance', 'dai',
-                            [
-                              ['shut', this.state.dialog.cup]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ];
-        break;
-      case 'migrate':
-        callbacks = [
-                      ['checkProxy',
-                        [
-                          ['migrateCDP', this.state.dialog.cup]
-                        ]
-                      ]
-                    ];
-        break;
-      default:
-        break;
-    }
-
-    if (error) {
-      const dialog = {...this.state.dialog}
-      dialog.error = error;
-      this.setState({dialog});
-    } else {
-      this.setState({dialog: {show: false}}, () => {
-        this.checkProxy(callbacks);
-      });
-    }
-  }
-
-  transferToken = (token, to, amount) => {
-    const tokenName = token.replace('gov', 'mkr').toUpperCase();
-    const id = Math.random();
-    const title = `${tokenName}: transfer ${to} ${amount}`;
-    this.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.logPendingTransaction(id, tx, title, [['setUpToken', token]]);
-      } else {
-        console.log(e);
-        this.logTransactionRejected(id, title);
-      }
-    }
-    this[`${token}Obj`].transfer(to, web3.toWei(amount), {}, log);
-  }
-
-  changeCup = e => {
-    e.preventDefault();
-    let cupId = e.target.getAttribute('data-cupId');
-    this.setState((prevState, props) => {
-      const system = {...prevState.system};
-      const tub = {...system.tub};
-      const chartData = {...system.chartData};
-      tub.cupId = cupId;
-      chartData.cupPrices = [];
-      system.tub = tub;
-      system.chartData = chartData;
-      return {system};
-    }, () => {
-      this.calculateCupChart();
-    });
-  }
 
   changeTab = e => {
     e.preventDefault();
@@ -2012,7 +873,7 @@ class App extends Component {
             }
           </aside>
         </div>
-        <Dialog system={ this.state.system } profile={ this.state.profile } dialog={ this.state.dialog } executeAction={ this.executeAction } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && web3.isAddress(this.state.profile.proxy) } calculateCupData={ this.calculateCupData } />
+        <Dialog system={ this.state.system } profile={ this.state.profile } dialog={ this.state.dialog } executeAction={ this.executeAction } handleCloseDialog={ this.handleCloseDialog } tab={ this.tab } rap={ this.rap } proxyEnabled={ this.state.profile.mode === 'proxy' && isAddress(this.state.profile.proxy) } calculateCupData={ this.calculateCupData } />
         <TermsModal modal={ this.state.termsModal } markAsAccepted={ this.markAsAccepted } />
         <VideoModal modal={ this.state.videoModal } termsModal={ this.state.termsModal } handleCloseVideoModal={ this.handleCloseVideoModal } />
         <TerminologyModal modal={ this.state.terminologyModal } handleCloseTerminologyModal={ this.handleCloseTerminologyModal } />
