@@ -1,8 +1,8 @@
 {
-  "name": "dai-dashboard",
+  "name": "simple-dai-portal",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dai-dashboard.makerdao.com",
+  "homepage": "https://dai.makerdao.com",
   "dependencies": {
     "create-react-class": "^15.5.3",
     "gulp-gh-pages": "^0.5.4",
