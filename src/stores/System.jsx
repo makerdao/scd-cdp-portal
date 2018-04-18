@@ -1,7 +1,7 @@
-import { observable, decorate } from "mobx"
+import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
-import { toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress } from '../helpers';
+import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from '../helpers';
 
 const settings = require('../settings');
 
@@ -22,10 +22,10 @@ class SystemStore {
   pep = null;
 
   constructor() {
-    this.getInitialState();
+    this.clear();
   }
 
-  getInitialState = () => {
+  clear = () => {
     this.tub = {
       address: null,
       authority: null,
@@ -119,6 +119,62 @@ class SystemStore {
     };
   }
 
+  init = (top, tub, tap, vox, pit) => {
+    this.top.address = top;
+    this.tub.address = tub;
+    this.tap.address = tap;
+
+    this.vox.address = vox;
+    this.pit.address = pit;
+    
+    this.loadVariables();
+
+    if (settings.chain[this.network.network].service) {
+      if (settings.chain[this.network.network].chart) {
+        // this.getPricesFromService();
+      }
+      // this.getStats();
+    }
+
+    this.getMyCups();
+    this.getMyLegacyCups();
+
+    this.setFiltersTub();
+    this.setFiltersTap();
+    this.setFiltersVox();
+    this.setFilterFeedValue('pip');
+    this.setFilterFeedValue('pep');
+  }
+
+  loadVariables = (onlySecondDependent = false) => {
+    if (!onlySecondDependent) {
+      this.setUpToken('gem');
+      this.setUpToken('gov');
+      this.setUpToken('skr');
+      this.setUpToken('dai');
+      this.setUpToken('sin');
+      this.getParameterFromTub('authority');
+      this.getParameterFromTub('off');
+      this.getParameterFromTub('out');
+      this.getParameterFromTub('axe', true);
+      this.getParameterFromTub('mat', true, this.calculateSafetyAndDeficit);
+      this.getParameterFromTub('cap');
+      this.getParameterFromTub('fit');
+      this.getParameterFromTub('tax', true);
+      this.getParameterFromTub('fee', true);
+      this.getParameterFromTub('per', true);
+      this.getParameterFromTub('gap');
+      this.getParameterFromTub('tag', true, this.calculateSafetyAndDeficit);
+      this.getParameterFromTap('fix', true);
+      this.getParameterFromTap('gap', false, this.getBoomBustValues);
+      this.getParameterFromVox('way', true);
+    }
+    this.getParameterFromTub('chi', true);
+    this.getParameterFromTub('rhi', true);
+    this.getParameterFromVox('par', true);
+    this.loadEraRho();
+  }
+
   loadEraRho = () => {
     const promises = [
                       this.getParameterFromTub('rho'),
@@ -196,7 +252,7 @@ class SystemStore {
     return p;
   }
 
-  getValFromFeed = (obj) => {
+  getValFromFeed = obj => {
     const p = new Promise((resolve, reject) => {
       Blockchain.objects[obj].peek.call((e, r) => {
         if (!e) {
@@ -209,6 +265,94 @@ class SystemStore {
       });
     });
     return p;
+  }
+
+  setFiltersTub = () => {
+    const cupSignatures = [
+      'lock(bytes32,uint256)',
+      'free(bytes32,uint256)',
+      'draw(bytes32,uint256)',
+      'wipe(bytes32,uint256)',
+      'bite(bytes32)',
+      'shut(bytes32)',
+      'give(bytes32,address)',
+    ].map(v => methodSig(v));
+
+    Blockchain.objects.tub.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+      if (!e) {
+        this.transactions.logTransactionConfirmed(r.transactionHash);
+        if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== 'undefined') {
+          this.reloadCupData(parseInt(r.args.foo, 16));
+        } else if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
+          const ray = ['axe', 'mat', 'tax', 'fee'].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1;
+          const callback = ['mat'].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1 ? this.calculateSafetyAndDeficit: () => {};
+          this.getParameterFromTub(toAscii(r.args.foo).substring(0,3), ray, callback);
+        } else if (r.args.sig === methodSig('cage(uint256,uint256)')) {
+          this.getParameterFromTub('off');
+          this.getParameterFromTub('fit');
+          this.getParameterFromTap('fix', true);
+        } else if (r.args.sig === methodSig('flow()')) {
+          this.getParameterFromTub('out');
+        }
+        if (r.args.sig === methodSig('drip()') ||
+            r.args.sig === methodSig('chi()') ||
+            r.args.sig === methodSig('rhi()') ||
+            r.args.sig === methodSig('draw(bytes32,uint256)') ||
+            r.args.sig === methodSig('wipe(bytes32,uint256)') ||
+            r.args.sig === methodSig('shut(bytes32)') ||
+            (r.args.sig === methodSig('mold(bytes32,uint256)') && toAscii(r.args.foo).substring(0,3) === 'tax')) {
+          this.getParameterFromTub('chi', true);
+          this.getParameterFromTub('rhi', true);
+          this.loadEraRho();
+        }
+      }
+    });
+  }
+
+  setFiltersTap = () => {
+    Blockchain.objects.tap.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+      if (!e) {
+        this.transactions.logTransactionConfirmed(r.transactionHash);
+        if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
+          this.getParameterFromTap('gap', false, this.getBoomBustValues());
+        }
+      }
+    });
+  }
+
+  setFiltersVox = () => {
+    Blockchain.objects.vox.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+      if (!e) {
+        this.transactions.logTransactionConfirmed(r.transactionHash);
+        if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
+          this.getParameterFromVox('way', true);
+        }
+      }
+    });
+  }
+
+  setFilterFeedValue = obj => {
+    Blockchain.objects.tub[obj].call((e, r) => {
+      if (!e) {
+        this[obj].address = r;
+        Blockchain.loadObject('dsvalue', r, obj);
+        this.getValFromFeed(obj);
+
+        Blockchain.objects[obj].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+          if (!e) {
+            if (
+              r.args.sig === methodSig('poke(bytes32)') ||
+              r.args.sig === methodSig('poke()')
+            ) {
+              this.getValFromFeed(obj);
+              if (obj === 'pip') {
+                this.getParameterFromTub('tag', true, this.calculateSafetyAndDeficit);
+              }
+            }
+          }
+        });
+      }
+    })
   }
 
   getBoomBustValues = () => {
@@ -306,7 +450,7 @@ class SystemStore {
     return p;
   }
 
-  getCup = (id) => {
+  getCup = id => {
     return new Promise((resolve, reject) => {
       Blockchain.objects.tub.cups.call(toBytes32(id), (e, cupData) => {
         if (!e) {
@@ -337,7 +481,11 @@ class SystemStore {
     }
   }
 
-  getCups = (type) => {
+  getMyLegacyCups = () => {
+    this.getCups('legacy');
+  }
+
+  getCups = type => {
     const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
     const me = this;
     if (settings.chain[this.network.network].service) {
@@ -419,7 +567,7 @@ class SystemStore {
     });
   }
 
-  addExtraCupData = (cup) => {
+  addExtraCupData = cup => {
     cup = this.calculateCupData(cup);
     return new Promise((resolve, reject) => {
       Blockchain.objects.tub.safe['bytes32'].call(toBytes32(cup.id), (e, safe) => {
@@ -433,7 +581,7 @@ class SystemStore {
     });
   }
 
-  calculateCupData = (cup) => {
+  calculateCupData = cup => {
     cup.pro = wmul(cup.ink, this.tub.tag).round(0);
     cup.ratio = cup.pro.div(wmul(this.tab(cup), this.vox.par));
     // This is to give a window margin to get the maximum value (as 'chi' is dynamic value per second)
@@ -460,21 +608,21 @@ class SystemStore {
     }));
   }
 
-  changeCup = (e) => {
+  changeCup = e => {
     e.preventDefault();
     this.tub.cupId = e.target.getAttribute('data-cupId');
     // this.calculateCupChart();
   }
 
-  tab = (cup) => {
+  tab = cup => {
     return wmul(cup.art, this.tub.chi).round(0);
   }
   
-  rap = (cup) => {
+  rap = cup => {
     return wmul(cup.ire, this.tub.rhi).minus(this.tab(cup)).round(0);
   }
 
-  setUpToken = (token) => {
+  setUpToken = token => {
     Blockchain.objects.tub[token.replace('dai', 'sai')].call((e, r) => {
       if (!e) {
         this[token].address = r;
@@ -485,7 +633,7 @@ class SystemStore {
     })
   }
   
-  getDataFromToken = (token) => {
+  getDataFromToken = token => {
     this.getTotalSupply(token);
   
     if (token !== 'sin' && isAddress(this.network.defaultAccount)) {
@@ -506,7 +654,7 @@ class SystemStore {
     }
   }
   
-  getTotalSupply = (token) => {
+  getTotalSupply = token => {
     Blockchain.objects[token].totalSupply.call((e, r) => {
       if (!e) {
         this[token].totalSupply = r;
@@ -528,7 +676,7 @@ class SystemStore {
     })
   }
 
-  setFilterToken = (token) => {
+  setFilterToken = token => {
     const filters = ['Transfer', 'Approval'];
   
     if (token === 'gem') {
@@ -600,7 +748,7 @@ class SystemStore {
     );  
   }
   
-  shut = (cup) => {
+  shut = cup => {
     const id = Math.random();
     const title = `Shut CDP ${cup}`;
     this.transactions.logRequestTransaction(id, title);
@@ -678,7 +826,7 @@ class SystemStore {
     }
   }
   
-  migrateCDP = async (cup) => {
+  migrateCDP = async cup => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
     const proxy = this.profile.proxy;
     if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === this.network.defaultAccount) {
@@ -689,7 +837,7 @@ class SystemStore {
     }
   }
   
-  executeAction = (value) => {
+  executeAction = value => {
     let callbacks = [];
     let error = false;
     switch (this.dialog.dialog.method) {

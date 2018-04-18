@@ -46,7 +46,7 @@ class Wizard extends Component {
 
   execute = e => {
     e.preventDefault();
-    this.props.checkProxy([['lockAndDraw', false, this.state.eth, this.state.dai]]);
+    this.props.profile.checkProxy([['lockAndDraw', false, this.state.eth, this.state.dai]]);
   }
 
   render() {

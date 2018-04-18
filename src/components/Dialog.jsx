@@ -21,7 +21,7 @@ class Dialog extends React.Component {
   setMax = e => {
     e.preventDefault();
     let value = toBigNumber(0);
-    switch(this.props.dialog.method) {
+    switch(this.props.dialog.dialog.method) {
       case 'join':
         value = wdiv(this.props.system.gem.myBalance, wmul(this.props.system.tub.per, this.props.system.tub.gap));
         break;
@@ -30,14 +30,14 @@ class Dialog extends React.Component {
         value = this.props.profile.accountBalance;
         break;
       case 'free':
-        // value = this.props.system.tub.cups[this.props.dialog.cup].avail_skr_with_margin;
-        value = wmul(this.props.system.tub.cups[this.props.dialog.cup].avail_skr, this.props.system.tub.per).round(0);
+        // value = this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_skr_with_margin;
+        value = wmul(this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_skr, this.props.system.tub.per).round(0);
         break;
       // case 'draw':
-      //   value = this.props.system.tub.cups[this.props.dialog.cup].avail_dai_with_margin;
+      //   value = this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_dai_with_margin;
       //   break;
       case 'wipe':
-        value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cup]));
+        value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.dialog.cup]));
         break;
       case 'boom':
         value = this.props.system.tub.avail_boom_skr.floor();
@@ -62,21 +62,21 @@ class Dialog extends React.Component {
     return (
       <form>
         <p id="warningMessage" className="error">
-          { this.props.dialog.error }
+          { this.props.dialog.dialog.error }
         </p>
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
-          <button className="text-btn" type="submit" onClick={ this.props.handleCloseDialog }>No</button>
+          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
         </div>
       </form>
     )
   }
 
-  renderInputTextForm = (method) => {
+  renderInputTextForm = method => {
     return this.renderInputForm('text', method);
   }
 
-  renderInputNumberForm = (method) => {
+  renderInputNumberForm = method => {
     return this.renderInputForm('number', method);
   }
 
@@ -97,16 +97,16 @@ class Dialog extends React.Component {
           </span>
         }
         {
-          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.cup].art.eq(0))
+          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.dialog.cup].art.eq(0))
           ? <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
           : ''
         }
         <p id="warningMessage" className="error">
-          { this.props.dialog.error }
+          { this.props.dialog.dialog.error }
         </p>
         <br />
         <div>
-          <button className="text-btn" type="submit" onClick={ this.props.handleCloseDialog }>Cancel</button>
+          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
           <button className="text-btn text-btn-primary" type="submit">Submit</button>
         </div>
       </form>
@@ -114,7 +114,7 @@ class Dialog extends React.Component {
   }
   
   render() {
-    const dialog = this.props.dialog;
+    const dialog = this.props.dialog.dialog;
 
     let text = '';
     let renderForm = '';
@@ -141,7 +141,7 @@ class Dialog extends React.Component {
           const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
           let error = '';
           this.submitEnabled = true;
-          const cup = this.props.dialog.cup;
+          const cup = this.props.dialog.dialog.cup;
           if (this.props.profile.accountBalance.lt(valueWei)) {
             error = 'Not enough balance to lock this amount of ETH.';
             this.submitEnabled = false;
@@ -163,7 +163,7 @@ class Dialog extends React.Component {
           this.cond = (value) => {
             const valueWei = toBigNumber(toWei(value));
             const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
-            const cup = this.props.dialog.cup;
+            const cup = this.props.dialog.dialog.cup;
             let error = '';
             this.submitEnabled = true;
             if (this.props.system.tub.cups[cup].avail_skr.lt(skrValue)) {
@@ -184,7 +184,7 @@ class Dialog extends React.Component {
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = toBigNumber(toWei(value));
-          const cup = this.props.dialog.cup;
+          const cup = this.props.dialog.dialog.cup;
           let error = '';
           this.submitEnabled = true;
           if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
@@ -205,7 +205,7 @@ class Dialog extends React.Component {
         renderForm = 'renderInputNumberForm';
         this.cond = (value) => {
           const valueWei = toBigNumber(toWei(value));
-          const cup = this.props.dialog.cup;
+          const cup = this.props.dialog.dialog.cup;
           let error = '';
           this.submitEnabled = true;
           if (this.props.system.dai.myBalance.lt(valueWei)) {
@@ -253,7 +253,7 @@ class Dialog extends React.Component {
 
     return (
       <div id="dialog" className="dialog bright-style">
-        <button id="dialog-close-caller" className="close-box" onClick={ this.props.handleCloseDialog }></button>
+        <button id="dialog-close-caller" className="close-box" onClick={ this.props.dialog.handleCloseDialog }></button>
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
           <div>

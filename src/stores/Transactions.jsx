@@ -25,15 +25,15 @@ class TransactionsStore {
   
   logRequestTransaction = (id, title) => {
     const msgTemp = 'Waiting for transaction signature...';
-    this.component.refs.notificator.info(id, title, msgTemp, false);
+    this.notificator.info(id, title, msgTemp, false);
   }
   
   logPendingTransaction = (id, tx, title, callbacks = []) => {
     const msgTemp = 'Transaction TX was created. Waiting for confirmation...';
     this.registry[tx] = {pending: true, title, callbacks}
     console.log(msgTemp.replace('TX', tx));
-    this.component.refs.notificator.hideNotification(id);
-    this.component.refs.notificator.info(tx, title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
+    this.notificator.hideNotification(id);
+    this.notificator.info(tx, title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
   }
   
   logTransactionConfirmed = (tx) => {
@@ -41,8 +41,8 @@ class TransactionsStore {
     if (this.registry[tx] && this.registry[tx].pending) {
       this.registry[tx].pending = false;
       console.log(msgTemp.replace('TX', tx));
-      this.component.refs.notificator.hideNotification(tx);
-      this.component.refs.notificator.success(tx, this.registry[tx].title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 4000);
+      this.notificator.hideNotification(tx);
+      this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 4000);
       if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
       }
@@ -53,13 +53,13 @@ class TransactionsStore {
     const msgTemp = 'Transaction TX failed.';
     if (this.registry[tx]) {
       this.registry[tx].pending = false;
-      this.component.refs.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
+      this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
     }
   }
   
   logTransactionRejected = (tx, title) => {
     const msgTemp = 'User denied transaction signature.';
-    this.component.refs.notificator.error(tx, title, msgTemp, 4000);
+    this.notificator.error(tx, title, msgTemp, 4000);
   }
   
   log = (e, tx, id, title, callbacks = []) => {

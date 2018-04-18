@@ -7,7 +7,7 @@ class ProfileStore {
   accountBalance = toBigNumber(-1);
   proxy = -1;
 
-  getAccountBalance = (account) => {
+  getAccountBalance = account => {
     if (isAddress(account)) {
       Blockchain.getEthBalanceOf(account).then(r => {
         this.accountBalance = r;
@@ -15,27 +15,32 @@ class ProfileStore {
     }
   }
 
-  setProxyAddress = (address, callbacks = null) => {
+  getAndSetProxy = (address, callbacks = null) => {
     return new Promise((resolve, reject) => {
       Blockchain.getProxyAddress(address).then(proxy => {
         if (proxy) {
-          this.proxy = proxy;
-          Blockchain.loadObject('dsproxy', this.proxy, 'proxy');
-          callbacks && callbacks.forEach(callback => this.transactions.executeCallback(callback))
-          resolve(true)
+          this.setProxy(proxy);
+          callbacks && callbacks.forEach(callback => this.transactions.executeCallback(callback));
+          resolve(true);
         }
       }, () => reject(false));
     });
   }
 
-  checkProxy = (callbacks) => {
+  setProxy = proxy => {
+    this.proxy = proxy;
+    Blockchain.loadObject('dsproxy', this.proxy, 'proxy');
+    console.log('proxy', this.proxy);
+  }
+
+  checkProxy = callbacks => {
     if (this.proxy) {
       callbacks.forEach(callback => this.transactions.executeCallback(callback));
     } else {
       const id = Math.random();
       const title = 'Create Proxy';
       this.transactions.logRequestTransaction(id, title);
-      Blockchain.objects.proxyRegistry.build((e, tx) => this.transactions.log(e, tx, id, title, [['setProxyAddress', callbacks]]));
+      Blockchain.objects.proxyRegistry.build((e, tx) => this.transactions.log(e, tx, id, title, [['profile/getAndSetProxy', callbacks]]));
     }
   }
 }
