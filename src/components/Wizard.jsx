@@ -52,27 +52,32 @@ class Wizard extends Component {
   render() {
     return (
       <div>
-        <form ref={ input => this.wizardForm = input } onSubmit={ this.execute }>
-          <div>
-            <label>Amount of ETH to deposit</label>
-            <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
-          </div>
-          <div style={ {clear:'left'} }>
-            <label>Amount of DAI to generate</label>
-            <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" value={ this.state.daiText } disabled={ this.state.eth.lte(0) } onChange={ e => { this.checkValues('dai', e.target.value) } } />
-          </div>
-          <br />
-          {
-            this.state.error &&
-            <p id="warningMessage" className="error">
-              { this.state.error }
-            </p> 
-          }
-          <br />
-          <div>
-            <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Submit</button>
-          </div>
-        </form>
+        <header className="col">
+          <h1 className="typo-h1 inline-headline">Wizard</h1>
+        </header>
+        <div>
+          <form ref={ input => this.wizardForm = input } onSubmit={ this.execute }>
+            <div>
+              <label>Amount of ETH to deposit</label>
+              <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
+            </div>
+            <div style={ {clear:'left'} }>
+              <label>Amount of DAI to generate</label>
+              <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" value={ this.state.daiText } disabled={ this.state.eth.lte(0) } onChange={ e => { this.checkValues('dai', e.target.value) } } />
+            </div>
+            <br />
+            {
+              this.state.error &&
+              <p id="warningMessage" className="error">
+                { this.state.error }
+              </p> 
+            }
+            <br />
+            <div>
+              <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Submit</button>
+            </div>
+          </form>
+        </div>
       </div>
     )
   }
