@@ -12,8 +12,8 @@
     "mobx-react": "^5.0.0",
     "prop-types": "^15.5.8",
     "raf": "^3.3.0",
-    "react": "^15.6.2",
-    "react-dom": "^15.6.2",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-stockcharts": "^0.7.0-beta.12",
     "web3": "^0.20.2"
   },
