@@ -200,7 +200,7 @@ class App extends React.Component {
                         }
                         {
                           (this.state.page === 'open' || Object.keys(this.props.system.tub.cups).length === 0) &&
-                          <Wizard system={ this.props.system } />
+                          <Wizard system={ this.props.system } profile={ this.props.profile } />
                         }
                         {
                           this.state.page === 'home' && Object.keys(this.props.system.tub.cups).length >= 0 &&
