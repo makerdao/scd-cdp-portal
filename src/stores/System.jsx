@@ -706,13 +706,13 @@ class SystemStore {
       const valueObj = toBigNumber(2).pow(256).minus(1); // uint(-1)
 
       if (r.equals(valueObj)) {
-        callbacks.forEach(callback => this.executeCallback(callback));
+        callbacks.forEach(callback => this.transactions.executeCallback(callback));
       } else {
         const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
         const id = Math.random();
         const title = `${tokenName}: approve`;
         this.transactions.logRequestTransaction(id, title);
-        Blockchain.objects[token].approve(this.profile.proxy, -1, {}, (e, tx) => this.log(e, tx, id, title, callbacks));
+        Blockchain.objects[token].approve(this.profile.proxy, -1, {}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks));
       }
     }, () => {});
   }
@@ -743,19 +743,20 @@ class SystemStore {
     this.transactions.logRequestTransaction(id, title);
     Blockchain.objects.proxy.execute['address,bytes'](
       this.saiProxyAddr(),
-      `${methodSig(`open()`)}`,
+      `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`,
       (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups']])
     );  
   }
   
   shut = cup => {
+    console.log(`${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}`)
     const id = Math.random();
     const title = `Shut CDP ${cup}`;
     this.transactions.logRequestTransaction(id, title);
     Blockchain.objects.proxy.execute['address,bytes'](
       this.saiProxyAddr(),
-      `${methodSig(`shut(bytes32)`)}${toBytes32(cup, false)}`,
-      (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'sai'], ['system/setUpToken', 'sin']])
+      `${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}`,
+      (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']])
     );
   }
   
@@ -765,7 +766,7 @@ class SystemStore {
     this.transactions.logRequestTransaction(id, title);
     Blockchain.objects.proxy.execute['address,bytes'](
       this.saiProxyAddr(),
-      `${methodSig(`give(bytes32, address)`)}${toBytes32(cup, false)}${addressToBytes32(newOwner, false)}`,
+      `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${addressToBytes32(newOwner, false)}`,
       (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups']])
     );
   }
@@ -821,7 +822,7 @@ class SystemStore {
       Blockchain.objects.proxy.execute['address,bytes'](
         this.saiProxyAddr(),
         action,
-        (e, tx) => this.transactions.log(e, tx, id, title, [['system/reloadCupData', cup], ['profile/getAccountBalance'], ['system/setUpToken', 'sai'], ['system/setUpToken', 'sin']])
+        (e, tx) => this.transactions.log(e, tx, id, title, [['system/reloadCupData', cup], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']])
       );
     }
   }

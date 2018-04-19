@@ -199,11 +199,11 @@ class App extends React.Component {
                           <Help />
                         }
                         {
-                          (this.state.page === 'open' || Object.keys(this.props.system.tub.cups).length === 0) &&
+                          (this.state.page !== 'settings' && this.state.page !== 'help' && /*this.state.page === 'open' || */Object.keys(this.props.system.tub.cups).length === 0) &&
                           <Wizard system={ this.props.system } profile={ this.props.profile } />
                         }
                         {
-                          this.state.page === 'home' && Object.keys(this.props.system.tub.cups).length >= 0 &&
+                          this.state.page !== 'settings' && this.state.page !== 'help' && /*this.state.page === 'home' && */Object.keys(this.props.system.tub.cups).length >= 0 &&
                           <Dashboard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
                         }
                       </main>
