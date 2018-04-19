@@ -478,6 +478,8 @@ class SystemStore {
     if (this.profile.proxy) {
       this.tub.cupsLoading = true;
       this.getCups('new');
+    } else {
+      this.tub.cupsLoading = false;
     }
   }
 

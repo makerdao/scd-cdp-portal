@@ -95,7 +95,7 @@ class App extends React.Component {
             this.props.profile.getAccountBalance(this.props.network.defaultAccount);
 
             // Set profile proxy and system contracts
-            if (r[2] && isAddress(r[1])) { this.props.profile.setProxy(r[2]) };
+            this.props.profile.setProxy(r[2])
             this.props.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
 
             // Intervals
