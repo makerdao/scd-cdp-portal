@@ -23,7 +23,7 @@
       "proxyRegistry": "0x383a7fc29edde64aec7f776e2517ec8819e147f1",
       "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
       "proxyContracts": {
-        "sai": "0x73672b34f1add334c5e242a0f8ade597ff5db0c9"
+        "sai": "0x0808e90dbdc7843a89ed7eebcbd06ddfd080a962"
       }
     },
     "main": {
