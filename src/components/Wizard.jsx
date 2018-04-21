@@ -8,7 +8,7 @@ class Wizard extends Component {
       step: 1,
       eth: toBigNumber(0),
       ethText: "",
-      peth: toBigNumber(0),
+      skr: toBigNumber(0),
       dai: toBigNumber(0),
       daiText: "",
       maxDaiAvail: null,
@@ -28,7 +28,7 @@ class Wizard extends Component {
     const state = {...this.state};
     state[token] = toWei(amountBN);
     state[`${token}Text`] = amount;
-    state.peth = toBigNumber(0);
+    state.skr = toBigNumber(0);
     state.maxDaiAvail = null;
     state.liqPrice = null;
     state.ratio = null;
@@ -36,8 +36,8 @@ class Wizard extends Component {
     state.warning = "";
 
     if (state.eth.gt(0)) {
-      state.peth = wdiv(state.eth, this.props.system.tub.per);
-      state.maxDaiAvail = wdiv(wmul(state.peth, this.props.system.tub.tag), wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0).minus(1);
+      state.skr = wdiv(state.eth, this.props.system.tub.per);
+      state.maxDaiAvail = wdiv(wmul(state.skr, this.props.system.tub.tag), wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0).minus(1);
     }
 
     if (state.dai.gt(0)) {
@@ -60,8 +60,8 @@ class Wizard extends Component {
           } else if (state.dai.gt(availDai)) {
             state.error = 'ETH to be deposited is not enough to draw this amount of DAI.';
           } else {
-            state.liqPrice = wdiv(wdiv(wmul(state.dai, this.props.system.tub.mat), this.props.system.tub.per), state.eth);
-            state.ratio = wdiv(wmul(wdiv(state.eth, this.props.system.tub.per), this.props.system.tub.tag).round(0), (wmul(state.dai, this.props.system.vox.par)));
+            state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
+            state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
             if (state.ratio.lt(WAD.times(2))) {
               state.warning = 'The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.';
             }
@@ -113,7 +113,7 @@ class Wizard extends Component {
                       <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
                       <span>ETH</span>
                     </div>
-                    <div style={ {clear: 'left'} }>{printNumber(this.state.peth)} PETH</div>
+                    <div style={ {clear: 'left'} }>{printNumber(this.state.skr)} PETH</div>
                     {
                       this.state.minETHReq &&
                       <div style={ {clear: 'left'} }>Min. ETH required: { printNumber(this.state.minETHReq) } ETH</div>

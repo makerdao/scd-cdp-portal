@@ -418,6 +418,14 @@ class SystemStore {
     }
   }
 
+  calculateLiquidationPrice = (skr, dai) => {
+    return wdiv(wmul(wmul(dai, this.vox.par), this.tub.mat), wmul(skr, this.tub.per));
+  }
+
+  calculateRatio = (skr, dai) => {
+    return wdiv(wmul(skr, this.tub.tag).round(0), wmul(dai, this.vox.par));
+  }
+
   getFromService = (service, conditions = {}, sort = {}, limit = null) => {
     const p = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();

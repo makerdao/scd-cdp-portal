@@ -1,12 +1,16 @@
 import React from 'react';
 import {observer} from 'mobx-react';
-import {wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min} from '../helpers';
+import {wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from '../helpers';
 
 class Dialog extends React.Component {
   constructor() {
     super();
     this.state = {
-      message: ''
+      skr: null,
+      liqPrice: null,
+      ratio: null,
+      warning: null,
+      error: null
     }
   }
 
@@ -62,14 +66,25 @@ class Dialog extends React.Component {
     return (
       <form>
         <p id="warningMessage" className="error">
-          { this.props.dialog.dialog.error }
+          { this.state.error }
         </p>
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
-          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
+          <button className="text-btn" type="submit" onClick={ this.handleCloseDialog }>No</button>
         </div>
       </form>
     )
+  }
+
+  handleCloseDialog = e => {
+    this.setState({
+                    skr: null,
+                    liqPrice: null,
+                    ratio: null,
+                    warning: null,
+                    error: null
+                  });
+    this.props.dialog.handleCloseDialog(e);
   }
 
   renderInputTextForm = method => {
@@ -97,16 +112,31 @@ class Dialog extends React.Component {
           </span>
         }
         {
-          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.dialog.cup].art.eq(0))
-          ? <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
-          : ''
+          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.dialog.cup].art.eq(0)) &&
+          <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
+        }
+        {
+          type === 'number' && (method === 'lock' || method === 'free') &&
+          <span style={ {clear: 'left', display: 'block'} }>{ printNumber(this.state.skr) } PETH</span>
+        }
+        {
+          type === 'number' && (method === 'lock' || method === 'free') &&
+          <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice ? printNumber(this.state.liqPrice) : '--' } USD</span>
+        }
+        {
+          type === 'number' && (method === 'lock' || method === 'free') &&
+          <span style={ {clear: 'left', display: 'block'} }>Current price information (ETH/USD)  { printNumber(this.props.system.pip.val) } USD</span>
+        }
+        {
+          type === 'number' && (method === 'lock' || method === 'free') &&
+          <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
         }
         <p id="warningMessage" className="error">
-          { this.props.dialog.dialog.error }
+          { this.state.error }
         </p>
         <br />
         <div>
-          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
+          <button className="text-btn" type="submit" onClick={ this.handleCloseDialog }>Cancel</button>
           <button className="text-btn text-btn-primary" type="submit">Submit</button>
         </div>
       </form>
@@ -136,20 +166,23 @@ class Dialog extends React.Component {
       case 'lock':
         text = `Please set amount of collateral (ETH) you want to lock in CDP ${dialog.cup}.`;
         renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
+        this.cond = value => {
+          const cup = this.props.system.tub.cups[this.props.dialog.dialog.cup];
           const valueWei = toBigNumber(toWei(value));
           const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
+          this.setState({skr: skrValue,
+                         liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.add(skrValue), cup.art),
+                         ratio: this.props.system.calculateRatio(cup.ink.add(skrValue), cup.art)});
           let error = '';
           this.submitEnabled = true;
-          const cup = this.props.dialog.dialog.cup;
           if (this.props.profile.accountBalance.lt(valueWei)) {
             error = 'Not enough balance to lock this amount of ETH.';
             this.submitEnabled = false;
-          } else if (this.props.system.tub.cups[cup].avail_skr.round(0).add(skrValue).gt(0) && this.props.system.tub.cups[cup].avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
+          } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
             error = `It is not allowed to lock a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
             this.submitEnabled = false;
           }
-          document.getElementById('warningMessage').innerHTML = error;
+          this.setState({error});
         }
         break;
       case 'free':
@@ -160,29 +193,32 @@ class Dialog extends React.Component {
         } else {
           text = `Please set amount of collateral (ETH) you want to withdraw from CDP ${dialog.cup}`;
           renderForm = 'renderInputNumberForm';
-          this.cond = (value) => {
+          this.cond = value => {
+            const cup = this.props.system.tub.cups[this.props.dialog.dialog.cup];
             const valueWei = toBigNumber(toWei(value));
             const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
-            const cup = this.props.dialog.dialog.cup;
+            this.setState({skr: skrValue,
+                           liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.minus(skrValue), cup.art),
+                           ratio: this.props.system.calculateRatio(cup.ink.minus(skrValue), cup.art)});
             let error = '';
             this.submitEnabled = true;
-            if (this.props.system.tub.cups[cup].avail_skr.lt(skrValue)) {
+            if (cup.avail_skr.lt(skrValue)) {
               error = 'This amount of ETH exceeds the maximum available to free.';
               this.submitEnabled = false;
-            } else if (this.props.system.tub.cups[cup].avail_skr.minus(skrValue).lte(toWei(0.005)) && !this.props.system.tub.cups[cup].avail_skr.round(0).eq(skrValue)) {
+            } else if (cup.avail_skr.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
               error = 'CDP can not be left with a dust amount lower or equal than 0.005 PETH. You have to either leave more or free the whole amount.';
               this.submitEnabled = false;
-            } else if (this.props.system.tub.off === false && this.props.system.tub.cups[cup].art.gt(0) && skrValue.gt(this.props.system.tub.cups[cup].avail_skr.times(0.9))) {
+            } else if (this.props.system.tub.off === false && cup.art.gt(0) && skrValue.gt(cup.avail_skr.times(0.9))) {
               error = 'This amount puts your CDP in risk to be liquidated';
             }
-            document.getElementById('warningMessage').innerHTML = error;
+            this.setState({error});
           }
         }
         break;
       case 'draw':
         text = `Please set amount of DAI you want to mint from your CDP ${dialog.cup}`;
         renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
+        this.cond = value => {
           const valueWei = toBigNumber(toWei(value));
           const cup = this.props.dialog.dialog.cup;
           let error = '';
@@ -196,14 +232,14 @@ class Dialog extends React.Component {
           } else if (valueWei.gt(this.props.system.tub.cups[cup].avail_dai.times(0.9))) {
             error = 'This amount puts your CDP in risk to be liquidated';
           }
-          document.getElementById('warningMessage').innerHTML = error;
+          this.setState({error});
         }
         break;
       case 'wipe':
         text = `Please set amount of DAI you want to retrieve to CDP ${dialog.cup}.`;
         text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';
         renderForm = 'renderInputNumberForm';
-        this.cond = (value) => {
+        this.cond = value => {
           const valueWei = toBigNumber(toWei(value));
           const cup = this.props.dialog.dialog.cup;
           let error = '';
@@ -234,7 +270,7 @@ class Dialog extends React.Component {
               this.submitEnabled = false;
             }
           }
-          document.getElementById('warningMessage').innerHTML = error;
+          this.setState({error});
         }
         break;
       case 'give':
@@ -253,7 +289,7 @@ class Dialog extends React.Component {
 
     return (
       <div id="dialog" className="dialog bright-style">
-        <button id="dialog-close-caller" className="close-box" onClick={ this.props.dialog.handleCloseDialog }></button>
+        <button id="dialog-close-caller" className="close-box" onClick={ this.handleCloseDialog }></button>
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>{ dialog.method }</h2>
           <div>
