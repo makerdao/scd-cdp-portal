@@ -608,7 +608,6 @@ class SystemStore {
 
   reloadCupData = (id) => {
     Promise.resolve(this.getCup(id).then(cup => {
-      console.log('getCup in reload', cup);
       this.tub.cups[id] = {...cup};
       if (settings.chain[this.network.network].service) {
         Promise.resolve(this.getFromService('cupHistoryActions', {cupi: id}, {timestamp:'asc'})).then(response => {

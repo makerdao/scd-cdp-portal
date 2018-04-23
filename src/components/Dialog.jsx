@@ -1,6 +1,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
-import {wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from '../helpers';
+import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from '../helpers';
 
 class Dialog extends React.Component {
   constructor() {
@@ -120,6 +120,21 @@ class Dialog extends React.Component {
           <span style={ {clear: 'left', display: 'block'} }>{ printNumber(this.state.skr) } PETH</span>
         }
         {
+          type === 'number' && method === 'wipe' &&
+          <span style={ {clear: 'left', display: 'block'} }>DAI generated { printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.dialog.cup])) } DAI</span>
+        }
+        {
+          type === 'number' && method === 'wipe' &&
+          <span style={ {clear: 'left', display: 'block'} }>
+            Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR&nbsp;
+            { printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.dialog.cup]), this.props.system.pep.val)) } MKR
+          </span>
+        }
+        {
+          type === 'number' && method === 'draw' &&
+          <span style={ {clear: 'left', display: 'block'} }>Max. available to generate { printNumber(this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_dai) } DAI</span>
+        }
+        {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
           <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice ? printNumber(this.state.liqPrice) : '--' } USD</span>
         }
@@ -131,9 +146,18 @@ class Dialog extends React.Component {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
           <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
         }
-        <p id="warningMessage" className="error">
-          { this.state.error }
-        </p>
+        {
+          this.state.error &&
+          <p id="warningMessage" className="error">
+            { this.state.error }
+          </p>
+        }
+        {
+          this.state.warning &&
+          <p id="warningMessage" className="warning">
+            { this.state.warning }
+          </p>
+        }
         <br />
         <div>
           <button className="text-btn" type="submit" onClick={ this.handleCloseDialog }>Cancel</button>
@@ -174,17 +198,18 @@ class Dialog extends React.Component {
                           skr: skrValue,
                           liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.add(skrValue), this.props.system.tab(cup)),
                           ratio: this.props.system.calculateRatio(cup.ink.add(skrValue), this.props.system.tab(cup))
+                        }, () => {
+                          let error = '';
+                          this.submitEnabled = true;
+                          if (this.props.profile.accountBalance.lt(valueWei)) {
+                            error = 'Not enough balance to deposit this amount of ETH.';
+                            this.submitEnabled = false;
+                          } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
+                            error = `It is not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
+                            this.submitEnabled = false;
+                          }
+                          this.setState({error});
                         });
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.profile.accountBalance.lt(valueWei)) {
-            error = 'Not enough balance to lock this amount of ETH.';
-            this.submitEnabled = false;
-          } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
-            error = `It is not allowed to lock a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
-            this.submitEnabled = false;
-          }
-          this.setState({error});
         }
         break;
       case 'free':
@@ -202,19 +227,21 @@ class Dialog extends React.Component {
                             skr: skrValue,
                             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.minus(skrValue), this.props.system.tab(cup)),
                             ratio: this.props.system.calculateRatio(cup.ink.minus(skrValue), this.props.system.tab(cup))
+                          }, () => {
+                            let error = '';
+                            let warning = '';
+                            this.submitEnabled = true;
+                            if (cup.avail_skr.lt(skrValue)) {
+                              error = 'This amount of ETH exceeds the maximum available to withdraw.';
+                              this.submitEnabled = false;
+                            } else if (cup.avail_skr.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
+                              error = `CDP can not be left with a dust amount lower or equal than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price). You have to either leave more or withdraw the whole amount.`;
+                              this.submitEnabled = false;
+                            } else if (this.props.system.tub.off === false && cup.art.gt(0) && this.state.ratio.lt(WAD.times(2))) {
+                              warning = 'The amount of ETH you are trying to withdraw is putting your CDP at risk.';
+                            }
+                            this.setState({error, warning});
                           });
-            let error = '';
-            this.submitEnabled = true;
-            if (cup.avail_skr.lt(skrValue)) {
-              error = 'This amount of ETH exceeds the maximum available to free.';
-              this.submitEnabled = false;
-            } else if (cup.avail_skr.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
-              error = 'CDP can not be left with a dust amount lower or equal than 0.005 PETH. You have to either leave more or free the whole amount.';
-              this.submitEnabled = false;
-            } else if (this.props.system.tub.off === false && cup.art.gt(0) && skrValue.gt(cup.avail_skr.times(0.9))) {
-              error = 'This amount puts your CDP in risk to be liquidated';
-            }
-            this.setState({error});
           }
         }
         break;
@@ -226,19 +253,21 @@ class Dialog extends React.Component {
           this.setState({
                           liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).add(valueWei)),
                           ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).add(valueWei))
+                        }, () => {
+                          let error = '';
+                          let warning = '';
+                          this.submitEnabled = true;
+                          if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
+                            error = 'This amount of DAI exceeds the system debt ceiling.';
+                            this.submitEnabled = false;
+                          } else if (cup.avail_dai.lt(valueWei)) {
+                            error = 'You have insufficient amount of DAI available to generate. Deposit more collateral first.';
+                            this.submitEnabled = false;
+                          } else if (this.state.ratio.lt(WAD.times(2))) {
+                            warning = 'The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.';
+                          }
+                          this.setState({error, warning});
                         });
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
-            error = 'This amount of DAI exceeds the system debt ceiling.';
-            this.submitEnabled = false;
-          } else if (cup.avail_dai.lt(valueWei)) {
-            error = 'This amount of DAI exceeds the maximum available to draw.';
-            this.submitEnabled = false;
-          } else if (valueWei.gt(cup.avail_dai.times(0.9))) {
-            error = 'This amount puts your CDP in risk to be liquidated';
-          }
-          this.setState({error});
         }
         break;
       case 'wipe':
@@ -250,36 +279,37 @@ class Dialog extends React.Component {
           this.setState({
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).minus(valueWei)),
             ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).minus(valueWei))
-          });
-          let error = '';
-          this.submitEnabled = true;
-          if (this.props.system.dai.myBalance.lt(valueWei)) {
-            error = 'Not enough balance of DAI to wipe this amount.';
-            this.submitEnabled = false;
-          } else if (this.props.system.tab(cup).lt(valueWei)) {
-            error = `Debt in CDP ${dialog.cup} is lower than this amount of DAI.`;
-            this.submitEnabled = false;
-          } else {
-            const futureGovFee = fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
-            const govDebt = wmul(
-                              wmul(
-                                wmul(
-                                  valueWei,
-                                  wdiv(
-                                    this.props.system.rap(cup),
-                                    this.props.system.tab(cup)
-                                  )
-                                ),
-                                this.props.system.pep.val
-                              ),
-                              futureGovFee
-                            );
-            if (govDebt.gt(this.props.system.gov.myBalance)) {
-              error = `Not enough balance of MKR to wipe this amount.`;
+          }, () => {
+            let error = '';
+            this.submitEnabled = true;
+            if (this.props.system.dai.myBalance.lt(valueWei)) {
+              error = 'Not enough balance of DAI to wipe this amount.';
               this.submitEnabled = false;
+            } else if (this.props.system.tab(cup).lt(valueWei)) {
+              error = `Debt in CDP ${dialog.cup} is lower than this amount of DAI.`;
+              this.submitEnabled = false;
+            } else {
+              const futureGovFee = fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
+              const govDebt = wmul(
+                                wmul(
+                                  wmul(
+                                    valueWei,
+                                    wdiv(
+                                      this.props.system.rap(cup),
+                                      this.props.system.tab(cup)
+                                    )
+                                  ),
+                                  this.props.system.pep.val
+                                ),
+                                futureGovFee
+                              );
+              if (govDebt.gt(this.props.system.gov.myBalance)) {
+                error = `Not enough balance of MKR to wipe this amount.`;
+                this.submitEnabled = false;
+              }
             }
-          }
-          this.setState({error});
+            this.setState({error});
+          });
         }
         break;
       case 'give':
