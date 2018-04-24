@@ -167,7 +167,7 @@ class App extends React.Component {
                 ?
                   <Welcome changePage={ this.changePage }/>
                 :
-                  <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.dialog.show ? "dialog-open" : "" }>
+                  <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.show ? "dialog-open" : "" }>
                     <div className="wrapper">
                       <div className="menu-bar">
                         <div className="logo">

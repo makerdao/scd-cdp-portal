@@ -13,7 +13,7 @@ class Menu extends React.Component {
           {
             !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 &&
             Object.keys(this.props.system.tub.cups).map(key =>
-              <li key={ key } data-cupId={ key } className={ this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0] === key ? 'active' : '' } onClick={ this.props.system.changeCup }>
+              <li key={ key } data-cupid={ key } className={ this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0] === key ? 'active' : '' } onClick={ this.props.system.changeCup }>
                 CDP #{ key }
               </li>
             )

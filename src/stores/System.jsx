@@ -619,7 +619,7 @@ class SystemStore {
 
   changeCup = e => {
     e.preventDefault();
-    this.tub.cupId = e.target.getAttribute('data-cupId');
+    this.tub.cupId = e.target.getAttribute('data-cupid');
     // this.calculateCupChart();
   }
 
@@ -850,7 +850,7 @@ class SystemStore {
   executeAction = value => {
     let callbacks = [];
     let error = false;
-    switch (this.dialog.dialog.method) {
+    switch (this.dialog.method) {
       case 'open':
         callbacks = [
                       ['system/open']
@@ -858,12 +858,12 @@ class SystemStore {
         break;
       case 'lock':
         callbacks = [
-                      ['system/lockAndDraw', this.dialog.dialog.cup, value, toBigNumber(0)]
+                      ['system/lockAndDraw', this.dialog.cupId, value, toBigNumber(0)]
                     ];
         break;
       case 'draw':
         callbacks = [
-                      ['system/lockAndDraw', this.dialog.dialog.cup, toBigNumber(0), value]
+                      ['system/lockAndDraw', this.dialog.cupId, toBigNumber(0), value]
                     ];
         break;
       case 'wipe':
@@ -872,7 +872,7 @@ class SystemStore {
                         [
                           ['system/checkAllowance', 'dai',
                             [
-                              ['system/wipeAndFree', this.dialog.dialog.cup, toBigNumber(0), value]
+                              ['system/wipeAndFree', this.dialog.cupId, toBigNumber(0), value]
                             ]
                           ]
                         ]
@@ -881,7 +881,7 @@ class SystemStore {
         break;
       case 'free':
         callbacks = [
-                      ['system/wipeAndFree', this.dialog.dialog.cup, value, toBigNumber(0)]
+                      ['system/wipeAndFree', this.dialog.cupId, value, toBigNumber(0)]
                     ];
         break;
       case 'shut':
@@ -890,7 +890,7 @@ class SystemStore {
                         [
                           ['system/checkAllowance', 'dai',
                             [
-                              ['system/shut', this.dialog.dialog.cup]
+                              ['system/shut', this.dialog.cupId]
                             ]
                           ]
                         ]
@@ -899,7 +899,7 @@ class SystemStore {
         break;
       case 'migrate':
         callbacks = [
-                      ['system/migrateCDP', this.dialog.dialog.cup]
+                      ['system/migrateCDP', this.dialog.cupId]
                     ];
         break;
       default:
@@ -907,9 +907,9 @@ class SystemStore {
     }
   
     if (error) {
-      this.dialog.dialog.error = error;
+      this.dialog.error = error;
     } else {
-      this.dialog.dialog.show = false;
+      this.dialog.show = false;
       this.profile.checkProxy(callbacks);
     }
   }

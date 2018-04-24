@@ -1,4 +1,4 @@
-import { observable, decorate } from "mobx"
+import { observable, decorate } from "mobx";
 import * as Blockchain from "../blockchainHandler";
 
 import { etherscanTx } from '../helpers';
@@ -42,7 +42,7 @@ class TransactionsStore {
       this.registry[tx].pending = false;
       console.log(msgTemp.replace('TX', tx));
       this.notificator.hideNotification(tx);
-      this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 4000);
+      this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 6000);
       if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
       }

@@ -1,4 +1,4 @@
-import { observable, decorate } from "mobx"
+import { observable, decorate } from "mobx";
 import * as Blockchain from "../blockchainHandler";
 
 class NetworkStore {

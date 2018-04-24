@@ -1,25 +1,27 @@
-import { observable, decorate } from "mobx"
+import { observable, decorate } from "mobx";
 
 class DialogStore {
-  dialog = {
-    show: false
-  };
+  show = false;
+  method = null;
+  cupId = false;
 
   handleOpenDialog = e => {
     e.preventDefault();
-    const method = e.target.getAttribute('data-method');
-    const cupId = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
-    this.dialog = {show: true, method, cup: cupId};
+    this.show = true;
+    this.method = e.target.getAttribute('data-method');
+    this.cupId = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
   }
 
   handleCloseDialog = e => {
     e.preventDefault();
-    this.dialog = {show: false};
+    this.show = false;
   }
 }
 
 decorate(DialogStore, {
-  dialog: observable
+  show: observable,
+  method: observable,
+  cupId: observable
 });
 
 const store = new DialogStore();

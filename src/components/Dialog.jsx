@@ -1,4 +1,5 @@
 import React from 'react';
+import {intercept} from 'mobx';
 import {observer} from 'mobx-react';
 import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from '../helpers';
 
@@ -7,11 +8,27 @@ class Dialog extends React.Component {
     super();
     this.state = {
       skr: null,
-      liqPrice: null,
-      ratio: null,
+      liqPrice: toBigNumber(0),
+      ratio: toBigNumber(0),
       warning: null,
       error: null
     }
+  }
+
+  componentDidMount = () => {
+    intercept(this.props.dialog, "show", change => {
+      if (change.newValue) {
+        if (this.updateVal) this.updateVal.value = "";
+        this.setState({
+          skr: null,
+          liqPrice: toBigNumber(0),
+          ratio: toBigNumber(0),
+          warning: null,
+          error: null
+        });
+      }
+      return change;
+    });
   }
 
   updateValue = e => {
@@ -25,7 +42,7 @@ class Dialog extends React.Component {
   setMax = e => {
     e.preventDefault();
     let value = toBigNumber(0);
-    switch(this.props.dialog.dialog.method) {
+    switch(this.props.dialog.method) {
       case 'join':
         value = wdiv(this.props.system.gem.myBalance, wmul(this.props.system.tub.per, this.props.system.tub.gap));
         break;
@@ -34,14 +51,14 @@ class Dialog extends React.Component {
         value = this.props.profile.accountBalance;
         break;
       case 'free':
-        // value = this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_skr_with_margin;
-        value = wmul(this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_skr, this.props.system.tub.per).round(0);
+        // value = this.props.system.tub.cups[this.props.dialog.cupId].avail_skr_with_margin;
+        value = wmul(this.props.system.tub.cups[this.props.dialog.cupId].avail_skr, this.props.system.tub.per).round(0);
         break;
       // case 'draw':
-      //   value = this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_dai_with_margin;
+      //   value = this.props.system.tub.cups[this.props.dialog.cupId].avail_dai_with_margin;
       //   break;
       case 'wipe':
-        value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.dialog.cup]));
+        value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId]));
         break;
       case 'boom':
         value = this.props.system.tub.avail_boom_skr.floor();
@@ -70,21 +87,10 @@ class Dialog extends React.Component {
         </p>
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
-          <button className="text-btn" type="submit" onClick={ this.handleCloseDialog }>No</button>
+          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
         </div>
       </form>
     )
-  }
-
-  handleCloseDialog = e => {
-    this.setState({
-                    skr: null,
-                    liqPrice: null,
-                    ratio: null,
-                    warning: null,
-                    error: null
-                  });
-    this.props.dialog.handleCloseDialog(e);
   }
 
   renderInputTextForm = method => {
@@ -112,7 +118,7 @@ class Dialog extends React.Component {
           </span>
         }
         {
-          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.dialog.cup].art.eq(0)) &&
+          type === 'number' && method !== 'draw' && (method !== 'free' || this.props.system.tub.cups[this.props.dialog.cupId].art.eq(0)) &&
           <span>&nbsp;<a href="#action" onClick={ this.setMax }>Set max</a></span>
         }
         {
@@ -121,22 +127,22 @@ class Dialog extends React.Component {
         }
         {
           type === 'number' && method === 'wipe' &&
-          <span style={ {clear: 'left', display: 'block'} }>DAI generated { printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.dialog.cup])) } DAI</span>
+          <span style={ {clear: 'left', display: 'block'} }>DAI generated { printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } DAI</span>
         }
         {
           type === 'number' && method === 'wipe' &&
           <span style={ {clear: 'left', display: 'block'} }>
             Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR&nbsp;
-            { printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.dialog.cup]), this.props.system.pep.val)) } MKR
+            { printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR
           </span>
         }
         {
           type === 'number' && method === 'draw' &&
-          <span style={ {clear: 'left', display: 'block'} }>Max. available to generate { printNumber(this.props.system.tub.cups[this.props.dialog.dialog.cup].avail_dai) } DAI</span>
+          <span style={ {clear: 'left', display: 'block'} }>Max. available to generate { printNumber(this.props.system.tub.cups[this.props.dialog.cupId].avail_dai) } DAI</span>
         }
         {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
-          <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice ? printNumber(this.state.liqPrice) : '--' } USD</span>
+          <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice) : '--' } USD</span>
         }
         {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
@@ -144,7 +150,7 @@ class Dialog extends React.Component {
         }
         {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
-          <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
+          <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
         }
         {
           this.state.error &&
@@ -160,7 +166,7 @@ class Dialog extends React.Component {
         }
         <br />
         <div>
-          <button className="text-btn" type="submit" onClick={ this.handleCloseDialog }>Cancel</button>
+          <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
           <button className="text-btn text-btn-primary" type="submit">Submit</button>
         </div>
       </form>
@@ -168,8 +174,8 @@ class Dialog extends React.Component {
   }
   
   render() {
-    const dialog = this.props.dialog.dialog;
-    const cup = dialog.cup ? this.props.system.tub.cups[dialog.cup] : null;
+    const dialog = this.props.dialog;
+    const cup = dialog.cupId ? this.props.system.tub.cups[dialog.cupId] : null;
 
     let text = '';
     let renderForm = '';
@@ -181,7 +187,7 @@ class Dialog extends React.Component {
         this.submitEnabled = true;
         break;
       case 'shut':
-        text = `Are you sure you want to close CDP ${dialog.cup}?`;
+        text = `Are you sure you want to close CDP ${dialog.cupId}?`;
         if (!this.props.proxyEnabled) {
           text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';;
         }
@@ -286,7 +292,7 @@ class Dialog extends React.Component {
               error = 'Not enough balance of DAI to wipe this amount.';
               this.submitEnabled = false;
             } else if (this.props.system.tab(cup).lt(valueWei)) {
-              error = `Debt in CDP ${dialog.cup} is lower than this amount of DAI.`;
+              error = `Debt in CDP ${dialog.cupId} is lower than this amount of DAI.`;
               this.submitEnabled = false;
             } else {
               const futureGovFee = fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
@@ -313,12 +319,12 @@ class Dialog extends React.Component {
         }
         break;
       case 'give':
-        text = `Please set the new address to be owner of CDP ${dialog.cup}`;
+        text = `Please set the new address to be owner of CDP ${dialog.cupId}`;
         renderForm = 'renderInputTextForm';
         this.submitEnabled = true;
         break;
       case 'migrate':
-        text = `Are you sure you want to migrate your CDP ${dialog.cup} for being used in this Dashboard? (you will not be able to use it in the old one anymore)`;
+        text = `Are you sure you want to migrate your CDP ${dialog.cupId} for being used in this Dashboard? (you will not be able to use it in the old one anymore)`;
         renderForm = 'renderYesNoForm';
         this.submitEnabled = true;
         break;
@@ -328,7 +334,7 @@ class Dialog extends React.Component {
 
     return (
       <div id="dialog" className="dialog bright-style">
-        <button id="dialog-close-caller" className="close-box" onClick={ this.handleCloseDialog }></button>
+        <button id="dialog-close-caller" className="close-box" onClick={ this.props.dialog.handleCloseDialog }></button>
         <div className="dialog-content">
           <h2 className="typo-h1" style={ {textTransform: 'capitalize'} }>
             {
