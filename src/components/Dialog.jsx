@@ -10,8 +10,6 @@ class Dialog extends React.Component {
       skr: null,
       liqPrice: toBigNumber(0),
       ratio: toBigNumber(0),
-      warning: null,
-      error: null
     }
   }
 
@@ -19,12 +17,11 @@ class Dialog extends React.Component {
     intercept(this.props.dialog, "show", change => {
       if (change.newValue) {
         if (this.updateVal) this.updateVal.value = "";
+        this.props.dialog.error = this.props.dialog.warning = "";
         this.setState({
           skr: null,
           liqPrice: toBigNumber(0),
           ratio: toBigNumber(0),
-          warning: null,
-          error: null
         });
       }
       return change;
@@ -83,7 +80,7 @@ class Dialog extends React.Component {
     return (
       <form>
         <p id="warningMessage" className="error">
-          { this.state.error }
+          { this.props.dialog.error }
         </p>
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
@@ -153,13 +150,13 @@ class Dialog extends React.Component {
           <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
         }
         {
-          this.state.error &&
+          this.props.dialog.error &&
           <p id="warningMessage" className="error">
-            { this.state.error }
+            { this.props.dialog.error }
           </p>
         }
         {
-          this.state.warning &&
+          this.props.dialog.warning &&
           <p id="warningMessage" className="warning">
             { this.state.warning }
           </p>
@@ -188,9 +185,7 @@ class Dialog extends React.Component {
         break;
       case 'shut':
         text = `Are you sure you want to close CDP ${dialog.cupId}?`;
-        if (!this.props.proxyEnabled) {
-          text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';;
-        }
+        text += '<br />You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction.';;
         renderForm = 'renderYesNoForm';
         this.submitEnabled = true;
         break;
@@ -214,7 +209,7 @@ class Dialog extends React.Component {
                             error = `It is not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
                             this.submitEnabled = false;
                           }
-                          this.setState({error});
+                          this.props.dialog.error = error;
                         });
         }
         break;
@@ -246,7 +241,8 @@ class Dialog extends React.Component {
                             } else if (this.props.system.tub.off === false && cup.art.gt(0) && this.state.ratio.lt(WAD.times(2))) {
                               warning = 'The amount of ETH you are trying to withdraw is putting your CDP at risk.';
                             }
-                            this.setState({error, warning});
+                            this.props.dialog.error = error;
+                            this.props.dialog.warning = warning;
                           });
           }
         }
@@ -272,7 +268,8 @@ class Dialog extends React.Component {
                           } else if (this.state.ratio.lt(WAD.times(2))) {
                             warning = 'The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.';
                           }
-                          this.setState({error, warning});
+                          this.props.dialog.error = error;
+                          this.props.dialog.warning = warning;
                         });
         }
         break;
@@ -313,8 +310,8 @@ class Dialog extends React.Component {
                 error = `Not enough balance of MKR to wipe this amount.`;
                 this.submitEnabled = false;
               }
+              this.props.dialog.error = error;
             }
-            this.setState({error});
           });
         }
         break;

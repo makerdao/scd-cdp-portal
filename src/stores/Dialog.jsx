@@ -4,6 +4,9 @@ class DialogStore {
   show = false;
   method = null;
   cupId = false;
+  error = '';
+  warning = '';
+
 
   handleOpenDialog = e => {
     e.preventDefault();
@@ -21,7 +24,9 @@ class DialogStore {
 decorate(DialogStore, {
   show: observable,
   method: observable,
-  cupId: observable
+  cupId: observable,
+  error: observable,
+  warning: observable
 });
 
 const store = new DialogStore();

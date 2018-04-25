@@ -57,9 +57,9 @@ class TransactionsStore {
     }
   }
   
-  logTransactionRejected = (tx, title) => {
-    const msgTemp = 'User denied transaction signature.';
-    this.notificator.error(tx, title, msgTemp, 4000);
+  logTransactionRejected = (tx, title, customMessage = null) => {
+    const msg = 'User denied transaction signature.';
+    this.notificator.error(tx, title, customMessage ? customMessage : msg, 4000);
   }
   
   log = (e, tx, id, title, callbacks = []) => {

@@ -721,7 +721,17 @@ class SystemStore {
         const id = Math.random();
         const title = `${tokenName}: approve`;
         this.transactions.logRequestTransaction(id, title);
-        Blockchain.objects[token].approve(this.profile.proxy, -1, {}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks));
+        const tokenObj = Blockchain.objects[token];
+        const params = [this.profile.proxy, -1];
+        if (this.network.isLedger) {
+          Blockchain.signTransactionLedger(this.network.defaultAccount, tokenObj.address, tokenObj.approve.getData(...params), 0).then(tx => {
+            this.transactions.logPendingTransaction(id, tx, title, callbacks);
+          }, e => {
+            this.transactions.logTransactionRejected(id, title, e.message);
+          });
+        } else {
+          tokenObj.approve(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
+        }
       }
     }, () => {});
   }
@@ -731,111 +741,20 @@ class SystemStore {
     const id = Math.random();
     const title = `${tokenName}: transfer ${to} ${amount}`;
     this.transactions.logRequestTransaction(id, title);
-    const log = (e, tx) => {
-      if (!e) {
-        this.transactions.logPendingTransaction(id, tx, title, [['system/setUpToken', token]]);
-      } else {
-        console.log(e);
-        this.transactions.logTransactionRejected(id, title);
-      }
+    const tokenObj = Blockchain.objects[token];
+    const params = [to, toWei(amount)];
+    const callbacks = [['system/setUpToken', token]];
+    if (this.network.isLedger) {
+      Blockchain.signTransactionLedger(this.network.defaultAccount, tokenObj.address, tokenObj.transfer.getData(...params), 0).then(tx => {
+        this.transactions.logPendingTransaction(id, tx, title, callbacks);
+      }, e => {
+        this.transactions.logTransactionRejected(id, title, e.message);
+      });
+    } else {
+      tokenObj.transfer(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
     }
-    Blockchain.objects[token].transfer(to, toWei(amount), {}, log);
   }
 
-  saiProxyAddr = () => {
-    return settings.chain[this.network.network].proxyContracts.sai
-  }
-  
-  open = () => {
-    const id = Math.random();
-    const title = 'Open CDP';
-    this.transactions.logRequestTransaction(id, title);
-    Blockchain.objects.proxy.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`,
-      (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups']])
-    );  
-  }
-  
-  shut = cup => {
-    console.log(`${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}`)
-    const id = Math.random();
-    const title = `Shut CDP ${cup}`;
-    this.transactions.logRequestTransaction(id, title);
-    Blockchain.objects.proxy.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}`,
-      (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']])
-    );
-  }
-  
-  give = (cup, newOwner) => {
-    const id = Math.random();
-    const title = `Transfer CDP ${cup} to ${newOwner}`;
-    this.transactions.logRequestTransaction(id, title);
-    Blockchain.objects.proxy.execute['address,bytes'](
-      this.saiProxyAddr(),
-      `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${addressToBytes32(newOwner, false)}`,
-      (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups']])
-    );
-  }
-  
-  lockAndDraw = (cup, eth, dai) => {
-    let action = false;
-    let title = '';
-  
-    if (eth.gt(0) || dai.gt(0)) {
-      if (!cup) {
-        title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-        action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
-      } else {
-        if (dai.equals(0)) {
-          title = `Lock ${eth.valueOf()} ETH`;
-          action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}`;
-        } else if (eth.equals(0)) {
-          title = `Draw ${dai.valueOf()} DAI`;
-          action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${toBytes32(toWei(dai), false)}`;
-        } else {
-          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${toBytes32(toWei(dai), false)}`;
-        }
-      }
-  
-      const id = Math.random();
-      this.transactions.logRequestTransaction(id, title);
-      Blockchain.objects.proxy.execute['address,bytes'](
-        this.saiProxyAddr(),
-        action,
-        {value: toWei(eth)},
-        (e, tx) => this.transactions.log(e, tx, id, title, cup ? [['system/reloadCupData', cup], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']] : [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']])
-      );
-    }
-  }
-  
-  wipeAndFree = (cup, eth, dai) => {
-    let action = false;
-    let title = '';
-    if (eth.gt(0) || dai.gt(0)) {
-      if (dai.equals(0)) {
-        title = `Withdraw ${eth.valueOf()} ETH`;
-        action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${toBytes32(toWei(eth), false)}`;
-      } else if (eth.equals(0)) {
-        title = `Wipe ${dai.valueOf()} DAI`;
-        action = `${methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${toBytes32(toWei(dai), false)}`;
-      } else {
-        title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cup, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}`;
-      }
-      const id = Math.random();
-      this.transactions.logRequestTransaction(id, title);
-      Blockchain.objects.proxy.execute['address,bytes'](
-        this.saiProxyAddr(),
-        action,
-        (e, tx) => this.transactions.log(e, tx, id, title, [['system/reloadCupData', cup], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']])
-      );
-    }
-  }
-  
   migrateCDP = async cup => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
     const proxy = this.profile.proxy;
@@ -843,7 +762,103 @@ class SystemStore {
       const id = Math.random();
       const title = `Migrate CDP ${cup}`;
       this.transactions.logRequestTransaction(id, title);
-      Blockchain.objects.tub.give(toBytes32(cup), proxy, (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups'], ['system/getMyLegacyCups']]));
+      const tubObj = Blockchain.objects.tub;
+      const params = [toBytes32(cup), proxy];
+      const callbacks = [['system/getMyCups'], ['system/getMyLegacyCups']];
+      if (this.network.isLedger) {
+        Blockchain.signTransactionLedger(this.network.defaultAccount, tubObj.address, tubObj.give.getData(...params), 0).then(tx => {
+          this.transactions.logPendingTransaction(id, tx, title, callbacks);
+        }, e => {
+          this.transactions.logTransactionRejected(id, title, e.message);
+        });
+      } else {
+        tubObj.give(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
+      }
+    }
+  }
+
+  executeProxyTx = (action, value, notificator) => {
+    const proxy = Blockchain.objects.proxy;
+    const params = [settings.chain[this.network.network].proxyContracts.sai, action];
+    if (this.network.isLedger) {
+      Blockchain.signTransactionLedger(this.network.defaultAccount, proxy.address, proxy.execute.getData(...params), value).then(tx => {
+        this.transactions.logPendingTransaction(notificator.id, tx, notificator.title, notificator.callbacks);
+      }, e => {
+        this.transactions.logTransactionRejected(notificator.id, notificator.title, e.message);
+      });
+    } else {
+      proxy.execute['address,bytes'](...params.concat([{value: toWei(value)}, (e, tx) => this.transactions.log(e, tx, notificator.id, notificator.title, notificator.callbacks)]));
+    }
+  }
+  
+  open = () => {
+    const id = Math.random();
+    const title = 'Open CDP';
+    this.transactions.logRequestTransaction(id, title);
+    const action = `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`;
+    this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups']]});
+  }
+  
+  shut = cupId => {
+    const id = Math.random();
+    const title = `Shut CDP ${cupId}`;
+    this.transactions.logRequestTransaction(id, title);
+    const action = `${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
+    this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
+  }
+  
+  give = (cupId, newOwner) => {
+    const id = Math.random();
+    const title = `Transfer CDP ${cupId} to ${newOwner}`;
+    this.transactions.logRequestTransaction(id, title);
+    const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
+    this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups']]});
+  }
+  
+  lockAndDraw = (cupId, eth, dai) => {
+    let action = false;
+    let title = '';
+  
+    if (eth.gt(0) || dai.gt(0)) {
+      if (!cupId) {
+        title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+        action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
+      } else {
+        if (dai.equals(0)) {
+          title = `Lock ${eth.valueOf()} ETH`;
+          action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
+        } else if (eth.equals(0)) {
+          title = `Draw ${dai.valueOf()} DAI`;
+          action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+        } else {
+          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+        }
+      }
+  
+      const id = Math.random();
+      this.transactions.logRequestTransaction(id, title);
+      this.executeProxyTx(action, toWei(eth), {id, title, callbacks: cupId ? [['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']] : [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
+    }
+  }
+  
+  wipeAndFree = (cupId, eth, dai) => {
+    let action = false;
+    let title = '';
+    if (eth.gt(0) || dai.gt(0)) {
+      if (dai.equals(0)) {
+        title = `Withdraw ${eth.valueOf()} ETH`;
+        action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
+      } else if (eth.equals(0)) {
+        title = `Wipe ${dai.valueOf()} DAI`;
+        action = `${methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+      } else {
+        title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
+        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}`;
+      }
+      const id = Math.random();
+      this.transactions.logRequestTransaction(id, title);
+      this.executeProxyTx(action, 0, {id, title, callbacks: [['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
     }
   }
   
@@ -885,6 +900,11 @@ class SystemStore {
                     ];
         break;
       case 'shut':
+        if (this.tab(this.tub.cups[this.dialog.cupId]).gt(this.dai.myBalance)) {
+          error = 'Not enough DAI to close this CDP';
+        } else if (wdiv(this.rap(this.tub.cups[this.dialog.cupId]), this.pep.val).gt(this.gov.myBalance)) {
+          error = 'Not enough MKR to close this CDP';
+        }
         callbacks = [
                       ['system/checkAllowance', 'gov',
                         [

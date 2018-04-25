@@ -1,6 +1,9 @@
 import web3 from './web3';
 import Promise from 'bluebird';
-// import { toBytes32, addressToBytes32, toWei, methodSig } from './helpers';
+import { toHex } from './helpers';
+import Transport from "@ledgerhq/hw-transport-u2f";
+import Eth from "@ledgerhq/hw-app-eth";
+import Tx from 'ethereumjs-tx';
 
 // const settings = require('./settings');
 const promisify = Promise.promisify;
@@ -33,6 +36,10 @@ export const loadObject = (type, address, label = null) => {
 
 export const setDefaultAccount = account => {
   web3.eth.defaultAccount = account;
+}
+
+export const getNetwork = () => {
+  return promisify(web3.version.getNetwork)();
 }
 
 export const getGasPrice = () => {
@@ -98,16 +105,16 @@ export const tokenApprove = (token, dst, gasPrice) => {
    iterated, the way to access a give element is access it by index
  */
 export const getProxy = (account, proxyIndex) => {
-  return promisify(objects['proxyRegistry'].proxies)(account, proxyIndex);
+  return promisify(objects.proxyRegistry.proxies)(account, proxyIndex);
 }
 
 export const getProxiesCount = account => {
-  return promisify(objects['proxyRegistry'].proxiesCount)(account);
+  return promisify(objects.proxyRegistry.proxiesCount)(account);
 }
 
 export const getProxyAddress = account => {
   if (!account) return null;
-  return getProxiesCount(account).then(async (r) => {
+  return getProxiesCount(account).then(async r => {
     if (r.gt(0)) {
       for (let i = r.toNumber() - 1; i >= 0; i--) {
         const proxyAddr = await getProxy(account, i);
@@ -157,3 +164,41 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
 }
 
 export const isMetamask = () => web3.currentProvider.isMetaMask || web3.currentProvider.constructor.name === 'MetamaskInpageProvider';
+
+export const initLedger = () => {
+  return new Promise((resolve, reject) => {
+    Transport.create().then(transport => {
+      transport.exchangeTimeout = 10000;
+      objects.ledger = new Eth(transport);
+      objects.ledger.getAddress("44'/60'/0'/0").then(r => {
+        resolve(r.address);
+      }, e => reject(e));
+    }, e => reject(e));
+  });
+}
+
+export const signTransactionLedger = (account, to, data, value) => {
+  return new Promise(async (resolve, reject) => {
+    const tx = new Tx({
+      nonce: toHex(await getTransactionCount(account)),
+      gasPrice: toHex(await getGasPrice()),
+      gasLimit: parseInt(await estimateGas(to, data, value, account) * 1.5, 10),
+      to,
+      value: toHex(value),
+      data,
+      v: parseInt(await getNetwork(), 10)
+    });
+    objects.ledger.signTransaction("44'/60'/0'/0", tx.serialize().toString('hex')).then(sig => {
+      tx.v = "0x" + sig['v'];
+      tx.r = "0x" + sig['r'];
+      tx.s = "0x" + sig['s'];
+      web3.eth.sendRawTransaction("0x" + tx.serialize().toString('hex'), (e, r) => {
+        if (!e) {
+          resolve(r);
+        } else {
+          reject(e);
+        }
+      });
+    }, e => reject(e));
+  });
+}

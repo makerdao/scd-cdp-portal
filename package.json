@@ -15,7 +15,10 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-stockcharts": "^0.7.0-beta.12",
-    "web3": "^0.20.2"
+    "web3": "^0.20.2",
+    "@ledgerhq/hw-app-eth": "^4.6.0",
+    "@ledgerhq/hw-transport-u2f": "^4.6.0",
+    "ethereumjs-tx": "^1.3.4"
   },
   "devDependencies": {
     "gh-pages": "^0.12.0",

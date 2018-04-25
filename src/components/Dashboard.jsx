@@ -16,7 +16,7 @@ class Dashboard extends React.Component {
             You have legacy CDPs to migrate:
             {
               Object.keys(this.props.system.tub.legacyCups).map(id =>
-                <a href="#action" style={ {display: 'block'} } key={ id } data-method="migrate" data-cup={ id } onClick={ this.props.handleOpenDialog }>Migrate CDP {cupId}</a>
+                <a href="#action" style={ {display: 'block'} } key={ id } data-method="migrate" data-cup={ id } onClick={ this.props.handleOpenDialog }>Migrate CDP {id}</a>
               )
             }
             <hr />

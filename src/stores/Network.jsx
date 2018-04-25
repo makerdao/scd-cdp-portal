@@ -8,8 +8,9 @@ class NetworkStore {
   latestBlock = null;
   network = "";
   outOfSync = true;
+  isLedger = false;
 
-  checkNetwork = initContracts => {
+  checkNetwork = () => {
     return new Promise((resolve, reject) => {
       let isConnected = null;
       Blockchain.getNode().then(r => {
@@ -83,7 +84,9 @@ class NetworkStore {
       Blockchain.getAccounts().then(accounts => {
         this.accounts = accounts;
         const oldDefaultAccount = this.defaultAccount;
-        this.defaultAccount = accounts[0];
+        if (!this.isLedger) {
+          this.defaultAccount = accounts[0];
+        }
         Blockchain.setDefaultAccount(this.defaultAccount);
         if (this.network && oldDefaultAccount !== this.defaultAccount) {
           resolve('reloadContracts');
@@ -92,6 +95,23 @@ class NetworkStore {
         }
       }, e => reject(e));
     });
+  }
+
+  loadLedger = () => {
+    return new Promise((resolve, reject) => {
+      Blockchain.initLedger().then(ledgerWallet => {
+        if (ledgerWallet) {
+          this.defaultAccount = ledgerWallet.toLowerCase();
+          this.isLedger = true;
+        }
+        resolve();
+      }, e => reject(e))
+    });
+  }
+
+  stopLedger = async () => {
+    this.defaultAccount = this.accounts[0];
+    this.isLedger = false;
   }
 }
 
@@ -102,6 +122,7 @@ decorate(NetworkStore, {
   latestBlock: observable,
   network: observable,
   outOfSync: observable,
+  isLedger: observable
 });
 
 const store = new NetworkStore();

@@ -122,4 +122,4 @@ export const min = (num1, num2) => {
   return web3.BigNumber.min(num1, num2);
 }
 
-export const {toBigNumber , toWei, fromWei, isAddress, toAscii} = web3;
+export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex} = web3;

@@ -12,8 +12,8 @@ import SystemInfo from './SystemInfo';
 import Wallet from './Wallet';
 import Settings from './Settings';
 import Help from './Help';
+import Notify from './Notify';
 import {initWeb3} from  '../web3';
-import ReactNotify from '../notify';
 import {isAddress} from '../helpers';
 import './App.css';
 
@@ -33,12 +33,6 @@ class App extends React.Component {
   componentDidMount = () => {
     this.setHashPage();
     setTimeout(this.init, 500);
-  }
-
-  componentDidUpdate = () => {
-    if (!this.props.transactions.notificator) {
-      this.props.transactions.notificator = this.refs.notificator;
-    }
   }
 
   checkNetworkAndAccounts = () => {
@@ -69,6 +63,13 @@ class App extends React.Component {
   setHashPage = () => {
     const params = window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
     this.setPage(params[0]);
+  }
+
+  loadLedger = e => {
+    e.preventDefault();
+    this.props.network.loadLedger().then(() => {
+      this.loadContracts();
+    }, e => alert(e));
   }
 
   loadContracts = () => {
@@ -157,7 +158,7 @@ class App extends React.Component {
           :
             !this.props.network.defaultAccount
             ?
-              <NoAccount />
+              <NoAccount loadLedger={ this.loadLedger } />
             :
               this.props.system.tub.cupsLoading
               ?
@@ -208,7 +209,7 @@ class App extends React.Component {
                         }
                       </main>
                       <aside className="right-column">
-                        <ReactNotify ref='notificator'/>
+                        <Notify ref='notificator' transactions={ this.props.transactions }/>
                         {
                           this.state.page !== 'help' &&
                           <div className="right-column-content">
