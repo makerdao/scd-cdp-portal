@@ -1,7 +1,7 @@
 import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
-import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from '../helpers';
+import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
 
 const settings = require('../settings');
 
@@ -131,7 +131,7 @@ class SystemStore {
 
     if (settings.chain[this.network.network].service) {
       if (settings.chain[this.network.network].chart) {
-        // this.getPricesFromService();
+        // this.getPricesFromService(); // TODO
       }
       // this.getStats();
     }
@@ -426,7 +426,7 @@ class SystemStore {
     return wdiv(wmul(skr, this.tub.tag).round(0), wmul(dai, this.vox.par));
   }
 
-  getCupHistoryFromService = cupId => {
+  getFromService = query => {
     const p = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', settings.chain[this.network.network].service, true);
@@ -434,15 +434,29 @@ class SystemStore {
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
-          resolve(response.data.getCup.actions.nodes);
+          resolve(response);
         } else if (xhr.readyState === 4 && xhr.status !== 200) {
           reject(xhr.status);
         }
       }
       // xhr.send();
-      xhr.send(`query { getCup(id: ${cupId}) { actions { nodes { act arg tx time } } } }`);
+      xhr.send(`query ${query}`);
     });
     return p;
+  }
+
+  getCupsFromService = lad => {
+    return new Promise((resolve, reject) => {
+      this.getFromService(`{ allCups( condition: { lad: "${toChecksumAddress(lad)}" } ) { nodes { id } } }`)
+      .then(r => resolve(r.data.allCups.nodes), e => reject(e))
+    });
+  }
+
+  getCupHistoryFromService = cupId => {
+    return new Promise((resolve, reject) => {
+      this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg tx time } } } }`)
+      .then(r => resolve(r.data.getCup.actions.nodes), e => reject(e))
+    });
   }
 
   // getFromService = (service, conditions = {}, sort = {}, limit = null) => {
@@ -515,21 +529,21 @@ class SystemStore {
   }
 
   getCups = type => {
-    // const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
-    // const me = this;
-    // if (settings.chain[this.network.network].service) {
-    //   Promise.resolve(this.getFromService('cups', {lad}, {cupi: 'asc'})).then(response => {
-    //     const promises = [];
-    //     response.results.forEach(v => {
-    //       promises.push(me.getCup(v.cupi));
-    //     });
-    //     me.getCupsFromChain(type, response.lastBlockNumber, promises);
-    //   }).catch(error => {
-    //     me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-    //   });
-    // } else {
+    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    const me = this;
+    if (settings.chain[this.network.network].service) {
+      Promise.resolve(this.getCupsFromService(lad)).then(response => {
+        const promises = [];
+        response.forEach(v => {
+          promises.push(me.getCup(v.id));
+        });
+        me.getCupsFromChain(type, response.lastBlockNumber, promises);
+      }).catch(error => {
+        me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
+      });
+    } else {
       this.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-    // }
+    }
   }
   
   getCupsFromChain = (type, fromBlock, promises = []) => {
@@ -629,7 +643,7 @@ class SystemStore {
     Promise.resolve(this.getCup(id).then(cup => {
       this.tub.cups[id] = {...cup};
       if (settings.chain[this.network.network].service) {
-        Promise.resolve(this.getCupHistoryFromService(id, {timestamp:'asc'})).then(response => {
+        Promise.resolve(this.getCupHistoryFromService(id)).then(response => {
           this.tub.cups[id].history = response;
         }, () => {});
       }
