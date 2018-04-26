@@ -56,7 +56,6 @@ class App extends React.Component {
 
   init = () => {
     initWeb3();
-
     this.initNetworkAndAccounts();
   }
 
@@ -205,7 +204,7 @@ class App extends React.Component {
                         }
                         {
                           this.state.page !== 'settings' && this.state.page !== 'help' && /*this.state.page === 'home' && */Object.keys(this.props.system.tub.cups).length > 0 &&
-                          <Dashboard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
+                          <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
                         }
                       </main>
                       <aside className="right-column">

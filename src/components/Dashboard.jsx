@@ -22,7 +22,7 @@ class Dashboard extends React.Component {
             <hr />
           </div>
         }
-        <Cup system={ this.props.system } profile={ this.props.profile } cupId={ cupId } handleOpenDialog={ this.props.handleOpenDialog } />
+        <Cup system={ this.props.system } profile={ this.props.profile } network={ this.props.network } cupId={ cupId } handleOpenDialog={ this.props.handleOpenDialog } />
       </div>
     )
   }

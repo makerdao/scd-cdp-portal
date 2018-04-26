@@ -426,37 +426,56 @@ class SystemStore {
     return wdiv(wmul(skr, this.tub.tag).round(0), wmul(dai, this.vox.par));
   }
 
-  getFromService = (service, conditions = {}, sort = {}, limit = null) => {
+  getCupHistoryFromService = cupId => {
     const p = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      let conditionsString = '';
-      let sortString = '';
-      Object.keys(conditions).map(key => {
-        conditionsString += `${key}:${conditions[key]}`;
-        conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
-        return false;
-      });
-      conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
-      Object.keys(sort).map(key => {
-        sortString += `${key}:${sort[key]}`;
-        sortString += Object.keys(sort).pop() !== key ? '&' : '';
-        return false;
-      });
-      sortString = sortString !== '' ? `/sort=${sortString}` : '';
-      const url = `${settings.chain[this.network.network].service}${settings.chain[this.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}${limit ? `/limit=${limit}` : ''}`;
-      xhr.open('GET', url, true);
+      xhr.open('POST', settings.chain[this.network.network].service, true);
+      xhr.setRequestHeader("Content-type", "application/graphql");
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
-          resolve(response);
+          resolve(response.data.getCup.actions.nodes);
         } else if (xhr.readyState === 4 && xhr.status !== 200) {
           reject(xhr.status);
         }
       }
-      xhr.send();
+      // xhr.send();
+      xhr.send(`query { getCup(id: ${cupId}) { actions { nodes { act arg tx time } } } }`);
     });
     return p;
   }
+
+  // getFromService = (service, conditions = {}, sort = {}, limit = null) => {
+  //   const p = new Promise((resolve, reject) => {
+  //     const xhr = new XMLHttpRequest();
+  //     let conditionsString = '';
+  //     let sortString = '';
+  //     Object.keys(conditions).map(key => {
+  //       conditionsString += `${key}:${conditions[key]}`;
+  //       conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
+  //       return false;
+  //     });
+  //     conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
+  //     Object.keys(sort).map(key => {
+  //       sortString += `${key}:${sort[key]}`;
+  //       sortString += Object.keys(sort).pop() !== key ? '&' : '';
+  //       return false;
+  //     });
+  //     sortString = sortString !== '' ? `/sort=${sortString}` : '';
+  //     const url = `${settings.chain[this.network.network].service}${settings.chain[this.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}${limit ? `/limit=${limit}` : ''}`;
+  //     xhr.open('GET', url, true);
+  //     xhr.onreadystatechange = () => {
+  //       if (xhr.readyState === 4 && xhr.status === 200) {
+  //         const response = JSON.parse(xhr.responseText);
+  //         resolve(response);
+  //       } else if (xhr.readyState === 4 && xhr.status !== 200) {
+  //         reject(xhr.status);
+  //       }
+  //     }
+  //     xhr.send();
+  //   });
+  //   return p;
+  // }
 
   getCup = id => {
     return new Promise((resolve, reject) => {
@@ -496,21 +515,21 @@ class SystemStore {
   }
 
   getCups = type => {
-    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
-    const me = this;
-    if (settings.chain[this.network.network].service) {
-      Promise.resolve(this.getFromService('cups', {lad}, {cupi: 'asc'})).then(response => {
-        const promises = [];
-        response.results.forEach(v => {
-          promises.push(me.getCup(v.cupi));
-        });
-        me.getCupsFromChain(type, response.lastBlockNumber, promises);
-      }).catch(error => {
-        me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-      });
-    } else {
+    // const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    // const me = this;
+    // if (settings.chain[this.network.network].service) {
+    //   Promise.resolve(this.getFromService('cups', {lad}, {cupi: 'asc'})).then(response => {
+    //     const promises = [];
+    //     response.results.forEach(v => {
+    //       promises.push(me.getCup(v.cupi));
+    //     });
+    //     me.getCupsFromChain(type, response.lastBlockNumber, promises);
+    //   }).catch(error => {
+    //     me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
+    //   });
+    // } else {
       this.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-    }
+    // }
   }
   
   getCupsFromChain = (type, fromBlock, promises = []) => {
@@ -562,9 +581,9 @@ class SystemStore {
               this.tub.cups = cupsFiltered;
               if (keys.length > 0 && settings.chain[this.network.network].service) {
                 keys.forEach(key => {
-                  Promise.resolve(this.getFromService('cupHistoryActions', {cupi: key}, {timestamp:'asc'})).then(response => {
-                    this.tub.cups[key].history = response.results
-                    this.calculateCupChart();
+                  Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
+                    this.tub.cups[key].history = response
+                    // this.calculateCupChart(); // TODO
                   }, () => {});
                 });
               }
@@ -610,8 +629,8 @@ class SystemStore {
     Promise.resolve(this.getCup(id).then(cup => {
       this.tub.cups[id] = {...cup};
       if (settings.chain[this.network.network].service) {
-        Promise.resolve(this.getFromService('cupHistoryActions', {cupi: id}, {timestamp:'asc'})).then(response => {
-          this.tub.cups[id].history = response.results;
+        Promise.resolve(this.getCupHistoryFromService(id, {timestamp:'asc'})).then(response => {
+          this.tub.cups[id].history = response;
         }, () => {});
       }
     }));
@@ -787,7 +806,7 @@ class SystemStore {
         this.transactions.logTransactionRejected(notificator.id, notificator.title, e.message);
       });
     } else {
-      proxy.execute['address,bytes'](...params.concat([{value: toWei(value)}, (e, tx) => this.transactions.log(e, tx, notificator.id, notificator.title, notificator.callbacks)]));
+      proxy.execute['address,bytes'](...params.concat([{value}, (e, tx) => this.transactions.log(e, tx, notificator.id, notificator.title, notificator.callbacks)]));
     }
   }
   
