@@ -1,0 +1,69 @@
+// boxes in alerts 
+.notifications-container {
+	position: fixed;
+	width: 340px;
+	z-index: 999;
+	right: 0;
+	top: 0;
+
+	& > * {
+		padding: 32px 44px;
+		position: relative;
+		border: 0;
+		
+		p {
+			max-width: 30em;
+		}
+	}
+	h3 {
+		margin-top: 0px;
+	}
+	.nf-error {
+		background-color: $error-red;
+		color: $white;
+		.notification-headline {
+			&:after {
+				content: url('../img/icon-stop.svg');
+				position: absolute;
+				left: -1.5em;
+				top: auto;
+				margin-top: 0.05em;
+			}
+		}
+	}
+	.nf-info {
+		background-color: $neutral-blue;
+		color: $white;
+		.notification-headline {
+			&:after {
+				content: url('../img/icon-clock.svg');
+				position: absolute;
+				left: -1.5em;
+				top: auto;
+				margin-top: 0.05em;
+			}
+		}
+	}
+	.nf-success {
+		background-color: $success-green;
+		color: $white;
+		.notification-headline {
+			&:after {
+				content: url('../img/icon-check.svg');
+				position: absolute;
+				left: -1.5em;
+				top: auto;
+				margin-top: 0.05em;
+			}
+		}
+	}
+	.close-box {
+		position: absolute;
+		top: 0.785em;
+		right: 0.785em;
+	}
+	.notification-headline {
+		@include fontweight(bold);
+		position: relative;
+	}
+}

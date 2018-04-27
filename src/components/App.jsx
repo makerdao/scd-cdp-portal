@@ -208,7 +208,6 @@ class App extends React.Component {
                         }
                       </main>
                       <aside className="right-column">
-                        <Notify ref='notificator' transactions={ this.props.transactions }/>
                         {
                           this.state.page !== 'help' &&
                           <div className="right-column-content">
@@ -226,6 +225,7 @@ class App extends React.Component {
                     <Dialog system={ this.props.system } profile={ this.props.profile } dialog={ this.props.dialog } />
                   </div>
         }
+        <Notify ref='notificator' transactions={ this.props.transactions }/>
       </React.Fragment>
     )
   }
