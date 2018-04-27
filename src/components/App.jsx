@@ -64,13 +64,6 @@ class App extends React.Component {
     this.setPage(params[0]);
   }
 
-  loadLedger = e => {
-    e.preventDefault();
-    this.props.network.loadLedger().then(() => {
-      this.loadContracts();
-    }, e => alert(e));
-  }
-
   loadContracts = () => {
     Blockchain.resetFilters(true);
     if (typeof this.timeVariablesInterval !== 'undefined') clearInterval(this.timeVariablesInterval);
@@ -157,7 +150,7 @@ class App extends React.Component {
           :
             !this.props.network.defaultAccount
             ?
-              <NoAccount loadLedger={ this.loadLedger } />
+              <NoAccount network={ this.props.network } />
             :
               this.props.system.tub.cupsLoading
               ?
@@ -214,7 +207,7 @@ class App extends React.Component {
                             <div className="row-2col-m">
                               <Wallet system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } account={ this.props.network.defaultAccount } />
                               <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } pipVal = { this.props.system.pip.val } pepVal = { this.props.system.pep.val } />
-                            </div>	
+                            </div>
                             <div className="footer col col-no-border typo-cs typo-grid-grey">
                               <a href="#action">Dai Public Announcement</a> || <a href="#action">Dai Terms of Service</a>
                             </div>
@@ -225,7 +218,7 @@ class App extends React.Component {
                     <Dialog system={ this.props.system } profile={ this.props.profile } dialog={ this.props.dialog } />
                   </div>
         }
-        <Notify ref='notificator' transactions={ this.props.transactions }/>
+        <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network }/>
       </React.Fragment>
     )
   }

@@ -29,7 +29,7 @@ class Notify extends React.Component {
   }
 
   componentDidMount = () => {
-    this.props.transactions.notificator = this;
+    this.props.transactions.notificator = this.props.network.notificator = this;
   }
 
   getInitialState = () => {

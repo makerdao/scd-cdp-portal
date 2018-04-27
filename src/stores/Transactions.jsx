@@ -36,7 +36,7 @@ class TransactionsStore {
     this.notificator.info(tx, title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
   }
   
-  logTransactionConfirmed = (tx) => {
+  logTransactionConfirmed = tx => {
     const msgTemp = 'Transaction TX was confirmed.';
     if (this.registry[tx] && this.registry[tx].pending) {
       this.registry[tx].pending = false;
@@ -49,7 +49,7 @@ class TransactionsStore {
     }
   }
   
-  logTransactionFailed = (tx) => {
+  logTransactionFailed = tx => {
     const msgTemp = 'Transaction TX failed.';
     if (this.registry[tx]) {
       this.registry[tx].pending = false;

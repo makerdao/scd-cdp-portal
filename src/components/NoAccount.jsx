@@ -13,7 +13,7 @@ class NoConnection extends React.Component {
               We could not find an account, please connect your account.<br />
             </p>
             <p>
-              <a href="#action" onClick={ this.props.loadLedger }>Connect to Ledger</a>
+              <a href="#action" onClick={ this.props.network.loadLedger }>Connect to Ledger</a>
             </p>
           </div>
         </div>

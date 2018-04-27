@@ -98,15 +98,15 @@ class NetworkStore {
   }
 
   loadLedger = () => {
-    return new Promise((resolve, reject) => {
-      Blockchain.initLedger().then(ledgerWallet => {
-        if (ledgerWallet) {
-          this.defaultAccount = ledgerWallet.toLowerCase();
-          this.isLedger = true;
-        }
-        resolve();
-      }, e => reject(e))
-    });
+    const id = Math.random();
+    this.notificator.info(id, 'Connecting to Ledger', '', false);
+    Blockchain.initLedger().then(ledgerWallet => {
+      if (ledgerWallet) {
+        this.defaultAccount = ledgerWallet.toLowerCase();
+        this.isLedger = true;
+        this.notificator.success(id, 'Ledger connected', `Address ${this.defaultAccount} loaded`, 4000);
+      }
+    }, e => this.notificator.error(id, 'Error connecting Ledger', e.message, 4000));
   }
 
   stopLedger = async () => {
