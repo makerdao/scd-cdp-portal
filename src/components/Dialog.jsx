@@ -10,6 +10,7 @@ class Dialog extends React.Component {
       skr: null,
       liqPrice: toBigNumber(0),
       ratio: toBigNumber(0),
+      govFeeType: 'mkr',
     }
   }
 
@@ -22,6 +23,7 @@ class Dialog extends React.Component {
           skr: null,
           liqPrice: toBigNumber(0),
           ratio: toBigNumber(0),
+          govFeeType: 'mkr',
         });
       }
       return change;
@@ -32,8 +34,21 @@ class Dialog extends React.Component {
     e.preventDefault();
     if (this.submitEnabled) {
       const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? toBigNumber(this.updateVal.value) : false;
-      this.props.system.executeAction(value);
+      const params = { value };
+      if (['wipe', 'shut'].indexOf(this.props.dialog.method) !== -1) {
+        params.govFeeType = this.state.govFeeType;
+      }
+      this.props.system.executeAction(params);
     }
+  }
+
+  selectGovFeeType = e => {
+    this.setState({govFeeType: e.target.value}, () => {
+      this.props.dialog.error = this.props.dialog.warning = "";
+      if (this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined') {
+        this.cond(this.updateVal.value);
+      }
+    });
   }
 
   setMax = e => {
@@ -76,12 +91,13 @@ class Dialog extends React.Component {
     this.cond(document.getElementById('inputValue').value);
   }
 
-  renderYesNoForm = () => {
+  renderYesNoForm = method => {
     return (
       <form>
         <p id="warningMessage" className="error">
           { this.props.dialog.error }
         </p>
+        { method === 'shut' && this.renderFeeTypeSelector() }
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
           <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
@@ -96,6 +112,15 @@ class Dialog extends React.Component {
 
   renderInputNumberForm = method => {
     return this.renderInputForm('number', method);
+  }
+
+  renderFeeTypeSelector = () => {
+    return (
+      <React.Fragment>
+        <input type="radio" style={ {visibility: 'initial', WebkitAppearance: 'radio'} } name="govFee" value="mkr" checked={this.state.govFeeType === 'mkr'} onChange={ this.selectGovFeeType } /> Pay Gov Fee with MKR<br />
+        <input type="radio" style={ {visibility: 'initial', WebkitAppearance: 'radio'} } name="govFee" value="dai" checked={this.state.govFeeType === 'dai'} onChange={ this.selectGovFeeType } /> Pay Gov Fee with DAI (via Oasisdex best offer)<br /><br />
+      </React.Fragment>
+    )
   }
 
   renderInputForm = (type, method) => {
@@ -124,14 +149,14 @@ class Dialog extends React.Component {
         }
         {
           type === 'number' && method === 'wipe' &&
-          <span style={ {clear: 'left', display: 'block'} }>DAI generated { printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } DAI</span>
-        }
-        {
-          type === 'number' && method === 'wipe' &&
-          <span style={ {clear: 'left', display: 'block'} }>
-            Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR&nbsp;
-            { printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR
-          </span>
+          <React.Fragment>
+            <span style={ {clear: 'left', display: 'block'} }>DAI generated { printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } DAI</span>
+            <span style={ {clear: 'left', display: 'block'} }>
+              Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR&nbsp;
+              { printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR
+            </span>
+            { this.renderFeeTypeSelector() }
+          </React.Fragment>
         }
         {
           type === 'number' && method === 'draw' &&
@@ -139,15 +164,11 @@ class Dialog extends React.Component {
         }
         {
           type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
-          <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice) : '--' } USD</span>
-        }
-        {
-          type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
-          <span style={ {clear: 'left', display: 'block'} }>Current price information (ETH/USD)  { printNumber(this.props.system.pip.val) } USD</span>
-        }
-        {
-          type === 'number' && (method === 'lock' || method === 'free' || method === 'draw' || method === 'wipe') &&
-          <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
+          <React.Fragment>
+            <span style={ {clear: 'left', display: 'block'} }>Projected liquidation price (ETH/USD)  { this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice) : '--' } USD</span>
+            <span style={ {clear: 'left', display: 'block'} }>Current price information (ETH/USD)  { printNumber(this.props.system.pip.val) } USD</span>
+            <span style={ {clear: 'left', display: 'block'} }>Projected collateralization ratio { this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100)) : '--' } %</span>
+          </React.Fragment>
         }
         {
           this.props.dialog.error &&
@@ -285,33 +306,32 @@ class Dialog extends React.Component {
           }, () => {
             let error = '';
             this.submitEnabled = true;
-            if (this.props.system.dai.myBalance.lt(valueWei)) {
+
+            const futureGovFee = fromWei(this.props.system.tub.fee).pow(180).round(0); // 3 minutes of future fee
+            const govDebtSai = wmul(
+                                wmul(
+                                  valueWei,
+                                  wdiv(
+                                    this.props.system.rap(cup),
+                                    this.props.system.tab(cup)
+                                  )
+                                ),
+                                futureGovFee
+                              );
+            const govDebtGov = wmul(govDebtSai, this.props.system.pep.val);
+
+            const valuePlusGovFee = this.state.govFeeType === 'dai' ? valueWei.add(govDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
+            if (this.props.system.dai.myBalance.lt(valuePlusGovFee)) {
               error = 'Not enough balance of DAI to wipe this amount.';
               this.submitEnabled = false;
             } else if (this.props.system.tab(cup).lt(valueWei)) {
               error = `Debt in CDP ${dialog.cupId} is lower than this amount of DAI.`;
               this.submitEnabled = false;
-            } else {
-              const futureGovFee = fromWei(wdiv(this.props.system.tub.fee, this.props.system.tub.tax)).pow(180).round(0); // 3 minutes of future fee
-              const govDebt = wmul(
-                                wmul(
-                                  wmul(
-                                    valueWei,
-                                    wdiv(
-                                      this.props.system.rap(cup),
-                                      this.props.system.tab(cup)
-                                    )
-                                  ),
-                                  this.props.system.pep.val
-                                ),
-                                futureGovFee
-                              );
-              if (govDebt.gt(this.props.system.gov.myBalance)) {
-                error = `Not enough balance of MKR to wipe this amount.`;
-                this.submitEnabled = false;
-              }
-              this.props.dialog.error = error;
+            } else if (this.state.govFeeType === 'mkr' && govDebtGov.gt(this.props.system.gov.myBalance)) {
+              error = `Not enough balance of MKR to wipe this amount.`;
+              this.submitEnabled = false;
             }
+            this.props.dialog.error = error;
           });
         }
         break;

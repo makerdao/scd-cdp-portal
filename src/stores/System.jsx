@@ -836,11 +836,11 @@ class SystemStore {
     this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups']]});
   }
   
-  shut = cupId => {
+  shut = (cupId, useOTC = false) => {
     const id = Math.random();
     const title = `Shut CDP ${cupId}`;
     this.transactions.logRequestTransaction(id, title);
-    const action = `${methodSig(`shut(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
+    const action = `${methodSig(`shut(address,bytes32${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
     this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
   }
   
@@ -890,7 +890,7 @@ class SystemStore {
     }
   }
   
-  wipeAndFree = (cupId, eth, dai) => {
+  wipeAndFree = (cupId, eth, dai, useOTC = false) => {
     let action = false;
     let title = '';
     if (eth.gt(0) || dai.gt(0)) {
@@ -899,10 +899,10 @@ class SystemStore {
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
       } else if (eth.equals(0)) {
         title = `Wipe ${dai.valueOf()} DAI`;
-        action = `${methodSig(`wipe(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+        action = `${methodSig(`wipe(address,bytes32,uint256${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
       } else {
         title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}`;
+        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
       }
       const id = Math.random();
       this.transactions.logRequestTransaction(id, title);
@@ -916,7 +916,8 @@ class SystemStore {
     }
   }
   
-  executeAction = value => {
+  executeAction = params => {
+    const value = params.value;
     let callbacks = [];
     let error = false;
     switch (this.dialog.method) {
@@ -937,16 +938,20 @@ class SystemStore {
         break;
       case 'wipe':
         callbacks = [
-                      ['system/checkAllowance', 'gov',
+                      ['system/checkAllowance', 'dai',
                         [
-                          ['system/checkAllowance', 'dai',
-                            [
-                              ['system/wipeAndFree', this.dialog.cupId, toBigNumber(0), value]
-                            ]
-                          ]
+                          ['system/wipeAndFree', this.dialog.cupId, toBigNumber(0), value, params.govFeeType === 'dai']
                         ]
                       ]
                     ];
+        if (params.govFeeType === 'mkr') {
+          // If fee will be paid with MKR it is necessary to check its allowance
+          callbacks = [
+                        ['system/checkAllowance', 'gov',
+                          callbacks
+                        ]
+                      ];
+        }
         break;
       case 'free':
         callbacks = [
@@ -954,22 +959,32 @@ class SystemStore {
                     ];
         break;
       case 'shut':
-        if (this.tab(this.tub.cups[this.dialog.cupId]).gt(this.dai.myBalance)) {
+        const futureGovFee = fromWei(this.tub.fee).pow(180).round(0); // 3 minutes of future fee
+        const govDebtSai = wmul(this.rap(this.tub.cups[this.dialog.cupId]), futureGovFee);
+        const govDebtGov = wmul(govDebtSai, this.pep.val);
+
+        const valuePlusGovFee = params.govFeeType === 'dai' ? this.tab(this.tub.cups[this.dialog.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[this.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
+
+        if (valuePlusGovFee.gt(this.dai.myBalance)) {
           error = 'Not enough DAI to close this CDP';
-        } else if (wdiv(this.rap(this.tub.cups[this.dialog.cupId]), this.pep.val).gt(this.gov.myBalance)) {
+        } else if (params.govFeeType === 'mkr' && govDebtGov.gt(this.gov.myBalance)) {
           error = 'Not enough MKR to close this CDP';
         }
         callbacks = [
-                      ['system/checkAllowance', 'gov',
+                      ['system/checkAllowance', 'dai',
                         [
-                          ['system/checkAllowance', 'dai',
-                            [
-                              ['system/shut', this.dialog.cupId]
-                            ]
-                          ]
+                          ['system/shut', this.dialog.cupId, params.govFeeType === 'dai']
                         ]
                       ]
                     ];
+        if (params.govFeeType === 'mkr') {
+          // If fee will be paid with MKR it is necessary to check its allowance
+          callbacks = [
+                        ['system/checkAllowance', 'gov',
+                          callbacks
+                        ]
+                      ];
+        }
         break;
       case 'migrate':
         callbacks = [

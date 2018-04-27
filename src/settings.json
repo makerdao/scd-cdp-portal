@@ -4,6 +4,7 @@
   "chain": {
     "private": {
       "top": "",
+      "otc": "",
       "faucet": "",
       "fromBlock": 0,
       "service": "",
@@ -16,6 +17,7 @@
     },
     "kovan": {
       "top": "0x5f00393547561da3030ebf30e52f5dc0d5d3362c",
+      "otc": "0x8cf1cab422a0b6b554077a361f8419cdf122a9f9",
       "faucet": "",
       "fromBlock": 5216602,
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
@@ -23,11 +25,12 @@
       "proxyRegistry": "0x383a7fc29edde64aec7f776e2517ec8819e147f1",
       "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
       "proxyContracts": {
-        "sai": "0x0808e90dbdc7843a89ed7eebcbd06ddfd080a962"
+        "sai": "0xe2d2f84e56e161a7f05e875b05af04e1c40c5d8e"
       }
     },
     "main": {
       "top": "0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3",
+      "otc": "",
       "faucet": "",
       "fromBlock": 4752013,
       "service": "https://graphql.makerdao.com/v1",
