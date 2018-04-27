@@ -454,7 +454,7 @@ class SystemStore {
 
   getCupHistoryFromService = cupId => {
     return new Promise((resolve, reject) => {
-      this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg tx time } } } }`)
+      this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg guy tx time } } } }`)
       .then(r => resolve(r.data.getCup.actions.nodes), e => reject(e))
     });
   }

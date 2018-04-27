@@ -49,12 +49,11 @@ class CupHistory extends React.Component {
                         default:
                           break;
                       }
-                      this.props.actions[key].sender = '0x';
                       return (
                         <div key={ key } style={ {marginBottom: '10px'} }>
                           { formatDate(new Date(this.props.actions[key].time).getTime() / 1000) }<br />
                           <span dangerouslySetInnerHTML={{__html: message}}></span>&nbsp;
-                          { etherscanAddress(this.props.network.network, 'Sender', this.props.actions[key].sender) }&nbsp;
+                          { etherscanAddress(this.props.network.network, 'Sender', this.props.actions[key].guy) }&nbsp;
                           { etherscanTx(this.props.network.network, 'Tx Hash', this.props.actions[key].tx) }
                         </div>
                       )
