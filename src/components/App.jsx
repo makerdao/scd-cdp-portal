@@ -13,6 +13,7 @@ import Wallet from './Wallet';
 import Settings from './Settings';
 import Help from './Help';
 import Notify from './Notify';
+import NotifySetUp from './NotifySetUp';
 import {initWeb3} from  '../web3';
 import {isAddress} from '../helpers';
 import './App.css';
@@ -219,6 +220,7 @@ class App extends React.Component {
                   </div>
         }
         <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network }/>
+        <NotifySetUp transactions={ this.props.transactions } system={ this.props.system }/>
       </React.Fragment>
     )
   }

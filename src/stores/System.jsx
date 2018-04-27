@@ -455,7 +455,7 @@ class SystemStore {
   getCupHistoryFromService = cupId => {
     return new Promise((resolve, reject) => {
       this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg guy tx time } } } }`)
-      .then(r => resolve(r.data.getCup.actions.nodes), e => reject(e))
+      .then(r => resolve(r.data.getCup ? r.data.getCup.actions.nodes : null), e => reject(e))
     });
   }
 
@@ -515,10 +515,10 @@ class SystemStore {
     });
   }
 
-  getMyCups = () => {
+  getMyCups = (keepTrying = false) => {
     if (this.profile.proxy) {
       this.tub.cupsLoading = true;
-      this.getCups('new');
+      this.getCups('new', keepTrying);
     } else {
       this.tub.cupsLoading = false;
     }
@@ -528,25 +528,25 @@ class SystemStore {
     this.getCups('legacy');
   }
 
-  getCups = type => {
-    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
-    const me = this;
-    if (settings.chain[this.network.network].service) {
-      Promise.resolve(this.getCupsFromService(lad)).then(response => {
-        const promises = [];
-        response.forEach(v => {
-          promises.push(me.getCup(v.id));
-        });
-        me.getCupsFromChain(type, response.lastBlockNumber, promises);
-      }).catch(error => {
-        me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-      });
-    } else {
-      this.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-    }
+  getCups = (type, keepTrying = false) => {
+    // const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    // const me = this;
+    // if (settings.chain[this.network.network].service) {
+    //   Promise.resolve(this.getCupsFromService(lad)).then(response => {
+    //     const promises = [];
+    //     response.forEach(v => {
+    //       promises.push(me.getCup(v.id));
+    //     });
+    //     me.getCupsFromChain(type, response.lastBlockNumber, promises);
+    //   }).catch(error => {
+    //     me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
+    //   });
+    // } else {
+      this.getCupsFromChain(keepTrying, type, settings.chain[this.network.network].fromBlock);
+    // }
   }
   
-  getCupsFromChain = (type, fromBlock, promises = []) => {
+  getCupsFromChain = (keepTrying, type, fromBlock, promises = []) => {
     const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
     const conditions = {lad};
     const promisesLogs = [];
@@ -591,9 +591,13 @@ class SystemStore {
           const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
           if (type === 'new') {
             if (this.tub.cupsLoading) {
-              this.tub.cupsLoading = false;
               this.tub.cups = cupsFiltered;
-              if (keys.length > 0 && settings.chain[this.network.network].service) {
+
+              this.tub.cupsLoading = keepTrying && keys.length === 0;
+              if (this.tub.cupsLoading) {
+                // If we know there is a new CDP and it still not available, keep trying & loading
+                setTimeout(() => this.getMyCups(true), 3000)
+              } else if (keys.length > 0 && settings.chain[this.network.network].service) {
                 keys.forEach(key => {
                   Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
                     this.tub.cups[key].history = response
@@ -854,7 +858,7 @@ class SystemStore {
   
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
-        title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+        title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
         action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
       } else {
         if (dai.equals(0)) {
@@ -868,10 +872,21 @@ class SystemStore {
           action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
         }
       }
-  
       const id = Math.random();
-      this.transactions.logRequestTransaction(id, title);
-      this.executeProxyTx(action, toWei(eth), {id, title, callbacks: cupId ? [['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']] : [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
+      this.transactions.logRequestTransaction(id, title, !cupId);
+      this.executeProxyTx(action, toWei(eth), {
+                                                id,
+                                                title,
+                                                callbacks:
+                                                  cupId
+                                                  ?
+                                                    [
+                                                      ['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
+                                                    ]
+                                                  : [
+                                                      ['system/getMyCups', true], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
+                                                    ]
+                                              });
     }
   }
   
@@ -891,7 +906,13 @@ class SystemStore {
       }
       const id = Math.random();
       this.transactions.logRequestTransaction(id, title);
-      this.executeProxyTx(action, 0, {id, title, callbacks: [['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
+      this.executeProxyTx(action, 0, {
+                                        id,
+                                        title,
+                                        callbacks:  [
+                                                      ['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
+                                                    ]
+                                      });
     }
   }
   

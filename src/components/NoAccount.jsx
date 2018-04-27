@@ -1,4 +1,5 @@
 import React from 'react';
+import {observer} from "mobx-react";
 
 class NoConnection extends React.Component {
   render() {
@@ -22,4 +23,4 @@ class NoConnection extends React.Component {
   }
 }
 
-export default NoConnection;
+export default observer(NoConnection);
