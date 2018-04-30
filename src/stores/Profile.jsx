@@ -42,8 +42,8 @@ class ProfileStore {
       this.transactions.logRequestTransaction(id, title);
       const proxyRegistry = Blockchain.objects.proxyRegistry;
       callbacks = [['profile/getAndSetProxy', callbacks]];
-      if (this.transactions.network.isLedger) {
-        Blockchain.signTransactionLedger(this.transactions.network.defaultAccount, proxyRegistry.address, proxyRegistry.build.getData(), 0).then(tx => {
+      if (this.transactions.network.isHw && this.transactions.network.hw.option === 'ledger') {
+        Blockchain.signTransactionLedger(`${this.transactions.network.hw.derivationPath}/${this.transactions.network.hw.addressIndex}`, this.transactions.network.defaultAccount, proxyRegistry.address, proxyRegistry.build.getData(), 0).then(tx => {
           this.transactions.logPendingTransaction(id, tx, title, callbacks);
         }, e => {
           this.transactions.logTransactionRejected(id, title, e.message);

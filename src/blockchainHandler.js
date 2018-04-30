@@ -165,40 +165,50 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
 
 export const isMetamask = () => web3.currentProvider.isMetaMask || web3.currentProvider.constructor.name === 'MetamaskInpageProvider';
 
-export const initLedger = () => {
+export const loadLedgerAddresses = derivationPath => {
   return new Promise((resolve, reject) => {
-    Transport.create().then(transport => {
+    Transport.create().then(async transport => {
       transport.exchangeTimeout = 10000;
       objects.ledger = new Eth(transport);
-      objects.ledger.getAddress("44'/60'/0'/0").then(r => {
-        resolve(r.address);
-      }, e => reject(e));
+      const addresses = [];
+      try {
+        for (let i = 0; i < 5; i++){
+          addresses.push((await objects.ledger.getAddress(`${derivationPath}/${i}`)).address);
+        }
+        resolve(addresses);
+      } catch(e) {
+        reject(e);
+      }
     }, e => reject(e));
   });
 }
 
-export const signTransactionLedger = (account, to, data, value) => {
+export const signTransactionLedger = (derivationPathWithAccount, account, to, data, value) => {
   return new Promise(async (resolve, reject) => {
-    const tx = new Tx({
-      nonce: toHex(await getTransactionCount(account)),
-      gasPrice: toHex(await getGasPrice()),
-      gasLimit: parseInt(await estimateGas(to, data, value, account) * 1.5, 10),
-      to,
-      value: toHex(value),
-      data,
-      v: parseInt(await getNetwork(), 10)
-    });
-    objects.ledger.signTransaction("44'/60'/0'/0", tx.serialize().toString('hex')).then(sig => {
-      tx.v = "0x" + sig['v'];
-      tx.r = "0x" + sig['r'];
-      tx.s = "0x" + sig['s'];
-      web3.eth.sendRawTransaction("0x" + tx.serialize().toString('hex'), (e, r) => {
-        if (!e) {
-          resolve(r);
-        } else {
-          reject(e);
-        }
+    try {
+      const tx = new Tx({
+        nonce: toHex(await getTransactionCount(account)),
+        gasPrice: toHex(await getGasPrice()),
+        gasLimit: parseInt(await estimateGas(to, data, value, account) * 1.5, 10),
+        to,
+        value: toHex(value),
+        data,
+        v: parseInt(await getNetwork(), 10)
       });
-    }, e => reject(e));
+      objects.ledger.signTransaction(derivationPathWithAccount, tx.serialize().toString('hex')).then(sig => {
+        tx.v = "0x" + sig['v'];
+        tx.r = "0x" + sig['r'];
+        tx.s = "0x" + sig['s'];
+        web3.eth.sendRawTransaction("0x" + tx.serialize().toString('hex'), (e, r) => {
+          if (!e) {
+            resolve(r);
+          } else {
+            reject(e);
+          }
+        });
+      }, e => reject(e));
+    } catch(e) {
+      reject(e);
+    }
   });
 }

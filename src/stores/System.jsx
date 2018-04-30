@@ -760,8 +760,8 @@ class SystemStore {
         this.transactions.logRequestTransaction(id, title);
         const tokenObj = Blockchain.objects[token];
         const params = [this.profile.proxy, -1];
-        if (this.network.isLedger) {
-          Blockchain.signTransactionLedger(this.network.defaultAccount, tokenObj.address, tokenObj.approve.getData(...params), 0).then(tx => {
+        if (this.network.isHw && this.network.hw.option === 'ledger') {
+          Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tokenObj.address, tokenObj.approve.getData(...params), 0).then(tx => {
             this.transactions.logPendingTransaction(id, tx, title, callbacks);
           }, e => {
             this.transactions.logTransactionRejected(id, title, e.message);
@@ -781,8 +781,8 @@ class SystemStore {
     const tokenObj = Blockchain.objects[token];
     const params = [to, toWei(amount)];
     const callbacks = [['system/setUpToken', token]];
-    if (this.network.isLedger) {
-      Blockchain.signTransactionLedger(this.network.defaultAccount, tokenObj.address, tokenObj.transfer.getData(...params), 0).then(tx => {
+    if (this.network.isHw && this.network.hw.option === 'ledger') {
+      Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tokenObj.address, tokenObj.transfer.getData(...params), 0).then(tx => {
         this.transactions.logPendingTransaction(id, tx, title, callbacks);
       }, e => {
         this.transactions.logTransactionRejected(id, title, e.message);
@@ -802,8 +802,8 @@ class SystemStore {
       const tubObj = Blockchain.objects.tub;
       const params = [toBytes32(cup), proxy];
       const callbacks = [['system/getMyCups'], ['system/getMyLegacyCups']];
-      if (this.network.isLedger) {
-        Blockchain.signTransactionLedger(this.network.defaultAccount, tubObj.address, tubObj.give.getData(...params), 0).then(tx => {
+      if (this.network.isHw && this.network.hw.option === 'ledger') {
+        Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tubObj.address, tubObj.give.getData(...params), 0).then(tx => {
           this.transactions.logPendingTransaction(id, tx, title, callbacks);
         }, e => {
           this.transactions.logTransactionRejected(id, title, e.message);
@@ -817,8 +817,8 @@ class SystemStore {
   executeProxyTx = (action, value, notificator) => {
     const proxy = Blockchain.objects.proxy;
     const params = [settings.chain[this.network.network].proxyContracts.sai, action];
-    if (this.network.isLedger) {
-      Blockchain.signTransactionLedger(this.network.defaultAccount, proxy.address, proxy.execute.getData(...params), value).then(tx => {
+    if (this.network.isHw && this.network.hw.option === 'ledger') {
+      Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, proxy.address, proxy.execute.getData(...params), value).then(tx => {
         this.transactions.logPendingTransaction(notificator.id, tx, notificator.title, notificator.callbacks);
       }, e => {
         this.transactions.logTransactionRejected(notificator.id, notificator.title, e.message);
@@ -840,7 +840,7 @@ class SystemStore {
     const id = Math.random();
     const title = `Shut CDP ${cupId}`;
     this.transactions.logRequestTransaction(id, title);
-    const action = `${methodSig(`shut(address,bytes32${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
+    const action = `${methodSig(`shut(address,bytes32${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
     this.executeProxyTx(action, 0, {id, title, callbacks: [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
   }
   
@@ -899,10 +899,10 @@ class SystemStore {
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
       } else if (eth.equals(0)) {
         title = `Wipe ${dai.valueOf()} DAI`;
-        action = `${methodSig(`wipe(address,bytes32,uint256${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
+        action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
       } else {
         title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC && ',address'})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC && addressToBytes32(settings.chain[this.network.network].otc, false)}`;
+        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
       }
       const id = Math.random();
       this.transactions.logRequestTransaction(id, title);

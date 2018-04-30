@@ -7,8 +7,8 @@ class NotifySetUp extends React.Component {
     
     return (
       txs.length > 0 &&
-      <div style={ {position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, background: 'rgba(255,255,255,0.4)', zIndex: 9999} }>
-        <div style={ {position: 'relative', width: '700px', height: '400px', background: '#202930', zIndex: 10000, margin: 'auto'} }>
+      <div style={ {position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, background: 'rgba(255,255,255,0.4)', zIndex: 997} }>
+        <div style={ {position: 'relative', width: '700px', height: '400px', background: '#202930', zIndex: 998, margin: 'auto'} }>
           {
             this.props.transactions.registry[txs[0]].pending || Object.keys(this.props.system.tub.cups).length === 0
             ?

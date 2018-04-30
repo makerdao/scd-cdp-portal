@@ -8,7 +8,8 @@ class NetworkStore {
   latestBlock = null;
   network = "";
   outOfSync = true;
-  isLedger = false;
+  isHw = false;
+  hw = { show: false, option: null, derivationPath: null, addresses: [], addressIndex: null };
 
   checkNetwork = () => {
     return new Promise((resolve, reject) => {
@@ -84,7 +85,7 @@ class NetworkStore {
       Blockchain.getAccounts().then(accounts => {
         this.accounts = accounts;
         const oldDefaultAccount = this.defaultAccount;
-        if (!this.isLedger) {
+        if (!this.isHw) {
           this.defaultAccount = accounts[0];
         }
         Blockchain.setDefaultAccount(this.defaultAccount);
@@ -97,21 +98,36 @@ class NetworkStore {
     });
   }
 
-  loadLedger = () => {
-    const id = Math.random();
-    this.notificator.info(id, 'Connecting to Ledger', '', false);
-    Blockchain.initLedger().then(ledgerWallet => {
-      if (ledgerWallet) {
-        this.defaultAccount = ledgerWallet.toLowerCase();
-        this.isLedger = true;
-        this.notificator.success(id, 'Ledger connected', `Address ${this.defaultAccount} loaded`, 4000);
-      }
-    }, e => this.notificator.error(id, 'Error connecting Ledger', e.message, 4000));
+  showHW = option => {
+    this.hw.option = option;
+    this.hw.show = true;
   }
 
-  stopLedger = async () => {
+  loadHWAddresses = derivationPath => {
+    this.hw.derivationPath = derivationPath;
+    if (this.hw.option === 'ledger') {
+      const id = Math.random();
+      this.notificator.info(id, 'Connecting to Ledger', 'Getting addresses...', false);
+      Blockchain.loadLedgerAddresses(derivationPath).then(addresses => {
+        this.hw.addresses = addresses;
+        this.notificator.success(id, 'Ledger connected', 'Addresses were loaded', 4000);
+      }, e => this.notificator.error(id, 'Error connecting Ledger', e.message, 4000));
+    }
+  }
+
+  selectHWAddress = address => {
+    this.hw.addressIndex = this.hw.addresses.indexOf(address);
+  }
+
+  importAddress = () => {
+    this.defaultAccount = this.hw.addresses[this.hw.addressIndex].toLowerCase();
+    this.isHw = true;
+    this.hw.show = false;
+  }
+
+  stopHw = async () => {
     this.defaultAccount = this.accounts[0];
-    this.isLedger = false;
+    this.isHw = false;
   }
 }
 
@@ -122,7 +138,8 @@ decorate(NetworkStore, {
   latestBlock: observable,
   network: observable,
   outOfSync: observable,
-  isLedger: observable
+  hw: observable,
+  isHw: observable
 });
 
 const store = new NetworkStore();
