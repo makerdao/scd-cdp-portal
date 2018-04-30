@@ -32,13 +32,17 @@ class HardWallet extends React.Component {
             <li><label><input type="radio" style={ {visibility: 'initial', WebkitAppearance: 'radio'} } checked={ this.props.network.hw.derivationPath === "m/44'/40'/0'/0" } onChange={ this.selectDerivationPath } value="m/44'/40'/0'/0"/>m/44'/40'/0'/0 - Network: Expanse</label></li>
           </ul>
           Choose Address:
-          <ul>
+          <ul style={ {height: '200px', overflowY: 'scroll'} }>
             {
               this.props.network.hw.addresses.map(key => 
                 <li key={ key }><label><input type="radio" style={ {visibility: 'initial', WebkitAppearance: 'radio'} } checked={ key === this.props.network.hw.addresses[this.props.network.hw.addressIndex] } value={ key } onChange={ this.selectAccount } />{ key }</label></li>
               )
             }
           </ul>
+          {
+            this.props.network.hw.addresses.length > 0 &&
+            <button onClick={ this.props.network.loadMoreHwAddresses }>Load more addresses</button>
+          }
           {
             this.props.network.hw.addressIndex !== null &&
             <button onClick={ this.importAddress }>Import Address</button>

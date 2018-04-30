@@ -108,8 +108,19 @@ class NetworkStore {
     if (this.hw.option === 'ledger') {
       const id = Math.random();
       this.notificator.info(id, 'Connecting to Ledger', 'Getting addresses...', false);
-      Blockchain.loadLedgerAddresses(derivationPath).then(addresses => {
+      Blockchain.loadLedgerAddresses(derivationPath, 0).then(addresses => {
         this.hw.addresses = addresses;
+        this.notificator.success(id, 'Ledger connected', 'Addresses were loaded', 4000);
+      }, e => this.notificator.error(id, 'Error connecting Ledger', e.message, 4000));
+    }
+  }
+
+  loadMoreHwAddresses = () => {
+    if (this.hw.option === 'ledger') {
+      const id = Math.random();
+      this.notificator.info(id, 'Connecting to Ledger', 'Getting more addresses...', false);
+      Blockchain.loadLedgerAddresses(this.hw.derivationPath, this.hw.addresses.length).then(addresses => {
+        this.hw.addresses = this.hw.addresses.concat(addresses);
         this.notificator.success(id, 'Ledger connected', 'Addresses were loaded', 4000);
       }, e => this.notificator.error(id, 'Error connecting Ledger', e.message, 4000));
     }

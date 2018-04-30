@@ -165,14 +165,14 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
 
 export const isMetamask = () => web3.currentProvider.isMetaMask || web3.currentProvider.constructor.name === 'MetamaskInpageProvider';
 
-export const loadLedgerAddresses = derivationPath => {
+export const loadLedgerAddresses = (derivationPath, from) => {
   return new Promise((resolve, reject) => {
     Transport.create().then(async transport => {
       transport.exchangeTimeout = 10000;
       objects.ledger = new Eth(transport);
       const addresses = [];
       try {
-        for (let i = 0; i < 5; i++){
+        for (let i = from; i < from + 5; i++){
           addresses.push((await objects.ledger.getAddress(`${derivationPath}/${i}`)).address);
         }
         resolve(addresses);
