@@ -28,7 +28,8 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      page: ''
+      page: '',
+      wizardOpenCDP: false,
     }
   }
 
@@ -128,11 +129,23 @@ class App extends React.Component {
   }
 
   setPage = page => {
-    if (['home', 'open', 'settings', 'help'].indexOf(page) === -1) {
+    if (['home', 'settings', 'help'].indexOf(page) === -1) {
       page = 'home';
     }
-    window.location.hash = page;
+    if (page !== 'home') {
+      window.location.hash = page;
+    } else {
+      // If home we try to remove hash completely if browser supports
+      window.location.hash = '';
+      if ('pushState' in window.history) {
+        window.history.pushState('', document.title, window.location.pathname + window.location.search);
+      }
+    }
     this.setState({'page': page});
+  }
+
+  setOpenCDPWizard = () => {
+    this.setState({wizardOpenCDP: true});
   }
 
   changePage = e => {
@@ -158,9 +171,9 @@ class App extends React.Component {
               ?
                 <div>Loading...</div>
               :
-                Object.keys(this.props.system.tub.cups).length === 0 && this.state.page !== "open"
+                Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
                 ?
-                  <Welcome changePage={ this.changePage }/>
+                  <Welcome setOpenCDPWizard={ this.setOpenCDPWizard }/>
                 :
                   <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.show ? "dialog-open" : "" }>
                     <div className="wrapper">
@@ -182,24 +195,29 @@ class App extends React.Component {
                         {
                           this.state.page === 'settings' &&
                           <Settings
-                            network={ this.props.network.network }
+                            network={ this.props.network }
                             system={ this.props.system }
                             account={ this.props.network.defaultAccount }
                             profile={ this.props.profile }
                             handleOpenDialog={ this.props.dialog.handleOpenDialog }
-                            transferToken={ this.props.system.transferToken } />
+                            transferToken={ this.props.system.transferToken }
+                            loadContracts={ this.loadContracts } />
                         }
                         {
                           this.state.page === 'help' &&
                           <Help />
                         }
                         {
-                          (this.state.page !== 'settings' && this.state.page !== 'help' && /*this.state.page === 'open' || */Object.keys(this.props.system.tub.cups).length === 0) &&
-                          <Wizard system={ this.props.system } profile={ this.props.profile } />
-                        }
-                        {
-                          this.state.page !== 'settings' && this.state.page !== 'help' && /*this.state.page === 'home' && */Object.keys(this.props.system.tub.cups).length > 0 &&
-                          <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
+                          this.state.page === 'home' &&
+                          <React.Fragment>
+                            {
+                              Object.keys(this.props.system.tub.cups).length === 0
+                              ?
+                                <Wizard system={ this.props.system } profile={ this.props.profile } />
+                              :
+                                <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
+                            }
+                          </React.Fragment>
                         }
                       </main>
                       <aside className="right-column">

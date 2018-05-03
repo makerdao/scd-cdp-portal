@@ -1,7 +1,7 @@
 import React from 'react';
 import {observer} from "mobx-react";
 
-class NoConnection extends React.Component {
+class NoAccount extends React.Component {
   render() {
     return (
       <div>
@@ -14,7 +14,7 @@ class NoConnection extends React.Component {
               We could not find an account, please connect your account.<br />
             </p>
             <p>
-              <a href="#action" onClick={ () => this.props.network.showHW('ledger') }>Connect to Ledger</a>
+              <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Connect to Ledger</a>
             </p>
           </div>
         </div>
@@ -23,4 +23,4 @@ class NoConnection extends React.Component {
   }
 }
 
-export default observer(NoConnection);
+export default observer(NoAccount);

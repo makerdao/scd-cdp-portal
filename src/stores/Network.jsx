@@ -9,7 +9,7 @@ class NetworkStore {
   network = "";
   outOfSync = true;
   isHw = false;
-  hw = { show: false, option: null, derivationPath: null, addresses: [], addressIndex: null };
+  hw = {show: false, option: null, derivationPath: null, addresses: [], addressIndex: null};
 
   checkNetwork = () => {
     return new Promise((resolve, reject) => {

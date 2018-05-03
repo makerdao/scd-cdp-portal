@@ -3,6 +3,7 @@ import {observer} from 'mobx-react';
 
 class Menu extends React.Component {
   render() {
+    const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
       <nav>
         <ul className="menu">
@@ -11,9 +12,9 @@ class Menu extends React.Component {
             <span className="menu-label" data-page="home">Dashboard</span>
           </li>
           {
-            !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 &&
+            this.props.page === 'home' && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 &&
             Object.keys(this.props.system.tub.cups).map(key =>
-              <li key={ key } data-cupid={ key } className={ this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0] === key ? 'active' : '' } onClick={ this.props.system.changeCup }>
+              <li key={ key } data-cupid={ key } className={ cupId === key ? 'active' : '' } onClick={ this.props.system.changeCup }>
                 CDP #{ key }
               </li>
             )
