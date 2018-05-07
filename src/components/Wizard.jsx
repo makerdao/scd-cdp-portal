@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
+import LegacyCups from './LegacyCups';
 
 class Wizard extends Component {
   constructor() {
@@ -105,6 +106,7 @@ class Wizard extends Component {
           this.state.step === 1
           ?
             <React.Fragment>
+              <LegacyCups legacyCups={ this.props.system.tub.legacyCups } handleOpenDialog={ this.props.handleOpenDialog } />
               <div>
                 <form ref={ input => this.wizardForm = input } onSubmit={ () => this.goToStep(2) }>
                   <div style={ {float: 'left', width: '50%'} }>

@@ -173,7 +173,7 @@ class App extends React.Component {
               :
                 Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
                 ?
-                  <Welcome setOpenCDPWizard={ this.setOpenCDPWizard }/>
+                  <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
                 :
                   <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.show ? "dialog-open" : "" }>
                     <div className="wrapper">
@@ -213,7 +213,7 @@ class App extends React.Component {
                             {
                               Object.keys(this.props.system.tub.cups).length === 0
                               ?
-                                <Wizard system={ this.props.system } profile={ this.props.profile } />
+                                <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
                               :
                                 <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
                             }

@@ -4,6 +4,7 @@ import {observer} from "mobx-react";
 class HardWallet extends React.Component {
 
   selectAccount = e => {
+    e.preventDefault();
     this.props.network.selectHWAddress(e.target.value);
   }
 
@@ -22,11 +23,11 @@ class HardWallet extends React.Component {
           <ul style={ {padding:'0px', margin: '0px', listStyle: 'none'} }>
             <li style={ {padding:'0px', margin: '0px'} }>
               { defaultDerivationPath } (default)&nbsp;
-              <a href="#action" onClick={ e => this.props.network.loadHWAddresses(defaultDerivationPath) }>Load</a>
+              <a href="#action" onClick={ e => {  e.preventDefault(); this.props.network.loadHWAddresses(defaultDerivationPath) } }>Load</a>
             </li>
             <li style={ {padding:'0px', margin: '0px'} }>
               <input type="text" style={ {width: '120px'} } ref={input => this.derivationPath = input}/>&nbsp;
-              <a href="#action" onClick={ e => this.props.network.loadHWAddresses(this.derivationPath.value) }>Load</a>
+              <a href="#action" onClick={ e => {  e.preventDefault(); this.props.network.loadHWAddresses(this.derivationPath.value) } }>Load</a>
             </li>
           </ul>
           {
