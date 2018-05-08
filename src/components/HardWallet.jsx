@@ -4,7 +4,6 @@ import {observer} from "mobx-react";
 class HardWallet extends React.Component {
 
   selectAccount = e => {
-    e.preventDefault();
     this.props.network.selectHWAddress(e.target.value);
   }
 
