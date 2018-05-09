@@ -29,10 +29,10 @@ class CupHistory extends React.Component {
                           message = `Transferred your CDP to ${ReactDOMServer.renderToString(etherscanAddress(this.props.network, `${this.props.actions[key].arg.substring(0,20)}...`, this.props.actions[key].arg))}`;
                           break;
                         case 'LOCK':
-                          message = `Deposited ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} PETH to your CDP`;
+                          message = `Deposited ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} ETH to your CDP`;
                           break;
                         case 'FREE':
-                          message = `Withdraw ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} DAI from your CDP`;
+                          message = `Withdraw ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} ETH from your CDP`;
                           break;
                         case 'DRAW':
                           message = `Generated ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} DAI from your CDP`;
