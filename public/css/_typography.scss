@@ -166,6 +166,13 @@ h2 {
 	margin-bottom: 1em;
 }
 
+h2.underline {
+	padding-bottom: 0.4em;
+	border-color: #313d47;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+}
+
 h3 {
 	@include fontsize(cl);
 }

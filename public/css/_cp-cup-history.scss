@@ -1,0 +1,55 @@
+.history-cointainer {
+  clear: both;
+  margin-top: 35px;
+  .history-icon {
+    float: left;
+    height: 100px;
+    width: 80px;
+    img {
+      position: absolute;
+      display: block;
+      width: auto;
+      height: 48px;
+    }
+    .vertical-line {
+      position: relative;
+      width: 1px;
+      height: calc(100% - 65px);
+      left: 23px;
+      top: 57px;
+      border-left: 1px solid #313d47;
+    }
+  }
+  .history-details {
+    float: left;
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+  .history-date {
+    font-size: 0.85em;
+  }
+  .history-tx-links {
+    margin-left: 10px;
+    position: relative;
+    top: -1px;
+    .pipe-separator {
+      font-size: 0.9em;
+      padding: 0 1px;
+      color: rgba(154, 163, 173, 0.65);
+    }
+    a {
+      text-decoration: none;
+      border-bottom: 1px solid rgba(154, 163, 173, 0.65);
+      padding-bottom: 2px;
+      position: relative;
+      font-size: 0.85em;
+      display: inline-block;
+      line-height: 1;
+    }
+  }
+  &:last-child {
+    .vertical-line {
+      display: none;
+    }
+  }
+}
