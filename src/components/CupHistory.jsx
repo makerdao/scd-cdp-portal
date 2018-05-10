@@ -31,11 +31,11 @@ class CupHistory extends React.Component {
                           image = 'history-icon-unknown.svg';
                           break;
                         case 'LOCK':
-                          message = `Deposited ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} ETH to your CDP`;
+                          message = `Deposited ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} PETH to your CDP`;
                           image = 'history-icon-locked.svg';
                           break;
                         case 'FREE':
-                          message = `Withdrew ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} ETH from your CDP`;
+                          message = `Withdrew ${ReactDOMServer.renderToString(printNumber(toWei(this.props.actions[key].arg)))} PETH from your CDP`;
                           image = 'history-icon-payback.svg';
                           break;
                         case 'DRAW':
