@@ -7,7 +7,7 @@ class CupHistory extends React.Component {
   render() {
     return (
       <div className="col col-extra-padding">
-        <h2 class="underline">CDP History</h2>
+        <h2 className="underline">CDP History</h2>
           <div>
             {
               false
@@ -58,10 +58,10 @@ class CupHistory extends React.Component {
                           break;
                       }
                       return (
-                        <div class="history-cointainer" key={ key }>
+                        <div className="history-cointainer" key={ key }>
                           <div className="history-icon">
                             <img src={ `img/${image}` } draggable="false" alt="" />
-                            <div class="vertical-line"></div>
+                            <div className="vertical-line"></div>
                           </div>
                           <div className="history-details">
                             <div className="history-date">{ formatDate(new Date(this.props.actions[key].time).getTime() / 1000) }</div>
