@@ -129,7 +129,7 @@ class App extends React.Component {
   }
 
   setPage = page => {
-    if (['home', 'wizard', 'settings', 'help'].indexOf(page) === -1) {
+    if (['home', 'settings', 'help'].indexOf(page) === -1) {
       page = 'home';
     }
     if (page !== 'home') {
@@ -151,7 +151,6 @@ class App extends React.Component {
   changePage = e => {
     e.preventDefault();
     let page = e.target.getAttribute('data-page');
-    console.debug(`Changing to page: ${page}`);
     this.setPage(page);
   }
   //
@@ -207,10 +206,6 @@ class App extends React.Component {
                         {
                           this.state.page === 'help' &&
                           <Help />
-                        }
-                        {
-                          this.state.page === 'wizard' &&
-                          <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
                         }
                         {
                           this.state.page === 'home' &&
