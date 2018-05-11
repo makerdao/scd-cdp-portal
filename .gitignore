@@ -1,5 +1,10 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+# auto-generated
+public/css/styles.css
+public/css/styles.min.css
+public/css/styles.css.map
+
 # dependencies
 /node_modules
 
@@ -18,4 +23,3 @@ public/css/.sass-cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
