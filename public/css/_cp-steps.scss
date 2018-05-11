@@ -1,0 +1,89 @@
+header {
+  .rc-steps {
+      @include inline-flex;
+      width: unset;
+  }
+
+  .rc-steps-item-custom {
+    -ms-flex: unset;
+    flex: unset;
+
+    .rc-steps-item-icon {
+      font-size: 1rem;
+      background: initial;
+      height: unset;
+      width: unset;
+      margin-right: 0.6rem;
+      border-radius: 50%;
+      background-color: #202930;
+      border: solid 1px #313d47;
+      @include transition(background-color 0.5s, border-color 0.5s);
+
+      & > .rc-steps-icon {
+        color: #9aa3ad;
+        font-size: unset;
+        top: unset;
+        width: unset;
+        height: unset;
+        @include transition(color 0.5s);
+      }
+    }
+    .rc-steps-item-icon-inner {
+      border: 2px solid #202930;
+      background-color: #313d47;
+      width: 2em;
+      height: 2em;
+      line-height: calc(2em - 4px);
+      text-align: center;
+      border-radius: 50%;
+      font-weight: normal;
+      font-size: 1em;
+    }
+    .rc-steps-item-content {
+      margin-top: 2px;
+      // Step text
+      .rc-steps-item-title {
+        color: #9aa3ad;
+        font-weight: 300;
+        font-size: 1.3rem;
+      }
+      // Line separator
+      .rc-steps-item-title:after {
+        top: 50%;
+        background-color: #9aa3ad;
+      }
+    }
+    // Line separator width
+    &:not(:last-child) .rc-steps-item-title {
+      margin-right: 35px;
+    }
+
+    // Active step element styles
+    &.rc-steps-item-process {
+      .rc-steps-item-icon {
+        background-color: #202930;
+        border-color: #f3f3f3;
+        & > .rc-steps-icon {
+          color: #ffffff;
+        }
+      }
+      // Step text
+      .rc-steps-item-title {
+        color: #ffffff;
+      }
+      // Step separator (line)
+      .rc-steps-item-title:after {
+        background-color: #ffffff;
+      }
+    }
+
+    // Finished step element styles
+    &.rc-steps-item-finish {
+      // Step separator (line)
+      .rc-steps-item-title:after {
+        background-color: #9aa3ad;
+      }
+    }
+
+  }
+}

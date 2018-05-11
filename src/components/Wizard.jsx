@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
 import LegacyCups from './LegacyCups';
+import Steps, {Step} from 'rc-steps';
+import 'rc-steps/assets/index.css';
+
+const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 
 class Wizard extends Component {
   constructor() {
@@ -93,14 +97,10 @@ class Wizard extends Component {
     return (
       <div>
         <header className="col">
-          <ul>
-            <li className={this.state.step === 1 ? 'active' : ''}>
-              Collateralize &amp; generate DAI
-            </li>
-            <li className={this.state.step === 1 ? 'active' : ''}>
-              Confirm details
-            </li>
-          </ul>
+          <Steps current={this.state.step - 1}>
+            <Step title="Collateralize & generate DAI" icon={<StepIcon step="1" />} />
+            <Step title="Confirm details" icon={<StepIcon step="2" />} />
+          </Steps>
         </header>
         {
           this.state.step === 1
