@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>section-expand</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="01_Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dashboard-Transaction-details---Default" transform="translate(-1062.000000, -464.000000)" fill-rule="nonzero" fill="#9AA3AD">
+            <path d="M1080.95385,474.769231 L1076,479.723077 L1071.04615,474.769231 L1069.53846,476.276923 L1076,482.738462 L1082.46154,476.276923 L1080.95385,474.769231 Z M1076,492 C1068.26801,492 1062,485.731986 1062,478 C1062,470.268014 1068.26801,464 1076,464 C1083.73199,464 1090,470.268014 1090,478 C1090,485.731986 1083.73199,492 1076,492 Z M1076,489.846154 C1082.54245,489.846154 1087.84615,484.54245 1087.84615,478 C1087.84615,471.45755 1082.54245,466.153846 1076,466.153846 C1069.45755,466.153846 1064.15385,471.45755 1064.15385,478 C1064.15385,484.54245 1069.45755,489.846154 1076,489.846154 Z" id="Oval-2"></path>
+        </g>
+    </g>
+</svg>
