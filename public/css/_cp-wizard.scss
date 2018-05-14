@@ -1,0 +1,64 @@
+.wizard-automated-transactions {
+  margin-top: 2.5rem;
+  margin-bottom: 3.5rem;
+  display: none;
+
+  &.expanded {
+    display: block;
+  }
+
+  .step-cointainer {
+    clear: both;
+
+    .step-icon {
+      float: left;
+      height: 5.6rem;
+      width: 4.5rem;
+
+      .vertical-line {
+        position: relative;
+        width: 1px;
+        height: calc(100% - 3.8rem);
+        left: 1rem;
+        top: 0.85rem;
+        border-left: 1px solid $line-grey;
+      }
+    }
+
+    &:last-child .step-icon {
+      height: 1px;
+      .vertical-line {
+        display: none;
+      }
+    }
+
+    .step-message {
+      float: left;
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+
+    .steps-item {
+      display: inline-block;
+      font-size: 1rem;
+      margin-right: 0.6rem;
+      border-radius: 50%;
+      background-color: $bg-grey;
+      border: solid 1px darken($white, 5%);
+
+      .steps-item-inner {
+        color: darken($white, 5%);
+        border: 2px solid $bg-grey;
+        background-color: $line-grey;
+        width: 2em;
+        height: 2em;
+        line-height: calc(2em - 4px);
+        text-align: center;
+        border-radius: 50%;
+        font-weight: normal;
+        font-size: 1em;
+      }
+    }
+
+  }
+}
