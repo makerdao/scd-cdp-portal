@@ -19,8 +19,8 @@
 		}
 	}
 	// screen sizes in between 1281 and 1599 px are defined with no media  queries
-	
-	
+
+
 	@if $breakpoint == "xl" { // super size desktop screens ) dells workingstations, iMacs, etc.
 		@media only screen and (min-width: 1600px) {
 			@content;
@@ -41,5 +41,3 @@
 @include respond-to(xl) {
 	.hide-breakpoint-xl { display: none !important; }
 }
-
-

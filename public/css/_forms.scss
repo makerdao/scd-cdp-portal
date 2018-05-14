@@ -3,7 +3,7 @@
 label, .form-label {
 	margin-bottom: 0.5em;
 	display: block;
-	
+
 	input + & {
 		margin-top: 2em;
 	}
@@ -71,7 +71,7 @@ input[type='radio']+label {
 }
 
 input[type="radio"] {
-	
+
 	/* remove standard-styles */
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -79,21 +79,21 @@ input[type="radio"] {
 	border: none;
 	border-radius: 0;
 	font-size: 1em;
-	
+
 	/* graceful degradation for ie8 */
 	width: auto;
 	float: left;
 	margin-right: .75em;
-	
+
 	// hide native radio button
 	background: transparent;
 	border: none;
 	display: inline-block;
 	line-height: inherit;
 	vertical-align: baseline;
-	
-	
-// add custom styles 
+
+
+// add custom styles
 	&:checked + label::before,
 	&:not(:checked) + label::before {
 		content:' ';
@@ -119,9 +119,9 @@ input[type="radio"] {
 	 	background: $white;
 	 	//background: radial-gradient($white 0%, $white 40%, transparent 40%);
 	}
-	
-	
-	// layout for labels 
+
+
+	// layout for labels
 	&+label {
 		display: inline-block;
 		margin:0;

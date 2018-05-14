@@ -8,7 +8,7 @@
 	top: 0;
 	right: 0;
 	transition: right 0.3s ease-in;
-	
+
 	@include respond-to(m) {
 		width: 100%;
 		position: relative;
@@ -18,29 +18,29 @@
 	@include respond-to(xl) {
 		width: 30%;
 	}
-	
+
 	// headlines in right column
 	h1, h2, h3, h4, h5, h6 {
 		display: block;
 		margin-top: 0;
 	}
-	
-	
+
+
 	// boxes in right column
 	.right-column-content {
 		padding: 32px 44px;
-		
+
 		@include respond-to(m) {
 			display: inline-block;
 			width: 100%;
 		}
-		
+
 		h3 {
 			padding-top: 1em;
 		}
 	}
-	
-	// Wallet 
+
+	// Wallet
 	ul.wallet {
 		list-style-type: none;
 		margin: 0;
@@ -54,7 +54,7 @@
 		text-align: right;
 		float: right;
 	}
-	
+
 	// footer
 	.footer {
 		@include respond-to(m) {
@@ -62,9 +62,9 @@
 			margin-top: 2em;
 		}
 	}
-	
-	
-	
+
+
+
 	// medium Screen layout
 	@include respond-to(m) {
 		.dialog-open & {

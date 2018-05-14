@@ -1,9 +1,9 @@
 
 
 .forecast-mode {
-	
+
 	.value {
-		
+
 		&:before {
 			content: 'forecast *';
 			white-space: nowrap;
@@ -15,8 +15,8 @@
 			color: $maker-green;
 		}
 	}
-	
-	
+
+
 	.chart-container .chart .line-chart .x.axis g.tick:last-child  {
 		text {
 			fill: $maker-green;
@@ -28,5 +28,5 @@
 			stroke-dasharray: 0.1% 0.1%;
 		}
 	}
-	
+
 }

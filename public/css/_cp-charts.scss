@@ -5,22 +5,22 @@
     user-select: none;
 	padding-top: 0.5em;
 	li {
-		display: inline-block; 
+		display: inline-block;
 		list-style-type: none;
 		margin-left: 1em;
 	}
 	.dot {
 		display: inline-block;
-		width: 10px; 
+		width: 10px;
 		height: 10px;
 		border-radius: 5px;
 		border-radius: 100%;
 		margin-right: 1px;
 		position: relative;
 		top: 1px;
-		&.dot-redlines {background-image: repeating-linear-gradient(45deg, 
-			transparent 0px, 
-			transparent 2px, $error-red 2px, 
+		&.dot-redlines {background-image: repeating-linear-gradient(45deg,
+			transparent 0px,
+			transparent 2px, $error-red 2px,
 			$error-red 3px, transparent 3px);}
 		&.dot-reddots {
 			background-image: -webkit-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
@@ -42,7 +42,7 @@
 	user-select: none;
 	margin-left: 0px;
 	width: calc(100% + 52px);
-	
+
 	@include respond-to(xl) {
 		margin-top: 3em;
 	}
@@ -56,7 +56,7 @@
 .chart-container {
 	// https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
 	font-family: 'Cairo', 'Arial', sans-serif;
-	
+
 	.graph-focus-margin {
 		margin: 0px 5%;
 	}
@@ -134,7 +134,7 @@
 	.tick {
 		&.x-axis-label {
 			display: block;
-			
+
 		}
 		.specific-value {
 			text-anchor: start;
@@ -253,10 +253,10 @@
 	.indicator-right::after {
 		margin: 0 0 0 4px;
 	}
-	
-	
+
+
 	// OWN STYLES ---------------------------
-	
+
 	.title, .sub-title { display: none; }
 	.chart .line-chart .y.axis .tick line {
 		stroke: $line-grey;
@@ -277,7 +277,7 @@
 		}
 		*/
 	}
-	
+
 	// css for dotted line (high risc)
 	g.data-points-2 circle {
 		visibility: hidden;
@@ -287,7 +287,7 @@
 		stroke-opacity: 0.5;
 		stroke-width: 2px;
 	}
-	
+
 	// Tooltip
 	.graph-svg-tip, .graph-svg-tip.comparison { // tooltip
 		margin-top: -0.5em;
@@ -297,12 +297,12 @@
 		color: $mid-grey;
 		border-radius: 2px;
 		box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, .5);
-		
-		// amimation 
+
+		// amimation
 		#chart:hover & {
 			transition: top 0.1s ease-in, left 0.1s ease-in, opacity 0.2s ease-in 0.25s;
-		}		
-		
+		}
+
 		.svg-pointer {
 			border-top-color: $white;
 		}
@@ -328,7 +328,7 @@
 			padding-top: 0em;
 			margin-top: 0em;
 			padding-bottom: 0.5em;
-			
+
 			li {
 				@include fontsize(sc);
 				@include fontweight(light);
@@ -337,12 +337,12 @@
 				border-top-width: 0 !important;
 				vertical-align: baseline;
 				line-height: 1em;
-					
+
 				// adding the color dots
-				&:before { 
+				&:before {
 					content: '';
 					display: inline-block;
-					float: left; 
+					float: left;
 					font-size: inherit;
 					margin-right: 0.3em;
 					height: 0.5em;
@@ -354,8 +354,8 @@
 				}
 				&:nth-child(1n):before{ background-color:$white; border: 1px solid $silver; box-sizing: border-box; }
 				&:nth-child(2n):before{ background-color: $risk-red; border: 0; }
-				&:nth-child(3n):before{ 
-					border: none; 
+				&:nth-child(3n):before{
+					border: none;
 					border-radius: 0;
 					background-image: -webkit-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
 					background-image: -moz-repeating-radial-gradient(center center, #c0392b, #c0392b 1px, transparent 1px, transparent 100%);
@@ -364,10 +364,10 @@
 					-webkit-background-size: 3px 3px;
 					-moz-background-size: 3px 3px;
 					background-size: 3px 3px;
-					
+
 				}
 				&:nth-child(4n):before{ background-color:$loan-blue; border: 0; }
-				
+
 				// values
 				strong {
 					color: $black;
@@ -383,7 +383,5 @@
 			}
 		}
 	}
-	
+
 }
-
-

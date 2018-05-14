@@ -11,7 +11,7 @@ body {
 	margin: 0;
 	overflow: auto;
 	overflow-x: hidden;
-	
+
 	@media only screen and (max-width: 767px) {
 		overflow-x: auto;
 	}
@@ -32,7 +32,7 @@ body {
 	padding-right: 340px;
 	background-color: $bg-grey;
 	transition: padding-right .3s ease-in;
-		
+
 	@include respond-to(m) {
 		padding-left: 0;
 		padding-right: 0;
@@ -40,7 +40,7 @@ body {
 	@include respond-to(xl) {
 		padding-right: 0;
 	}
-	
+
 	.full-width-page &, &.full-width-page {
 		padding-right: 0;
 		.right-column {
@@ -67,13 +67,13 @@ body {
 	width: 100%;
 	display: block;
 	overflow: hidden;
-	
+
 	& > div {
 		width: 100%;
 		padding: 23px 44px 38px;
 		padding: 1.7em 3.3846153em 3em;
 	}
-	
+
 	// large Screen layout
 	@include respond-to(xl) {
 		width: 70%;
@@ -101,10 +101,10 @@ body {
 	display: inline-block;
 	width: 100%;
 	float: left;
-	
+
 	&.row-no-border {
 		border: 0;
-	} 
+	}
 }
 
 .row .col {
@@ -113,15 +113,15 @@ body {
 
 .col {
 	padding: 1em 0;
-	
+
 	@include respond-to(xl) {
 		padding: 1.5em 0;
 	}
-	
+
 	&.col-extra-padding {
 		padding-top: 4em;
 		padding-bottom: 4em;
-		
+
 		@include respond-to(xl) {
 			padding-top: 5em;
 			padding-bottom: 5em;
@@ -129,20 +129,20 @@ body {
 	}
 	&.col-no-border {
 		border: 0;
-	} 
+	}
 }
 
 .col-2 {
 	width: 50%;
 	float: left;
 	padding-left: 1em;
-	
+
 	&:first-child {
 		border-right-width: 1px;
 		padding-left: 0px;
 		padding-right: 1em;
 	}
-	
+
 	@include respond-to(xl) {
 		padding-left: 1.5em;
 		&:first-child {;
@@ -158,7 +158,7 @@ body {
 	[foo], .row-2col-m {
 		display: flex;
 		flex-direction: row;
-		
+
 		& > * {
 			padding-left: 1em;
 			border-bottom-width: 0px;
@@ -179,4 +179,3 @@ body {
 	line-height: 3em;
 	vertical-align: baseline;
 }
-

@@ -14,19 +14,19 @@
 	max-height: 100vh;
 	max-width: 100vw;
 	overflow: auto;
-	
+
 	// Visible class to blend in dialog
 	transition: right 0.2s ease-out 0.2s;
 	&.visible, .dialog-open & {
 		transition: right 0.2s ease-in 0s;
 		right: 0px;
 	}
-	
-	// content container and wrapper 
+
+	// content container and wrapper
 	.dialog-content {
 		display: block;
 	}
-	
+
 	// Elements in Dialog
 	form {
 		display: inline;
@@ -48,7 +48,7 @@
 	input[type="text"].number-input  {
 		margin-bottom: 4em;
 	}
-	
+
 // large Screen layout
 	@include respond-to(xl) {
 		width: 30%;
@@ -65,14 +65,14 @@
 		right: 0px;
 		padding: 26px 26px;
 		padding: 2em 2em;
-		
-		
+
+
 		transition: bottom 0.2s ease-out 0.2s;
 		&.visible, .dialog-open & {
 			transition: bottom 0.2s ease-in 0s;
 			bottom: 0px;
 		}
-		
+
 		label {
 			width: 50%;
 			display: inline-block;
@@ -87,7 +87,7 @@
 		input[type="text"].number-input  {
 			margin-bottom: 0em;
 		}
-		
+
 		.typo-h1 {
 			margin-bottom: 1em;
 		}
@@ -96,6 +96,6 @@
 			margin-top: 1em;
 		}
 	}
-	
-	
+
+
 }

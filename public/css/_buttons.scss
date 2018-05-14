@@ -7,7 +7,7 @@ button, .btn {
     user-select: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	
+
 	&.text-btn {
 		background: $blue-grey;
 		padding: 12px 12px;
@@ -37,7 +37,7 @@ button, .btn {
 				outline: 0;
 			}
 		}
-		
+
 		& + & {
 			margin-left: 0.5em;
 		}
@@ -47,28 +47,28 @@ button, .btn {
 		.value + & {
 			margin-left: 1em;
 		}
-		
+
 		&.text-btn-primary {
 			background: $maker-green;
 		}
-		
+
 		.bright-style &, &.bright-style {
 			background: $white-two;
 			color: $black;
-			
+
 			&:hover {
 				background: $very-light-grey;
 			}
-			
+
 			&.text-btn-primary {
 				background: $maker-green;
-				
+
 				&:hover {
 					background: $maker-green-light;
 				}
 			}
 		}
-		
+
 	}
 	&.close-box {
 		min-width: 0;
@@ -83,7 +83,7 @@ button, .btn {
 		flex-direction: column;
 		justify-content: center;
 		text-align: center;
-		
+
 		&:after {
 			content: url('../img/icon-close.svg');
 			display: inline-block;
@@ -92,14 +92,14 @@ button, .btn {
 			line-height: 0;
 			color: inherit;
 		}
-		
+
 		.bright-style &, &.bright-style {
 			color: $bg-grey;
 			&:after {
 				content: url('../img/icon-close-dark.svg');
 			}
 		}
-	}	
+	}
 }
 .button-switch {
 	display: inline-block;
@@ -125,7 +125,7 @@ button, .btn {
 			color: $white;
 			border-color: rgba(255,255,255,1);
 		}
-		
+
 		.forecast-mode .main-column &, .forecast-mode .right-column &, &:disabled, &[disabled] {
 			&, &:hover, &:active, &.active {
 				cursor: default;
@@ -134,8 +134,8 @@ button, .btn {
 			}
 		}
 	}
-	
-	
+
+
 }
 
 .btn-group {
@@ -144,15 +144,15 @@ button, .btn {
 	button, .btn, button.text-btn, .btn.text-btn {
 		float: left;
 		border-radius: 0px;
-		
+
 		& + button.text-btn, & + .btn.text-btn {
 			margin-left: 2px;
 		}
 		&:first-child {
-			border-radius: 2px 0px 0px 2px; 
+			border-radius: 2px 0px 0px 2px;
 		}
 		&:last-child {
-			border-radius: 0px 2px 2px 0px; 
+			border-radius: 0px 2px 2px 0px;
 		}
 	}
 }
