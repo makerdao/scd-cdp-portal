@@ -15,12 +15,12 @@ header {
       width: unset;
       margin-right: 0.6rem;
       border-radius: 50%;
-      background-color: #202930;
-      border: solid 1px #313d47;
+      background-color: $bg-grey;
+      border: solid 1px $line-grey;
       @include transition(background-color 0.5s, border-color 0.5s);
 
       & > .rc-steps-icon {
-        color: #9aa3ad;
+        color: $text-grey;
         font-size: unset;
         top: unset;
         width: unset;
@@ -29,8 +29,8 @@ header {
       }
     }
     .rc-steps-item-icon-inner {
-      border: 2px solid #202930;
-      background-color: #313d47;
+      border: 2px solid $bg-grey;
+      background-color: $line-grey;
       width: 2em;
       height: 2em;
       line-height: calc(2em - 4px);
@@ -43,14 +43,14 @@ header {
       margin-top: 2px;
       // Step text
       .rc-steps-item-title {
-        color: #9aa3ad;
+        color: $text-grey;
         font-weight: 300;
         font-size: 1.3rem;
       }
       // Line separator
       .rc-steps-item-title:after {
         top: 50%;
-        background-color: #9aa3ad;
+        background-color: $text-grey;
       }
     }
     // Line separator width
@@ -61,19 +61,19 @@ header {
     // Active step element styles
     &.rc-steps-item-process {
       .rc-steps-item-icon {
-        background-color: #202930;
-        border-color: #f3f3f3;
+        background-color: $bg-grey;
+        border-color: darken($white, 5%);
         & > .rc-steps-icon {
-          color: #ffffff;
+          color: $white;
         }
       }
       // Step text
       .rc-steps-item-title {
-        color: #ffffff;
+        color: $white;
       }
       // Step separator (line)
       .rc-steps-item-title:after {
-        background-color: #ffffff;
+        background-color: $white;
       }
     }
 
@@ -81,7 +81,7 @@ header {
     &.rc-steps-item-finish {
       // Step separator (line)
       .rc-steps-item-title:after {
-        background-color: #9aa3ad;
+        background-color: $text-grey;
       }
     }
 
