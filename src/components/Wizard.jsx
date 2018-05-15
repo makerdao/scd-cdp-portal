@@ -128,14 +128,14 @@ class Wizard extends Component {
                   <div className="col col-2" style={ {border: 'none'} }>
                     <label className="typo-cl">How much ETH would you like to collateralize?</label>
                     <div style={ {display: 'inline-block'} }>
-                      <input ref={ input => this.eth = input } style={ {'min-width': '15rem'} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
+                      <input ref={ input => this.eth = input } style={ {minWidth: '15rem'} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
                       <span className="unit" style={ {marginBottom: '0.35rem' } }>ETH</span>
                       <div className="typo-cs align-right">{printNumber(this.state.skr)} PETH
                         <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       </div>
                       {
                         this.state.minETHReq &&
-                        <p className="typo-cs error align-right">Min. ETH required: { printNumber(this.state.minETHReq) } ETH</p>
+                        <p className="typo-cs align-right">Min. ETH required: { printNumber(this.state.minETHReq) } ETH</p>
                       }
                     </div>
                   </div>
@@ -143,7 +143,7 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <label className="typo-cl">How much DAI would you like to generate?</label>
                     <div style={ {display: 'inline-block'} }>
-                      <input ref={ input => this.dai = input } style={ {'min-width': '15rem'} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues('dai', e.target.value) } } />
+                      <input ref={ input => this.dai = input } style={ {minWidth: '15rem'} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues('dai', e.target.value) } } />
                       <span className="unit" style={ {marginBottom: '0.35rem' } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
@@ -187,11 +187,11 @@ class Wizard extends Component {
 
                 </div>
 
-                <div className="row" style={ {'border-bottom': 'none'} }>
-                    <p>Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR</p>
+                <div className="row" style={ {borderBottom: 'none'} }>
+                  <p>Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR</p>
                 </div>
 
-                <div className="row" style={ {'border-bottom': 'none'} }>
+                <div className="row" style={ {borderBottom: 'none'} }>
                   {
                     this.state.error &&
                     <p id="errorMessage" className="error">
@@ -206,8 +206,10 @@ class Wizard extends Component {
                   }
                 </div>
 
-                <div>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; GENERATE</button>
+                <div className="row" style={ {borderBottom: 'none'} }>
+                  <div className="col">
+                    <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; GENERATE</button>
+                  </div>
                 </div>
 
               </form>
