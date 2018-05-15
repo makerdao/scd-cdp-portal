@@ -36,6 +36,7 @@ input[type="text"].number-input, input[type="number"].number-input {
 	position: relative;
 	z-index: 1;
 	& + .unit {
+		color: lighten($black, 5%);
 		position: relative;
 		z-index: 0;
 		display: inline-block;
