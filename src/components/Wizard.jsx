@@ -3,6 +3,7 @@ import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../help
 import LegacyCups from './LegacyCups';
 import Steps, {Step} from 'rc-steps';
 import 'rc-steps/assets/index.css';
+import TooltipHint from './TooltipHint';
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 
@@ -129,7 +130,9 @@ class Wizard extends Component {
                     <div style={ {display: 'inline-block'} }>
                       <input ref={ input => this.eth = input } style={ {'min-width': '15rem'} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
                       <span className="unit" style={ {marginBottom: '0.35rem' } }>ETH</span>
-                      <div className="typo-cs align-right">{printNumber(this.state.skr)} PETH</div>
+                      <div className="typo-cs align-right">{printNumber(this.state.skr)} PETH
+                        <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      </div>
                       {
                         this.state.minETHReq &&
                         <p className="typo-cs error align-right">Min. ETH required: { printNumber(this.state.minETHReq) } ETH</p>
@@ -156,10 +159,12 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <div style={ {marginBottom: '1rem'}}>
                       <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
+                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : '--' } USD</div>
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
+                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
                     </div>
                     <div>
@@ -171,6 +176,7 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <div style={ {marginBottom: '1rem'}}>
                       <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
+                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : '--' }%</div>
                     </div>
                     <div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import {observer} from "mobx-react";
 
+import ReactTooltip from 'react-tooltip';
 import NoConnection from './NoConnection';
 import NoAccount from './NoAccount';
 import Dialog from './Dialog';
@@ -236,6 +237,7 @@ class App extends React.Component {
                       </aside>
                     </div>
                     <Dialog system={ this.props.system } profile={ this.props.profile } dialog={ this.props.dialog } />
+                    <ReactTooltip place="top" type="light" effect="solid" globalEventOff='click' html={true} />
                   </div>
         }
         <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network }/>

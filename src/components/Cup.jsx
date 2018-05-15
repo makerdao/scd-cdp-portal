@@ -3,9 +3,9 @@ import {observer} from 'mobx-react';
 
 // import CupChart from './CupChart'
 import CupHistory from './CupHistory';
+import TooltipHint from './TooltipHint';
 // import {printNumber, toBytes32, wmul, toBigNumber, toWei, methodSig} from '../helpers';
 import {WAD, printNumber, wmul, toBigNumber, toWei} from '../helpers';
-
 
 class Cup extends React.Component {
   render() {
@@ -44,6 +44,7 @@ class Cup extends React.Component {
           <div className="col col-2">
             <div>
               <h3 className="typo-c inline-headline">Liquidation price (ETH/USD)</h3>
+              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 {
                   this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0)
@@ -56,12 +57,14 @@ class Cup extends React.Component {
             </div>
             <div>
               <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
+              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 <span>{ printNumber(this.props.system.pip.val) }<span className="unit">USD</span></span>
               </div>
             </div>
             <div>
               <h3 className="typo-c inline-headline">Liquidation penalty</h3>
+              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 <span>{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }<span className="unit">%</span></span>
               </div>
@@ -70,6 +73,7 @@ class Cup extends React.Component {
           <div className="col col-2">
             <div>
               <h3 className="typo-c inline-headline">Collateralization ratio</h3>
+              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 {
                   this.props.system.tub.off === false
@@ -104,7 +108,7 @@ class Cup extends React.Component {
               <div className="right">
                 <span className="value typo-cl">{ printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.ink) }<span className="unit">PETH</span> / { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span></span>
                 <button className="text-btn disable-on-dialog" disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Deposit</button>
-              </div>	
+              </div>
             </div>
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Max. available to withdraw</h4>
