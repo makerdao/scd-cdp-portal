@@ -142,11 +142,15 @@ class App extends React.Component {
         window.history.pushState('', document.title, window.location.pathname + window.location.search);
       }
     }
-    this.setState({'page': page});
+    this.setState({'page': page}, () => {
+      ReactTooltip.rebuild();
+    });
   }
 
   setOpenCDPWizard = () => {
-    this.setState({wizardOpenCDP: true});
+    this.setState({wizardOpenCDP: true}, () => {
+      ReactTooltip.rebuild()
+    });
   }
 
   changePage = e => {
@@ -154,7 +158,6 @@ class App extends React.Component {
     let page = e.target.getAttribute('data-page');
     this.setPage(page);
   }
-  //
 
   render() {
     return (

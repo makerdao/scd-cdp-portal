@@ -4,6 +4,7 @@ import LegacyCups from './LegacyCups';
 import Steps, {Step} from 'rc-steps';
 import 'rc-steps/assets/index.css';
 import TooltipHint from './TooltipHint';
+import ReactTooltip from 'react-tooltip';
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 
@@ -81,7 +82,9 @@ class Wizard extends Component {
   }
 
   goToStep = step => {
-    this.setState({step});
+    this.setState({step}, () => {
+      ReactTooltip.rebuild();
+    });
   }
 
   toggleExpand = () => {
