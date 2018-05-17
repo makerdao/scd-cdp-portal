@@ -104,12 +104,19 @@ class Wizard extends Component {
 
   render() {
     let steps = [
-      'Creating your new CDP',
-      'Wrap ETH to WETH - ERC 20 tokenization',
-      'Converting WETH to PETH',
-      'CDP is collateralized with PETH - Your converted ETH is locked',
-      'DAI generated -  Your requested DAI are generated',
-      'DAI transferred - Your requested DAI are transferred to your wallet'];
+      { text: 'Creating your new CDP' },
+      {
+        text: 'Wrap ETH to WETH - ERC 20 tokenization',
+        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+      },
+      {
+        text: 'Converting WETH to PETH',
+        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+      },
+      { text: 'CDP is collateralized with PETH - Your converted ETH is locked' },
+      { text: 'DAI generated -  Your requested DAI are generated' },
+      { text: 'DAI transferred - Your requested DAI are transferred to your wallet' }
+    ];
 
     return (
       <div>
@@ -172,6 +179,7 @@ class Wizard extends Component {
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Liquidation penalty</h3>
+                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
                     </div>
                   </div>
@@ -191,7 +199,10 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row" style={ {borderBottom: 'none'} }>
-                  <p>Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR</p>
+                  <p>
+                    Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
+                    <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                  </p>
                 </div>
 
                 <div className="row" style={ {borderBottom: 'none'} }>
@@ -253,7 +264,16 @@ class Wizard extends Component {
                   <div className="typo-cl inline-headline" style={ {marginBottom: '1rem'} }>Automated smart contract transaction</div>
 
                   <div className="typo-c" style={ {clear: 'left'} }>
-                    <img src={"img/icon-section-" + (this.state.stepsExpanded ? "collapse" : "expand") + ".svg"} onClick={ () => this.toggleExpand() } draggable="false" alt="Expand" style={ {float: 'right', cursor: 'pointer' } }/>
+                    {
+                      this.state.stepsExpanded ?
+                      <svg className="expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => this.toggleExpand() }>
+                        <path d="m1022.95113 481.269219-4.95267-4.953847-4.95267 4.953847-1.50733-1.507693 6.46-6.461538 6.46 6.461538zm-4.95113 10.730781c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" fill="#9aa3ad" transform="translate(-1004 -464)"/>
+                      </svg>
+                      :
+                      <svg className="expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => this.toggleExpand() }>
+                        <path d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" transform="translate(-1062 -464)"/>
+                      </svg>
+                    }
                     There are 6 steps to complete the CDP.&nbsp;&nbsp;These will be automated for your convenience.
                   </div>
 
@@ -266,7 +286,7 @@ class Wizard extends Component {
                           <div className="vertical-line"></div>
                         </div>
                         <div className="step-message">
-                          <span>{ s }</span>
+                          <span>{ s.text }{ s.tip }</span>
                         </div>
                       </div>
                     ))
