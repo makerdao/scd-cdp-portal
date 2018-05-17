@@ -13,16 +13,23 @@ svg.expand-section-btn {
 }
 
 .wizard-automated-transactions {
-  margin-top: 2.5rem;
-  margin-bottom: 3.5rem;
-  display: none;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.15s ease-out;
 
   &.expanded {
-    display: block;
+    max-height: 1000px;
+    transition: max-height 0.25s ease-in;
   }
 
   .step-cointainer {
     clear: both;
+    &:first-child {
+      padding-top: 2.5rem;
+    }
+    &:last-child {
+      padding-bottom: 3.5rem;
+    }
 
     .step-icon {
       float: left;
