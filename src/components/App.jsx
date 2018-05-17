@@ -2,7 +2,6 @@ import React from 'react';
 import {observer} from "mobx-react";
 
 import ReactTooltip from 'react-tooltip';
-import Web3ClientChoice from './Web3ClientChoice';
 import NoAccount from './NoAccount';
 import Dialog from './Dialog';
 import Welcome from './Welcome';
@@ -15,7 +14,6 @@ import Settings from './Settings';
 import Help from './Help';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
-import HardWallet from './HardWallet';
 import {isAddress} from '../helpers';
 import './App.css';
 
@@ -87,58 +85,51 @@ class App extends React.Component {
                             "main-column"
                         }>
               {
-                this.props.network.hw.showModal
+                !this.props.network.isConnected
                 ?
-                  <HardWallet network={ this.props.network }
-                              loadHWAddresses={ this.props.network.loadHWAddresses }
-                              selectHWAddress={ this.props.network.selectHWAddress }
-                              importAddress={ this.props.network.importAddress } />
+                  <React.Fragment />
                 :
-                  !this.props.network.isConnected
+                  this.props.network.defaultAccount && isAddress(this.props.network.defaultAccount)
                   ?
-                    <Web3ClientChoice setWeb3WebClient={ this.props.network.setWeb3WebClient } showHW={ this.props.network.showHW } />
-                  :
-                    this.props.network.defaultAccount && isAddress(this.props.network.defaultAccount)
+                    this.props.system.tub.cupsLoading
                     ?
-                      this.props.system.tub.cupsLoading
+                      <div>Loading...</div>
+                    :
+                      Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
                       ?
-                        <div>Loading...</div>
+                        <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
                       :
-                        Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
-                        ?
-                          <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
-                        :
-                          <React.Fragment>
-                            {
-                              this.state.page === 'settings' &&
-                              <Settings
-                                network={ this.props.network }
-                                system={ this.props.system }
-                                account={ this.props.network.defaultAccount }
-                                profile={ this.props.profile }
-                                handleOpenDialog={ this.props.dialog.handleOpenDialog }
-                                transferToken={ this.props.system.transferToken }
-                                loadContracts={ this.loadContracts } />
-                            }
-                            {
-                              this.state.page === 'help' &&
-                              <Help />
-                            }
-                            {
-                              this.state.page === 'home' &&
-                              <React.Fragment>
-                                {
-                                  Object.keys(this.props.system.tub.cups).length === 0
-                                  ?
-                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
-                                  :
-                                    <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
-                                }
-                              </React.Fragment>
-                            }
-                          </React.Fragment>
-                        :
-                          <NoAccount />
+                        <React.Fragment>
+                          {
+                            this.state.page === 'settings' &&
+                            <Settings
+                              network={ this.props.network }
+                              system={ this.props.system }
+                              account={ this.props.network.defaultAccount }
+                              profile={ this.props.profile }
+                              handleOpenDialog={ this.props.dialog.handleOpenDialog }
+                              transferToken={ this.props.system.transferToken }
+                              loadContracts={ this.loadContracts } />
+                          }
+                          {
+                            this.state.page === 'help' &&
+                            <Help />
+                          }
+                          {
+                            this.state.page === 'home' &&
+                            <React.Fragment>
+                              {
+                                Object.keys(this.props.system.tub.cups).length === 0
+                                ?
+                                  <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
+                                :
+                                  <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
+                              }
+                            </React.Fragment>
+                          }
+                        </React.Fragment>
+                      :
+                        <NoAccount />
               }
             </main>
             <aside className="right-column">
@@ -146,8 +137,11 @@ class App extends React.Component {
                 this.state.page !== 'help' &&
                 <div className="right-column-content">
                   <div className="row-2col-m">
-                    <Wallet system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } account={ this.props.network.defaultAccount } />
-                    <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } pipVal = { this.props.system.pip.val } pepVal = { this.props.system.pep.val } />
+                    <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } account={ this.props.network.defaultAccount } />
+                    {
+                      this.props.network.isConnected &&
+                      <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } pipVal = { this.props.system.pip.val } pepVal = { this.props.system.pep.val } />
+                    }
                   </div>
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
                     <a href="#action">Dai Public Announcement</a> || <a href="#action">Dai Terms of Service</a>
@@ -161,7 +155,6 @@ class App extends React.Component {
         </div>
         <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network }/>
         <NotifySetUp transactions={ this.props.transactions } system={ this.props.system }/>
-        <HardWallet network={ this.props.network } loadContracts={ this.loadContracts } />
       </React.Fragment>
     )
   }
