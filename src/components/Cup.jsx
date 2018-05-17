@@ -112,6 +112,7 @@ class Cup extends React.Component {
             </div>
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Max. available to withdraw</h4>
+              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="right">
                 <span className="value typo-cl">
                   {

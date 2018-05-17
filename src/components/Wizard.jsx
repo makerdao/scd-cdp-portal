@@ -104,12 +104,19 @@ class Wizard extends Component {
 
   render() {
     let steps = [
-      'Creating your new CDP',
-      'Wrap ETH to WETH - ERC 20 tokenization',
-      'Converting WETH to PETH',
-      'CDP is collateralized with PETH - Your converted ETH is locked',
-      'DAI generated -  Your requested DAI are generated',
-      'DAI transferred - Your requested DAI are transferred to your wallet'];
+      { text: 'Creating your new CDP' },
+      {
+        text: 'Wrap ETH to WETH - ERC 20 tokenization',
+        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+      },
+      {
+        text: 'Converting WETH to PETH',
+        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+      },
+      { text: 'CDP is collateralized with PETH - Your converted ETH is locked' },
+      { text: 'DAI generated -  Your requested DAI are generated' },
+      { text: 'DAI transferred - Your requested DAI are transferred to your wallet' }
+    ];
 
     return (
       <div>
@@ -172,6 +179,7 @@ class Wizard extends Component {
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Liquidation penalty</h3>
+                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
                     </div>
                   </div>
@@ -191,7 +199,10 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row" style={ {borderBottom: 'none'} }>
-                  <p>Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR</p>
+                  <p>
+                    Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
+                    <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                  </p>
                 </div>
 
                 <div className="row" style={ {borderBottom: 'none'} }>
@@ -266,7 +277,7 @@ class Wizard extends Component {
                           <div className="vertical-line"></div>
                         </div>
                         <div className="step-message">
-                          <span>{ s }</span>
+                          <span>{ s.text }{ s.tip }</span>
                         </div>
                       </div>
                     ))
