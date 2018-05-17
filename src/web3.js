@@ -20,6 +20,7 @@ export const setHWProvider = (device, network, path, accountsOffset = 0, account
       const hwWalletSubProvider = device === 'ledger'
                                   ? LedgerSubProvider(async () => await Transport.create(), {networkId, path, accountsOffset, accountsLength})
                                   : TrezorSubProvider({networkId, path, accountsOffset, accountsLength});
+      web3.currentProvider.name = device;
       web3.currentProvider.addProvider(hwWalletSubProvider);
       web3.currentProvider.addProvider(new RpcSource({rpcUrl: settings.chain[network].nodeURL}));
       web3.currentProvider.start();
@@ -40,6 +41,7 @@ export const setWebClientProvider = () => {
         alert('error');
       }
       web3.useLogs = true;
+      web3.currentProvider.name = web3.currentProvider.isMetaMask || web3.currentProvider.constructor.name === 'MetamaskInpageProvider' ? 'metamask' : 'other';
       resolve(web3);
     } catch(e) {
       reject(e);

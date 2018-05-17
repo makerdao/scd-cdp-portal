@@ -96,6 +96,14 @@ export const resetFilters = bool => {
   web3.reset(bool);
 }
 
+export const getProviderUseLogs = () => {
+  return web3.useLogs;
+}
+
+export const getProviderName = () => {
+  return web3.currentProvider.name;
+}
+
 export const getEthBalanceOf = addr => {
   return promisify(web3.eth.getBalance)(addr);
 }
@@ -180,8 +188,6 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
     });
   });
 }
-
-export const isMetamask = () => web3.currentProvider.isMetaMask || web3.currentProvider.constructor.name === 'MetamaskInpageProvider';
 
 const createLedgerTransport = () => {
   return Transport.create().then(transport => {

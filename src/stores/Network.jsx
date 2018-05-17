@@ -13,7 +13,7 @@ class NetworkStore {
   network = "";
   outOfSync = true;
   isHw = false;
-  hw = {active: false, showModal: false, option: null, derivationPath: null, addresses: [], addressIndex: null};
+  hw = {active: false, showModal: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
 
   checkNetwork = () => {
     let isConnected = null;
@@ -109,20 +109,22 @@ class NetworkStore {
   showHW = option => {
     this.hw.option = option;
     this.hw.showModal = true;
+    this.loadHWAddresses('kovan', option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0");
   }
 
   loadHWAddresses = async (network, derivationPath = this.hw.derivationPath) => {
+    this.hw.loading = true;
     this.hw.active = true;
     this.hw.derivationPath = derivationPath;
-    const id = Math.random();
     try {
-      this.notificator.info(id, `Connecting to ${this.hw.option}`, 'Getting addresses...', false);
       await setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, this.hw.addresses.length + 5);
       const accounts = await Blockchain.getAccounts();
       this.hw.addresses = accounts;
-      this.notificator.success(id, `${this.hw.option} connected`, 'Addresses were loaded', 4000);
+      this.hw.addressIndex = 0;
     } catch(e) {
-      this.notificator.error(id, `Error connecting ${this.hw.option}`, e.message, 4000);
+      this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
+    } finally {
+      this.hw.loading = false;
     }
   }
 

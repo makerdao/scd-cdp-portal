@@ -2,7 +2,6 @@ import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
 import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
-import web3 from '../web3';
 
 const settings = require('../settings');
 
@@ -269,7 +268,7 @@ class SystemStore {
   }
 
   setFiltersTub = () => {
-    if (!web3.useLogs) return;
+    if (!Blockchain.getProviderUseLogs()) return;
     const cupSignatures = [
       'lock(bytes32,uint256)',
       'free(bytes32,uint256)',
@@ -312,7 +311,7 @@ class SystemStore {
   }
 
   setFiltersTap = () => {
-    if (!web3.useLogs) return;
+    if (!Blockchain.getProviderUseLogs()) return;
     Blockchain.objects.tap.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.transactions.logTransactionConfirmed(r.transactionHash);
@@ -324,7 +323,7 @@ class SystemStore {
   }
 
   setFiltersVox = () => {
-    if (!web3.useLogs) return;
+    if (!Blockchain.getProviderUseLogs()) return;
     Blockchain.objects.vox.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.transactions.logTransactionConfirmed(r.transactionHash);
@@ -336,26 +335,27 @@ class SystemStore {
   }
 
   setFilterFeedValue = obj => {
-    if (!web3.useLogs) return;
     Blockchain.objects.tub[obj].call((e, r) => {
       if (!e) {
         this[obj].address = r;
         Blockchain.loadObject('dsvalue', r, obj);
         this.getValFromFeed(obj);
 
-        Blockchain.objects[obj].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
-          if (!e) {
-            if (
-              r.args.sig === methodSig('poke(bytes32)') ||
-              r.args.sig === methodSig('poke()')
-            ) {
-              this.getValFromFeed(obj);
-              if (obj === 'pip') {
-                this.getParameterFromTub('tag', true, this.calculateSafetyAndDeficit);
+        if (Blockchain.getProviderUseLogs()){
+          Blockchain.objects[obj].LogNote({}, {fromBlock: 'latest'}, (e, r) => {
+            if (!e) {
+              if (
+                r.args.sig === methodSig('poke(bytes32)') ||
+                r.args.sig === methodSig('poke()')
+              ) {
+                this.getValFromFeed(obj);
+                if (obj === 'pip') {
+                  this.getParameterFromTub('tag', true, this.calculateSafetyAndDeficit);
+                }
               }
             }
-          }
-        });
+          });
+        }
       }
     })
   }
@@ -489,7 +489,7 @@ class SystemStore {
   }
 
   getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
-    if (!web3.useLogs) return promisesCups;
+    if (!Blockchain.getProviderUseLogs()) return promisesCups;
     return new Promise((resolve, reject) => {
       const promisesLogs = [];
       promisesLogs.push(
@@ -701,7 +701,7 @@ class SystemStore {
   }
 
   setFilterToken = token => {
-    if (!web3.useLogs) return;
+    if (!Blockchain.getProviderUseLogs()) return;
     const filters = ['Transfer', 'Approval'];
   
     if (token === 'gem') {
