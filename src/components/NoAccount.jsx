@@ -13,9 +13,6 @@ class NoAccount extends React.Component {
             <p className="typo-cl">
               We could not find an account, please connect your account.<br />
             </p>
-            <p>
-              <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Connect to Ledger</a>
-            </p>
           </div>
         </div>
       </div>

@@ -14,6 +14,9 @@ system.transactions = transactions;
 system.dialog = dialog;
 transactions.system = system;
 transactions.profile = profile;
+network.profile = profile;
+network.system = system;
+network.transactions = transactions;
 
 window.stores = stores;
 

@@ -38,6 +38,24 @@ export const setDefaultAccount = account => {
   web3.eth.defaultAccount = account;
 }
 
+export const getDefaultAccount = () => {
+  return web3.eth.defaultAccount;
+}
+
+export const setDefaultAccountByIndex = index => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const accounts = await getAccounts();
+      console.log(`Address ${accounts[index]} loaded`);
+      web3.eth.defaultAccount = accounts[index];
+      resolve(true);
+    } catch (e) {
+      console.log(e);
+      resolve(false);
+    }
+  });
+}
+
 export const getNetwork = () => {
   return promisify(web3.version.getNetwork)();
 }

@@ -2,6 +2,7 @@ import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
 import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
+import web3 from '../web3';
 
 const settings = require('../settings');
 
@@ -268,6 +269,7 @@ class SystemStore {
   }
 
   setFiltersTub = () => {
+    if (!web3.useLogs) return;
     const cupSignatures = [
       'lock(bytes32,uint256)',
       'free(bytes32,uint256)',
@@ -310,6 +312,7 @@ class SystemStore {
   }
 
   setFiltersTap = () => {
+    if (!web3.useLogs) return;
     Blockchain.objects.tap.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.transactions.logTransactionConfirmed(r.transactionHash);
@@ -321,6 +324,7 @@ class SystemStore {
   }
 
   setFiltersVox = () => {
+    if (!web3.useLogs) return;
     Blockchain.objects.vox.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
         this.transactions.logTransactionConfirmed(r.transactionHash);
@@ -332,6 +336,7 @@ class SystemStore {
   }
 
   setFilterFeedValue = obj => {
+    if (!web3.useLogs) return;
     Blockchain.objects.tub[obj].call((e, r) => {
       if (!e) {
         this[obj].address = r;
@@ -445,51 +450,12 @@ class SystemStore {
     return p;
   }
 
-  getCupsFromService = lad => {
-    return new Promise((resolve, reject) => {
-      this.getFromService(`{ allCups( condition: { lad: "${toChecksumAddress(lad)}" } ) { nodes { id } } }`)
-      .then(r => resolve(r.data.allCups.nodes), e => reject(e))
-    });
-  }
-
   getCupHistoryFromService = cupId => {
     return new Promise((resolve, reject) => {
       this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg guy tx time } } } }`)
       .then(r => resolve(r.data.getCup ? r.data.getCup.actions.nodes : null), e => reject(e))
     });
   }
-
-  // getFromService = (service, conditions = {}, sort = {}, limit = null) => {
-  //   const p = new Promise((resolve, reject) => {
-  //     const xhr = new XMLHttpRequest();
-  //     let conditionsString = '';
-  //     let sortString = '';
-  //     Object.keys(conditions).map(key => {
-  //       conditionsString += `${key}:${conditions[key]}`;
-  //       conditionsString += Object.keys(conditions).pop() !== key ? '&' : '';
-  //       return false;
-  //     });
-  //     conditionsString = conditionsString !== '' ? `/conditions=${conditionsString}` : '';
-  //     Object.keys(sort).map(key => {
-  //       sortString += `${key}:${sort[key]}`;
-  //       sortString += Object.keys(sort).pop() !== key ? '&' : '';
-  //       return false;
-  //     });
-  //     sortString = sortString !== '' ? `/sort=${sortString}` : '';
-  //     const url = `${settings.chain[this.network.network].service}${settings.chain[this.network.network].service.slice(-1) !== '/' ? '/' : ''}${service}${conditionsString}${sortString}${limit ? `/limit=${limit}` : ''}`;
-  //     xhr.open('GET', url, true);
-  //     xhr.onreadystatechange = () => {
-  //       if (xhr.readyState === 4 && xhr.status === 200) {
-  //         const response = JSON.parse(xhr.responseText);
-  //         resolve(response);
-  //       } else if (xhr.readyState === 4 && xhr.status !== 200) {
-  //         reject(xhr.status);
-  //       }
-  //     }
-  //     xhr.send();
-  //   });
-  //   return p;
-  // }
 
   getCup = id => {
     return new Promise((resolve, reject) => {
@@ -515,6 +481,104 @@ class SystemStore {
     });
   }
 
+  getCupsFromService = lad => {
+    return new Promise((resolve, reject) => {
+      this.getFromService(`{ allCups( condition: { lad: "${toChecksumAddress(lad)}" } ) { nodes { id, block } } }`)
+      .then(r => resolve(r.data.allCups.nodes), e => reject(e))
+    });
+  }
+
+  getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
+    if (!web3.useLogs) return promisesCups;
+    return new Promise((resolve, reject) => {
+      const promisesLogs = [];
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          Blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16)));
+              }
+              resolve();
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          Blockchain.objects.tub.LogNote({sig: methodSig('give(bytes32,address)'), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16)));
+              }
+              resolve();
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      Promise.all(promisesLogs).then(() => resolve(promisesCups), e => reject(e));
+    });
+  }
+
+  getCups = async (type, keepTrying = false) => {
+    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    const me = this;
+    let promisesCups = [];
+    let fromBlock = settings.chain[this.network.network].fromBlock;
+
+    try {
+      const serviceData = settings.chain[this.network.network].service ? await this.getCupsFromService(lad) : [];
+      serviceData.forEach(v => {
+        promisesCups.push(me.getCup(v.id));
+        fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
+      });
+    } finally {
+      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
+      this.filterCups(keepTrying, type, promisesCups);
+    }
+  }
+  
+  filterCups = (keepTrying, type, promisesCups = []) => {
+    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    const conditions = {lad};
+    conditions.closed = false;
+    if (type === 'legacy' || this.tub.cupsLoading) {
+      Promise.all(promisesCups).then(cups => {
+        const cupsFiltered = {};
+        for (let i = 0; i < cups.length; i++) {
+          if (conditions.lad === cups[i].lad) {
+              cupsFiltered[cups[i].id] = cups[i];
+          }
+        }
+        const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
+        if (type === 'new') {
+          if (this.tub.cupsLoading) {
+            this.tub.cups = cupsFiltered;
+
+            this.tub.cupsLoading = keepTrying && keys.length === 0;
+            if (this.tub.cupsLoading) {
+              // If we know there is a new CDP and it still not available, keep trying & loading
+              setTimeout(() => this.getMyCups(true), 3000)
+            } else if (keys.length > 0 && settings.chain[this.network.network].service) {
+              keys.forEach(key => {
+                Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
+                  this.tub.cups[key].history = response
+                  // this.calculateCupChart(); // TODO
+                }, () => {});
+              });
+            }
+          }
+        } else if (type === 'legacy') {
+          this.tub.legacyCups = cupsFiltered;
+        }
+      });
+    }
+  }
+
   getMyCups = (keepTrying = false) => {
     if (this.profile.proxy) {
       this.tub.cupsLoading = true;
@@ -526,92 +590,6 @@ class SystemStore {
 
   getMyLegacyCups = () => {
     this.getCups('legacy');
-  }
-
-  getCups = (type, keepTrying = false) => {
-    // const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
-    // const me = this;
-    // if (settings.chain[this.network.network].service) {
-    //   Promise.resolve(this.getCupsFromService(lad)).then(response => {
-    //     const promises = [];
-    //     response.forEach(v => {
-    //       promises.push(me.getCup(v.id));
-    //     });
-    //     me.getCupsFromChain(type, response.lastBlockNumber, promises);
-    //   }).catch(error => {
-    //     me.getCupsFromChain(type, settings.chain[this.network.network].fromBlock);
-    //   });
-    // } else {
-      this.getCupsFromChain(keepTrying, type, settings.chain[this.network.network].fromBlock);
-    // }
-  }
-  
-  getCupsFromChain = (keepTrying, type, fromBlock, promises = []) => {
-    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
-    const conditions = {lad};
-    const promisesLogs = [];
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        Blockchain.objects.tub.LogNewCup(conditions, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promises.push(this.getCup(parseInt(r[i].args.cup, 16)));
-            }
-            resolve();
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        Blockchain.objects.tub.LogNote({sig: methodSig('give(bytes32,address)'), bar: toBytes32(conditions.lad)}, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promises.push(this.getCup(parseInt(r[i].args.foo, 16)));
-            }
-            resolve();
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    Promise.all(promisesLogs).then(r => {
-      conditions.closed = false;
-      if (type === 'legacy' || this.tub.cupsLoading) {
-        Promise.all(promises).then(cups => {
-          const cupsFiltered = {};
-          for (let i = 0; i < cups.length; i++) {
-            if (conditions.lad === cups[i].lad) {
-                cupsFiltered[cups[i].id] = cups[i];
-            }
-          }
-          const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-          if (type === 'new') {
-            if (this.tub.cupsLoading) {
-              this.tub.cups = cupsFiltered;
-
-              this.tub.cupsLoading = keepTrying && keys.length === 0;
-              if (this.tub.cupsLoading) {
-                // If we know there is a new CDP and it still not available, keep trying & loading
-                setTimeout(() => this.getMyCups(true), 3000)
-              } else if (keys.length > 0 && settings.chain[this.network.network].service) {
-                keys.forEach(key => {
-                  Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
-                    this.tub.cups[key].history = response
-                    // this.calculateCupChart(); // TODO
-                  }, () => {});
-                });
-              }
-            }
-          } else if (type === 'legacy') {
-            this.tub.legacyCups = cupsFiltered;
-          }
-        });
-      }
-    });
   }
 
   addExtraCupData = cup => {
@@ -723,6 +701,7 @@ class SystemStore {
   }
 
   setFilterToken = token => {
+    if (!web3.useLogs) return;
     const filters = ['Transfer', 'Approval'];
   
     if (token === 'gem') {
@@ -758,17 +737,7 @@ class SystemStore {
         const id = Math.random();
         const title = `${tokenName}: approve`;
         this.transactions.logRequestTransaction(id, title);
-        const tokenObj = Blockchain.objects[token];
-        const params = [this.profile.proxy, -1];
-        if (this.network.isHw && this.network.hw.option === 'ledger') {
-          Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tokenObj.address, tokenObj.approve.getData(...params), 0).then(tx => {
-            this.transactions.logPendingTransaction(id, tx, title, callbacks);
-          }, e => {
-            this.transactions.logTransactionRejected(id, title, e.message);
-          });
-        } else {
-          tokenObj.approve(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
-        }
+        Blockchain.objects[token].approve(this.profile.proxy, -1, {}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks));
       }
     }, () => {});
   }
@@ -778,18 +747,7 @@ class SystemStore {
     const id = Math.random();
     const title = `${tokenName}: transfer ${to} ${amount}`;
     this.transactions.logRequestTransaction(id, title);
-    const tokenObj = Blockchain.objects[token];
-    const params = [to, toWei(amount)];
-    const callbacks = [['system/setUpToken', token]];
-    if (this.network.isHw && this.network.hw.option === 'ledger') {
-      Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tokenObj.address, tokenObj.transfer.getData(...params), 0).then(tx => {
-        this.transactions.logPendingTransaction(id, tx, title, callbacks);
-      }, e => {
-        this.transactions.logTransactionRejected(id, title, e.message);
-      });
-    } else {
-      tokenObj.transfer(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
-    }
+    Blockchain.objects[token].transfer(to, toWei(amount), {}, (e, tx) => this.transactions.log(e, tx, id, title, [['system/setUpToken', token]]));
   }
 
   migrateCDP = async cup => {
@@ -800,32 +758,12 @@ class SystemStore {
       const title = `Migrate CDP ${cup}`;
       this.transactions.logRequestTransaction(id, title);
       const tubObj = Blockchain.objects.tub;
-      const params = [toBytes32(cup), proxy];
-      const callbacks = [['system/getMyCups'], ['system/getMyLegacyCups']];
-      if (this.network.isHw && this.network.hw.option === 'ledger') {
-        Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, tubObj.address, tubObj.give.getData(...params), 0).then(tx => {
-          this.transactions.logPendingTransaction(id, tx, title, callbacks);
-        }, e => {
-          this.transactions.logTransactionRejected(id, title, e.message);
-        });
-      } else {
-        tubObj.give(...params.concat([{}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks)]));
-      }
+      tubObj.give(toBytes32(cup), proxy, {}, (e, tx) => this.transactions.log(e, tx, id, title, [['system/getMyCups'], ['system/getMyLegacyCups']]));
     }
   }
 
   executeProxyTx = (action, value, notificator) => {
-    const proxy = Blockchain.objects.proxy;
-    const params = [settings.chain[this.network.network].proxyContracts.sai, action];
-    if (this.network.isHw && this.network.hw.option === 'ledger') {
-      Blockchain.signTransactionLedger(`${this.network.hw.derivationPath}/${this.network.hw.addressIndex}`, this.network.defaultAccount, proxy.address, proxy.execute.getData(...params), value).then(tx => {
-        this.transactions.logPendingTransaction(notificator.id, tx, notificator.title, notificator.callbacks);
-      }, e => {
-        this.transactions.logTransactionRejected(notificator.id, notificator.title, e.message);
-      });
-    } else {
-      proxy.execute['address,bytes'](...params.concat([{value}, (e, tx) => this.transactions.log(e, tx, notificator.id, notificator.title, notificator.callbacks)]));
-    }
+    Blockchain.objects.proxy.execute['address,bytes'](settings.chain[this.network.network].proxyContracts.sai, action, {value}, (e, tx) => this.transactions.log(e, tx, notificator.id, notificator.title, notificator.callbacks));
   }
   
   open = () => {

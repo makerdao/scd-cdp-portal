@@ -1,21 +1,8 @@
 {
-  "nodeURL" : "https://rpc3.makerdao.com",
   "CDPsPerPage": 15,
   "chain": {
-    "private": {
-      "top": "",
-      "otc": "",
-      "faucet": "",
-      "fromBlock": 0,
-      "service": "",
-      "chart": false,
-      "proxyRegistry": "",
-      "proxyFactory": "",
-      "proxyContracts": {
-        "sai": ""
-      }
-    },
     "kovan": {
+      "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
       "top": "0x5f00393547561da3030ebf30e52f5dc0d5d3362c",
       "otc": "0x8cf1cab422a0b6b554077a361f8419cdf122a9f9",
       "faucet": "",
@@ -29,13 +16,14 @@
       }
     },
     "main": {
+      "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
       "top": "0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3",
       "otc": "",
       "faucet": "",
       "fromBlock": 4752013,
       "service": "https://graphql.makerdao.com/v1",
       "chart": false,
-      "proxyRegistry": "",
+      "proxyRegistry": "0xaa63c8683647ef91b3fdab4b4989ee9588da297b",
       "proxyFactory": "",
       "proxyContracts": {
         "sai": ""
