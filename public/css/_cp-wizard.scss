@@ -1,3 +1,17 @@
+svg.expand-section-btn {
+  float: right;
+  cursor: pointer;
+  cursor: pointer;
+  width: 1.7rem;
+  height: 1.7rem;
+  path {
+    fill: $text-grey;
+  }
+  &:hover path {
+    fill: $silver;
+  }
+}
+
 .wizard-automated-transactions {
   margin-top: 2.5rem;
   margin-bottom: 3.5rem;
