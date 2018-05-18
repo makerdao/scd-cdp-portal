@@ -1,6 +1,5 @@
 import { observable, decorate } from "mobx";
 import * as Blockchain from "../blockchainHandler";
-import {setHWProvider, setWebClientProvider} from "../web3";
 import {isAddress} from '../helpers';
 
 const settings = require('../settings');
@@ -99,7 +98,7 @@ class NetworkStore {
 
   // Web3 web client
   setWeb3WebClient = async () => {
-    await setWebClientProvider();
+    await Blockchain.setWebClientProvider();
     this.checkNetwork();
     this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
     this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
@@ -117,11 +116,12 @@ class NetworkStore {
     this.hw.active = true;
     this.hw.derivationPath = derivationPath;
     try {
-      await setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, this.hw.addresses.length + 5);
+      await Blockchain.setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, this.hw.addresses.length + 5);
       const accounts = await Blockchain.getAccounts();
       this.hw.addresses = accounts;
       this.hw.addressIndex = 0;
     } catch(e) {
+      Blockchain.stopProvider();
       this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
     } finally {
       this.hw.loading = false;

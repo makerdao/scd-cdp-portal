@@ -1,9 +1,5 @@
 import web3 from './web3';
 import Promise from 'bluebird';
-import { toHex } from './helpers';
-import Transport from "@ledgerhq/hw-transport-u2f";
-import Eth from "@ledgerhq/hw-app-eth";
-import Tx from 'ethereumjs-tx';
 
 // const settings = require('./settings');
 const promisify = Promise.promisify;
@@ -189,56 +185,14 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
   });
 }
 
-const createLedgerTransport = () => {
-  return Transport.create().then(transport => {
-    transport.exchangeTimeout = 10000;
-    return new Eth(transport);
-  }, e => e);
+export const stopProvider = () => {
+  web3.stop();
 }
 
-export const loadLedgerAddresses = (derivationPath, from) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!objects.ledger) {
-        objects.ledger = await createLedgerTransport();
-      }
-      const addresses = [];
-      for (let i = from; i < from + 5; i++){
-        addresses.push((await objects.ledger.getAddress(`${derivationPath}/${i}`)).address);
-      }
-      resolve(addresses);
-    } catch(e) {
-      reject(e);
-    }
-  });
+export const setHWProvider = (device, network, path, accountsOffset = 0, accountsLength = 1) => {
+  return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength = 1);
 }
 
-export const signTransactionLedger = (derivationPathWithAccount, account, to, data, value) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const tx = new Tx({
-        nonce: toHex(await getTransactionCount(account)),
-        gasPrice: toHex(await getGasPrice()),
-        gasLimit: parseInt(await estimateGas(to, data, value, account) * 1.5, 10),
-        to,
-        value: toHex(value),
-        data,
-        v: parseInt(await getNetwork(), 10)
-      });
-      objects.ledger.signTransaction(derivationPathWithAccount, tx.serialize().toString('hex')).then(sig => {
-        tx.v = "0x" + sig['v'];
-        tx.r = "0x" + sig['r'];
-        tx.s = "0x" + sig['s'];
-        web3.eth.sendRawTransaction("0x" + tx.serialize().toString('hex'), (e, r) => {
-          if (!e) {
-            resolve(r);
-          } else {
-            reject(e);
-          }
-        });
-      }, e => reject(e));
-    } catch(e) {
-      reject(e);
-    }
-  });
+export const setWebClientProvider = () => {
+  return web3.setWebClientProvider();
 }
