@@ -135,7 +135,7 @@ class Wizard extends Component {
                 <div className="row">
 
                   <div className="col col-2" style={ {border: 'none'} }>
-                    <label className="typo-cl">How much ETH would you like to collateralize?</label>
+                    <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
                     <div style={ {display: 'inline-block'} }>
                       <input ref={ input => this.eth = input } style={ {minWidth: '15rem'} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
                       <span className="unit" style={ {marginBottom: '0.35rem' } }>ETH</span>
@@ -150,7 +150,7 @@ class Wizard extends Component {
                   </div>
 
                   <div className="col col-2">
-                    <label className="typo-cl">How much DAI would you like to generate?</label>
+                    <label className="typo-cl no-select">How much DAI would you like to generate?</label>
                     <div style={ {display: 'inline-block'} }>
                       <input ref={ input => this.dai = input } style={ {minWidth: '15rem'} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues('dai', e.target.value) } } />
                       <span className="unit" style={ {marginBottom: '0.35rem' } }>DAI</span>
@@ -198,7 +198,7 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row" style={ {borderBottom: 'none'} }>
-                  <p>
+                  <p className="no-select">
                     Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
                     <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                   </p>
@@ -233,7 +233,7 @@ class Wizard extends Component {
 
               <div className="row">
                 <div className="col">
-                  <div className="typo-cl">Collateralize &amp; generate Dai</div>
+                  <h3 className="typo-cl">Collateralize &amp; generate Dai</h3>
                 </div>
               </div>
 
@@ -254,15 +254,15 @@ class Wizard extends Component {
 
               <div className="row" style={ {marginTop: '50px'} }>
                 <div className="col">
-                  <div className="typo-cl">Transaction details</div>
+                  <h3 className="typo-cl">Transaction details</h3>
                 </div>
               </div>
 
               <div className="row">
                 <div className="col">
-                  <div className="typo-cl inline-headline" style={ {marginBottom: '1rem'} }>Automated smart contract transaction</div>
+                  <h3 className="typo-cl" style={ {marginBottom: '1rem'} }>Automated smart contract transaction</h3>
 
-                  <div className="typo-c" style={ {clear: 'left'} }>
+                  <div className="typo-c no-select clear-left">
                     {
                       this.state.stepsExpanded ?
                       <svg className="expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => this.toggleExpand() }>

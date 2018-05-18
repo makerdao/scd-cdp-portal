@@ -45,8 +45,8 @@ class Cup extends React.Component {
       <div>
         <div className="row">
           <div className="col col-2">
-            <div>
-              <h3 className="typo-c inline-headline">Liquidation price (ETH/USD)</h3>
+            <div style={ {marginBottom: '1rem'}}>
+              <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 {
@@ -61,21 +61,21 @@ class Cup extends React.Component {
             <div>
               <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-              <div className="value typo-cl right">
+              <div className="value typo-c right">
                 <span>{ printNumber(this.props.system.pip.val) }<span className="unit">USD</span></span>
               </div>
             </div>
             <div>
               <h3 className="typo-c inline-headline">Liquidation penalty</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-              <div className="value typo-cl right">
+              <div className="value typo-c right">
                 <span>{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }<span className="unit">%</span></span>
               </div>
             </div>
           </div>
           <div className="col col-2">
-            <div>
-              <h3 className="typo-c inline-headline">Collateralization ratio</h3>
+            <div style={ {marginBottom: '1rem'}}>
+              <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
                 {
@@ -106,54 +106,89 @@ class Cup extends React.Component {
         <div className="row">
           <div className="col col-2">
             <h3 className="typo-cl inline-headline">ETH collateral</h3>
+
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Deposited</h4>
               <div className="right">
-                <span className="value typo-cl">{ printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.ink) }<span className="unit">PETH</span> / { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span></span>
-                <button className="text-btn disable-on-dialog" disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Deposit</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Deposit</button>
+              </div>
+              <div className="right align-right" style={ {marginRight: '1rem'} }>
+                <div className="value block typo-cl">
+                  { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span>
+                </div>
+                <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                  { printNumber(cup.ink) }<span className="unit">PETH</span>
+                  <span className="separator">&nbsp;|&nbsp;</span>
+                  { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
+                </div>
               </div>
             </div>
+
             <div className="inner-row">
-              <h4 className="typo-c inline-headline">Max. available to withdraw</h4>
-              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              <h4 className="typo-c inline-headline" style={ {maxWidth: '8rem' } }>Max. available to withdraw
+                <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              </h4>
               <div className="right">
-                <span className="value typo-cl">
-                  {
-                    this.props.system.tub.off === false
-                    ?
-                      <span>{ printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span> / { printNumber(cup.avail_skr) }<span className="unit">PETH</span> / { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span></span>
-                    :
-                      '-'
-                  }
-                </span>
-                <button className="text-btn disable-on-dialog" disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Withdraw</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Withdraw</button>
               </div>
+              {
+                this.props.system.tub.off === false
+                ?
+                <div className="right align-right" style={ {marginRight: '1rem'} }>
+                  <div className="value block typo-cl">
+                    { printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span>
+                  </div>
+                  <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                    { printNumber(cup.avail_skr) }<span className="unit">PETH</span>
+                    <span className="separator">&nbsp;|&nbsp;</span>
+                    { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
+                  </div>
+                </div>
+                :
+                  '-'
+              }
             </div>
           </div>
+
           <div className="col col-2">
             <h3 className="typo-cl inline-headline">DAI position</h3>
+
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Generated</h4>
               <div className="right">
-                <span className="value typo-cl">{ printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span> / { printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span></span>
-                <button className="text-btn disable-on-dialog" disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Payback</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Payback</button>
+              </div>
+              <div className="right align-right" style={ {marginRight: '1rem'} }>
+                <div className="value block typo-cl">
+                  { printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span>
+                </div>
+                <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                  { printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span>
+                </div>
               </div>
             </div>
+
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Max. availble to generate</h4>
               <div className="right">
-                <span className="value typo-cl">
-                  {
-                    this.props.system.tub.off === false
-                    ?
-                      <span>{ printNumber(cup.avail_dai) }<span className="unit">DAI</span> / { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span></span>
-                    :
-                      '-'
-                  }
-                </span>
-                <button className="text-btn disable-on-dialog" disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Generate</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Generate</button>
               </div>
+              {
+                this.props.system.tub.off === false
+                ?
+                <div className="right align-right" style={ {marginRight: '1rem'} }>
+                  <div className="value block typo-cl">
+                    { printNumber(cup.avail_dai) }<span className="unit">DAI</span>
+                  </div>
+                  <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                    { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span>
+                  </div>
+                </div>
+                :
+                  '-'
+              }
             </div>
+
           </div>
         </div>
         {

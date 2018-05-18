@@ -13,6 +13,7 @@ svg.expand-section-btn {
 }
 
 .wizard-automated-transactions {
+  user-select: none;
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.15s ease-out;
