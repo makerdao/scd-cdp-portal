@@ -1,5 +1,17 @@
-// Class helpers
+// Helper classes
 
 .align-right {
   text-align: right;
+}
+
+.no-select {
+  user-select: none;
+}
+
+.no-margin {
+  margin: 0 !important;
+}
+
+.clear-left {
+  clear: left;
 }
