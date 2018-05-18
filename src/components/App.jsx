@@ -10,6 +10,7 @@ import Dashboard from './Dashboard';
 import SystemInfo from './SystemInfo';
 import Wallet from './Wallet';
 import Help from './Help';
+import LegacyCups from './LegacyCups';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
 import './App.css';
@@ -32,7 +33,7 @@ class App extends React.Component {
   }
 
   setPage = page => {
-    if (['home', 'help'].indexOf(page) === -1) {
+    if (['home', 'help', 'migrate'].indexOf(page) === -1) {
       page = 'home';
     }
     if (page !== 'home') {
@@ -92,6 +93,10 @@ class App extends React.Component {
                         :
                           <React.Fragment>
                             {
+                              this.state.page === 'migrate' &&
+                              <LegacyCups legacyCups={ this.props.system.tub.legacyCups } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
+                            }
+                            {
                               this.state.page === 'help' &&
                               <Help />
                             }
@@ -101,9 +106,9 @@ class App extends React.Component {
                                 {
                                   Object.keys(this.props.system.tub.cups).length === 0
                                   ?
-                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
+                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
                                   :
-                                    <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog }/>
+                                    <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
                                 }
                               </React.Fragment>
                             }

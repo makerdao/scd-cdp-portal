@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
-import LegacyCups from './LegacyCups';
+import LegacyCupsAlert from './LegacyCupsAlert';
 import Steps, {Step} from 'rc-steps';
 import 'rc-steps/assets/index.css';
 import TooltipHint from './TooltipHint';
@@ -122,7 +122,7 @@ class Wizard extends Component {
       <div>
         <header className="col" style={ {borderBottom: 'none'} }>
           <Steps current={this.state.step - 1}>
-            <Step title="Collateralize & generate DAI" icon={<StepIcon step="1" />} />
+            <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
             <Step title="Confirm details" icon={<StepIcon step="2" />} />
           </Steps>
         </header>
@@ -130,7 +130,7 @@ class Wizard extends Component {
           this.state.step === 1
           ?
             <React.Fragment>
-              <LegacyCups legacyCups={ this.props.system.tub.legacyCups } handleOpenDialog={ this.props.handleOpenDialog } />
+              <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } changePage={ this.props.changePage } />
 
               <form ref={ input => this.wizardForm = input } onSubmit={ () => this.goToStep(2) }>
                 <div className="row">
