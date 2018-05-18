@@ -94,7 +94,7 @@ class App extends React.Component {
                           <React.Fragment>
                             {
                               this.state.page === 'migrate' &&
-                              <LegacyCups legacyCups={ this.props.system.tub.legacyCups } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
+                              <LegacyCups system={ this.props.system } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
                             }
                             {
                               this.state.page === 'help' &&
