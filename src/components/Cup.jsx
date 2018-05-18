@@ -8,6 +8,9 @@ import TooltipHint from './TooltipHint';
 import {WAD, printNumber, wmul, toBigNumber, toWei} from '../helpers';
 
 class Cup extends React.Component {
+  componentDidMount() {
+    TooltipHint.rebuildTooltips();
+  }
   render() {
     const cup = this.props.system.tub.cups[this.props.cupId];
 
