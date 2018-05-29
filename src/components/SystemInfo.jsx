@@ -10,10 +10,51 @@ class SystemInfo extends React.Component {
   render = () => {
     return (
       <div className="col col-2-m">
-        <h2 className="typo-h2">System Info
+        <h2 className="typo-h2">Price Info
           <span className="typo-c right" style={ {textTransform: 'capitalize'} }>{ this.props.network === 'main' ? 'mainnet' : this.props.network }</span>
         </h2>
-        <h3 className="typo-c">System Collateralization</h3>
+        <h3 className="typo-c">ETH/USD</h3>
+        <div className="value">
+          {
+            this.props.system.pip.val && this.props.system.pip.val.gt(0)
+            ?
+              <span><span>{ printNumber(this.props.system.pip.val) }</span><span className="unit">USD</span></span>
+            :
+              <span>Loading...</span>
+          } 
+        </div>
+        <h3 className="typo-c">PETH/USD</h3>
+        <div className="value">
+          {
+            this.props.system.tub.per.gte(0)
+            ?
+              <span><span>{ printNumber(this.props.system.tub.per) }</span><span className="unit">ETH</span></span>
+            :
+              <span>Loading...</span>
+          } 
+        </div>
+        <h3 className="typo-c">DAI/USD</h3>
+        <div className="value">
+          {
+            this.props.system.vox.par.gte(0)
+            ?
+              <span><span>{ printNumber(this.props.system.vox.par) }</span><span className="unit">USD</span></span>
+            :
+              <span>Loading...</span>
+          } 
+        </div>
+        <h3 className="typo-c">MKR/USD</h3>
+        <div className="value">
+          {
+            this.props.system.pep.val && this.props.system.pep.val.gt(0)
+            ?
+              <span><span>{ printNumber(this.props.system.pep.val) }</span><span className="unit">USD</span></span>
+            :
+              <span>Loading...</span>
+          } 
+        </div>
+        <h2 className="typo-h2">Global CDP Info</h2>
+        <h3 className="typo-c">Global CDP Collateralization</h3>
         <div className="value">
           {
             this.props.system.gem.tubBalance.gte(0) && this.props.system.pip.val.gte(0) && this.props.system.dai.totalSupply.gte(0) && this.props.system.vox.par.gte(0)
@@ -32,32 +73,12 @@ class SystemInfo extends React.Component {
               'Loading...'
           }
         </div>
-        <h3 className="typo-c">Current PETH value</h3>
+        <h3 className="typo-c">Maximum Global DAI Available</h3>
         <div className="value">
           {
-            this.props.system.tub.per.gte(0)
+            this.props.system.dai.totalSupply && this.props.system.dai.totalSupply.gt(0)
             ?
-              <span><span>{ printNumber(this.props.system.tub.per) }</span><span className="unit">ETH</span></span>
-            :
-              <span>Loading...</span>
-          } 
-        </div>
-        <h3 className="typo-c">Current ETH value</h3>
-        <div className="value">
-          {
-            this.props.pipVal && this.props.pipVal.gt(0)
-            ?
-              <span><span>{ printNumber(this.props.pipVal) }</span><span className="unit">&#36;</span></span>
-            :
-              <span>Loading...</span>
-          } 
-        </div>
-        <h3 className="typo-c">Current MKR value</h3>
-        <div className="value">
-          {
-            this.props.pepVal && this.props.pepVal.gt(0)
-            ?
-              <span><span>{ printNumber(this.props.pepVal) }</span><span className="unit">&#36;</span></span>
+              <span><span>{ printNumber(this.props.system.dai.totalSupply) }</span><span className="unit">&#36;</span></span>
             :
               <span>Loading...</span>
           } 

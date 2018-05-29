@@ -125,7 +125,7 @@ class App extends React.Component {
                     <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
                     {
                       this.props.network.defaultAccount &&
-                      <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } pipVal = { this.props.system.pip.val } pepVal = { this.props.system.pep.val } />
+                      <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
                     }
                   </div>
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
