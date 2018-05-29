@@ -4,6 +4,8 @@ import jazzicon from 'jazzicon';
 
 export const WAD = web3.toBigNumber(web3.toWei(1));
 
+export const BIGGESTUINT256 = web3.toBigNumber(2).pow(256).minus(1);
+
 var padLeft = (string, chars, sign) => {
   return new Array(chars - string.length + 1).join(sign ? sign : "0") + string;
 };

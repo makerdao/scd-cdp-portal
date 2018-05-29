@@ -185,6 +185,10 @@ export const getAllowance = (token, srcAddr, dstAddr) => {
   });
 }
 
+export const transferETH = (to, value) => {
+  return promisify(web3.eth.sendTransaction)({ to, value });
+}
+
 export const stopProvider = () => {
   web3.stop();
 }

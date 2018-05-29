@@ -1,7 +1,7 @@
 import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
-import {toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
+import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
 
 const settings = require('../settings');
 
@@ -86,6 +86,7 @@ class SystemStore {
       totalSupply: toBigNumber(-1),
       myBalance: toBigNumber(-1),
       pitBalance: toBigNumber(-1),
+      allowance: toBigNumber(-1),
     };
     this.skr = {
       address: null,
@@ -99,6 +100,7 @@ class SystemStore {
       totalSupply: toBigNumber(-1),
       myBalance: toBigNumber(-1),
       tapBalance: toBigNumber(-1),
+      allowance: toBigNumber(-1),
     };
     this.sin = {
       address: null,
@@ -676,6 +678,9 @@ class SystemStore {
     if (token === 'gov') {
       this.getBalanceOf(token, this.pit.address, 'pitBalance');
     }
+    if (token === 'gov' || token === 'dai') {
+      this.getAllowance(token);
+    }
   }
   
   getTotalSupply = token => {
@@ -696,6 +701,14 @@ class SystemStore {
         if ((token === 'skr' || token === 'dai') && field === 'tubBalance') {
           this.calculateSafetyAndDeficit();
         }
+      }
+    })
+  }
+
+  getAllowance = token => {
+    Blockchain.objects[token].allowance.call(this.network.defaultAccount, this.profile.proxy, (e, r) => {
+      if (!e) {
+        this[token].allowance = r;
       }
     })
   }
@@ -725,10 +738,18 @@ class SystemStore {
     }
   }
 
+  setAllowance = (token, value, callbacks = []) => {
+    const tokenName = token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase();
+    const id = Math.random();
+    const title = `${tokenName}: ${value ? 'unlock' : 'lock'}`;
+    this.transactions.logRequestTransaction(id, title);
+    Blockchain.objects[token].approve(this.profile.proxy, value ? -1 : 0, {}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks));
+  }
+
   // Actions
   checkAllowance = (token, callbacks) => {
     Blockchain.getAllowance(token, this.network.defaultAccount, this.profile.proxy).then(r => {
-      const valueObj = toBigNumber(2).pow(256).minus(1); // uint(-1)
+      const valueObj = BIGGESTUINT256;
 
       if (r.equals(valueObj)) {
         callbacks.forEach(callback => this.transactions.executeCallback(callback));
@@ -737,7 +758,7 @@ class SystemStore {
         const id = Math.random();
         const title = `${tokenName}: approve`;
         this.transactions.logRequestTransaction(id, title);
-        Blockchain.objects[token].approve(this.profile.proxy, -1, {}, (e, tx) => this.transactions.log(e, tx, id, title, callbacks));
+        this.setAllowance(token, -1, callbacks);
       }
     }, () => {});
   }
@@ -747,7 +768,11 @@ class SystemStore {
     const id = Math.random();
     const title = `${tokenName}: transfer ${to} ${amount}`;
     this.transactions.logRequestTransaction(id, title);
-    Blockchain.objects[token].transfer(to, toWei(amount), {}, (e, tx) => this.transactions.log(e, tx, id, title, [['system/setUpToken', token]]));
+    if (token === 'eth') {
+      Blockchain.transferETH(to, toWei(amount)).then(tx => this.transactions.log(null, tx, id, title), e => this.transactions.log(e, null, id, title));
+    } else {
+      Blockchain.objects[token].transfer(to, toWei(amount), {}, (e, tx) => this.transactions.log(e, tx, id, title, [['system/setUpToken', token]]));
+    }
   }
 
   migrateCDP = async cup => {
