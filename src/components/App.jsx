@@ -122,7 +122,7 @@ class App extends React.Component {
                 this.state.page !== 'help' &&
                 <div className="right-column-content">
                   <div className="row-2col-m">
-                    <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } account={ this.props.network.defaultAccount } />
+                    <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
                     {
                       this.props.network.defaultAccount &&
                       <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } pipVal = { this.props.system.pip.val } pepVal = { this.props.system.pep.val } />

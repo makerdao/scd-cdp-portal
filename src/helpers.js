@@ -1,5 +1,6 @@
 import React from 'react';
 import web3 from './web3';
+import jazzicon from 'jazzicon';
 
 export const WAD = web3.toBigNumber(web3.toWei(1));
 
@@ -120,6 +121,14 @@ export const methodSig = method => {
 
 export const min = (num1, num2) => {
   return web3.BigNumber.min(num1, num2);
+}
+
+export const jsNumberForAddress = address => {
+  return parseInt(address.slice(2, 10), 16);
+}
+
+export const getJazziconIcon = (address, size) => {
+  return <div style={ {borderRadius: '15px', overflow: 'hidden', padding: '0', margin: '0', width: `${size}px`, 'height': `${size}px`, display: 'inline-block'} } dangerouslySetInnerHTML={ {__html: jazzicon(size, jsNumberForAddress(address)).innerHTML} } />
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;

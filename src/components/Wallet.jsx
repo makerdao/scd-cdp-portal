@@ -4,6 +4,7 @@ import {printNumber, etherscanAddress} from '../helpers';
 import WalletClientSelector from './WalletClientSelector';
 import WalletHardHWSelector from './WalletHardHWSelector';
 import {getProviderName} from '../blockchainHandler';
+import {getJazziconIcon} from '../helpers';
 
 class Wallet extends React.Component {
   render() {
@@ -33,7 +34,8 @@ class Wallet extends React.Component {
                           { getProviderName() === 'trezor' && 'Trezor'}
                           { getProviderName() === 'other' && 'Web Client'}
                         </span>
-                        <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.account.substring(0, 10)}...${this.props.account.substring(36, 42)}`, this.props.account)}</span>
+                        { getJazziconIcon(this.props.network.defaultAccount, 30) }
+                        <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
                       </h2>
                       <ul className="wallet">
                         <li><span className="value"><span>{ printNumber(this.props.profile.accountBalance) }</span><span className="unit">ETH</span></span></li>
