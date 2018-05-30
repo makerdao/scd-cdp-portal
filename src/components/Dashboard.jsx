@@ -10,8 +10,8 @@ class Dashboard extends React.Component {
       <div>
         <header className="col">
           <h1 className="typo-h1 inline-headline">Dashboard <span className="typo-c typo-mid-grey">My collateralized debt position #{ cupId }</span></h1>
+          <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } changePage={ this.props.changePage } />
         </header>
-        <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } changePage={ this.props.changePage } />
         <Cup system={ this.props.system } profile={ this.props.profile } network={ this.props.network } cupId={ cupId } handleOpenDialog={ this.props.handleOpenDialog } />
       </div>
     )
