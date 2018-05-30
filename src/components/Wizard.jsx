@@ -4,6 +4,7 @@ import LegacyCupsAlert from './LegacyCupsAlert';
 import Steps, {Step} from 'rc-steps';
 import 'rc-steps/assets/index.css';
 import TooltipHint from './TooltipHint';
+import InlineNotification from './InlineNotification';
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 const steps = [
@@ -192,6 +193,10 @@ class Wizard extends Component {
                       <h3 className="typo-c inline-headline">Minimum ratio</h3>
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
                     </div>
+                    {
+                      this.state.warning &&
+                      <InlineNotification type="warning" message={ this.state.warning } />
+                    }
                   </div>
 
                 </div>
@@ -208,12 +213,6 @@ class Wizard extends Component {
                     this.state.error &&
                     <p id="errorMessage" className="error">
                       { this.state.error }
-                    </p>
-                  }
-                  {
-                    this.state.warning &&
-                    <p id="warningMessage" className="warning">
-                      { this.state.warning }
                     </p>
                   }
                 </div>
