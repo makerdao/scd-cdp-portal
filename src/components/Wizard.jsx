@@ -6,6 +6,20 @@ import 'rc-steps/assets/index.css';
 import TooltipHint from './TooltipHint';
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
+const steps = [
+  { text: 'Creating your new CDP' },
+  {
+    text: 'Wrap ETH to WETH - ERC 20 tokenization',
+    tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+  },
+  {
+    text: 'Converting WETH to PETH',
+    tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+  },
+  { text: 'CDP is collateralized with PETH - Your converted ETH is locked' },
+  { text: 'DAI generated -  Your requested DAI are generated' },
+  { text: 'DAI transferred - Your requested DAI are transferred to your wallet' }
+];
 
 class Wizard extends Component {
   constructor() {
@@ -102,21 +116,6 @@ class Wizard extends Component {
   }
 
   render() {
-    let steps = [
-      { text: 'Creating your new CDP' },
-      {
-        text: 'Wrap ETH to WETH - ERC 20 tokenization',
-        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-      },
-      {
-        text: 'Converting WETH to PETH',
-        tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-      },
-      { text: 'CDP is collateralized with PETH - Your converted ETH is locked' },
-      { text: 'DAI generated -  Your requested DAI are generated' },
-      { text: 'DAI transferred - Your requested DAI are transferred to your wallet' }
-    ];
-
     return (
       <div>
         <header className="col" style={ {borderBottom: 'none'} }>
