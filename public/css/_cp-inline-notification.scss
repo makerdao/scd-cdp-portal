@@ -1,0 +1,52 @@
+.inline-notification {
+  clear: both;
+  background-color: $white-two;
+  color: #26323a;
+  padding: 2rem 2.5rem !important;
+  margin: 2rem 0 1rem;
+
+  .caption {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .message {
+    position: relative;
+    font-size: 1.1rem;
+    font-weight: 400;
+    &.has-button {
+      padding-right: 12rem;
+    }
+    &.no-caption {
+      margin-left: 3rem;
+    }
+  }
+  button {
+    min-width: 10rem;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 0;
+  }
+  // Icon
+  svg {
+    float: left;
+    width: auto;
+    height: 1.6rem;
+    top: 0.3rem;
+    position: relative;
+    margin-right: 1rem;
+    path {
+      fill: #26323a;
+    }
+  }
+  &.is-warning {
+    svg path {
+      fill: $white;
+    }
+    & {
+      background-color: $error-red;
+      color: $white;
+    }
+  }
+}
