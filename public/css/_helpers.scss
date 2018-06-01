@@ -1,11 +1,15 @@
 // Helper classes
 
 .align-right {
-  text-align: right;
+  text-align: right !important;
+}
+
+.align-center {
+  text-align: center !important;
 }
 
 .no-select {
-  user-select: none;
+  user-select: none !important;
 }
 
 .no-margin {
@@ -13,9 +17,9 @@
 }
 
 .clear-left {
-  clear: left;
+  clear: left !important;
 }
 
 .clearfix {
-  clear: both;
+  clear: both !important;
 }
