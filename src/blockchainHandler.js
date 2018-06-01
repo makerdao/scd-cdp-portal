@@ -35,15 +35,18 @@ export const setDefaultAccount = account => {
 }
 
 export const getDefaultAccount = () => {
-  return web3.eth.defaultAccount;
+  return typeof web3.eth.defaultAccount !== 'undefined' ? web3.eth.defaultAccount : null;
 }
 
 export const setDefaultAccountByIndex = index => {
   return new Promise(async (resolve, reject) => {
     try {
       const accounts = await getAccounts();
-      console.log(`Address ${accounts[index]} loaded`);
-      web3.eth.defaultAccount = accounts[index];
+      const address = typeof accounts[index] !== 'undefined' ? accounts[index] : null;
+      if (address) {
+        console.log(`Address ${address} loaded`);
+      }
+      web3.eth.defaultAccount = address;
       resolve(true);
     } catch (e) {
       console.log(e);

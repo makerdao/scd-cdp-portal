@@ -68,20 +68,15 @@ class App extends React.Component {
       <React.Fragment>
         <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.show ? "dialog-open" : "" }>
           <div className="wrapper">
-            <div className="menu-bar">
-              <div className="logo">
-                <img src="img/mkr-logo-rounded.svg" draggable="false" alt="" />
-                <span className="menu-label">Maker</span>
-              </div>
+            {
+              this.props.network.isConnected && this.props.network.defaultAccount &&
               <Menu system={ this.props.system } page={ this.state.page } changePage={ this.changePage } />
-            </div>
+            }
             <main className={ this.state.page === 'help' ? "main-column fullwidth" : "main-column" }>
               {
                 !this.props.network.isConnected
                 ?
-                  <React.Fragment>
-                    <Landing />
-                  </React.Fragment>
+                  <Landing />
                 :
                   this.props.network.defaultAccount &&
                   <React.Fragment>
