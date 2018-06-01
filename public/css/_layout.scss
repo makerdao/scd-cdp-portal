@@ -28,7 +28,7 @@ body {
 	min-height: 100vh;
 	overflow: hidden;
 	position: relative;
-	padding-left: 72px;
+	padding-left: 65px;
 	padding-right: 340px;
 	background-color: $bg-grey;
 	transition: padding-right .3s ease-in;
@@ -38,6 +38,7 @@ body {
 		padding-right: 0;
 	}
 	@include respond-to(xl) {
+		padding-left: 80px;
 		padding-right: 0;
 	}
 
