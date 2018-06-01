@@ -13,6 +13,7 @@ import Help from './Help';
 import LegacyCups from './LegacyCups';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
+import Landing from './Landing';
 import './App.css';
 
 import * as Blockchain from "../blockchainHandler";
@@ -78,7 +79,9 @@ class App extends React.Component {
               {
                 !this.props.network.isConnected
                 ?
-                  <React.Fragment />
+                  <React.Fragment>
+                    <Landing />
+                  </React.Fragment>
                 :
                   this.props.network.defaultAccount &&
                   <React.Fragment>
