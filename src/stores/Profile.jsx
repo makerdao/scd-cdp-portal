@@ -40,7 +40,8 @@ class ProfileStore {
       const id = Math.random();
       const title = 'Create Proxy';
       this.transactions.logRequestTransaction(id, title);
-      Blockchain.objects.proxyRegistry.build((e, tx) => this.transactions.log(e, tx, id, title, [['profile/getAndSetProxy', callbacks]]));
+      const transaction = () => Blockchain.objects.proxyRegistry.build((e, tx) => this.transactions.log(e, tx, id, title, [['profile/getAndSetProxy', callbacks]]));
+      this.transactions.setPriceAndSend(transaction);
     }
   }
 }

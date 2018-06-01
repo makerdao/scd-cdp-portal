@@ -1,21 +1,22 @@
-import { observable, decorate } from "mobx";
+import {observable, decorate} from "mobx";
 import * as Blockchain from "../blockchainHandler";
 
-import { etherscanTx } from '../helpers';
+import {etherscanTx, methodSig} from '../helpers';
 
 class TransactionsStore {
   registry = {};
   cdpCreationTx = false;
+  priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
 
   checkPendingTransactions = () => {
     Object.keys(this.registry).map(tx => {
       if (this.registry[tx].pending) {
         Blockchain.getTransactionReceipt(tx).then(r => {
           if (r !== null) {
-            if (r.logs.length === 0) {
-              this.logTransactionFailed(tx);
-            } else if (r.blockNumber)  {
+            if (r.status === "0x1") {
               this.logTransactionConfirmed(tx);
+            } else {
+              this.logTransactionFailed(tx);
             }
           }
         })
@@ -34,6 +35,24 @@ class TransactionsStore {
     this.cdpCreationTx = cdpCreationTx;
     const msgTemp = 'Waiting for transaction signature...';
     this.notificator.info(id, title, msgTemp, false);
+  }
+
+  closePriceModal = () => {
+    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+  }
+
+  setPriceAndSend = (title, func, params, settings, callbacks) => {
+    this.priceModal = { open: true, title, func, params, settings, callbacks };
+  }
+
+  sendTransaction = gasPriceGwei => {
+    const id = Math.random();
+    const {func, params, settings, title, callbacks} = {...this.priceModal};
+    const cdpCreationTx = typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10);
+    this.logRequestTransaction(id, title, cdpCreationTx);
+    settings.gasPrice = gasPriceGwei * 10 ** 9;
+    func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
+    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
   
   logPendingTransaction = (id, tx, title, callbacks = []) => {
@@ -96,7 +115,6 @@ class TransactionsStore {
     let method = args.shift();
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
     const timeout = ['system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
-    // console.log(method, args, timeout);
     setTimeout(() => {
       method = method.split('/');
       console.log('executeCallback', `${method[0]}.${method[1]}`, args);
@@ -106,7 +124,8 @@ class TransactionsStore {
 }
 
 decorate(TransactionsStore, {
-  registry: observable
+  registry: observable,
+  priceModal: observable
 });
 
 const store = new TransactionsStore();

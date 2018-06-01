@@ -13,6 +13,7 @@ import Help from './Help';
 import LegacyCups from './LegacyCups';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
+import PriceModal from './PriceModal';
 import Landing from './Landing';
 import './App.css';
 
@@ -136,8 +137,9 @@ class App extends React.Component {
           <Dialog system={ this.props.system } profile={ this.props.profile } dialog={ this.props.dialog } />
           <ReactTooltip place="top" type="light" effect="solid" globalEventOff='click' html={true} />
         </div>
-        <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network }/>
-        <NotifySetUp transactions={ this.props.transactions } system={ this.props.system }/>
+        <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network } />
+        <NotifySetUp transactions={ this.props.transactions } system={ this.props.system } />
+        <PriceModal transactions={ this.props.transactions } />
       </React.Fragment>
     )
   }
