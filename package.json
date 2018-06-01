@@ -20,8 +20,10 @@
     "rc-steps": "^3.1.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-slick": "^0.23.1",
     "react-stockcharts": "^0.7.0-beta.12",
     "react-tooltip": "^3.5.1",
+    "slick-carousel": "^1.8.1",
     "web3": "^0.20.2",
     "web3-provider-engine": "14.0.4"
   },
