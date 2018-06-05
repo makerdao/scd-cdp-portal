@@ -84,6 +84,7 @@ class NetworkStore {
   }
 
   stopNetwork = () => {
+    Blockchain.stopProvider();
     clearInterval(this.checkAccountsInterval);
     clearInterval(this.checkNetworkInterval);
     this.network = "";
@@ -104,10 +105,12 @@ class NetworkStore {
           Blockchain.setDefaultAccount(account);
         }
       }
-      const oldDefaultAccount = this.defaultAccount;
-      this.defaultAccount = Blockchain.getDefaultAccount();
-      if (this.network && this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
-        this.loadContracts();
+      if (this.network) { // Avoid race condition
+        const oldDefaultAccount = this.defaultAccount;
+        this.defaultAccount = Blockchain.getDefaultAccount();
+        if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
+          this.loadContracts();
+        }
       }
     }, () => {});
   }
