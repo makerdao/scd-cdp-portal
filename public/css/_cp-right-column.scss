@@ -25,6 +25,28 @@
 		margin-top: 0;
 	}
 
+	.no-account section {
+		margin-bottom: 1rem;
+		.helper-text {
+			font-size: 0.95rem;
+			margin: 2rem 0 2.1rem;
+		}
+		a {
+			font-size: 1.1rem;
+			color: #fff;
+			text-align: center;
+			display: block;
+			text-decoration: none;
+			letter-spacing: 0.02rem;
+			border: 1px solid #c0c0c0;
+			padding: 0.8rem 0;
+			width: 80%;
+			margin: 3px auto;
+			&:hover {
+				background-color: #2d404c;
+			}
+		}
+	}
 
 	// boxes in right column
 	.right-column-content {

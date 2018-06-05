@@ -3,12 +3,28 @@ import Slider from "react-slick";
 
 class Landing extends React.Component {
   render() {
-    var settings = {
+    function PrevButton(props) {
+      const { className, style, onClick } = props;
+      return (
+        <svg className={className} style={{ ...style }} onClick={onClick} enableBackground="new 0 0 240.823 240.823" viewBox="0 0 240.823 240.823" xmlns="http://www.w3.org/2000/svg">
+          <path d="m57.633 129.007 108.297 108.261c4.752 4.74 12.451 4.74 17.215 0 4.752-4.74 4.752-12.439 0-17.179l-99.707-99.671 99.695-99.671c4.752-4.74 4.752-12.439 0-17.191-4.752-4.74-12.463-4.74-17.215 0l-108.297 108.26c-4.679 4.691-4.679 12.511.012 17.191z"/>
+        </svg>
+      );
+    }
+    function NextButton(props) {
+      const { className, style, onClick } = props;
+      return (
+        <svg className={className} style={{ ...style }} onClick={onClick} enableBackground="new 0 0 240.823 240.823" viewBox="0 0 240.823 240.823" xmlns="http://www.w3.org/2000/svg">
+          <path d="m183.189 111.816-108.297-108.261c-4.752-4.74-12.451-4.74-17.215 0-4.752 4.74-4.752 12.439 0 17.179l99.707 99.671-99.695 99.671c-4.752 4.74-4.752 12.439 0 17.191 4.752 4.74 12.463 4.74 17.215 0l108.297-108.261c4.68-4.691 4.68-12.511-.012-17.19z" />
+        </svg>
+      );
+    }
+    const settings = {
       dots: true,
       infinite: false,
       speed: 500,
-      prevArrow: <svg enableBackground="new 0 0 240.823 240.823" viewBox="0 0 240.823 240.823" xmlns="http://www.w3.org/2000/svg"><path d="m57.633 129.007 108.297 108.261c4.752 4.74 12.451 4.74 17.215 0 4.752-4.74 4.752-12.439 0-17.179l-99.707-99.671 99.695-99.671c4.752-4.74 4.752-12.439 0-17.191-4.752-4.74-12.463-4.74-17.215 0l-108.297 108.26c-4.679 4.691-4.679 12.511.012 17.191z"/></svg>,
-      nextArrow: <svg enableBackground="new 0 0 240.823 240.823" viewBox="0 0 240.823 240.823" xmlns="http://www.w3.org/2000/svg"><path d="m183.189 111.816-108.297-108.261c-4.752-4.74-12.451-4.74-17.215 0-4.752 4.74-4.752 12.439 0 17.179l99.707 99.671-99.695 99.671c-4.752 4.74-4.752 12.439 0 17.191 4.752 4.74 12.463 4.74 17.215 0l108.297-108.261c4.68-4.691 4.68-12.511-.012-17.19z" /></svg>
+      prevArrow: <PrevButton />,
+      nextArrow: <NextButton />,
     };
     return (
       <div className="landing">
@@ -56,11 +72,33 @@ class Landing extends React.Component {
             </div>
           </div>
         </Slider>
+
         <div className="getting-started">
           <h1>What do I need to get started?</h1>
           <p>Connect one of the four wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
           <p className="align-center"><a className="faq">See FAQs for additional information on wallets</a></p>
-          <br /><br /><br />
+          <ul>
+            <li><a href="https://metamask.io/"><img src="../img/metamask-logo.svg" alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
+            <li><a href="https://www.parity.io/"><img src="../img/parity-logo.png" alt="Get Parity" /><div>Get Parity</div></a></li>
+            <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src="../img/ledger-nano-logo.png" alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
+            <li><a href="https://trezor.io/"><img src="../img/trezor-logo.png" alt="Get Trezor" /><div>Get Trezor</div></a></li>
+          </ul>
+        </div>
+
+        <div className="landing-footer">
+          <div className="logo-block">
+            <div className="line" />
+            <div className="logo-center"><img src="../img/maker-logo-footer.svg" alt="Maker" />&copy; DAI Foundation 2018</div>
+          </div>
+          <p>
+            The DAI Stablecoin System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />
+            Our team consists of developers, economists and designers from all over the world. Our decentralized autonomous organization is governed by our token holders.
+          </p>
+          <ul>
+            <li><a href="">FAQ</a></li>
+            <li><a href="https://www.reddit.com/r/MakerDAO/">Reddit</a></li>
+            <li><a href="https://chat.makerdao.com">Chat</a></li>
+          </ul>
         </div>
       </div>
     );

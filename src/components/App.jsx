@@ -67,7 +67,7 @@ class App extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className={ this.state.page === 'help' ? "full-width-page" : this.props.dialog.show ? "dialog-open" : "" }>
+        <div className={ (this.state.page ? "page-" + this.state.page : "") + (this.props.network.isConnected ? " is-connected" : " is-not-connected") + (this.state.page === 'help' ? " full-width-page" : this.props.dialog.show ? " dialog-open" : "") }>
           <div className="wrapper">
             {
               this.props.network.isConnected && this.props.network.defaultAccount &&

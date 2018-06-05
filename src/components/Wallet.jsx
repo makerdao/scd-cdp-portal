@@ -108,6 +108,7 @@ class Wallet extends React.Component {
                   <h2>Connect a Wallet</h2>
                 </div>
                 <section className="content">
+                  <div className="helper-text no-wrap">Get started by connecting one of the wallets below</div>
                   <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } }>{ getWebClientProviderName() ? this.formatClientName(getWebClientProviderName()): 'Metamask/Toshi/Mist/Parity' }</a><br/>
                   <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Ledger Nano S</a><br/>
                   <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('trezor') } }>Trezor</a>
@@ -215,7 +216,7 @@ class Wallet extends React.Component {
                       }
                     </React.Fragment>
                   :
-                    <p>Log in with your account to see you dashboard</p>
+                    <p>Log in with your account to see your dashboard</p>
                   }
               </React.Fragment>
         }
