@@ -38,16 +38,11 @@ export const getDefaultAccount = () => {
   return typeof web3.eth.defaultAccount !== 'undefined' ? web3.eth.defaultAccount : null;
 }
 
-export const setDefaultAccountByIndex = index => {
+export const getDefaultAccountByIndex = index => {
   return new Promise(async (resolve, reject) => {
     try {
       const accounts = await getAccounts();
-      const address = typeof accounts[index] !== 'undefined' ? accounts[index] : null;
-      if (address) {
-        console.log(`Address ${address} loaded`);
-      }
-      web3.eth.defaultAccount = address;
-      resolve(true);
+      resolve(accounts[index]);
     } catch (e) {
       console.log(e);
       resolve(false);
@@ -99,7 +94,7 @@ export const getProviderUseLogs = () => {
   return web3.useLogs;
 }
 
-export const getProviderName = () => {
+export const getCurrentProviderName = () => {
   return web3.currentProvider.name;
 }
 
@@ -201,3 +196,5 @@ export const setHWProvider = (device, network, path, accountsOffset = 0, account
 export const setWebClientProvider = () => {
   return web3.setWebClientProvider();
 }
+
+export const {getWebClientProviderName} = require('./web3');

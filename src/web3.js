@@ -7,9 +7,40 @@ import TrezorSubProvider from './vendor/trezor-subprovider';
 
 const settings = require('./settings');
 
+export const getWebClientProviderName = () => {
+  if (!window.web3 || typeof window.web3.currentProvider === 'undefined')
+    return '';
+
+  if (window.web3.currentProvider.isMetaMask)
+    return 'metamask';
+
+  if (window.web3.currentProvider.isTrust)
+    return 'trust';
+
+  if (typeof window.SOFA !== 'undefined')
+    return 'toshi';
+
+  if (typeof window.__CIPHER__ !== 'undefined')
+    return 'cipher';
+
+  if (window.web3.currentProvider.constructor.name === 'EthereumProvider')
+    return 'mist';
+
+  if (window.web3.currentProvider.constructor.name === 'Web3FrameProvider')
+    return 'parity';
+
+  if (window.web3.currentProvider.host && window.web3.currentProvider.host.indexOf('infura') !== -1)
+    return 'infura';
+
+  if (window.web3.currentProvider.host && window.web3.currentProvider.host.indexOf('localhost') !== -1)
+    return 'localhost';
+
+  return 'other';
+};
+
 class Web3Extended extends Web3 {
   stop = () => {
-    if (this.currentProvider) {
+    if (this.currentProvider && typeof this.currentProvider.stop === 'function') {
       this.currentProvider.stop();
     }
   }
@@ -39,13 +70,13 @@ class Web3Extended extends Web3 {
     this.stop();
     return new Promise(async (resolve, reject) => {
       try {
-        if (window.web3) {
+        if (window.web3 && window.web3.currentProvider) {
           this.setProvider(window.web3.currentProvider);
+          this.useLogs = true;
+          this.currentProvider.name = getWebClientProviderName();
         } else {
           alert('error');
         }
-        this.useLogs = true;
-        this.currentProvider.name = this.currentProvider.isMetaMask || this.currentProvider.constructor.name === 'MetamaskInpageProvider' ? 'metamask' : 'other';
         resolve(true);
       } catch(e) {
         reject(e);

@@ -122,30 +122,32 @@ class SystemStore {
   }
 
   init = (top, tub, tap, vox, pit) => {
-    this.top.address = top;
-    this.tub.address = tub;
-    this.tap.address = tap;
+    if (this.network.network) {
+      this.top.address = top;
+      this.tub.address = tub;
+      this.tap.address = tap;
 
-    this.vox.address = vox;
-    this.pit.address = pit;
-    
-    this.loadVariables();
+      this.vox.address = vox;
+      this.pit.address = pit;
 
-    if (settings.chain[this.network.network].service) {
-      if (settings.chain[this.network.network].chart) {
-        // this.getPricesFromService(); // TODO
+      this.loadVariables();
+
+      if (settings.chain[this.network.network].service) {
+        if (settings.chain[this.network.network].chart) {
+          // this.getPricesFromService(); // TODO
+        }
+        // this.getStats();
       }
-      // this.getStats();
+
+      this.getMyCups();
+      this.getMyLegacyCups();
+
+      this.setFiltersTub();
+      this.setFiltersTap();
+      this.setFiltersVox();
+      this.setFilterFeedValue('pip');
+      this.setFilterFeedValue('pep');
     }
-
-    this.getMyCups();
-    this.getMyLegacyCups();
-
-    this.setFiltersTub();
-    this.setFiltersTap();
-    this.setFiltersVox();
-    this.setFilterFeedValue('pip');
-    this.setFilterFeedValue('pep');
   }
 
   loadVariables = (onlySecondDependent = false) => {
@@ -565,7 +567,7 @@ class SystemStore {
             if (this.tub.cupsLoading) {
               // If we know there is a new CDP and it still not available, keep trying & loading
               setTimeout(() => this.getMyCups(true), 3000)
-            } else if (keys.length > 0 && settings.chain[this.network.network].service) {
+            } else if (this.network.network && keys.length > 0 && settings.chain[this.network.network].service) {
               keys.forEach(key => {
                 Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
                   this.tub.cups[key].history = response

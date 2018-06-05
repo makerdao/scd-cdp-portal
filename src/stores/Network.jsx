@@ -83,14 +83,30 @@ class NetworkStore {
     this.checkAccounts();
   }
 
+  stopNetwork = () => {
+    clearInterval(this.checkAccountsInterval);
+    clearInterval(this.checkNetworkInterval);
+    this.network = "";
+    this.hw = {active: false, showModal: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+    this.accounts = [];
+    this.defaultAccount = null;
+    this.isConnected = false;
+    this.latestBlock = null;
+    this.outOfSync = true;
+    this.isHw = false;
+  }
+
   checkAccounts = () => {
     Blockchain.getAccounts().then(async accounts => {
-      const oldDefaultAccount = this.defaultAccount;
-      if (!this.hw.active && accounts && accounts[0] !== Blockchain.getDefaultAccount()) {
-        await Blockchain.setDefaultAccountByIndex(0);
+      if (this.network && !this.hw.active && accounts && accounts[0] !== Blockchain.getDefaultAccount()) {
+        const account = await Blockchain.getDefaultAccountByIndex(0);
+        if (this.network && !this.hw.active && accounts && accounts[0] !== Blockchain.getDefaultAccount()) { // To avoid race condition (we make sure nothing changed after getting the account)
+          Blockchain.setDefaultAccount(account);
+        }
       }
+      const oldDefaultAccount = this.defaultAccount;
       this.defaultAccount = Blockchain.getDefaultAccount();
-      if (oldDefaultAccount !== this.defaultAccount) {
+      if (this.network && this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
         this.loadContracts();
       }
     }, () => {});
@@ -134,7 +150,8 @@ class NetworkStore {
 
   importAddress = async () => {
     this.hw.showModal = false;
-    await Blockchain.setDefaultAccountByIndex(this.hw.addressIndex);
+    const account = await Blockchain.getDefaultAccountByIndex(this.hw.addressIndex);
+    Blockchain.setDefaultAccount(account);
     this.checkNetwork();
     this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
     this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
@@ -185,7 +202,7 @@ class NetworkStore {
             this.profile.getAccountBalance(this.defaultAccount);
 
             // Set profile proxy and system contracts
-            this.profile.setProxy(r[2])
+            this.profile.setProxy(r[2]);
             this.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
 
             // Intervals

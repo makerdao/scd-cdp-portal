@@ -1,8 +1,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
-import WalletClientSelector from './WalletClientSelector';
 import WalletHardHWSelector from './WalletHardHWSelector';
-import {getProviderName} from '../blockchainHandler';
+import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon} from '../helpers';
 
 class Wallet extends React.Component {
@@ -44,6 +43,48 @@ class Wallet extends React.Component {
 
   tokenName = token => token.replace('gov', 'mkr').toUpperCase();
 
+  formatClientName = name => {
+    const capitalize = val => val.replace(/\b[a-z]|\B[A-Z]/g, x => String.fromCharCode(x.charCodeAt(0)^32));
+    switch (name) {
+      case 'ledger':
+        return 'Ledger Nano S';
+      case 'web':
+        return capitalize(getWebClientProviderName())
+      default:
+        return capitalize(name);
+    }
+  }
+
+  renderWalletOptions = () => {
+    const options = [];
+    if (getWebClientProviderName() && (getCurrentProviderName() === 'ledger' || getCurrentProviderName() === 'trezor')) {
+      options.push('web');
+    }
+    if (getCurrentProviderName() !== 'ledger') {
+      options.push('ledger');
+    }
+    if (getCurrentProviderName() !== 'trezor') {
+      options.push('trezor');
+    }
+    return options;
+  }
+
+  switchConnection = e => {
+    e.preventDefault();
+    this.props.network.stopNetwork();
+    const client = e.target.getAttribute('data-client');
+    if (client === 'ledger' || client === 'trezor') {
+      this.props.network.showHW(client);
+    } else {
+      this.props.network.setWeb3WebClient();
+    }
+  }
+
+  logout = e => {
+    e.preventDefault();
+    this.props.network.stopNetwork();
+  }
+
   render() {
     const tokens = {
       'eth': {'balance': this.props.profile.accountBalance, 'allowance': false},
@@ -62,7 +103,16 @@ class Wallet extends React.Component {
           :
             !this.props.network.isConnected
             ?
-              <WalletClientSelector network={ this.props.network } />
+              <div className="frame no-account">
+                <div className="heading">
+                  <h2>Connect a Wallet</h2>
+                </div>
+                <section className="content">
+                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } }>{ getWebClientProviderName() ? this.formatClientName(getWebClientProviderName()): 'Metamask/Toshi/Mist/Parity' }</a><br/>
+                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Ledger Nano S</a><br/>
+                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('trezor') } }>Trezor</a>
+                </section>
+              </div>
             :
               <React.Fragment>
                 {
@@ -70,15 +120,22 @@ class Wallet extends React.Component {
                   ?
                     <React.Fragment>
                       <h2 className="typo-h2">
-                        <span>
-                          { getProviderName() === 'metamask' && 'Metamask'}
-                          { getProviderName() === 'ledger' && 'Ledger Nano S'}
-                          { getProviderName() === 'trezor' && 'Trezor'}
-                          { getProviderName() === 'other' && 'Web Client'}
-                        </span>
                         { getJazziconIcon(this.props.network.defaultAccount, 30) }
+                        <span>
+                          { this.formatClientName(getCurrentProviderName()) }
+                        </span>
                         <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
                       </h2>
+                      <div>
+                        <a href="#action" onClick={ this.logout }>Logout</a>
+                        {
+                          this.renderWalletOptions().map(key =>
+                            <a href="#action" style={ {display: 'block'} } key={ key } data-client={ key } onClick={ this.switchConnection }>
+                              Connect { this.formatClientName(key) }
+                            </a>
+                          )
+                        }
+                      </div>
                       {
                         this.state.sendToken
                         ?
