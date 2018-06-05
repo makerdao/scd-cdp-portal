@@ -158,7 +158,7 @@ class Wallet extends React.Component {
                       }
                     </React.Fragment>
                   :
-                    <p>Log in with your account to see you dashboard</p>
+                    <p>Log in with your account to see your dashboard</p>
                   }
               </React.Fragment>
         }
