@@ -8,7 +8,8 @@ class WalletClientSelector extends React.Component {
           <h2>Connect a Wallet</h2>
         </div>
         <section className="content">
-          <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } }>Metamask/Parity/Mist</a><br/>
+          <div className="helper-text no-wrap">Get started by connecting one of the wallets below</div>
+          <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } }>MetaMask / Parity</a><br/>
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Ledger Nano S</a><br/>
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('trezor') } }>Trezor</a>
         </section>
