@@ -1,5 +1,5 @@
 {
-  "CDPsPerPage": 15,
+  "hwNetwork": "kovan",
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",

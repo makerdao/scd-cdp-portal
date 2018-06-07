@@ -125,6 +125,9 @@ export const min = (num1, num2) => {
   return web3.BigNumber.min(num1, num2);
 }
 
+export const capitalize = string => {
+  return string.replace(/\b[a-z]|\B[A-Z]/g, x => String.fromCharCode(x.charCodeAt(0)^32));
+}
 export const jsNumberForAddress = address => {
   return parseInt(address.slice(2, 10), 16);
 }

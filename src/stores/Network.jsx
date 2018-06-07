@@ -132,15 +132,24 @@ class NetworkStore {
   showHW = option => {
     this.hw.option = option;
     this.hw.showSelector = true;
-    this.loadHWAddresses('kovan', option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0");
+    this.loadHWAddresses();
   }
 
-  loadHWAddresses = async (network, derivationPath = this.hw.derivationPath) => {
+  hideHw = () => {
+    this.hw.active = false;
+    this.hw.loading = false;
+    this.hw.showSelector = false;
+    this.hw.option = '';
+    this.hw.derivationPath = false;
+  }
+
+  loadHWAddresses = async () => {
     this.hw.loading = true;
     this.hw.active = true;
-    this.hw.derivationPath = derivationPath;
+    this.hw.error = false;
+    this.hw.derivationPath = this.hw.option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0";
     try {
-      await Blockchain.setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, 50);
+      await Blockchain.setHWProvider(this.hw.option, settings.hwNetwork, `${this.hw.derivationPath.replace('m/', '')}/0`, 0, 50);
       const accounts = await Blockchain.getAccounts();
       this.hw.addresses = accounts;
       this.hw.addressIndex = 0;

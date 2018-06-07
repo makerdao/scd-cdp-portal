@@ -1,5 +1,6 @@
 import React from 'react';
 import {observer} from "mobx-react";
+import {capitalize} from "../helpers";
 
 class WalletHardHWSelector extends React.Component {
 
@@ -13,23 +14,29 @@ class WalletHardHWSelector extends React.Component {
         {
           this.props.network.hw.loading
           ?
-            `Connecting to ${this.props.network.hw.option}`
+            <React.Fragment>
+              <h2>
+                Connecting to {capitalize(this.props.network.hw.option)}
+              </h2>
+              <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+            </React.Fragment>
           :
             <React.Fragment>
               {
                 this.props.network.hw.error &&
                 <React.Fragment>
-                  { this.props.network.hw.error }<br />
-                  Select Network:&nbsp;
-                  <select ref={input => this.network = input}>
-                    <option value="kovan">Kovan</option>
-                    <option value="main">Mainnet</option>
-                  </select>
-                  <br />
-                  Select Derivation Path: &nbsp;
+                  <h2>{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
+                  {
+                    this.props.network.hw.option === 'ledger' &&
+                    <ul>
+                      <li>Unlock you ledger and open the ETH application.</li>
+                      <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
+                      <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
+                    </ul>
+                  }
                   <div>
-                    <input type="text" style={ {width: '120px'} } defaultValue={ this.props.network.hw.derivationPath } ref={input => this.derivationPath = input}/>&nbsp;
-                    <a href="#action" onClick={ e => {  e.preventDefault(); this.props.network.loadHWAddresses(this.network.value, this.derivationPath.value) } }>Load</a>
+                    <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>&nbsp;
+                    <button href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
                   </div>
                 </React.Fragment>
               }

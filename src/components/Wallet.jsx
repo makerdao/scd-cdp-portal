@@ -2,7 +2,7 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import WalletHardHWSelector from './WalletHardHWSelector';
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
-import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon} from '../helpers';
+import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon, capitalize} from '../helpers';
 
 class Wallet extends React.Component {
   constructor() {
@@ -44,7 +44,6 @@ class Wallet extends React.Component {
   tokenName = token => token.replace('gov', 'mkr').toUpperCase();
 
   formatClientName = name => {
-    const capitalize = val => val.replace(/\b[a-z]|\B[A-Z]/g, x => String.fromCharCode(x.charCodeAt(0)^32));
     switch (name) {
       case 'ledger':
         return 'Ledger Nano S';
