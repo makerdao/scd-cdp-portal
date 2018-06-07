@@ -44,8 +44,7 @@ export const getDefaultAccountByIndex = index => {
       const accounts = await getAccounts();
       resolve(accounts[index]);
     } catch (e) {
-      console.log(e);
-      resolve(false);
+      reject(new Error(e));
     }
   });
 }
@@ -190,7 +189,7 @@ export const stopProvider = () => {
 }
 
 export const setHWProvider = (device, network, path, accountsOffset = 0, accountsLength = 1) => {
-  return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength = 1);
+  return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength);
 }
 
 export const setWebClientProvider = () => {

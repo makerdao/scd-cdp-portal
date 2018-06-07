@@ -121,10 +121,18 @@ class App extends React.Component {
                 this.state.page !== 'help' &&
                 <div className="right-column-content">
                   <div className="row-2col-m">
-                    <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
                     {
-                      this.props.network.defaultAccount &&
-                      <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
+                      this.props.network.loadingAddress
+                      ?
+                        <div>Importing account...</div>
+                      :
+                        <React.Fragment>
+                          <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
+                          {
+                            this.props.network.defaultAccount &&
+                            <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
+                          }
+                        </React.Fragment>
                     }
                   </div>
                   <div className="footer col col-no-border typo-cs typo-grid-grey">

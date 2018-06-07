@@ -94,7 +94,7 @@ class Wallet extends React.Component {
     return (
       <div className="col col-2-m">
         {
-          this.props.network.hw.showModal
+          this.props.network.hw.showSelector
           ?
             <WalletHardHWSelector network={ this.props.network }
                                   loadHWAddresses={ this.props.network.loadHWAddresses }

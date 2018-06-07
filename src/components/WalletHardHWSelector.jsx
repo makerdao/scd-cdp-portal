@@ -37,7 +37,6 @@ class WalletHardHWSelector extends React.Component {
                 this.props.network.hw.addresses.length > 0 &&
                 <React.Fragment>
                   Choose Address:
-                  <button onClick={ () => this.props.network.loadHWAddresses(this.network.value) }>Load more addresses</button>
                   <select onChange={ this.selectAccount } defaultValue={ this.props.network.hw.addresses[this.props.network.hw.addressIndex] } >
                     {
                       this.props.network.hw.addresses.map(key =>

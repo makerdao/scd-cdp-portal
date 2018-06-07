@@ -5,6 +5,7 @@ import {isAddress} from '../helpers';
 const settings = require('../settings');
 
 class NetworkStore {
+  stopIntervals = false;
   accounts = [];
   defaultAccount = null;
   isConnected = false;
@@ -12,7 +13,7 @@ class NetworkStore {
   network = "";
   outOfSync = true;
   isHw = false;
-  hw = {active: false, showModal: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+  hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
 
   checkNetwork = () => {
     let isConnected = null;
@@ -53,7 +54,8 @@ class NetworkStore {
                 console.log('res.hash:', res.hash);
                 network = 'private';
             }
-            if (this.network !== network) {
+            if (!this.stopIntervals // To avoid race condition
+                && this.network !== network) {
               this.network = network;
               this.isConnected = true;
               this.latestBlock = 0;
@@ -84,11 +86,12 @@ class NetworkStore {
   }
 
   stopNetwork = () => {
+    this.stopIntervals = true;
     Blockchain.stopProvider();
     clearInterval(this.checkAccountsInterval);
     clearInterval(this.checkNetworkInterval);
     this.network = "";
-    this.hw = {active: false, showModal: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
     this.accounts = [];
     this.defaultAccount = null;
     this.isConnected = false;
@@ -101,11 +104,11 @@ class NetworkStore {
     Blockchain.getAccounts().then(async accounts => {
       if (this.network && !this.hw.active && accounts && accounts[0] !== Blockchain.getDefaultAccount()) {
         const account = await Blockchain.getDefaultAccountByIndex(0);
-        if (this.network && !this.hw.active && accounts && accounts[0] !== Blockchain.getDefaultAccount()) { // To avoid race condition (we make sure nothing changed after getting the account)
+        if (!this.stopIntervals) { // To avoid race condition
           Blockchain.setDefaultAccount(account);
         }
       }
-      if (this.network) { // Avoid race condition
+      if (!this.stopIntervals) { // To avoid race condition
         const oldDefaultAccount = this.defaultAccount;
         this.defaultAccount = Blockchain.getDefaultAccount();
         if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
@@ -117,6 +120,8 @@ class NetworkStore {
 
   // Web3 web client
   setWeb3WebClient = async () => {
+    this.stopIntervals = false;
+    this.loadingAddress = true;
     await Blockchain.setWebClientProvider();
     this.checkNetwork();
     this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
@@ -126,7 +131,7 @@ class NetworkStore {
   // Hardwallets
   showHW = option => {
     this.hw.option = option;
-    this.hw.showModal = true;
+    this.hw.showSelector = true;
     this.loadHWAddresses('kovan', option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0");
   }
 
@@ -135,7 +140,7 @@ class NetworkStore {
     this.hw.active = true;
     this.hw.derivationPath = derivationPath;
     try {
-      await Blockchain.setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, this.hw.addresses.length + 5);
+      await Blockchain.setHWProvider(this.hw.option, network, `${derivationPath.replace('m/', '')}/0`, 0, 50);
       const accounts = await Blockchain.getAccounts();
       this.hw.addresses = accounts;
       this.hw.addressIndex = 0;
@@ -152,7 +157,9 @@ class NetworkStore {
   }
 
   importAddress = async () => {
-    this.hw.showModal = false;
+    this.stopIntervals = false;
+    this.loadingAddress = true;
+    this.hw.showSelector = false;
     const account = await Blockchain.getDefaultAccountByIndex(this.hw.addressIndex);
     Blockchain.setDefaultAccount(account);
     this.checkNetwork();
@@ -182,48 +189,53 @@ class NetworkStore {
   }
 
   loadContracts = () => {
-    Blockchain.resetFilters(true);
-    if (typeof this.timeVariablesInterval !== 'undefined') clearInterval(this.timeVariablesInterval);
-    if (typeof this.nonTimeVariablesInterval !== 'undefined') clearInterval(this.nonTimeVariablesInterval);
-    if (typeof this.pendingTxInterval !== 'undefined') clearInterval(this.pendingTxInterval);
-    this.system.clear();
+    if (this.network && !this.stopIntervals) {
+      Blockchain.resetFilters(true);
+      if (typeof this.timeVariablesInterval !== 'undefined') clearInterval(this.timeVariablesInterval);
+      if (typeof this.nonTimeVariablesInterval !== 'undefined') clearInterval(this.nonTimeVariablesInterval);
+      if (typeof this.pendingTxInterval !== 'undefined') clearInterval(this.pendingTxInterval);
+      this.system.clear();
 
-    const topAddress = settings.chain[this.network].top;
-    const proxyRegistryAddr = settings.chain[this.network].proxyRegistry;
+      const topAddress = settings.chain[this.network].top;
+      const proxyRegistryAddr = settings.chain[this.network].proxyRegistry;
 
-    Blockchain.loadObject('top', topAddress, 'top');
-    Blockchain.loadObject('proxyregistry', proxyRegistryAddr, 'proxyRegistry');
+      Blockchain.loadObject('top', topAddress, 'top');
+      Blockchain.loadObject('proxyregistry', proxyRegistryAddr, 'proxyRegistry');
 
-    const setUpPromises = [Blockchain.getContractAddr('top', 'tub'), Blockchain.getContractAddr('top', 'tap'), Blockchain.getProxyAddress(this.defaultAccount)];
+      const setUpPromises = [Blockchain.getContractAddr('top', 'tub'), Blockchain.getContractAddr('top', 'tap'), Blockchain.getProxyAddress(this.defaultAccount)];
 
-    Promise.all(setUpPromises).then(r => {
-      if (r[0] && r[1] && isAddress(r[0]) && isAddress(r[1])) {
-        const setUpPromises2 = [Blockchain.getContractAddr('tub', 'vox'), Blockchain.getContractAddr('tub', 'pit')];
+      Promise.all(setUpPromises).then(r => {
+        if (r[0] && r[1] && isAddress(r[0]) && isAddress(r[1])) {
+          const setUpPromises2 = [Blockchain.getContractAddr('tub', 'vox'), Blockchain.getContractAddr('tub', 'pit')];
 
-        Promise.all(setUpPromises2).then(r2 => {
-          if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
-            this.profile.getAccountBalance(this.defaultAccount);
+          Promise.all(setUpPromises2).then(r2 => {
+            if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
+              this.profile.getAccountBalance(this.defaultAccount);
 
-            // Set profile proxy and system contracts
-            this.profile.setProxy(r[2]);
-            this.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
+              // Set profile proxy and system contracts
+              this.profile.setProxy(r[2]);
+              this.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
+              this.loadingAddress = false;
 
-            // Intervals
-            this.setTimeVariablesInterval();
-            this.setNonTimeVariablesInterval();
-            this.setPendingTxInterval();
-          } else {
-            console.log('Error getting vox & pit');
-          }
-        }, () => console.log('Error getting vox & pit'));
-      } else {
-        console.log('Error getting tub, tap or proxy registry');
-      }
-    }, () => console.log('Error getting tub, tap or proxy registry'));
+              // Intervals
+              this.setTimeVariablesInterval();
+              this.setNonTimeVariablesInterval();
+              this.setPendingTxInterval();
+            } else {
+              console.log('Error getting vox & pit');
+            }
+          }, () => console.log('Error getting vox & pit'));
+        } else {
+          console.log('Error getting tub, tap or proxy registry');
+        }
+      }, () => console.log('Error getting tub, tap or proxy registry'));
+    }
   }
 }
 
 decorate(NetworkStore, {
+  stopIntervals: observable,
+  loadingAddress: observable,
   accounts: observable,
   defaultAccount: observable,
   isConnected: observable,

@@ -122,7 +122,7 @@ class SystemStore {
   }
 
   init = (top, tub, tap, vox, pit) => {
-    if (this.network.network) {
+    if (this.network.network && !this.network.stopIntervals) {
       this.top.address = top;
       this.tub.address = tub;
       this.tap.address = tap;
@@ -567,7 +567,7 @@ class SystemStore {
             if (this.tub.cupsLoading) {
               // If we know there is a new CDP and it still not available, keep trying & loading
               setTimeout(() => this.getMyCups(true), 3000)
-            } else if (this.network.network && keys.length > 0 && settings.chain[this.network.network].service) {
+            } else if (!this.network.stopIntervals && keys.length > 0 && settings.chain[this.network.network].service) {
               keys.forEach(key => {
                 Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
                   this.tub.cups[key].history = response
