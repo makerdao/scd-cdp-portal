@@ -50,6 +50,7 @@ body {
 				right: 0px;
 				bottom: -100%;
 			}
+			border-left: none;
 		}
 		.main-column {
 			padding-right: 0;
@@ -168,7 +169,7 @@ body {
 		& > *:first-child {
 			border-right-width: 1px;
 			padding-left: 0px;
-			padding-right: 1em;
+			padding-right: 0;
 		}
 	}
 }

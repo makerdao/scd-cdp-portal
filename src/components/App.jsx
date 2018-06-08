@@ -120,23 +120,21 @@ class App extends React.Component {
               {
                 this.state.page !== 'help' &&
                 <div className="right-column-content">
-                  <div className="row-2col-m">
                     {
                       this.props.network.loadingAddress
                       ?
                         <div>Importing account...</div>
                       :
                         <React.Fragment>
-                          <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
+                  <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } changePage={ this.changePage } />
                           {
                             this.props.network.defaultAccount &&
                             <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
                           }
                         </React.Fragment>
                     }
-                  </div>
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
-                    <a href="#action">Dai Public Announcement</a> || <a href="#action">Dai Terms of Service</a>
+                    <a href="#action">Terms of Service</a><span className="separator">||</span><a href="#action">Announcement</a>
                   </div>
                 </div>
               }

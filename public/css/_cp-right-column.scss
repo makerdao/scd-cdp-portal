@@ -8,6 +8,9 @@
 	top: 0;
 	right: 0;
 	transition: right 0.3s ease-in;
+	.is-connected & {
+		border-left: 1px solid #414040;
+	}
 
 	@include respond-to(m) {
 		width: 100%;
@@ -27,11 +30,13 @@
 
 	.no-account section {
 		margin-bottom: 1rem;
+		text-align: center;
 		.helper-text {
 			font-size: 0.95rem;
 			margin: 2rem 0 2.1rem;
 		}
 		a {
+			user-select: none;
 			font-size: 1.1rem;
 			color: #fff;
 			text-align: center;
@@ -40,7 +45,7 @@
 			letter-spacing: 0.02rem;
 			border: 1px solid #c0c0c0;
 			padding: 0.8rem 0;
-			width: 80%;
+			width: 60%;
 			margin: 3px auto;
 			&:hover {
 				background-color: #2d404c;
@@ -50,7 +55,23 @@
 
 	// boxes in right column
 	.right-column-content {
-		padding: 32px 44px;
+		padding: 0;
+		h2 {
+			&.wallet {
+				text-align: left;
+				padding-left: 25px;
+				padding-right: 25px;
+				border-bottom: none;
+			}
+			user-select: none;
+			font-size: 1.3rem;
+			background-color: #202930;
+			padding: 1.5rem 0;
+			border-bottom: 1px solid #595f62;
+			color: #fff;
+			text-align: center;
+			letter-spacing: 0.02rem;
+		}
 
 		@include respond-to(m) {
 			display: inline-block;
@@ -59,6 +80,16 @@
 
 		h3 {
 			padding-top: 1em;
+		}
+	}
+
+	.identicon {
+		margin-right: 14px;
+		float: left;
+		position: relative;
+		top: -2px;
+		@include respond-to(xl) {
+			top: 2px;
 		}
 	}
 
@@ -75,10 +106,26 @@
 	.wallet-id {
 		text-align: right;
 		float: right;
+		margin-right: 1rem;
+		a {
+			color: $text-grey;
+			text-decoration: none;
+		}
 	}
 
 	// footer
 	.footer {
+		text-align: center;
+		color: #858f99;
+		font-size: 1.1rem;
+		font-weight: 200;
+		letter-spacing: 0.01rem;
+		margin-top: 1rem;
+		span.separator {
+			padding: 0 0.5rem;
+			font-weight: inherit;
+			color: inherit;
+		}
 		@include respond-to(m) {
 			text-align: left;
 			margin-top: 2em;
