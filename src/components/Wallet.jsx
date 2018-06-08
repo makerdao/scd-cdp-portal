@@ -73,7 +73,7 @@ class Wallet extends React.Component {
   switchConnection = e => {
     e.preventDefault();
     this.props.network.stopNetwork();
-    const client = e.target.getAttribute('data-client');
+    const client = e.currentTarget.getAttribute('data-client');
     if (client === 'ledger' || client === 'trezor') {
       this.props.network.showHW(client);
     } else {
