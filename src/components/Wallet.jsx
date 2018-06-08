@@ -47,8 +47,10 @@ class Wallet extends React.Component {
     switch (name) {
       case 'ledger':
         return 'Ledger Nano S';
+      case 'metamask':
+        return 'MetaMask';
       case 'web':
-        return capitalize(getWebClientProviderName())
+        return capitalize(getWebClientProviderName());
       default:
         return capitalize(name);
     }
