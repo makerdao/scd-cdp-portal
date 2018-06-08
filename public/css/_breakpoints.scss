@@ -21,6 +21,11 @@
 	// screen sizes in between 1281 and 1599 px are defined with no media  queries
 
 
+	@if $breakpoint == "<xl" { // anything below super size desktop screens
+		@media only screen and (max-width: 1599px) {
+			@content;
+		}
+	}
 	@if $breakpoint == "xl" { // super size desktop screens ) dells workingstations, iMacs, etc.
 		@media only screen and (min-width: 1600px) {
 			@content;
