@@ -2,6 +2,8 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {capitalize} from "../helpers";
 
+const settings = require('../settings');
+
 class WalletHardHWSelector extends React.Component {
 
   selectAccount = e => {
@@ -43,7 +45,8 @@ class WalletHardHWSelector extends React.Component {
               {
                 this.props.network.hw.addresses.length > 0 &&
                 <React.Fragment>
-                  Choose Address:
+                  <h2>{ capitalize(this.props.network.hw.option) } Connected</h2>
+                  <h3>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</h3>
                   <select onChange={ this.selectAccount } defaultValue={ this.props.network.hw.addresses[this.props.network.hw.addressIndex] } >
                     {
                       this.props.network.hw.addresses.map(key =>
@@ -51,9 +54,8 @@ class WalletHardHWSelector extends React.Component {
                       )
                     }
                   </select>
-                  {
-                    <button onClick={ this.props.network.importAddress }>Connect this Address</button>
-                  }
+                  <button onClick={ this.props.network.importAddress }>Connect this Address</button><br />
+                  <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
                 </React.Fragment>
               }
             </React.Fragment>
