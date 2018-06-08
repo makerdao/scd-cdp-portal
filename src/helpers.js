@@ -133,7 +133,7 @@ export const jsNumberForAddress = address => {
 }
 
 export const getJazziconIcon = (address, size) => {
-  return <div style={ {borderRadius: '15px', overflow: 'hidden', padding: '0', margin: '0', width: `${size}px`, 'height': `${size}px`, display: 'inline-block'} } dangerouslySetInnerHTML={ {__html: jazzicon(size, jsNumberForAddress(address)).innerHTML} } />
+  return <div className="identicon" style={ {width: `${size}px`, height: `${size}px`, overflow: 'hidden', borderRadius: '50%' } } dangerouslySetInnerHTML={ {__html: jazzicon(size, jsNumberForAddress(address)).innerHTML} } />
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;
