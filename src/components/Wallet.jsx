@@ -3,6 +3,7 @@ import {observer} from 'mobx-react';
 import WalletHardHWSelector from './WalletHardHWSelector';
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon, capitalize} from '../helpers';
+import { DropdownMenu, MenuItems, MenuItem, MenuFooter } from './DropdownMenu';
 
 class Wallet extends React.Component {
   constructor() {
@@ -93,7 +94,7 @@ class Wallet extends React.Component {
       'gov': {'balance': this.props.system.gov.myBalance, 'allowance': false}
     };
     return (
-      <div className="col col-2-m">
+      <div>
         {
           this.props.network.hw.showSelector
           ?
@@ -121,12 +122,25 @@ class Wallet extends React.Component {
                   this.props.network.defaultAccount
                   ?
                     <React.Fragment>
-                      <h2 className="typo-h2">
-                        { getJazziconIcon(this.props.network.defaultAccount, 30) }
+                      <h2 className="typo-h2 wallet">
+                        { getJazziconIcon(this.props.network.defaultAccount, 25) }
                         <span>
                           { this.formatClientName(getCurrentProviderName()) }
                         </span>
+                        <DropdownMenu icon="../img/wallet-icon.png">
+                          <MenuItems>
+                          {
+                            this.renderWalletOptions().map(key =>
+                              <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                            )
+                          }
+                          </MenuItems>
+                          <MenuFooter>
+                            <a href="#help" data-page="help" onClick={ this.props.changePage }>Help</a><a href="#action" onClick={ this.logout }>Log Out</a>
+                          </MenuFooter>
+                        </DropdownMenu>
                         <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
+
                       </h2>
                       <div>
                         <a href="#action" onClick={ this.logout }>Logout</a>
