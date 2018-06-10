@@ -197,7 +197,7 @@ class Wallet extends React.Component {
                                         printNumber(tokens[token].balance)
                                     }
                                   </td>
-                                  <td><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }>Send</a></td>
+                                  <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>
                                   <td>
                                     {
                                       token !== 'eth' &&

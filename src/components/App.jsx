@@ -123,7 +123,7 @@ class App extends React.Component {
                     {
                       this.props.network.loadingAddress
                       ?
-                        <div>Importing account...</div>
+                        <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
                       :
                         <React.Fragment>
                   <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } changePage={ this.changePage } />

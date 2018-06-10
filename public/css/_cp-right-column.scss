@@ -61,6 +61,7 @@
 				text-align: left;
 				padding-left: 25px;
 				padding-right: 25px;
+				margin-bottom: 0;
 				border-bottom: none;
 			}
 			user-select: none;
@@ -138,6 +139,103 @@
 	@include respond-to(m) {
 		.dialog-open & {
 			padding-bottom: 300px;
+		}
+	}
+}
+
+.right-column {
+
+	// Top right balances table
+	table {
+		width: 100%;
+		border-spacing: 0;
+		border-bottom: 1px solid #595f62;
+		thead {
+			th {
+				text-align: left;
+				text-transform: uppercase;
+				font-size: 0.8rem;
+				font-weight: 300;
+				padding: 0.6rem 1.4rem;
+			}
+		}
+		tbody {
+			tr:nth-child(2n+1) {
+				background-color: #202930;
+			}
+			tr {
+				td {
+					font-size: 1.2rem;
+					font-weight: 300;
+					color: #fff;
+					letter-spacing: 0.03rem;
+					padding: 1.2rem 1.4rem;
+				}
+				td.send-col {
+					img {
+						position: relative;
+						left: 3px;
+						top: 3px;
+					}
+				}
+			}
+		}
+	}
+
+	.info-section {
+		padding: 1rem 3rem;
+		border-bottom: 0;
+		h2 {
+			font-size: 1.8rem;
+			font-weight: 200;
+			background-color: unset;
+			padding: 0;
+			border: none;
+			color: #9AA3AD;
+			text-align: left;
+			letter-spacing: 0.02rem;
+			clear: both;
+			margin: 1rem 0;
+		}
+		h3 {
+			clear: both;
+			padding: 0;
+		}
+		.value {
+			font-size: 1.4rem;
+			font-weight: 600;
+		}
+		.price-info {
+			h3 {
+				float: left;
+			}
+			.value {
+				float: right;
+			}
+			h3, .value {
+				line-height: 3.5rem;
+			}
+		}
+		.price-info {
+			.value {
+				display: block;
+			}
+		}
+		.line {
+			display: inline-flex;
+			background-color: #444C52;
+			height: 1px;
+			width: 100%;
+			margin: 2rem 0 1.4rem;
+			clear: both;
+		}
+		.cdp-info {
+			h2 {
+				margin: 1rem 0 1.5rem;
+			}
+			.value {
+				margin-bottom: 1rem;
+			}
 		}
 	}
 }
