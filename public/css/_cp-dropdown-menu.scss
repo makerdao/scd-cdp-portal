@@ -3,6 +3,7 @@
   position: relative;
   cursor: pointer;
   user-select: none;
+  z-index: 1;
 
   // When dropdown-button becomes an SVG, use this to change 'fill' style on hover
   // .dropdown-button {
