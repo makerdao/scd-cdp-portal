@@ -140,18 +140,7 @@ class Wallet extends React.Component {
                           </MenuFooter>
                         </DropdownMenu>
                         <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
-
                       </h2>
-                      <div>
-                        <a href="#action" onClick={ this.logout }>Logout</a>
-                        {
-                          this.renderWalletOptions().map(key =>
-                            <a href="#action" style={ {display: 'block'} } key={ key } data-client={ key } onClick={ this.switchConnection }>
-                              Connect { this.formatClientName(key) }
-                            </a>
-                          )
-                        }
-                      </div>
                       {
                         this.state.sendToken
                         ?
