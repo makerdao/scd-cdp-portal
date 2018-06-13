@@ -123,7 +123,6 @@ class Cup extends React.Component {
                 </div>
               </div>
             </div>
-
             <div className="inner-row">
               <h4 className="typo-c inline-headline" style={ {maxWidth: '8rem' } }>Max. available to withdraw
                 <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
@@ -149,10 +148,8 @@ class Cup extends React.Component {
               }
             </div>
           </div>
-
           <div className="col col-2">
             <h3 className="typo-cl inline-headline">DAI position</h3>
-
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Generated</h4>
               <div className="right">
@@ -167,7 +164,6 @@ class Cup extends React.Component {
                 </div>
               </div>
             </div>
-
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Max. availble to generate</h4>
               <div className="right">
@@ -188,9 +184,9 @@ class Cup extends React.Component {
                   '-'
               }
             </div>
-
           </div>
         </div>
+        <button className="text-btn" data-method="shut" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Close this CDP</button>
         {
           cup.history &&
           <CupHistory actions={ cup.history } network={ this.props.network }/>
