@@ -40,7 +40,6 @@ class Wizard extends Component {
       warning: false,
       submitEnabled: false,
       checkTerms: false,
-      checkProxy: false,
       stepsExpanded: false
     }
   }
@@ -300,14 +299,10 @@ class Wizard extends Component {
                       <input style={ {visibility: 'initial'} } type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, 'checkTerms')}/>&nbsp;
                       I have read and the accepted the MakerDao’s terms and conditions and the announcement.
                     </label>
-                    <label>
-                      <input style={ {visibility: 'initial'} } type="checkbox" checked={ this.state.checkProxy } value="1" onChange={e => this.check(e.target.checked, 'checkProxy')} />&nbsp;
-                      I agree and accept the use of automated smart contract.
-                    </label>
                   </div>
                   <div>
                     <button className="text-btn text-btn-primary" onClick={ () => this.goToStep(1) }>Go back</button>
-                    <button className="text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms || !this.state.checkProxy }>Process CDP</button>
+                    <button className="text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms }>Process CDP</button>
                   </div>
                 </div>
               </div>
