@@ -260,7 +260,7 @@ class SystemStore {
     const p = new Promise((resolve, reject) => {
       Blockchain.objects[obj].peek.call((e, r) => {
         if (!e) {
-          this[obj].val = toBigNumber(r[1] ? parseInt(r[0], 16) : -2);
+          this[obj].val = toBigNumber(r[1] ? parseInt(r[0], 16) : -1);
           this.getBoomBustValues();
           resolve(this[obj].val);
         } else {
