@@ -14,6 +14,7 @@ class NetworkStore {
   outOfSync = true;
   isHw = false;
   hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+  downloadClient = false;
 
   checkNetwork = () => {
     let isConnected = null;
@@ -120,11 +121,16 @@ class NetworkStore {
 
   // Web3 web client
   setWeb3WebClient = async () => {
-    this.stopIntervals = false;
-    await Blockchain.setWebClientProvider();
-    this.checkNetwork();
-    this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
-    this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
+    try {
+      this.stopIntervals = false;
+      await Blockchain.setWebClientProvider();
+      this.checkNetwork();
+      this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
+      this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
+    } catch (e) {
+      this.downloadClient = true;
+      console.log(e);
+    }
   }
 
   // Hardwallets
@@ -251,7 +257,8 @@ decorate(NetworkStore, {
   network: observable,
   outOfSync: observable,
   hw: observable,
-  isHw: observable
+  isHw: observable,
+  downloadClient: observable
 });
 
 const store = new NetworkStore();

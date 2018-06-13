@@ -75,10 +75,10 @@ class Web3Extended extends Web3 {
           this.setProvider(window.web3.currentProvider);
           this.useLogs = true;
           this.currentProvider.name = getWebClientProviderName();
+          resolve(true);
         } else {
-          alert('error');
+          reject(new Error('No client'));
         }
-        resolve(true);
       } catch(e) {
         reject(e);
       }

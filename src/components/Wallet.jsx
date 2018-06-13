@@ -1,10 +1,12 @@
 import React from 'react';
 import {observer} from 'mobx-react';
-import WalletHardHWSelector from './WalletHardHWSelector';
-import NoAccount from './NoAccount';
+import WalletClientSelector from './WalletClientSelector';
+import WalletClientDownload from './WalletClientDownload';
+import WalletHWSelector from './WalletHWSelector';
+import WalletNoAccount from './WalletNoAccount';
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon, capitalize} from '../helpers';
-import { DropdownMenu, MenuItems, MenuItem, MenuFooter } from './DropdownMenu';
+import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from './DropdownMenu';
 
 class Wallet extends React.Component {
   constructor() {
@@ -83,11 +85,6 @@ class Wallet extends React.Component {
     }
   }
 
-  logout = e => {
-    e.preventDefault();
-    this.props.network.stopNetwork();
-  }
-
   render() {
     const tokens = {
       'eth': {'balance': this.props.profile.accountBalance, 'allowance': false},
@@ -97,133 +94,127 @@ class Wallet extends React.Component {
     return (
       <div>
         {
-          this.props.network.hw.showSelector
+          this.props.network.downloadClient
           ?
-            <WalletHardHWSelector network={ this.props.network }
-                                  loadHWAddresses={ this.props.network.loadHWAddresses }
-                                  selectHWAddress={ this.props.network.selectHWAddress }
-                                  importAddress={ this.props.network.importAddress } />
+            <WalletClientDownload network={ this.props.network } />
           :
-            !this.props.network.isConnected
+            this.props.network.hw.showSelector
             ?
-              <div className="frame no-account">
-                <div className="heading">
-                  <h2>Connect a Wallet</h2>
-                </div>
-                <section className="content">
-                  <div className="helper-text no-wrap">Get started by connecting one of the wallets below</div>
-                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } }>{ getWebClientProviderName() ? this.formatClientName(getWebClientProviderName()): 'Metamask/Toshi/Mist/Parity' }</a><br/>
-                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('ledger') } }>Ledger Nano S</a><br/>
-                  <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW('trezor') } }>Trezor</a>
-                </section>
-              </div>
+              <WalletHWSelector network={ this.props.network }
+                                loadHWAddresses={ this.props.network.loadHWAddresses }
+                                selectHWAddress={ this.props.network.selectHWAddress }
+                                importAddress={ this.props.network.importAddress } />
             :
-              <React.Fragment>
-                {
-                  this.props.network.defaultAccount
-                  ?
-                    <React.Fragment>
-                      <h2 className="typo-h2 wallet">
-                        { getJazziconIcon(this.props.network.defaultAccount, 25) }
-                        <span>
-                          { this.formatClientName(getCurrentProviderName()) }
-                        </span>
-                        <DropdownMenu icon="../img/wallet-icon.png">
-                          <MenuItems>
-                          {
-                            this.renderWalletOptions().map(key =>
-                              <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
-                            )
-                          }
-                          </MenuItems>
-                          <MenuFooter>
-                            <a href="#help" data-page="help" onClick={ this.props.changePage }>Help</a><a href="#action" onClick={ this.logout }>Log Out</a>
-                          </MenuFooter>
-                        </DropdownMenu>
-                        <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
-                      </h2>
-                      {
-                        this.state.sendToken
-                        ?
-                          <React.Fragment>
-                            <a href="#action" onClick={ this.closeSendBox }>&lt;</a> Send { this.tokenName(this.state.sendToken) }
-                            <form onSubmit={ this.transfer }>
-                              <div>
-                                <label>
-                                  Amount<br/>
-                                  <input type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
-                                </label>
-                                { printNumber(this.state.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.state.sendToken].myBalance) }
-                                { ` ${ this.tokenName(this.state.sendToken) } available` }
-                              </div>
-                              <div>
-                                <label>
-                                  Destination<br/>
-                                  <input type="text" ref={ input => this.destination = input } />
-                                </label>
-                              </div>
-                              {
-                                this.state.error &&
-                                <div className="error">
-                                  { this.state.error }
-                                </div>
-                              }
-                              <div>
-                                <button className="text-btn text-btn-primary" onClick={ this.closeSendBox }>Cancel</button>
-                                <button className="text-btn text-btn-primary" type="submit">Send</button>
-                              </div>
-                            </form>
-                          </React.Fragment>
-                        :
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>Asset</th>
-                              <th>Balance</th>
-                              <th>Send</th>
-                              <th>Unlock</th>
-                            </tr>
-                          </thead>
-                          <tbody>
+              !this.props.network.isConnected
+              ?
+                <WalletClientSelector network={ this.props.network } formatClientName={ this.formatClientName } />
+              :
+                <React.Fragment>
+                  {
+                    this.props.network.defaultAccount
+                    ?
+                      <React.Fragment>
+                        <h2 className="typo-h2 wallet">
+                          { getJazziconIcon(this.props.network.defaultAccount, 25) }
+                          <span>
+                            { this.formatClientName(getCurrentProviderName()) }
+                          </span>
+                          <DropdownMenu icon="../img/wallet-icon.png">
+                            <MenuItems>
                             {
-                              Object.keys(tokens).map(token =>
-                                <tr key={ token }>
-                                  <td>{ this.tokenName(token) }</td>
-                                  <td>
-                                    {
-                                      tokens[token].balance.eq(-1)
-                                      ?
-                                        'Loading...'
-                                      :
-                                        printNumber(tokens[token].balance)
-                                    }
-                                  </td>
-                                  <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>
-                                  <td>
-                                    {
-                                      token !== 'eth' &&
-                                      <React.Fragment>
-                                        {
-                                          this.props.system[token].allowance.eq(-1)
-                                          ?
-                                            'Loading...'
-                                          :
-                                            <a href="#action" onClick={ e => { e.preventDefault(); this.props.system.setAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } }>{ this.props.system[token].allowance.eq(BIGGESTUINT256) ? 'Lock' : 'Unlock' }</a>
-                                        }
-                                      </React.Fragment>
-                                    }
-                                  </td>
-                                </tr>
+                              this.renderWalletOptions().map(key =>
+                                <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
                               )
                             }
-                          </tbody>
-                        </table>
-                      }
-                    </React.Fragment>
-                  :
-                    <NoAccount />
-                  }
-              </React.Fragment>
+                            </MenuItems>
+                            <MenuFooter>
+                              <a href="#help" data-page="help" onClick={ this.props.changePage }>Help</a><a href="#action" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>Log Out</a>
+                            </MenuFooter>
+                          </DropdownMenu>
+                          <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
+                        </h2>
+                        {
+                          this.state.sendToken
+                          ?
+                            <React.Fragment>
+                              <a href="#action" onClick={ this.closeSendBox }>&lt;</a> Send { this.tokenName(this.state.sendToken) }
+                              <form onSubmit={ this.transfer }>
+                                <div>
+                                  <label>
+                                    Amount<br/>
+                                    <input type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
+                                  </label>
+                                  { printNumber(this.state.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.state.sendToken].myBalance) }
+                                  { ` ${ this.tokenName(this.state.sendToken) } available` }
+                                </div>
+                                <div>
+                                  <label>
+                                    Destination<br/>
+                                    <input type="text" ref={ input => this.destination = input } />
+                                  </label>
+                                </div>
+                                {
+                                  this.state.error &&
+                                  <div className="error">
+                                    { this.state.error }
+                                  </div>
+                                }
+                                <div>
+                                  <button className="text-btn text-btn-primary" onClick={ this.closeSendBox }>Cancel</button>
+                                  <button className="text-btn text-btn-primary" type="submit">Send</button>
+                                </div>
+                              </form>
+                            </React.Fragment>
+                          :
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Asset</th>
+                                <th>Balance</th>
+                                <th>Send</th>
+                                <th>Unlock</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {
+                                Object.keys(tokens).map(token =>
+                                  <tr key={ token }>
+                                    <td>{ this.tokenName(token) }</td>
+                                    <td>
+                                      {
+                                        tokens[token].balance.eq(-1)
+                                        ?
+                                          'Loading...'
+                                        :
+                                          printNumber(tokens[token].balance)
+                                      }
+                                    </td>
+                                    <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>
+                                    <td>
+                                      {
+                                        token !== 'eth' &&
+                                        <React.Fragment>
+                                          {
+                                            this.props.system[token].allowance.eq(-1)
+                                            ?
+                                              'Loading...'
+                                            :
+                                              <a href="#action" onClick={ e => { e.preventDefault(); this.props.system.setAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } }>{ this.props.system[token].allowance.eq(BIGGESTUINT256) ? 'Lock' : 'Unlock' }</a>
+                                          }
+                                        </React.Fragment>
+                                      }
+                                    </td>
+                                  </tr>
+                                )
+                              }
+                            </tbody>
+                          </table>
+                        }
+                      </React.Fragment>
+                    :
+                      <WalletNoAccount network={ this.props.network } formatClientName={ this.formatClientName } />
+                    }
+                </React.Fragment>
         }
       </div>
     )
