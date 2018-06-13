@@ -36,38 +36,38 @@ class WalletHardHWSelector extends React.Component {
           :
             <React.Fragment>
               {
-                this.props.network.hw.error &&
-                <React.Fragment>
-                  <h2>{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
-                  {
-                    this.props.network.hw.option === 'ledger' &&
-                    <ul>
-                      <li>Unlock you ledger and open the ETH application.</li>
-                      <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
-                      <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
-                    </ul>
-                  }
-                  <div>
-                    <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>&nbsp;
-                    <button href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
-                  </div>
-                </React.Fragment>
-              }
-              {
-                this.props.network.hw.addresses.length > 0 &&
-                <React.Fragment>
-                  <h2>{ capitalize(this.props.network.hw.option) } Connected</h2>
-                  <h3>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</h3>
-                  <select onChange={ this.selectAccount } defaultValue={ this.props.network.hw.addresses[this.props.network.hw.addressIndex] } >
+                this.props.network.hw.error
+                ?
+                  <React.Fragment>
+                    <h2>{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
-                      this.props.network.hw.addresses.map(key =>
-                        <option key={ key } value={ key }>{ key }</option>
-                      )
+                      this.props.network.hw.option === 'ledger' &&
+                      <ul>
+                        <li>Unlock you ledger and open the ETH application.</li>
+                        <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
+                        <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
+                      </ul>
                     }
-                  </select>
-                  <button onClick={ this.props.network.importAddress }>Connect this Address</button><br />
-                  <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
-                </React.Fragment>
+                    <div>
+                      <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>&nbsp;
+                      <button href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
+                    </div>
+                  </React.Fragment>
+                :
+                  this.props.network.hw.addresses.length > 0 &&
+                  <React.Fragment>
+                    <h2>{ capitalize(this.props.network.hw.option) } Connected</h2>
+                    <h3>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</h3>
+                    <select onChange={ this.selectAccount } defaultValue={ this.props.network.hw.addresses[this.props.network.hw.addressIndex] } >
+                      {
+                        this.props.network.hw.addresses.map(key =>
+                          <option key={ key } value={ key }>{ key }</option>
+                        )
+                      }
+                    </select>
+                    <button onClick={ this.props.network.importAddress }>Connect this Address</button><br />
+                    <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+                  </React.Fragment>
               }
             </React.Fragment>
         }

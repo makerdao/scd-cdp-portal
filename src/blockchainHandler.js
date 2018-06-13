@@ -32,6 +32,7 @@ export const loadObject = (type, address, label = null) => {
 
 export const setDefaultAccount = account => {
   web3.eth.defaultAccount = account;
+  console.log(`Address ${account} loaded`);
 }
 
 export const getDefaultAccount = () => {

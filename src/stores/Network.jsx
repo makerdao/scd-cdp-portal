@@ -115,6 +115,9 @@ class NetworkStore {
         if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
           this.loadContracts();
         }
+        if (!this.defaultAccount) {
+          this.loadingAddress = false;
+        }
       }
     }, () => {});
   }
@@ -123,11 +126,13 @@ class NetworkStore {
   setWeb3WebClient = async () => {
     try {
       this.stopIntervals = false;
+      this.loadingAddress = true;
       await Blockchain.setWebClientProvider();
       this.checkNetwork();
       this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
       this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
     } catch (e) {
+      this.loadingAddress = false;
       this.downloadClient = true;
       console.log(e);
     }
@@ -171,14 +176,23 @@ class NetworkStore {
   }
 
   importAddress = async () => {
-    this.stopIntervals = false;
-    this.loadingAddress = true;
-    this.hw.showSelector = false;
-    const account = await Blockchain.getDefaultAccountByIndex(this.hw.addressIndex);
-    Blockchain.setDefaultAccount(account);
-    this.checkNetwork();
-    this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
-    this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
+    try {
+      this.stopIntervals = false;
+      this.loadingAddress = true;
+      this.hw.showSelector = false;
+      const account = await Blockchain.getDefaultAccountByIndex(this.hw.addressIndex);
+      Blockchain.setDefaultAccount(account);
+      this.checkNetwork();
+      this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
+      this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
+    } catch(e) {
+      this.loadingAddress = false;
+      this.hw.showSelector = true;
+      this.hw.addressIndex = null;
+      this.hw.addresses = [];
+      Blockchain.stopProvider();
+      this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
+    }
   }
   //
 
