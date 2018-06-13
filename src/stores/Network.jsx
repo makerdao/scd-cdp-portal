@@ -121,7 +121,6 @@ class NetworkStore {
   // Web3 web client
   setWeb3WebClient = async () => {
     this.stopIntervals = false;
-    this.loadingAddress = true;
     await Blockchain.setWebClientProvider();
     this.checkNetwork();
     this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);

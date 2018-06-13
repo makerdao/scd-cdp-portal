@@ -75,11 +75,10 @@ class App extends React.Component {
             }
             <main className={ this.state.page === 'help' ? "main-column fullwidth" : "main-column" }>
               {
-                !this.props.network.isConnected
+                !this.props.network.isConnected || !this.props.network.defaultAccount
                 ?
                   <Landing />
                 :
-                  this.props.network.defaultAccount &&
                   <React.Fragment>
                     {
                       this.props.system.tub.cupsLoading
@@ -126,7 +125,7 @@ class App extends React.Component {
                         <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
                       :
                         <React.Fragment>
-                  <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } changePage={ this.changePage } />
+                          <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } changePage={ this.changePage } />
                           {
                             this.props.network.defaultAccount &&
                             <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />

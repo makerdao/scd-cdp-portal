@@ -1,6 +1,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import WalletHardHWSelector from './WalletHardHWSelector';
+import NoAccount from './NoAccount';
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon, capitalize} from '../helpers';
 import { DropdownMenu, MenuItems, MenuItem, MenuFooter } from './DropdownMenu';
@@ -220,7 +221,7 @@ class Wallet extends React.Component {
                       }
                     </React.Fragment>
                   :
-                    <p>Log in with your account to see your dashboard</p>
+                    <NoAccount />
                   }
               </React.Fragment>
         }
