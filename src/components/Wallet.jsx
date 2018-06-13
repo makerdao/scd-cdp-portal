@@ -4,8 +4,9 @@ import WalletClientSelector from './WalletClientSelector';
 import WalletClientDownload from './WalletClientDownload';
 import WalletHWSelector from './WalletHWSelector';
 import WalletNoAccount from './WalletNoAccount';
+import WalletSendToken from './WalletSendToken';
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
-import {BIGGESTUINT256, printNumber, isAddress, etherscanAddress, toWei, getJazziconIcon, capitalize} from '../helpers';
+import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize} from '../helpers';
 import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from './DropdownMenu';
 
 class Wallet extends React.Component {
@@ -13,36 +14,13 @@ class Wallet extends React.Component {
     super();
     this.state = {
       sendToken: null,
-      error: false
     }
   }
 
   openSendBox = token => this.setState({ sendToken: token });
 
   closeSendBox = e => {
-    e.preventDefault();
     this.setState({ sendToken: null });
-  }
-
-  transfer = e => {
-    e.preventDefault();
-    const token = this.state.sendToken;
-    const amount = this.amount.value;
-    const destination = this.destination.value;
-    const myBalance = token === 'eth' ? this.props.profile.accountBalance : this.props.system[token].myBalance;
-    this.setState({ error: '' });
-
-    if (!destination || !isAddress(destination)) {
-      this.setState({ error: 'Invalid Address' });
-    } else if (!amount) {
-      this.setState({ error: 'Invalid Amount' });
-    } else if (myBalance.lt(toWei(amount))) {
-      this.setState({ error: `Not enough balance to transfer ${amount} ${this.tokenName(token)}` });
-    } else {
-      this.props.system.transferToken(token, destination, amount);
-      this.amount.value = '';
-      this.destination.value = '';
-    }
   }
 
   tokenName = token => token.replace('gov', 'mkr').toUpperCase();
@@ -136,35 +114,7 @@ class Wallet extends React.Component {
                         {
                           this.state.sendToken
                           ?
-                            <React.Fragment>
-                              <a href="#action" onClick={ this.closeSendBox }>&lt;</a> Send { this.tokenName(this.state.sendToken) }
-                              <form onSubmit={ this.transfer }>
-                                <div>
-                                  <label>
-                                    Amount<br/>
-                                    <input type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
-                                  </label>
-                                  { printNumber(this.state.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.state.sendToken].myBalance) }
-                                  { ` ${ this.tokenName(this.state.sendToken) } available` }
-                                </div>
-                                <div>
-                                  <label>
-                                    Destination<br/>
-                                    <input type="text" ref={ input => this.destination = input } />
-                                  </label>
-                                </div>
-                                {
-                                  this.state.error &&
-                                  <div className="error">
-                                    { this.state.error }
-                                  </div>
-                                }
-                                <div>
-                                  <button className="text-btn text-btn-primary" onClick={ this.closeSendBox }>Cancel</button>
-                                  <button className="text-btn text-btn-primary" type="submit">Send</button>
-                                </div>
-                              </form>
-                            </React.Fragment>
+                            <WalletSendToken profile={ this.props.profile } system={ this.props.system } sendToken={ this.state.sendToken } tokenName={ this.tokenName } closeSendBox={ this.closeSendBox } />
                           :
                           <table>
                             <thead>
