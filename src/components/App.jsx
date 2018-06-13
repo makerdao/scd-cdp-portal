@@ -70,49 +70,49 @@ class App extends React.Component {
         <div className={ (this.state.page ? "page-" + this.state.page : "") + (this.props.network.isConnected ? " is-connected" : " is-not-connected") + (this.state.page === 'help' ? " full-width-page" : this.props.dialog.show ? " dialog-open" : "") }>
           <div className="wrapper">
             {
-              this.props.network.isConnected && this.props.network.defaultAccount &&
+              (this.state.page === 'help' || (this.props.network.isConnected && this.props.network.defaultAccount)) &&
               <Menu system={ this.props.system } page={ this.state.page } changePage={ this.changePage } />
             }
             <main className={ this.state.page === 'help' ? "main-column fullwidth" : "main-column" }>
               {
-                !this.props.network.isConnected || !this.props.network.defaultAccount
+                this.state.page === 'help'
                 ?
-                  <Landing />
+                  <Help />
                 :
-                  <React.Fragment>
-                    {
-                      this.props.system.tub.cupsLoading
-                      ?
-                        <div>Loading...</div>
-                      :
-                        Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
+                  !this.props.network.isConnected || !this.props.network.defaultAccount
+                  ?
+                    <Landing />
+                  :
+                    <React.Fragment>
+                      {
+                        this.props.system.tub.cupsLoading
                         ?
-                          <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
+                          <div>Loading...</div>
                         :
-                          <React.Fragment>
-                            {
-                              this.state.page === 'migrate' &&
-                              <LegacyCups system={ this.props.system } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
-                            }
-                            {
-                              this.state.page === 'help' &&
-                              <Help />
-                            }
-                            {
-                              this.state.page === 'home' &&
-                              <React.Fragment>
-                                {
-                                  Object.keys(this.props.system.tub.cups).length === 0
-                                  ?
-                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
-                                  :
-                                    <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
-                                }
-                              </React.Fragment>
-                            }
-                          </React.Fragment>
-                    }
-                  </React.Fragment>
+                          Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
+                          ?
+                            <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
+                          :
+                            <React.Fragment>
+                              {
+                                this.state.page === 'migrate' &&
+                                <LegacyCups system={ this.props.system } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                              }
+                              {
+                                this.state.page === 'home' &&
+                                <React.Fragment>
+                                  {
+                                    Object.keys(this.props.system.tub.cups).length === 0
+                                    ?
+                                      <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                                    :
+                                      <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                                  }
+                                </React.Fragment>
+                              }
+                            </React.Fragment>
+                      }
+                    </React.Fragment>
               }
             </main>
             <aside className="right-column">
