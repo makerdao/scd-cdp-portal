@@ -17,9 +17,20 @@ class WalletHardHWSelector extends React.Component {
           this.props.network.hw.loading
           ?
             <React.Fragment>
-              <h2>
-                Connecting to {capitalize(this.props.network.hw.option)}
-              </h2>
+              {
+                this.props.network.hw.option === 'ledger' &&
+                <React.Fragment>
+                  <h2>Plugin Ledger &amp; Enter Pin</h2>
+                  <p>Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
+                </React.Fragment>
+              }
+              {
+                this.props.network.hw.option === 'trezor' &&
+                <React.Fragment>
+                  <h2>Plugin Trezor</h2>
+                  <p>Export account from Trezor Popup. Make sure your browser is not blocking it.</p>
+                </React.Fragment>
+              }
               <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
             </React.Fragment>
           :
