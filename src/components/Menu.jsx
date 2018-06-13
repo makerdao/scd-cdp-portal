@@ -24,10 +24,6 @@ class Menu extends React.Component {
                 </li>
               )
             }
-            <li value="settings" className={ this.props.page === 'settings' ? 'active' : '' } data-page="settings" onClick={ this.props.changePage }>
-              <img src="img/icon-settings.svg" draggable="false" alt="" data-page="settings" />
-              <span className="menu-label" data-page="settings">Settings</span>
-            </li>
             <li value="help" className={ this.props.page === 'help' ? 'active' : '' } data-page="help" onClick={ this.props.changePage }>
               <img src="img/icon-help.svg" draggable="false" alt="" data-page="help" />
               <span className="menu-label" data-page="help">Help</span>
