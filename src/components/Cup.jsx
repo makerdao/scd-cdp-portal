@@ -4,7 +4,6 @@ import {observer} from 'mobx-react';
 // import CupChart from './CupChart'
 import CupHistory from './CupHistory';
 import TooltipHint from './TooltipHint';
-// import {printNumber, toBytes32, wmul, toBigNumber, toWei, methodSig} from '../helpers';
 import {WAD, printNumber, wmul, toBigNumber, toWei} from '../helpers';
 
 class Cup extends React.Component {

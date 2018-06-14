@@ -1,6 +1,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import {printNumber, toBigNumber, toWei} from '../helpers';
+import {Link} from 'react-router-dom';
 
 class LegacyCups extends React.Component {
   render() {
@@ -80,9 +81,9 @@ class LegacyCups extends React.Component {
           )
         }
         <hr />
-        <div>
-          <a href="#action" data-page="home" onClick={ this.props.changePage }>Return to Dashboard</a>
-        </div>
+        <Link to="/">
+          Return to Dashboard
+        </Link>
       </div>
     )
   }

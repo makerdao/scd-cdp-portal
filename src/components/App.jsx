@@ -15,6 +15,7 @@ import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
 import PriceModal from './PriceModal';
 import Landing from './Landing';
+import {withRouter} from 'react-router-dom';
 import './App.css';
 
 import * as Blockchain from "../blockchainHandler";
@@ -29,53 +30,25 @@ class App extends React.Component {
     }
   }
 
-  componentDidMount = () => {
-    const params = window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
-    this.setPage(params[0]);
-  }
-
-  setPage = page => {
-    if (['home', 'help', 'migrate'].indexOf(page) === -1) {
-      page = 'home';
-    }
-    if (page !== 'home') {
-      window.location.hash = page;
-    } else {
-      // If home we try to remove hash completely if browser supports
-      window.location.hash = '';
-      if ('pushState' in window.history) {
-        window.history.pushState('', document.title, window.location.pathname + window.location.search);
-      }
-    }
-    this.setState({'page': page}, () => {
-      ReactTooltip.rebuild();
-    });
-  }
-
   setOpenCDPWizard = () => {
     this.setState({wizardOpenCDP: true}, () => {
       ReactTooltip.rebuild()
     });
   }
 
-  changePage = e => {
-    e.preventDefault();
-    let page = e.target.getAttribute('data-page');
-    this.setPage(page);
-  }
-
   render() {
+    const page = this.props.location.pathname.replace('/', '');
     return (
       <React.Fragment>
-        <div className={ (this.state.page ? "page-" + this.state.page : "") + (this.props.network.isConnected ? " is-connected" : " is-not-connected") + (this.state.page === 'help' ? " full-width-page" : this.props.dialog.show ? " dialog-open" : "") }>
+        <div className={ (page ? "page-" + page : "") + (this.props.network.isConnected ? " is-connected" : " is-not-connected") + (page === 'help' ? " full-width-page" : this.props.dialog.show ? " dialog-open" : "") }>
           <div className="wrapper">
             {
-              (this.state.page === 'help' || (this.props.network.isConnected && this.props.network.defaultAccount)) &&
-              <Menu system={ this.props.system } page={ this.state.page } changePage={ this.changePage } />
+              (page === 'help' || (this.props.network.isConnected && this.props.network.defaultAccount)) &&
+              <Menu system={ this.props.system } page={ page } />
             }
-            <main className={ this.state.page === 'help' ? "main-column fullwidth" : "main-column" }>
+            <main className={ page === 'help' ? "main-column fullwidth" : "main-column" }>
               {
-                this.state.page === 'help'
+                page === 'help'
                 ?
                   <Help />
                 :
@@ -95,18 +68,18 @@ class App extends React.Component {
                           :
                             <React.Fragment>
                               {
-                                this.state.page === 'migrate' &&
-                                <LegacyCups system={ this.props.system } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                                page === 'migrate' &&
+                                <LegacyCups system={ this.props.system } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
                               }
                               {
-                                this.state.page === 'home' &&
+                                page === '' &&
                                 <React.Fragment>
                                   {
                                     Object.keys(this.props.system.tub.cups).length === 0
                                     ?
-                                      <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                                      <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
                                     :
-                                      <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } changePage={ this.changePage } />
+                                      <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
                                   }
                                 </React.Fragment>
                               }
@@ -117,7 +90,7 @@ class App extends React.Component {
             </main>
             <aside className="right-column">
               {
-                this.state.page !== 'help' &&
+                page !== 'help' &&
                 <div className="right-column-content">
                     {
                       this.props.network.loadingAddress
@@ -125,7 +98,7 @@ class App extends React.Component {
                         <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
                       :
                         <React.Fragment>
-                          <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } changePage={ this.changePage } />
+                          <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
                           {
                             this.props.network.defaultAccount &&
                             <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
@@ -150,4 +123,4 @@ class App extends React.Component {
   }
 }
 
-export default observer(App);
+export default withRouter(observer(App));

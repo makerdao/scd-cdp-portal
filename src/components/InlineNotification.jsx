@@ -23,7 +23,7 @@ class InlineNotification extends React.Component {
         { this.props.message }
 
         {
-          this.props.onButtonClick && <button className="text-btn disable-on-dialog" data-page={ this.props.dataPage } onClick={ this.props.onButtonClick }>{ this.props.buttonText || "OK" }</button>
+          this.props.onButtonClick && <button className="text-btn disable-on-dialog" onClick={ this.props.onButtonClick }>{ this.props.buttonText || "OK" }</button>
         }
         </div>
         <div className="clearfix"></div>

@@ -6,7 +6,7 @@ class Welcome extends React.Component {
     return (
       <div>
         <div>Welcome</div>
-        <a href="#open" onClick={ e => { e.preventDefault(); this.props.setOpenCDPWizard() } }>Open CDP</a>
+          <a href="#action" onClick={ e => { e.preventDefault(); this.props.setOpenCDPWizard() } }>Open CDP</a>
       </div>
     )
   }
