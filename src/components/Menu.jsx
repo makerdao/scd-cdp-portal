@@ -20,7 +20,7 @@ class Menu extends React.Component {
               </Link>
             </li>
             {
-              this.props.page === 'home' && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 &&
+              this.props.page === '' && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 &&
               Object.keys(this.props.system.tub.cups).map(key =>
                 <li key={ key } data-cupid={ key } className={ cupId === key ? 'active' : '' } onClick={ this.props.system.changeCup }>
                   CDP #{ key }
