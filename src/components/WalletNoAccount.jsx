@@ -1,20 +1,17 @@
 import React from 'react';
 import {observer} from "mobx-react";
 import {getCurrentProviderName} from '../blockchainHandler';
+import LoadingSpinner from './LoadingSpinner';
 
 class NoAccount extends React.Component {
   render() {
     return (
       <div>
-        <header className="col">
-          <h1 className="typo-h1">Log in to { this.props.formatClientName(getCurrentProviderName()) }</h1>
-        </header>
-        <div className="row">
-          <div className="col">
-            <p className="typo-cl">
-              <button href="#action" onClick={ this.props.network.stopNetwork }>Cancel</button>
-            </p>
-          </div>
+        <h2>Log In to { this.props.formatClientName(getCurrentProviderName()) }</h2>
+        <p className="typo-c align-center">Please unlock your { this.props.formatClientName(getCurrentProviderName()) } account to continue.</p>
+        <LoadingSpinner />
+        <div className="align-center" style={ {margin: '1rem 0'} }>
+          <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.stopNetwork }>Cancel</button>
         </div>
       </div>
     )

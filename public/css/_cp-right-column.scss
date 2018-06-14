@@ -128,7 +128,6 @@
 			color: inherit;
 		}
 		@include respond-to(m) {
-			text-align: left;
 			margin-top: 2em;
 		}
 	}
@@ -144,6 +143,16 @@
 }
 
 .right-column {
+
+	// Ledger connection failed bullet points
+	ol {
+		margin: 2.5rem 2rem 3rem 1rem;
+		li {
+			margin-top: 1rem;
+			margin-bottom: 2.5rem;
+			padding-left: 0.3rem;
+		}
+	}
 
 	// Top right balances table
 	table {

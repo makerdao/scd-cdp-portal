@@ -1,6 +1,7 @@
 import React from 'react';
 import {observer} from "mobx-react";
 import {capitalize} from "../helpers";
+import LoadingSpinner from './LoadingSpinner';
 
 const settings = require('../settings');
 
@@ -21,17 +22,20 @@ class WalletHardHWSelector extends React.Component {
                 this.props.network.hw.option === 'ledger' &&
                 <React.Fragment>
                   <h2>Plugin Ledger &amp; Enter Pin</h2>
-                  <p>Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
+                  <p className="typo-c align-center">Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
                 </React.Fragment>
               }
               {
                 this.props.network.hw.option === 'trezor' &&
                 <React.Fragment>
                   <h2>Plugin Trezor</h2>
-                  <p>Export account from Trezor Popup. Make sure your browser is not blocking it.</p>
+                  <p className="typo-c align-center">Export account from Trezor Popup.<br />Make sure your browser is not blocking it.</p>
                 </React.Fragment>
               }
-              <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+              <LoadingSpinner />
+              <div className="align-center" style={ {margin: '1rem 0'} }>
+                <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+              </div>
             </React.Fragment>
           :
             <React.Fragment>
@@ -42,15 +46,20 @@ class WalletHardHWSelector extends React.Component {
                     <h2>{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
                       this.props.network.hw.option === 'ledger' &&
-                      <ul>
-                        <li>Unlock you ledger and open the ETH application.</li>
-                        <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
-                        <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
-                      </ul>
+                      <p className="typo-c">
+                        <ol>
+                          <li>Unlock your Ledger and open the ETH application.</li>
+                          <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
+                          <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
+                        </ol>
+                      </p>
                     }
-                    <div>
-                      <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>&nbsp;
-                      <button href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
+                    {
+                      this.props.network.hw.option === 'trezor' &&
+                      <p className="typo-c align-center">Error connecting to Trezor.</p>
+                    }
+                    <div className="align-center" style={ {margin: '1rem 0'} }>
+                      <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button><button className="sidebar-btn is-primary" href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
                     </div>
                   </React.Fragment>
                 :
