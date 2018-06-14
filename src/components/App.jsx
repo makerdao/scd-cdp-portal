@@ -2,12 +2,13 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {Route, Switch, withRouter} from 'react-router-dom';
 
-import Home from './Home';
 import Help from './Help';
+import Home from './Home';
 import NotFound from './NotFound';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
 import PriceModal from './PriceModal';
+
 import './App.css';
 
 import * as Blockchain from "../blockchainHandler";

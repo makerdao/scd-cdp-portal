@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {observer} from 'mobx-react';
+
 import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from '../helpers';
 
 class CupHistory extends React.Component {

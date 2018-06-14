@@ -1,10 +1,14 @@
 import React, {Component} from 'react';
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
-import LegacyCupsAlert from './LegacyCupsAlert';
 import Steps, {Step} from 'rc-steps';
-import 'rc-steps/assets/index.css';
-import TooltipHint from './TooltipHint';
+
 import InlineNotification from './InlineNotification';
+import LegacyCupsAlert from './LegacyCupsAlert';
+import TooltipHint from './TooltipHint';
+
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
+
+import 'rc-steps/assets/index.css';
+
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 const steps = [

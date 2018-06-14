@@ -12,7 +12,6 @@ import Wallet from './Wallet';
 import Welcome from './Welcome';
 import Wizard from './Wizard';
 
-
 class Home extends React.Component {
   constructor() {
     super();

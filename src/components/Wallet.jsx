@@ -1,10 +1,13 @@
 import React from 'react';
 import {observer} from 'mobx-react';
-import WalletClientSelector from './WalletClientSelector';
+import {Link} from 'react-router-dom';
+
 import WalletClientDownload from './WalletClientDownload';
+import WalletClientSelector from './WalletClientSelector';
 import WalletHWSelector from './WalletHWSelector';
 import WalletNoAccount from './WalletNoAccount';
 import WalletSendToken from './WalletSendToken';
+
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize} from '../helpers';
 import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from './DropdownMenu';
@@ -106,7 +109,10 @@ class Wallet extends React.Component {
                             }
                             </MenuItems>
                             <MenuFooter>
-                              <a href="#help" data-page="help" onClick={ this.props.changePage }>Help</a><a href="#action" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>Log Out</a>
+                              <Link to="/help">
+                                Help
+                              </Link>
+                              <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>Log Out</a>
                             </MenuFooter>
                           </DropdownMenu>
                           <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>

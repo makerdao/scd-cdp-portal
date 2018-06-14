@@ -1,5 +1,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
+
 import Cup from './Cup';
 import LegacyCupsAlert from './LegacyCupsAlert';
 

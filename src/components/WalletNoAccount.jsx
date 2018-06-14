@@ -1,7 +1,9 @@
 import React from 'react';
 import {observer} from "mobx-react";
-import {getCurrentProviderName} from '../blockchainHandler';
+
 import LoadingSpinner from './LoadingSpinner';
+
+import {getCurrentProviderName} from '../blockchainHandler';
 
 class NoAccount extends React.Component {
   render() {

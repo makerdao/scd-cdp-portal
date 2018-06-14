@@ -1,5 +1,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
+
 import {printNumber, isAddress, toWei} from '../helpers';
 
 class WalletSendToken extends React.Component {

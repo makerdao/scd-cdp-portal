@@ -1,7 +1,9 @@
 import React from 'react';
 import {observer} from "mobx-react";
-import {capitalize} from "../helpers";
+
 import LoadingSpinner from './LoadingSpinner';
+
+import {capitalize} from "../helpers";
 
 const settings = require('../settings');
 

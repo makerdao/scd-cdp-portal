@@ -1,5 +1,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
+
 import {printNumber, wdiv, wmul} from '../helpers';
 
 class SystemInfo extends React.Component {

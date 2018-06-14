@@ -1,5 +1,6 @@
 import React from 'react';
 import {observer} from 'mobx-react';
+
 import {printNumber, toBigNumber, toWei} from '../helpers';
 
 class LegacyCups extends React.Component {
