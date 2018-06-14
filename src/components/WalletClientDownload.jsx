@@ -10,7 +10,7 @@ class WalletClientSelector extends React.Component {
           <h2>Get a Wallet</h2>
         </div>
         <section className="content">
-          <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">Metamask</a><br/>
+          <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">MetaMask</a><br/>
           <a href="https://www.toshi.org/" target="_blank" rel="noopener noreferrer">Toshi</a><br/>
           <a href="https://www.parity.io/" target="_blank" rel="noopener noreferrer">Parity</a><br/>
           <button href="#action" onClick={ e => { this.props.network.downloadClient = false } }>Cancel</button>
