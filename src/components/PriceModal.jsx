@@ -1,31 +1,62 @@
 import React from 'react';
 import {observer} from "mobx-react";
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css';
 
 class PriceModal extends React.Component {
-  sendTransaction = e => {
-    e.preventDefault();
-    this.props.transactions.sendTransaction(this.gasPrice.value);
+
+  constructor (props, context) {
+    super(props, context)
+    this.state = {
+      gasPrice: 11,
+      timeEstimate: this.estimateTxTime(11)
+    };
+    this.stdGasPrice = 11;
   }
 
+  sendTransaction = e => {
+    e.preventDefault();
+    this.props.transactions.sendTransaction(this.state.gasPrice);
+  };
+
+  // TODO: Use an external source to estimate tx time
+  estimateTxTime = gasPrice => {
+    return Math.round(gasPrice / 2) + ' mins';
+  };
+
+  handleChange = value => {
+    this.setState({
+      gasPrice: value,
+      timeEstimate: this.estimateTxTime(value)
+    });
+  };
+
   render() {
+    const { gasPrice } = this.state
     return (
       <React.Fragment>
-        {
-          this.props.transactions.priceModal.open &&
-          <div style={ {position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, background: 'rgba(255,255,255,0.4)', zIndex: 997} }>
-            <div style={ {position: 'relative', width: '700px', height: '400px', background: '#202930', zIndex: 998, margin: 'auto'} }>
-              <h2>Set your gas price</h2>
-              <p>
-                Gas is used to pay for transactions. A higher gas price results in faster confirmation times.
-              </p>
-              <form onSubmit={ this.sendTransaction }>
-                <input type="number" ref={ input => this.gasPrice = input }/>
-                <button onClick={ this.props.transactions.closePriceModal }>Cancel</button>
-                <button type="submit">Confirm</button>
-              </form>
-            </div>
+        <h2>Set your gas price</h2>
+        <p>Gas is used to pay for transactions. A higher gas price results in faster confirmation times.</p>
+        <h3>{ gasPrice } Gwei { gasPrice === this.stdGasPrice ? ' (Standard)' : '' }</h3>
+        <p>~{ this.state.timeEstimate }</p>
+        <form onSubmit={ this.sendTransaction }>
+          <input type="hidden" value={ this.state.gasPrice } />
+          <div className='horizontal-slider'>
+            <Slider
+              min={1}
+              max={99}
+              value={gasPrice}
+              onChangeStart={this.handleChangeStart}
+              onChange={this.handleChange}
+              onChangeComplete={this.handleChangeComplete}
+            />
+            <div style={ {fontSize: '0.9rem', letterSpacing: '0.02rem'} }><div style={ {float: 'left'} }>Slow</div><div style={ {float: 'right'} }>Fast</div></div>
           </div>
-        }
+
+          <div className="align-center" style={ {margin: '6.4rem 0 0', paddingBottom: '3.7rem', userSelect: 'none'} }>
+            <button className="modal-btn is-secondary" onClick={ this.props.transactions.closePriceModal }>Cancel</button><button className="modal-btn is-primary" type="submit">Confirm</button>
+          </div>
+        </form>
       </React.Fragment>
     )
   }

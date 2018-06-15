@@ -37,6 +37,35 @@ button, .btn {
 		}
 	}
 
+	&.modal-btn {
+		margin-left: 1rem;
+		margin-right: 1rem;
+		&:first-child {
+			margin-left: 0;
+		}
+		&:last-child {
+			margin-right: 0;
+		}
+		color: #0A141F;
+		font-size: 1.1rem;
+		text-transform: uppercase;
+		padding: 0.7rem 1rem;
+		font-weight: 400;
+		min-width: 120px;
+		letter-spacing: 0.02rem;
+		line-height: 1;
+		border-radius: 2px;
+		font-family: 'Cairo', 'Arial', sans-serif;
+		&.is-primary {
+			background-color: #1ABC9C;
+			color: #000;
+		}
+		&.is-secondary {
+			background-color: #fff;
+			color: #0A141F;
+		}
+	}
+
 	&.text-btn {
 		background: $blue-grey;
 		padding: 12px 12px;

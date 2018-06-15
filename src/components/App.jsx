@@ -8,6 +8,7 @@ import NotFound from './NotFound';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
 import PriceModal from './PriceModal';
+import Modal from './Modal';
 
 import './App.css';
 
@@ -31,7 +32,9 @@ class App extends React.Component {
         </Switch>
         <Notify ref='notificator' transactions={ this.props.transactions } network={ this.props.network } />
         <NotifySetUp transactions={ this.props.transactions } system={ this.props.system } />
-        <PriceModal transactions={ this.props.transactions } />
+        <Modal show={ this.props.transactions.priceModal.open } close={ this.props.transactions.closePriceModal } modal={ this.props.modal }>
+          <PriceModal transactions={ this.props.transactions } />
+        </Modal>
       </React.Fragment>
     )
   }
