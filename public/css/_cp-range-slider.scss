@@ -1,0 +1,35 @@
+.horizontal-slider {
+  width: 225px;
+  margin: 0 auto;
+
+  .rangeslider.rangeslider-horizontal {
+    height: 4px;
+    border-radius: 0;
+    background-color: #9AA3AD;
+    width: 100%;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    margin: 20px 0 16px;
+
+    .rangeslider__handle {
+      outline: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      background-color: #1ABC9C;
+      border: none;
+      &:after {
+        display: none;
+      }
+    }
+
+    .rangeslider__fill {
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      border-radius: 0;
+      background-color: #20af93;
+    }
+  }
+}
