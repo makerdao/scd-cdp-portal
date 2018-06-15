@@ -6,12 +6,12 @@ import 'react-rangeslider/lib/index.css';
 class PriceModal extends React.Component {
 
   constructor (props, context) {
-    super(props, context)
+    super(props, context);
     this.state = {
-      gasPrice: 11,
-      timeEstimate: this.estimateTxTime(11)
+      gasPrice: props.transactions.priceModal.standardPrice,
+      timeEstimate: this.estimateTxTime(props.transactions.priceModal.standardPrice)
     };
-    this.stdGasPrice = 11;
+    this.stdGasPrice = props.transactions.priceModal.standardPrice;
   }
 
   sendTransaction = e => {
@@ -21,7 +21,7 @@ class PriceModal extends React.Component {
 
   // TODO: Use an external source to estimate tx time
   estimateTxTime = gasPrice => {
-    return Math.round(gasPrice / 2) + ' mins';
+    return Math.round((50 - gasPrice) / 2) + ' mins';
   };
 
   handleChange = value => {
@@ -32,19 +32,19 @@ class PriceModal extends React.Component {
   };
 
   render() {
-    const { gasPrice } = this.state
+    const { gasPrice } = this.state;
     return (
       <React.Fragment>
         <h2>Set your gas price</h2>
         <p>Gas is used to pay for transactions. A higher gas price results in faster confirmation times.</p>
         <h3>{ gasPrice } Gwei { gasPrice === this.stdGasPrice ? ' (Standard)' : '' }</h3>
-        <p>~{ this.state.timeEstimate }</p>
+        {/* <p>~{ this.state.timeEstimate }</p> */}
         <form onSubmit={ this.sendTransaction }>
           <input type="hidden" value={ this.state.gasPrice } />
           <div className='horizontal-slider'>
             <Slider
               min={1}
-              max={99}
+              max={50}
               value={gasPrice}
               onChangeStart={this.handleChangeStart}
               onChange={this.handleChange}

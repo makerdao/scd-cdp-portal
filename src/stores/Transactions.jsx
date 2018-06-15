@@ -6,7 +6,7 @@ import {etherscanTx, methodSig} from '../helpers';
 class TransactionsStore {
   registry = {};
   cdpCreationTx = false;
-  priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+  priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
 
   checkPendingTransactions = () => {
     Object.keys(this.registry).map(tx => {
@@ -38,11 +38,12 @@ class TransactionsStore {
   }
 
   closePriceModal = () => {
-    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
-  setPriceAndSend = (title, func, params, settings, callbacks) => {
-    this.priceModal = { open: true, title, func, params, settings, callbacks };
+  setPriceAndSend = async (title, func, params, settings, callbacks) => {
+    const standardPrice = (await Blockchain.getGasPrice()).div(10**9).toNumber();
+    this.priceModal = { open: true, standardPrice, title, func, params, settings, callbacks };
   }
 
   sendTransaction = gasPriceGwei => {
@@ -52,7 +53,7 @@ class TransactionsStore {
     this.logRequestTransaction(id, title, cdpCreationTx);
     settings.gasPrice = gasPriceGwei * 10 ** 9;
     func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
-    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
   
   logPendingTransaction = (id, tx, title, callbacks = []) => {
