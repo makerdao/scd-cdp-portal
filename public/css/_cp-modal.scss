@@ -1,0 +1,46 @@
+#root > .modal-open {
+  @include filter(blur, 3px);
+}
+.modal {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 997;
+  .modal-inner {
+    position: relative;
+    width: 380px;
+    background: #202930;
+    z-index: 998;
+    margin: 175px auto 0;
+    box-shadow: 0 4px 12px 0 rgba(0,0,0,0.50);
+    border-radius: 3px;
+
+    h2 {
+      color: #fff;
+      text-align: center;
+      padding-top: 2.4rem;
+      letter-spacing: 0.02rem;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1.4rem;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      letter-spacing: 0.02rem;
+      margin: 1rem 0;
+    }
+    p {
+      color: #A3A3A3;
+      font-size: 0.9rem;
+      line-height: 1.75;
+      text-align: center;
+      width: 65%;
+      margin: 0 auto 2.3rem;
+      user-select: none;
+    }
+  }
+}

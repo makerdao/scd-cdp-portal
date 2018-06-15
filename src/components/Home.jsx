@@ -35,7 +35,7 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className={ (this.props.network.isConnected ? " is-connected" : " is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") }>
+      <div className={ (this.props.network.isConnected ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + (this.props.modal.show ? " modal-open" : "") }>
         <div className="wrapper">
           {
             this.props.network.isConnected && this.props.network.defaultAccount &&
