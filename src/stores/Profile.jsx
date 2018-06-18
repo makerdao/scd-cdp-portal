@@ -37,11 +37,8 @@ class ProfileStore {
     if (this.proxy) {
       callbacks.forEach(callback => this.transactions.executeCallback(callback));
     } else {
-      const id = Math.random();
       const title = 'Create Proxy';
-      this.transactions.logRequestTransaction(id, title);
-      const transaction = () => Blockchain.objects.proxyRegistry.build((e, tx) => this.transactions.log(e, tx, id, title, [['profile/getAndSetProxy', callbacks]]));
-      this.transactions.setPriceAndSend(transaction);
+      this.transactions.setPriceAndSend(title, Blockchain.objects.proxyRegistry.build, [], {value: 0}, [['profile/getAndSetProxy', callbacks]]);
     }
   }
 }
