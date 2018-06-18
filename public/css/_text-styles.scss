@@ -1,4 +1,10 @@
-
+p.error {
+	clear: left;
+	color: $error-red;
+	display: block;
+	margin-top: 5px;
+	margin-bottom: 0px;
+}
 
 .value {
 	display: inline-block;

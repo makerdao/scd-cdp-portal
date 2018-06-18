@@ -28,6 +28,10 @@
 		margin-top: 0;
 	}
 
+	.heading {
+		position: relative;
+	}
+
 	.no-account section {
 		margin-bottom: 1rem;
 		text-align: center;
@@ -247,4 +251,75 @@
 			}
 		}
 	}
+
+	// Send token
+	.send-token {
+		section {
+			width: 80%;
+			margin: 0 auto;
+
+			label {
+				font-size: 1rem;
+				letter-spacing: 0.04rem;
+				font-weight: 200;
+				user-select: none;
+			}
+
+			.below-input-info {
+				color: #fff;
+				font-weight: 200;
+				font-size: 0.9rem;
+			}
+
+			button.sidebar-btn {
+				min-width: 105px;
+			}
+
+			input[type="text"], input[type="number"] {
+				background-color: #2b3943;
+				box-shadow: none;
+				color: #e4e4e4;
+				border: 1px solid #979797;
+				height: 3.1rem;
+
+				&.has-error {
+					border-color: #cc3121 !important;
+				}
+				padding: 0.8rem;
+				font-size: 1.3rem;
+				font-weight: 300;
+				width: 100%;
+				margin-top: 0.5rem;
+
+				&:active, &:focus {
+					color: #fff;
+					border-color: #1abc9c;
+					box-shadow: inset 2px 2px 4px 0 rgba(0, 0, 0, 0.15);
+				}
+			}
+		}
+
+		div.back-arrow {
+			position: absolute;
+			width: 50px;
+			height: 100%;
+			cursor: pointer;
+
+			svg {
+				float: left;
+				position: absolute;
+				left: 20px;
+				top: calc(50% - 9px);
+
+				path {
+					fill: #d8d8d8;
+				}
+			}
+
+			&:hover svg path {
+				fill: #fff;
+			}
+		}
+	}
+
 }

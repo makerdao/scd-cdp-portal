@@ -95,28 +95,32 @@ class Wallet extends React.Component {
                     this.props.network.defaultAccount
                     ?
                       <React.Fragment>
-                        <h2 className="typo-h2 wallet">
-                          { getJazziconIcon(this.props.network.defaultAccount, 25) }
-                          <span>
-                            { this.formatClientName(getCurrentProviderName()) }
-                          </span>
-                          <DropdownMenu icon="../img/wallet-icon.png">
-                            <MenuItems>
-                            {
-                              this.renderWalletOptions().map(key =>
-                                <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
-                              )
-                            }
-                            </MenuItems>
-                            <MenuFooter>
-                              <Link to="/help">
-                                Help
-                              </Link>
-                              <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>Log Out</a>
-                            </MenuFooter>
-                          </DropdownMenu>
-                          <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
-                        </h2>
+                        {
+                          !this.state.sendToken &&
+                          <h2 className="typo-h2 wallet">
+                            { getJazziconIcon(this.props.network.defaultAccount, 25) }
+                            <span>
+                              { this.formatClientName(getCurrentProviderName()) }
+                            </span>
+                            <DropdownMenu icon="../img/wallet-icon.png">
+                              <MenuItems>
+                              {
+                                this.renderWalletOptions().map(key =>
+                                  <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                                )
+                              }
+                              </MenuItems>
+                              <MenuFooter>
+                                <Link to="/help">
+                                  Help
+                                </Link>
+                                <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>Log Out</a>
+                              </MenuFooter>
+                            </DropdownMenu>
+                            <span className="typo-c wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 10)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
+                          </h2>
+                        }
+
                         {
                           this.state.sendToken
                           ?
