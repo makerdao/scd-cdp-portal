@@ -116,11 +116,11 @@
       }
       .first-slide {
         img.preview {
-          display: inline-block;
+          display: block;
           max-width: 600px;
           width: 65%;
           height: auto;
-          margin: 2rem 0;
+          margin: 2rem auto;
         }
         p {
           max-width: unset;
@@ -217,6 +217,6 @@
       }
     }
   }
-.page-home.is-not-connected .wrapper {
+.is-not-connected .wrapper {
   padding-left: 0 !important;
 }

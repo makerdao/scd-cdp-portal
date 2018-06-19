@@ -78,7 +78,10 @@ body {
 
 	// large Screen layout
 	@include respond-to(xl) {
-		width: 70%;
+		width: calc(75% - 20px);
+		.is-not-connected & {
+			width: 75%;
+		}
 	}
 	// medium Screen layout
 	@include respond-to(m) {
