@@ -1,0 +1,80 @@
+.switch {
+  position: relative;
+  width: 44px;
+  height: 22px;
+  border-radius: 11px;
+  cursor: pointer;
+  display: inline-block;
+  background-color: #4f565b;
+  transition: background-color 0.2s ease-in-out;
+  line-height: 1;
+  font-size: 14px;
+
+  &.on {
+    background-color: #1abc9c;
+
+    & .toggle-switch {
+      background-color: #fff;
+      left: calc(100% - 20px);
+
+      svg {
+        top: 2px;
+        width: 9px;
+        height: 10px;
+      }
+    }
+
+    .switch-spinner:before {
+      border-top-color: #16927a;
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+  }
+
+  .toggle-switch {
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #152128;
+    transition: left 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    text-align: center;
+
+    svg {
+      position: relative;
+      top: 1px;
+      width: 10px;
+      height: 10px;
+    }
+  }
+  @keyframes switch-spinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .switch-spinner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    &:before {
+      content: '';
+      box-sizing: border-box;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      border-top-color: #1bc4a6;
+      animation: switch-spinner 0.6s ease-in-out infinite;
+    }
+  }
+
+}
