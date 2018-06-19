@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import {observer} from "mobx-react";
+import {Link} from 'react-router-dom';
 
 import Dashboard from './Dashboard';
 import Dialog from './Dialog';
@@ -95,7 +96,7 @@ class Home extends React.Component {
                     </React.Fragment>
                 }
                 <div className="footer col col-no-border typo-cs typo-grid-grey">
-                  <a href="#action">Terms of Service</a><span className="separator">||</span><a href="#action">Announcement</a>
+                  <Link to="/terms">Terms of Service</Link><span className="separator">||</span><Link to="/announcement">Announcement</Link>
                 </div>
               </div>
             }

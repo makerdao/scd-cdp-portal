@@ -2,13 +2,15 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {Route, Switch, withRouter} from 'react-router-dom';
 
+import Announcement from './Announcement';
 import Help from './Help';
 import Home from './Home';
+import Modal from './Modal';
 import NotFound from './NotFound';
 import Notify from './Notify';
 import NotifySetUp from './NotifySetUp';
 import PriceModal from './PriceModal';
-import Modal from './Modal';
+import Terms from './Terms';
 
 import './App.css';
 
@@ -24,6 +26,12 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/help' render={() => (
             <Help {...props} />
+          )}/>
+          <Route exact path='/terms' render={() => (
+            <Terms {...props} />
+          )}/>
+          <Route exact path='/announcement' render={() => (
+            <Announcement {...props} />
           )}/>
           <Route exact path='/' render={() => (
             <Home {...props} />
