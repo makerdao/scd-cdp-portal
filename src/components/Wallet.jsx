@@ -7,6 +7,7 @@ import WalletClientSelector from './WalletClientSelector';
 import WalletHWSelector from './WalletHWSelector';
 import WalletNoAccount from './WalletNoAccount';
 import WalletSendToken from './WalletSendToken';
+import ToggleSwitch from './ToggleSwitch';
 
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize} from '../helpers';
@@ -17,7 +18,23 @@ class Wallet extends React.Component {
     super();
     this.state = {
       sendToken: null,
+      switchPending: { eth: false, mkr: false, gov: false }
     }
+  }
+
+  handleSetAllowance = (token, allow) => {
+    let pendingState = { ...this.state.switchPending };
+    pendingState[token] = true;
+    console.log(`Turning on pending state of ${token} switch`);
+    this.setState({ switchPending: pendingState });
+
+    this.props.system.setAllowance(token, allow, [[err => {
+      if (err) console.error(`Error setting allowance for ${token}: ${err.message}`);
+      let pendingState = { ...this.state.switchPending };
+      pendingState[token] = false;
+      console.log(`Turning off pending state of ${token} switch`);
+      this.setState({ switchPending: pendingState });
+    }]]);
   }
 
   openSendBox = token => this.setState({ sendToken: token });
@@ -154,13 +171,7 @@ class Wallet extends React.Component {
                                       {
                                         token !== 'eth' &&
                                         <React.Fragment>
-                                          {
-                                            this.props.system[token].allowance.eq(-1)
-                                            ?
-                                              'Loading...'
-                                            :
-                                              <a href="#action" onClick={ e => { e.preventDefault(); this.props.system.setAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } }>{ this.props.system[token].allowance.eq(BIGGESTUINT256) ? 'Lock' : 'Unlock' }</a>
-                                          }
+                                          <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.handleSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.state.switchPending[token] } />
                                         </React.Fragment>
                                       }
                                     </td>
