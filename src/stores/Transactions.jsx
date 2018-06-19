@@ -30,7 +30,7 @@ class TransactionsStore {
     registry[tx].cdpCreationTx = false;
     this.registry = registry;
   }
-  
+
   logRequestTransaction = (id, title, cdpCreationTx) => {
     this.cdpCreationTx = cdpCreationTx;
     const msgTemp = 'Waiting for transaction signature...';
@@ -38,6 +38,10 @@ class TransactionsStore {
   }
 
   closePriceModal = () => {
+    // Call any callbacks passing error as first parameter
+    if (this.priceModal.callbacks && this.priceModal.callbacks.length > 0) {
+      this.priceModal.callbacks.forEach(callback => this.executeCallback(callback, new Error('Cancelled price modal.')));
+    }
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
@@ -55,7 +59,7 @@ class TransactionsStore {
     func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
-  
+
   logPendingTransaction = (id, tx, title, callbacks = []) => {
     const msgTemp = 'Transaction TX was created. Waiting for confirmation...';
     const registry = {...this.registry};
@@ -68,7 +72,7 @@ class TransactionsStore {
       this.notificator.info(tx, title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
     }
   }
-  
+
   logTransactionConfirmed = tx => {
     const msgTemp = 'Transaction TX was confirmed.';
     if (this.registry[tx] && this.registry[tx].pending) {
@@ -85,7 +89,7 @@ class TransactionsStore {
       }
     }
   }
-  
+
   logTransactionFailed = tx => {
     const msgTemp = 'Transaction TX failed.';
     if (this.registry[tx]) {
@@ -95,25 +99,42 @@ class TransactionsStore {
       if (!this.registry[tx].cdpCreationTx) {
         this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
       }
-    }
-  }
-  
-  logTransactionRejected = (tx, title, customMessage = null) => {
-    const msg = 'User denied transaction signature.';
-    this.notificator.error(tx, title, customMessage ? customMessage : msg, 4000);
-  }
-  
-  log = (e, tx, id, title, callbacks = []) => {
-    if (!e) {
-      this.logPendingTransaction(id, tx, title, callbacks);
-    } else {
-      console.log(e);
-      this.logTransactionRejected(id, title);
+      // Call any callbacks passing error as first parameter
+      if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
+        this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback, new Error('Transaction failed.')));
+      }
     }
   }
 
-  executeCallback = args => {
+  logTransactionRejected = (tx, title, customMessage = null, callbacks = null, err = null) => {
+    const msg = 'User denied transaction signature.';
+    this.notificator.error(tx, title, customMessage ? customMessage : msg, 4000);
+    // Call any callbacks passing error as first parameter
+    if (callbacks && callbacks.length > 0) callbacks.forEach(callback => this.executeCallback(callback, err));
+  }
+
+  log = (err, tx, id, title, callbacks = []) => {
+    if (!err) {
+      this.logPendingTransaction(id, tx, title, callbacks);
+    } else {
+      this.logTransactionRejected(id, title, null, callbacks, err);
+    }
+  }
+
+  executeCallback = (args, err) => {
     let method = args.shift();
+
+    // If this callback is a function
+    if (typeof method === 'function') {
+      // First parameter of callback function is always error object (and null if no error)
+      if (err) args.unshift(err);
+      else args.unshift(null);
+      method(...args);
+      return;
+    }
+    // Don't call non-function callbacks if this is an error callback (for compatibility)
+    if (err) return;
+
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
     const timeout = ['system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
