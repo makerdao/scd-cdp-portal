@@ -87,7 +87,7 @@ class Home extends React.Component {
                     <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
                   :
                     <React.Fragment>
-                      <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } />
+                      <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } transactions={ this.props.transactions } />
                       {
                         this.props.network.defaultAccount &&
                         <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />

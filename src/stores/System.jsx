@@ -751,9 +751,14 @@ class SystemStore {
       if (r.equals(BIGGESTUINT256)) {
         callbacks.forEach(callback => this.transactions.executeCallback(callback));
       } else {
-        this.setAllowance(token, -1, callbacks);
+        this.setAllowance(token, true, callbacks);
       }
     }, () => {});
+  }
+
+  checkProxyAndSetAllowance = (token, value) => {
+    this.profile.checkProxy([['system/setAllowance', token, value, [['system/getAllowance', token], ['transactions/cleanLoading']]]]);
+    this.transactions.loading = { method: 'setAllowance', param: token };
   }
   
   transferToken = (token, to, amount) => {

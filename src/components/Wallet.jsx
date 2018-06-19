@@ -17,26 +17,9 @@ class Wallet extends React.Component {
   constructor() {
     super();
     this.state = {
-      sendToken: null,
-      switchPending: { eth: false, mkr: false, gov: false }
+      sendToken: null
     }
   }
-
-  handleSetAllowance = (token, allow) => {
-    let pendingState = { ...this.state.switchPending };
-    pendingState[token] = true;
-    console.log(`Turning on pending state of ${token} switch`);
-    this.setState({ switchPending: pendingState });
-
-    this.props.system.setAllowance(token, allow, [[err => {
-      if (err) console.error(`Error setting allowance for ${token}: ${err.message}`);
-      let pendingState = { ...this.state.switchPending };
-      pendingState[token] = false;
-      console.log(`Turning off pending state of ${token} switch`);
-      this.setState({ switchPending: pendingState });
-    }]]);
-  }
-
   openSendBox = token => this.setState({ sendToken: token });
 
   closeSendBox = e => {
@@ -171,7 +154,7 @@ class Wallet extends React.Component {
                                       {
                                         token !== 'eth' &&
                                         <React.Fragment>
-                                          <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.handleSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.state.switchPending[token] } />
+                                          <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.method === 'setAllowance' && this.props.transactions.loading.param === token } />
                                         </React.Fragment>
                                       }
                                     </td>

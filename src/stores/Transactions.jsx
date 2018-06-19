@@ -5,6 +5,7 @@ import {etherscanTx, methodSig} from '../helpers';
 
 class TransactionsStore {
   registry = {};
+  loading = { method: null, param: null };
   cdpCreationTx = false;
   priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
 
@@ -38,10 +39,7 @@ class TransactionsStore {
   }
 
   closePriceModal = () => {
-    // Call any callbacks passing error as first parameter
-    if (this.priceModal.callbacks && this.priceModal.callbacks.length > 0) {
-      this.priceModal.callbacks.forEach(callback => this.executeCallback(callback, new Error('Cancelled price modal.')));
-    }
+    this.loading = { method: null, param: null };
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
@@ -99,54 +97,47 @@ class TransactionsStore {
       if (!this.registry[tx].cdpCreationTx) {
         this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
       }
-      // Call any callbacks passing error as first parameter
-      if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
-        this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback, new Error('Transaction failed.')));
-      }
+      this.loading = { method: null, param: null };
     }
   }
 
-  logTransactionRejected = (tx, title, customMessage = null, callbacks = null, err = null) => {
+  logTransactionRejected = (tx, title, customMessage = null) => {
     const msg = 'User denied transaction signature.';
     this.notificator.error(tx, title, customMessage ? customMessage : msg, 4000);
-    // Call any callbacks passing error as first parameter
-    if (callbacks && callbacks.length > 0) callbacks.forEach(callback => this.executeCallback(callback, err));
+    this.loading = { method: null, param: null };
   }
 
-  log = (err, tx, id, title, callbacks = []) => {
-    if (!err) {
+  log = (e, tx, id, title, callbacks = []) => {
+    if (!e) {
       this.logPendingTransaction(id, tx, title, callbacks);
     } else {
-      this.logTransactionRejected(id, title, null, callbacks, err);
+      this.logTransactionRejected(id, title);
     }
   }
 
-  executeCallback = (args, err) => {
+  executeCallback = args => {
     let method = args.shift();
-
-    // If this callback is a function
-    if (typeof method === 'function') {
-      // First parameter of callback function is always error object (and null if no error)
-      if (err) args.unshift(err);
-      else args.unshift(null);
-      method(...args);
-      return;
-    }
-    // Don't call non-function callbacks if this is an error callback (for compatibility)
-    if (err) return;
-
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
     const timeout = ['system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
       method = method.split('/');
       console.log('executeCallback', `${method[0]}.${method[1]}`, args);
-      this[method[0]][method[1]](...args);
+      if (method[0] === 'transactions') {
+        this[method[1]](...args);
+      } else {
+        this[method[0]][method[1]](...args);
+      }
     }, timeout);
+  }
+
+  cleanLoading = () => {
+    this.loading = { method: null, param: null };
   }
 }
 
 decorate(TransactionsStore, {
   registry: observable,
+  loading: observable,
   priceModal: observable
 });
 
