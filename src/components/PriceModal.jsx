@@ -8,10 +8,10 @@ class PriceModal extends React.Component {
   constructor (props, context) {
     super(props, context);
     this.state = {
-      gasPrice: props.transactions.priceModal.standardPrice,
-      timeEstimate: this.estimateTxTime(props.transactions.priceModal.standardPrice)
+      gasPrice: props.transactions.standardGasPrice,
+      timeEstimate: this.estimateTxTime(props.transactions.standardGasPrice)
     };
-    this.stdGasPrice = props.transactions.priceModal.standardPrice;
+    this.stdGasPrice = props.transactions.standardGasPrice;
   }
 
   setPriceAndSend = e => {
@@ -21,7 +21,7 @@ class PriceModal extends React.Component {
 
   // TODO: Use an external source to estimate tx time
   estimateTxTime = gasPrice => {
-    return Math.round((50 - gasPrice) / 2) + ' mins';
+    return Math.round((99 - gasPrice) / 2) + ' mins';
   };
 
   handleChange = value => {
@@ -44,7 +44,7 @@ class PriceModal extends React.Component {
           <div className='horizontal-slider'>
             <Slider
               min={1}
-              max={50}
+              max={99}
               value={gasPrice}
               onChangeStart={this.handleChangeStart}
               onChange={this.handleChange}

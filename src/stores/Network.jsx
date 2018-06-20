@@ -200,6 +200,7 @@ class NetworkStore {
     this.timeVariablesInterval = setInterval(() => {
       this.system.loadVariables(true);
       this.profile.getAccountBalance(this.network.defaultAccount);
+      this.transactions.setStandardGasPrice();
     }, 5000);
   }
 
@@ -244,6 +245,8 @@ class NetworkStore {
               this.profile.setProxy(r[2]);
               this.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
               this.loadingAddress = false;
+
+              this.transactions.setStandardGasPrice();
 
               // Intervals
               this.setTimeVariablesInterval();

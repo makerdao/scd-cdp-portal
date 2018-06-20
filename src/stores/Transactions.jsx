@@ -7,7 +7,12 @@ class TransactionsStore {
   registry = {};
   loading = {};
   cdpCreationTx = false;
-  priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
+  standardGasPrice = -1;
+  priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+
+  setStandardGasPrice = async () => {
+    this.standardGasPrice = (await Blockchain.getGasPrice()).div(10**9).ceil().toNumber();
+  }
 
   checkPendingTransactions = () => {
     Object.keys(this.registry).map(tx => {
@@ -40,7 +45,7 @@ class TransactionsStore {
 
   closePriceModal = () => {
     this.lookForCleanCallBack(this.priceModal.callbacks);
-    this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
   sendTransaction = (title, func, params, settings, callbacks) => {
@@ -50,10 +55,9 @@ class TransactionsStore {
     func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
   }
 
-  askPriceAndSend = async (title, func, params, settings, callbacks) => {
+  askPriceAndSend = (title, func, params, settings, callbacks) => {
     if (this.network.hw.active) { // If user is using HW, gas price modal will appear
-      const standardPrice = (await Blockchain.getGasPrice()).div(10**9).toNumber();
-      this.priceModal = { open: true, standardPrice, title, func, params, settings, callbacks };
+      this.priceModal = { open: true, title, func, params, settings, callbacks };
     } else {
       this.sendTransaction(title, func, params, settings, callbacks);
     }
@@ -62,7 +66,7 @@ class TransactionsStore {
   setPriceAndSend = gasPriceGwei => {
     const {func, params, settings, title, callbacks} = {...this.priceModal};
     settings.gasPrice = gasPriceGwei * 10 ** 9;
-    this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
     this.sendTransaction(title, func, params, settings, callbacks);
   }
 
@@ -170,6 +174,7 @@ class TransactionsStore {
 decorate(TransactionsStore, {
   registry: observable,
   loading: observable,
+  standardGasPrice: observable,
   priceModal: observable
 });
 
