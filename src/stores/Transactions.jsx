@@ -158,7 +158,7 @@ class TransactionsStore {
   executeCallback = args => {
     let method = args.shift();
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
-    const timeout = ['transactions/cleanLoading', 'system/setAllowance', 'system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
+    const timeout = ['transactions/cleanLoading', 'system/setAllowance', 'system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP', 'system/moveLegacyCDP'].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
       method = method.split('/');
       console.log('executeCallback', `${method[0]}.${method[1]}`, args);

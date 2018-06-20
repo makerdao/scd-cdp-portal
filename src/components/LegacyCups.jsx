@@ -75,7 +75,13 @@ class LegacyCups extends React.Component {
                 </tbody>
               </table>
               <div>
-                <a href="#action" style={ {display: 'block'} } data-method="migrate" data-cup={ key } onClick={ this.props.handleOpenDialog }>Migrate CDP #{ key }</a>
+                {
+                  this.props.system.tub.cups[key]
+                  ?
+                    'CDP Migrated'
+                  :
+                    <button style={ {display: 'block'} } data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.handleOpenDialog }>Migrate CDP #{ key }</button>
+                }
               </div>
             </React.Fragment>
           )

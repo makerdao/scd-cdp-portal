@@ -528,7 +528,7 @@ class SystemStore {
     });
   }
 
-  getCups = async (type, keepTrying = false) => {
+  getCups = async (type, keepTrying = false, callbacks = []) => {
     const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
     const me = this;
     let promisesCups = [];
@@ -542,11 +542,11 @@ class SystemStore {
       });
     } finally {
       promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
-      this.filterCups(keepTrying, type, promisesCups);
+      this.filterCups(keepTrying, type, promisesCups, callbacks);
     }
   }
   
-  filterCups = (keepTrying, type, promisesCups = []) => {
+  filterCups = (keepTrying, type, promisesCups, callbacks = []) => {
     const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
     const conditions = {lad};
     conditions.closed = false;
@@ -570,30 +570,42 @@ class SystemStore {
             } else if (!this.network.stopIntervals && keys.length > 0 && settings.chain[this.network.network].service) {
               keys.forEach(key => {
                 Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
-                  this.tub.cups[key].history = response
+                  this.tub.cups[key].history = response;
                   // this.calculateCupChart(); // TODO
                 }, () => {});
               });
+              this.transactions.executeCallbacks(callbacks);
             }
           }
         } else if (type === 'legacy') {
           this.tub.legacyCups = cupsFiltered;
+          this.transactions.executeCallbacks(callbacks);
         }
       });
     }
   }
 
-  getMyCups = (keepTrying = false) => {
+  getMyCups = (keepTrying = false, callbacks = []) => {
     if (this.profile.proxy) {
       this.tub.cupsLoading = true;
-      this.getCups('new', keepTrying);
+      this.getCups('new', keepTrying, callbacks);
     } else {
       this.tub.cupsLoading = false;
     }
   }
 
-  getMyLegacyCups = () => {
-    this.getCups('legacy');
+  getMyLegacyCups = (callbacks = []) => {
+    this.getCups('legacy', false, callbacks);
+  }
+
+  moveLegacyCDP = (cupId, callbacks = []) => {
+    const cups = {...this.tub.cups};
+    cups[cupId] = {...this.tub.legacyCups[cupId]};
+    this.tub.cups = cups;
+    Promise.resolve(this.getCupHistoryFromService(cupId)).then(response => {
+      this.tub.cups[cupId].history = response;
+    }, () => {});
+    this.transactions.executeCallbacks(callbacks);
   }
 
   addExtraCupData = cup => {
@@ -771,12 +783,12 @@ class SystemStore {
     }
   }
 
-  migrateCDP = async cup => {
+  migrateCDP = async (cup, callbacks) => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
     const proxy = this.profile.proxy;
     if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === this.network.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
-      this.transactions.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, [['system/getMyCups'], ['system/getMyLegacyCups']]);
+      this.transactions.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
     }
   }
 
@@ -932,8 +944,9 @@ class SystemStore {
         }
         break;
       case 'migrate':
+        this.transactions.addLoading('migrate', this.dialog.cupId);
         callbacks = [
-                      ['system/migrateCDP', this.dialog.cupId]
+                      ['system/migrateCDP', this.dialog.cupId, [['system/moveLegacyCDP', this.dialog.cupId, [['transactions/cleanLoading', 'migrate', this.dialog.cupId]]]]]
                     ];
         break;
       default:
