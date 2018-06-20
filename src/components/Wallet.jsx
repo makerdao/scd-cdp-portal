@@ -35,7 +35,8 @@ class Wallet extends React.Component {
       case 'metamask':
         return 'MetaMask';
       case 'web':
-        return capitalize(getWebClientProviderName());
+        let webClientName = getWebClientProviderName();
+        return webClientName === 'metamask' ? 'MetaMask' : capitalize(webClientName);
       default:
         return capitalize(name);
     }
