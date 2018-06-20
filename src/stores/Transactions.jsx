@@ -5,7 +5,7 @@ import {etherscanTx, methodSig} from '../helpers';
 
 class TransactionsStore {
   registry = {};
-  loading = { method: null, param: null };
+  loading = {};
   cdpCreationTx = false;
   priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
 
@@ -39,7 +39,7 @@ class TransactionsStore {
   }
 
   closePriceModal = () => {
-    this.loading = { method: null, param: null };
+    this.lookForCleanCallBack(this.priceModal.callbacks);
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
@@ -95,30 +95,58 @@ class TransactionsStore {
       registry[tx].pending = false;
       this.registry = registry;
       if (!this.registry[tx].cdpCreationTx) {
-        this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 4000);
+        this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 5000);
       }
-      this.loading = { method: null, param: null };
+      this.lookForCleanCallBack(this.registry[tx].callbacks);
     }
   }
 
-  logTransactionRejected = (tx, title, customMessage = null) => {
+  logTransactionRejected = (id, title, callbacks = []) => {
     const msg = 'User denied transaction signature.';
-    this.notificator.error(tx, title, customMessage ? customMessage : msg, 4000);
-    this.loading = { method: null, param: null };
+    this.notificator.error(id, title, msg, 5000);
+    this.lookForCleanCallBack(callbacks);
   }
 
   log = (e, tx, id, title, callbacks = []) => {
     if (!e) {
       this.logPendingTransaction(id, tx, title, callbacks);
     } else {
-      this.logTransactionRejected(id, title);
+      this.logTransactionRejected(id, title, callbacks);
     }
+  }
+
+  addLoading = (method, param) => {
+    const loading = {...this.loading};
+    if (typeof loading[method] === 'undefined') loading[method] = {};
+    loading[method][param] = true;
+    this.loading = loading;
+  }
+
+  cleanLoading = (method, param) => {
+    const loading = {...this.loading};
+    loading[method][param] = false;
+    this.loading = loading;
+  }
+
+  lookForCleanCallBack = callbacks => {
+    callbacks.forEach(callback => {
+      if (callback[0] === 'transactions/cleanLoading') {
+        this.executeCallback(callback)
+      }
+      if (typeof callback[callback.length - 1] === 'object') {
+        this.lookForCleanCallBack(callback[callback.length - 1]);
+      }
+    });
+  }
+
+  executeCallbacks = callbacks => {
+    callbacks.forEach(callback => this.executeCallback(callback));
   }
 
   executeCallback = args => {
     let method = args.shift();
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
-    const timeout = ['system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
+    const timeout = ['transactions/cleanLoading', 'system/setAllowance', 'system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP'].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
       method = method.split('/');
       console.log('executeCallback', `${method[0]}.${method[1]}`, args);
@@ -128,10 +156,6 @@ class TransactionsStore {
         this[method[0]][method[1]](...args);
       }
     }, timeout);
-  }
-
-  cleanLoading = () => {
-    this.loading = { method: null, param: null };
   }
 }
 

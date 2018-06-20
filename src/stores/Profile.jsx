@@ -20,7 +20,7 @@ class ProfileStore {
       Blockchain.getProxyAddress(this.transactions.network.defaultAccount).then(proxy => {
         if (proxy) {
           this.setProxy(proxy);
-          callbacks && callbacks.forEach(callback => this.transactions.executeCallback(callback));
+          callbacks && this.transactions.executeCallbacks(callbacks);
         }
         resolve(proxy);
       }, () => reject(false));
@@ -35,7 +35,7 @@ class ProfileStore {
 
   checkProxy = callbacks => {
     if (this.proxy) {
-      callbacks.forEach(callback => this.transactions.executeCallback(callback));
+      this.transactions.executeCallbacks(callbacks);
     } else {
       const title = 'Create Proxy';
       this.transactions.setPriceAndSend(title, Blockchain.objects.proxyRegistry.build, [], {value: 0}, [['profile/getAndSetProxy', callbacks]]);

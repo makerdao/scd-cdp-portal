@@ -707,10 +707,11 @@ class SystemStore {
     })
   }
 
-  getAllowance = token => {
+  getAllowance = (token, callbacks = []) => {
     Blockchain.objects[token].allowance.call(this.network.defaultAccount, this.profile.proxy, (e, r) => {
       if (!e) {
         this[token].allowance = r;
+        this.transactions.executeCallbacks(callbacks);
       }
     })
   }
@@ -749,7 +750,7 @@ class SystemStore {
   checkAllowance = (token, callbacks) => {
     Blockchain.getAllowance(token, this.network.defaultAccount, this.profile.proxy).then(r => {
       if (r.equals(BIGGESTUINT256)) {
-        callbacks.forEach(callback => this.transactions.executeCallback(callback));
+        this.transactions.executeCallbacks(callbacks);
       } else {
         this.setAllowance(token, true, callbacks);
       }
@@ -757,8 +758,8 @@ class SystemStore {
   }
 
   checkProxyAndSetAllowance = (token, value) => {
-    this.profile.checkProxy([['system/setAllowance', token, value, [['system/getAllowance', token], ['transactions/cleanLoading']]]]);
-    this.transactions.loading = { method: 'setAllowance', param: token };
+    this.transactions.addLoading('setAllowance', token);
+    this.profile.checkProxy([['system/setAllowance', token, value, [['system/getAllowance', token, [['transactions/cleanLoading', 'setAllowance', token]]]]]]);
   }
   
   transferToken = (token, to, amount) => {
