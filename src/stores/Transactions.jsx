@@ -43,19 +43,27 @@ class TransactionsStore {
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
   }
 
-  setPriceAndSend = async (title, func, params, settings, callbacks) => {
-    const standardPrice = (await Blockchain.getGasPrice()).div(10**9).toNumber();
-    this.priceModal = { open: true, standardPrice, title, func, params, settings, callbacks };
+  sendTransaction = (title, func, params, settings, callbacks) => {
+    const cdpCreationTx = typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10);
+    const id = Math.random();
+    this.logRequestTransaction(id, title, cdpCreationTx);
+    func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
   }
 
-  sendTransaction = gasPriceGwei => {
-    const id = Math.random();
+  askPriceAndSend = async (title, func, params, settings, callbacks) => {
+    if (this.network.hw.active) { // If user is using HW, gas price modal will appear
+      const standardPrice = (await Blockchain.getGasPrice()).div(10**9).toNumber();
+      this.priceModal = { open: true, standardPrice, title, func, params, settings, callbacks };
+    } else {
+      this.sendTransaction(title, func, params, settings, callbacks);
+    }
+  }
+
+  setPriceAndSend = gasPriceGwei => {
     const {func, params, settings, title, callbacks} = {...this.priceModal};
-    const cdpCreationTx = typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10);
-    this.logRequestTransaction(id, title, cdpCreationTx);
     settings.gasPrice = gasPriceGwei * 10 ** 9;
-    func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
     this.priceModal = { open: false, standardPrice: 0, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.sendTransaction(title, func, params, settings, callbacks);
   }
 
   logPendingTransaction = (id, tx, title, callbacks = []) => {

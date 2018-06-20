@@ -14,9 +14,9 @@ class PriceModal extends React.Component {
     this.stdGasPrice = props.transactions.priceModal.standardPrice;
   }
 
-  sendTransaction = e => {
+  setPriceAndSend = e => {
     e.preventDefault();
-    this.props.transactions.sendTransaction(this.state.gasPrice);
+    this.props.transactions.setPriceAndSend(this.state.gasPrice);
   };
 
   // TODO: Use an external source to estimate tx time
@@ -39,7 +39,7 @@ class PriceModal extends React.Component {
         <p>Gas is used to pay for transactions. A higher gas price results in faster confirmation times.</p>
         <h3>{ gasPrice } Gwei { gasPrice === this.stdGasPrice ? ' (Standard)' : '' }</h3>
         {/* <p>~{ this.state.timeEstimate }</p> */}
-        <form onSubmit={ this.sendTransaction }>
+        <form onSubmit={ this.setPriceAndSend }>
           <input type="hidden" value={ this.state.gasPrice } />
           <div className='horizontal-slider'>
             <Slider

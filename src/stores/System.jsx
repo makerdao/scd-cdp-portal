@@ -743,7 +743,7 @@ class SystemStore {
 
   setAllowance = (token, value, callbacks = []) => {
     const title = `${token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase()}: ${value ? 'unlock' : 'lock'}`;
-    this.transactions.setPriceAndSend(title, Blockchain.objects[token].approve, [this.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
+    this.transactions.askPriceAndSend(title, Blockchain.objects[token].approve, [this.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
   }
 
   // Actions
@@ -765,9 +765,9 @@ class SystemStore {
   transferToken = (token, to, amount) => {
     const title = `${token.replace('gov', 'mkr').toUpperCase()}: transfer ${to} ${amount}`;
     if (token === 'eth') {
-      this.transactions.setPriceAndSend(title, Blockchain.sendTransaction, [], {to, value: toWei(amount)}, [['system/setUpToken', token]]);
+      this.transactions.askPriceAndSend(title, Blockchain.sendTransaction, [], {to, value: toWei(amount)}, [['system/setUpToken', token]]);
     } else {
-      this.transactions.setPriceAndSend(title, Blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [['system/setUpToken', token]]);
+      this.transactions.askPriceAndSend(title, Blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [['system/setUpToken', token]]);
     }
   }
 
@@ -776,12 +776,12 @@ class SystemStore {
     const proxy = this.profile.proxy;
     if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === this.network.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
-      this.transactions.setPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, [['system/getMyCups'], ['system/getMyLegacyCups']]);
+      this.transactions.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, [['system/getMyCups'], ['system/getMyLegacyCups']]);
     }
   }
 
   executeProxyTx = (action, value, notificator) => {
-    this.transactions.setPriceAndSend(notificator.title, Blockchain.objects.proxy.execute['address,bytes'], [settings.chain[this.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
+    this.transactions.askPriceAndSend(notificator.title, Blockchain.objects.proxy.execute['address,bytes'], [settings.chain[this.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
   }
   
   open = () => {
