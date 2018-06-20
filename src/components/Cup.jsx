@@ -165,7 +165,7 @@ class Cup extends React.Component {
               </div>
             </div>
             <div className="inner-row">
-              <h4 className="typo-c inline-headline">Max. availble to generate</h4>
+              <h4 className="typo-c inline-headline">Max. available to generate</h4>
               <div className="right">
                 <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Generate</button>
               </div>

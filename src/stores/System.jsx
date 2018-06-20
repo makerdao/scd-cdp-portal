@@ -561,6 +561,7 @@ class SystemStore {
         const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
         if (type === 'new') {
           if (this.tub.cupsLoading) {
+            this.tub.cupId = null;
             this.tub.cups = cupsFiltered;
 
             this.tub.cupsLoading = keepTrying && keys.length === 0;
