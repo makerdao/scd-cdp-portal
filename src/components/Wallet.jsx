@@ -107,7 +107,7 @@ class Wallet extends React.Component {
                               <MenuItems>
                               {
                                 this.renderWalletOptions().map(key =>
-                                  <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.png` } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                                  <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.svg` } key={ key } data-client={ key } onClick={ this.switchConnection } />
                                 )
                               }
                               </MenuItems>
