@@ -62,6 +62,7 @@
 		padding: 0;
 		h2 {
 			&.wallet {
+				position: relative;
 				text-align: left;
 				padding-left: 25px;
 				padding-right: 25px;
@@ -109,13 +110,20 @@
 		}
 	}
 	.wallet-id {
-		text-align: right;
-		float: right;
-		margin-right: 1rem;
-		a {
-			color: $text-grey;
-			text-decoration: none;
-		}
+	  position: absolute;
+	  display: block;
+	  text-align: right;
+	  right: 50px;
+	  top: 50%;
+	  font-size: 0.75em;
+	  line-height: 1;
+
+	  a {
+	    color: $text-grey;
+	    text-decoration: none;
+	    position: relative;
+	    top: -0.45rem;
+	  }
 	}
 
 	// footer
