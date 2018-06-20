@@ -13,10 +13,10 @@ class Menu extends React.Component {
         </div>
         <nav>
           <ul className="menu">
-            <li value="home" className={ this.props.page === '' ? 'active' : '' } data-page="home">
+            <li value="home" className={ this.props.page === '' ? 'active' : '' }>
               <Link to="/">
-                <img src="img/icon-home.svg" draggable="false" alt="" data-page="home" />
-                <span className="menu-label" data-page="home">Dashboard</span>
+                <img src="img/icon-home.svg" draggable="false" alt="" />
+                <span className="menu-label">Dashboard</span>
               </Link>
             </li>
             {
@@ -27,10 +27,10 @@ class Menu extends React.Component {
                 </li>
               )
             }
-            <li value="help" className={ this.props.page === 'help' ? 'active' : '' } data-page="help">
+            <li value="help" className={ this.props.page === 'help' ? 'active' : '' }>
               <Link to="/help">
-                <img src="img/icon-help.svg" draggable="false" alt="" data-page="help" />
-                <span className="menu-label" data-page="help">Help</span>
+                <img src="img/icon-help.svg" draggable="false" alt="" />
+                <span className="menu-label">Help</span>
               </Link>
             </li>
           </ul>
