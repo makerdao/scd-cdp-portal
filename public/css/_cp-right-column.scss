@@ -68,6 +68,16 @@
 				padding-right: 25px;
 				margin-bottom: 0;
 				border-bottom: none;
+
+				.identicon {
+					margin-right: 14px;
+					float: left;
+					position: relative;
+					top: -2px;
+					@include respond-to(xl) {
+						top: 2px;
+					}
+				}
 			}
 			user-select: none;
 			font-size: 1.3rem;
@@ -86,16 +96,6 @@
 
 		h3 {
 			padding-top: 1em;
-		}
-	}
-
-	.identicon {
-		margin-right: 14px;
-		float: left;
-		position: relative;
-		top: -2px;
-		@include respond-to(xl) {
-			top: 2px;
 		}
 	}
 
