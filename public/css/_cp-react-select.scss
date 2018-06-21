@@ -1,0 +1,494 @@
+// Variables
+// ------------------------------
+
+// control options
+$select-input-bg: #152128 !default;
+$select-input-bg-disabled: #152128 !default;
+$select-input-bg-focus: $select-input-bg !default;
+$select-input-border-color: #C0C0C0 !default;
+$select-input-border-radius: 0 !default;
+$select-input-border-focus: #1ABC9C !default;
+$select-input-box-shadow-focus: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 5px -1px fade($select-input-border-focus, 50%) !default;
+$select-input-border-width: 1px !default;
+$select-input-height: 44px !default;
+$select-input-internal-height: ($select-input-height - ($select-input-border-width * 2)) !default;
+$select-input-placeholder: #aaa !default;
+$select-text-color: #FFFFFF !default;
+$select-link-hover-color: $select-input-border-focus !default;
+$select-input-hover-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06) !default;
+
+$select-padding-vertical: 8px !default;
+$select-padding-horizontal: 10px !default;
+
+// menu options
+$select-menu-zindex: 1000 !default;
+$select-menu-max-height: 200px !default;
+$select-menu-box-shadow: $select-input-hover-box-shadow !default;
+
+$select-option-color: lighten($select-text-color, 20%) !default;
+$select-option-bg: $select-input-bg !default;
+$select-option-focused-color: $select-text-color !default;
+$select-option-focused-bg: lighten($select-input-bg, 20%) !default;
+$select-option-selected-color: $select-text-color !default;
+$select-option-selected-bg: lighten($select-input-bg, 10%) !default;
+$select-option-disabled-color: lighten($select-text-color, 60%) !default;
+
+$select-noresults-color: lighten($select-text-color, 40%) !default;
+
+// clear "x" button
+$select-clear-size: floor(($select-input-height / 2)) !default;
+$select-clear-color: #999 !default;
+$select-clear-hover-color: #D0021B !default; // red
+$select-clear-width: ($select-input-internal-height / 2) !default;
+
+// arrow indicator
+$select-arrow-color: #ddd !default;
+$select-arrow-color-hover: lighten($select-arrow-color, 20%) !default;
+$select-arrow-width: 5px !default;
+
+// loading indicator
+$select-loading-size: 16px !default;
+$select-loading-color: $select-text-color !default;
+$select-loading-color-bg: $select-input-border-color !default;
+
+// Mixins
+// ------------------------------
+
+// utilities
+@mixin size($width, $height) {
+  width: $width;
+  height: $height;
+}
+@mixin square($size) {
+  @include size($size, $size);
+}
+@mixin border-top-radius($radius) {
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+}
+@mixin border-right-radius($radius) {
+  border-bottom-right-radius: $radius;
+  border-top-right-radius: $radius;
+}
+@mixin border-bottom-radius($radius) {
+  border-bottom-right-radius: $radius;
+  border-bottom-left-radius: $radius;
+}
+@mixin border-left-radius($radius) {
+  border-bottom-left-radius: $radius;
+  border-top-left-radius: $radius;
+}
+
+// vendor Prefixes
+@mixin animation($animation) {
+  -webkit-animation: $animation;
+  -o-animation: $animation;
+  animation: $animation;
+}
+@mixin box-sizing($boxmodel) {
+  -webkit-box-sizing: $boxmodel;
+  -moz-box-sizing: $boxmodel;
+  box-sizing: $boxmodel;
+}
+
+// Spinner
+// ------------------------------
+@mixin Select-spinner($size, $orbit, $satellite) {
+  @include animation(Select-animation-spin 400ms infinite linear);
+  @include square($size);
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: floor(($size / 8)) solid $orbit;
+  border-right-color: $satellite;
+  display: inline-block;
+  position: relative;
+
+}
+
+@keyframes Select-animation-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@-webkit-keyframes Select-animation-spin {
+  to {
+    -webkit-transform: rotate(1turn);
+  }
+}
+
+.Select {
+  position: relative;
+
+  // disable some browser-specific behaviours that break the input
+  input::-webkit-contacts-auto-fill-button,
+  input::-webkit-credentials-auto-fill-button {
+    display: none !important;
+  }
+
+  input::-ms-clear {
+    display: none !important;
+  }
+
+  input::-ms-reveal {
+    display: none !important;
+  }
+
+  // preferred box model
+  &,
+  & div,
+  & input,
+  & span {
+    @include box-sizing(border-box);
+  }
+
+  // handle disabled state
+  &.is-disabled {
+    .Select-arrow-zone {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    > .Select-control {
+      background-color: $select-input-bg-disabled;
+
+      &:hover {
+        box-shadow: none;
+      }
+    }
+  }
+
+  &.is-searchable {
+    &.is-open > .Select-control {
+      cursor: text;
+    }
+
+    &.is-focused:not(.is-open) > .Select-control {
+      cursor: text;
+    }
+  }
+
+  &.is-open > .Select-control {
+    @include border-bottom-radius(0);
+    background: $select-input-bg;
+    border-color: darken($select-input-border-color, 10%) $select-input-border-color lighten($select-input-border-color, 5%);
+
+    // flip the arrow so its pointing up when the menu is open
+    .Select-arrow {
+      top: -2px;
+      border-color: transparent transparent $select-arrow-color;
+      border-width: 0 $select-arrow-width $select-arrow-width;
+    }
+  }
+
+  &.is-focused > .Select-control {
+    background: $select-input-bg-focus;
+  }
+
+  &.is-focused:not(.is-open) > .Select-control {
+    border-color: $select-input-border-focus lighten($select-input-border-focus, 5%) lighten($select-input-border-focus, 5%);
+    box-shadow: $select-input-box-shadow-focus;
+  }
+
+  &.has-value.is-clearable.Select--single > .Select-control .Select-value {
+    padding-right: ($select-clear-width + $select-arrow-width * 5);
+  }
+
+  &.has-value.Select--single > .Select-control .Select-value,
+  &.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value {
+    .Select-value-label {
+      color: $select-text-color;
+    }
+
+    a.Select-value-label {
+      cursor: pointer;
+      text-decoration: none;
+
+      &:focus,
+      &:hover {
+        color: $select-link-hover-color;
+        outline: none;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        background: $select-input-bg-focus;
+      }
+    }
+  }
+
+  // fake-hide the input when the control is pseudo-focused
+  &.has-value.is-pseudo-focused .Select-input {
+    opacity: 0;
+  }
+
+  &.is-open .Select-arrow,
+  .Select-arrow-zone:hover > .Select-arrow {
+    border-top-color: $select-arrow-color-hover;
+  }
+
+  &.Select--rtl {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+// base
+.Select-control {
+  background-color: $select-input-bg;
+  border-color: lighten($select-input-border-color, 5%) $select-input-border-color darken($select-input-border-color, 10%);
+  border-radius: $select-input-border-radius;
+  border: $select-input-border-width solid $select-input-border-color;
+  color: $select-text-color;
+  cursor: default;
+  display: table;
+  border-spacing: 0;
+  border-collapse: separate;
+  height: $select-input-height;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  &:hover {
+    box-shadow: $select-input-hover-box-shadow;
+  }
+
+  .Select-input:focus {
+    outline: none;
+    background: $select-input-bg-focus;
+  }
+}
+
+// placeholder
+.Select--single > .Select-control .Select-value,
+.Select-placeholder {
+  bottom: 0;
+  color: $select-input-placeholder;
+  left: 0;
+  line-height: $select-input-internal-height;
+  padding-left: $select-padding-horizontal;
+  padding-right: $select-padding-horizontal;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  // crop text
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// the <input> element users type in
+.Select-input {
+  // inherits `display: inline-block` from "react-input-autosize"
+  height: $select-input-internal-height;
+  padding-left: $select-padding-horizontal;
+  padding-right: $select-padding-horizontal;
+  vertical-align: middle;
+
+  > input {
+    width: 100%;
+    background: none transparent;
+    border: 0 none;
+    box-shadow: none;
+    cursor: default;
+    display: inline-block;
+    font-family: inherit;
+    font-size: inherit;
+    // height: $select-input-internal-height;
+    margin: 0;
+    outline: none;
+    // padding: 0;
+    line-height: 17px;
+    /* For IE 8 compatibility */
+    padding: (($select-input-internal-height - 14) / 2 - 2) 0 (($select-input-internal-height - 14) / 2 + 2);
+    /* For IE 8 compatibility */
+    -webkit-appearance: none;
+
+    .is-focused & {
+      cursor: text;
+    }
+  }
+
+}
+
+// fake input
+.Select-control:not(.is-searchable) > .Select-input {
+  outline: none;
+}
+
+// loading indicator
+.Select-loading-zone {
+  cursor: pointer;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  width: $select-loading-size;
+}
+
+.Select-loading {
+  @include Select-spinner($select-loading-size, $select-loading-color-bg, $select-loading-color);
+  vertical-align: middle;
+}
+
+// the little cross that clears the field
+.Select-clear-zone {
+  @include animation(Select-animation-fadeIn 200ms);
+  color: $select-clear-color;
+  cursor: pointer;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  width: $select-clear-width;
+
+  &:hover {
+    color: $select-clear-hover-color;
+  }
+}
+
+.Select-clear {
+  display: inline-block;
+  font-size: $select-clear-size;
+  line-height: 1;
+}
+
+.Select--multi .Select-clear-zone {
+  width: $select-clear-width;
+}
+
+.Select--multi .Select-multi-value-wrapper {
+  display: inline-block;
+}
+
+.Select .Select-aria-only {
+  position: absolute;
+  display: inline-block;
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  clip: rect(0,0,0,0);
+  overflow: hidden;
+  float: left;
+}
+
+// arrow indicator
+.Select-arrow-zone {
+  cursor: pointer;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  width: ($select-arrow-width * 5);
+  padding-right: $select-arrow-width * 3;
+
+  .Select--rtl & {
+    padding-right: 0;
+    padding-left: $select-arrow-width;
+  }
+}
+
+.Select-arrow {
+  border-color: $select-arrow-color transparent transparent;
+  border-style: solid;
+  border-width: $select-arrow-width $select-arrow-width ($select-arrow-width / 2);
+  display: inline-block;
+  height: 0;
+  width: 0;
+  position: relative;
+}
+
+// Animation
+// ------------------------------
+
+// fade in
+@-webkit-keyframes Select-animation-fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+@keyframes Select-animation-fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// Select Menu
+// ------------------------------
+
+// wrapper around the menu
+.Select-menu-outer {
+  // Unfortunately, having both border-radius and allows scrolling using overflow defined on the same
+  // element forces the browser to repaint on scroll.  However, if these definitions are split into an
+  // outer and an inner element, the browser is able to optimize the scrolling behavior and does not
+  // have to repaint on scroll.
+  @include border-bottom-radius($select-input-border-radius);
+  background-color: $select-input-bg;
+  border: 1px solid $select-input-border-color;
+  border-top-color: mix($select-input-bg, $select-input-border-color, 50%);
+  box-shadow: $select-menu-box-shadow;
+  box-sizing: border-box;
+  margin-top: -1px;
+  max-height: $select-menu-max-height;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  z-index: $select-menu-zindex;
+  -webkit-overflow-scrolling: touch;
+}
+
+// wrapper
+.Select-menu {
+  max-height: ($select-menu-max-height - 2px);
+  overflow-y: auto;
+}
+
+// options
+.Select-option {
+  box-sizing: border-box;
+  background-color: $select-option-bg;
+  color: $select-option-color;
+  cursor: pointer;
+  display: block;
+  padding: $select-padding-vertical $select-padding-horizontal;
+
+  &:last-child {
+    @include border-bottom-radius($select-input-border-radius);
+  }
+
+  &.is-selected {
+    background-color: $select-option-selected-bg;
+    color: $select-option-selected-color;
+  }
+
+  &.is-focused {
+    background-color: $select-option-focused-bg;
+    color: $select-option-focused-color;
+  }
+
+  &.is-disabled {
+    color: $select-option-disabled-color;
+    cursor: default;
+  }
+
+}
+
+// no results
+.Select-noresults {
+  box-sizing: border-box;
+  color: $select-noresults-color;
+  cursor: default;
+  display: block;
+  padding: $select-padding-vertical $select-padding-horizontal;
+}
