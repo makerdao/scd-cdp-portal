@@ -1,19 +1,101 @@
 import React from 'react';
-import {observer} from "mobx-react";
-
+import { observer } from "mobx-react";
+import createClass from 'create-react-class';
+import { getJazziconIcon, capitalize, truncateAddress } from "../helpers";
 import LoadingSpinner from './LoadingSpinner';
-
-import {capitalize} from "../helpers";
+import Select from 'react-select';
+import PropTypes from 'prop-types';
 
 const settings = require('../settings');
 
-class WalletHardHWSelector extends React.Component {
+const SHOW_ADDRESSES_MAX = 10;
+const IDENTICON_SIZE = 18;
+const identiconStyle = {
+  borderRadius: 3,
+  display: 'inline-block',
+  marginRight: 10,
+  position: 'relative',
+  top: -2,
+  verticalAlign: 'middle',
+};
 
-  selectAccount = e => {
-    this.props.network.selectHWAddress(e.target.value);
+const stringOrNode = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.node,
+]);
+
+const IdenticonOption = createClass({
+  propTypes: {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    isDisabled: PropTypes.bool,
+    isFocused: PropTypes.bool,
+    isSelected: PropTypes.bool,
+    onFocus: PropTypes.func,
+    onSelect: PropTypes.func,
+    option: PropTypes.object.isRequired,
+  },
+  handleMouseDown (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.props.onSelect(this.props.option, event);
+  },
+  handleMouseEnter (event) {
+    this.props.onFocus(this.props.option, event);
+  },
+  handleMouseMove (event) {
+    if (this.props.isFocused) return;
+    this.props.onFocus(this.props.option, event);
+  },
+  render () {
+    return (
+      <div className={this.props.className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} title={this.props.option.title}>
+        <span style={ identiconStyle }>{ getJazziconIcon(this.props.option.value, IDENTICON_SIZE) }</span>
+        { this.props.children }
+      </div>
+    );
   }
+});
 
+const IdenticonValue = createClass({
+  propTypes: {
+    children: PropTypes.node,
+    placeholder: stringOrNode,
+    value: PropTypes.object
+  },
+  render () {
+    return (
+      <div className="Select-value" title={this.props.value.title}>
+        <span className="Select-value-label">
+          <span style={ identiconStyle }>{ getJazziconIcon(this.props.value.value, IDENTICON_SIZE) }</span>
+          { this.props.children }
+        </span>
+      </div>
+    );
+  }
+});
+
+class WalletHardHWSelector extends React.Component {
+  state = {
+    selectedOption: null
+  }
+  selectAccount = selectedOption => {
+   if (selectedOption) {
+     this.setState({ selectedOption });
+     this.props.network.selectHWAddress(selectedOption.value);
+   }
+ }
   render() {
+    let selectOptions = []
+    for (var i = 0; i < this.props.network.hw.addresses.length - 1 && i < SHOW_ADDRESSES_MAX; i++) {
+      selectOptions.push({
+        value: this.props.network.hw.addresses[i],
+        label: truncateAddress(this.props.network.hw.addresses[i], 10)
+      })
+    }
+    let { selectedOption } = this.state;
+    let value = selectedOption && selectedOption.value;
+    if (!value && this.props.network.hw.addresses.length > 0) value = selectOptions[this.props.network.hw.addressIndex];
     return (
       <div>
         {
@@ -45,7 +127,7 @@ class WalletHardHWSelector extends React.Component {
                 this.props.network.hw.error
                 ?
                   <React.Fragment>
-                    <h2>{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
+                    <h2 className="connect-fail">{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
                       this.props.network.hw.option === 'ledger' &&
                       <p className="typo-c">
@@ -60,24 +142,35 @@ class WalletHardHWSelector extends React.Component {
                       this.props.network.hw.option === 'trezor' &&
                       <p className="typo-c align-center">Error connecting to Trezor.</p>
                     }
-                    <div className="align-center" style={ {margin: '1rem 0'} }>
+                    <div className="align-center" style={ {margin: '2rem 0 1rem '} }>
                       <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button><button className="sidebar-btn is-primary" href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
                     </div>
                   </React.Fragment>
                 :
                   this.props.network.hw.addresses.length > 0 &&
                   <React.Fragment>
-                    <h2>{ capitalize(this.props.network.hw.option) } Connected</h2>
-                    <h3>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</h3>
-                    <select onChange={ this.selectAccount } defaultValue={ this.props.network.hw.addresses[this.props.network.hw.addressIndex] } >
-                      {
-                        this.props.network.hw.addresses.map(key =>
-                          <option key={ key } value={ key }>{ key }</option>
-                        )
-                      }
-                    </select>
-                    <button onClick={ this.props.network.importAddress }>Connect this Address</button><br />
-                    <button href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+                    <h2 className="connect-success">{ capitalize(this.props.network.hw.option) } Connected</h2>
+                    <section style={ { width: '75%', margin: '0 auto' } }>
+                      <p className="typo-c align-center" style={ {color: '#fff'} }><span className="green-dot"></span>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</p>
+                      <div style={ {margin: '2.5rem 0 2.4rem'} }>
+                        <Select
+                          name="wallet-address"
+                          value={ value }
+                          valueComponent={ IdenticonValue }
+                          options={ selectOptions }
+                          optionComponent={ IdenticonOption }
+                          onChange={ this.selectAccount }
+                          clearable={ false }
+                          searchable={ false }
+                          />
+                        </div>
+                        <div className="align-center">
+                          <button className="sidebar-btn is-primary-green" style={ {width: '100%'} } onClick={ this.props.network.importAddress }>Connect this address</button>
+                        </div>
+                        <div className="align-center" style={ {margin: '4rem 0 2rem'} }>
+                          <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
+                        </div>
+                    </section>
                   </React.Fragment>
               }
             </React.Fragment>

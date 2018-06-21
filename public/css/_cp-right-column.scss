@@ -155,9 +155,19 @@
 }
 
 .right-column {
-
+	h2 {
+		&.connect-success {
+			border-bottom-color: #1ABC9C;
+			border-bottom-width: 2px;
+		}
+		&.connect-fail {
+			border-bottom-color: #FF7F7F;
+			border-bottom-width: 2px;
+		}
+	}
 	// Ledger connection failed bullet points
 	ol {
+		color: #fff;
 		margin: 2.5rem 2rem 3rem 1rem;
 		li {
 			margin-top: 1rem;
@@ -330,4 +340,12 @@
 		}
 	}
 
+	.green-dot {
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #1ABC9C;
+		margin-right: 5px;
+	}
 }
