@@ -91,6 +91,10 @@ export const printNumber = number => {
   return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18) }>{ formatNumber(number, 3) }</span>
 }
 
+export const truncateAddress = (address, chars = 8) => {
+  return `${address.substring(0, chars)}...${address.substring(42 - chars, 42)}`;
+}
+
 // Multiply WAD values
 export const wmul = (a, b) => {
   return toBigNumber(a).times(b).div(WAD);
