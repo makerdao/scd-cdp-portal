@@ -56,7 +56,7 @@ class Home extends React.Component {
                     :
                       Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
                       ?
-                        <Welcome setOpenCDPWizard={ this.setOpenCDPWizard } />
+                        <Welcome system={ this.props.system } setOpenMigrate={ this.setOpenMigrate } setOpenCDPWizard={ this.setOpenCDPWizard } />
                       :
                         <React.Fragment>
                           {
