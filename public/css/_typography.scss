@@ -14,7 +14,7 @@
 			font-size: 40px;
 		}
 		@include respond-to(m) {
-			font-size:32px;
+			font-size: 32px;
 		}
 	}
 	@if $styletype == h2 {
@@ -36,42 +36,47 @@
 			font-size: 21px;
 		}
 	}
+
+	@if $styletype == cxl { // copy extra large
+		font-size: 18px;
+		line-height: 1.5;
+		@include respond-to(xl) {
+			font-size: 20px;
+		}
+	}
+
 	@if $styletype == cl { // copy large
 		font-size: 16px;
 		line-height: 1.5;
-
 		@include respond-to(xl) {
 			font-size: 18px;
 		}
-
 	}
+
 	@if $styletype == c { // copy
 		font-size: 13px;
 		line-height: 1.5;
-
 		@include respond-to(xl) {
 			font-size: 16px;
 		}
-
 	}
+
 	@if $styletype == cs { // copy small
 		font-size: 10px;
 		line-height: 1.5;
-
 		@include respond-to(xl) {
 			font-size: 14px;
 		}
-
 	}
-	@if $styletype == cxs { // copy small
+
+	@if $styletype == cxs { // copy extra small
 		font-size: 8px;
 		line-height: 1.5;
-
 		@include respond-to(xl) {
 			font-size: 10px;
 		}
-
 	}
+
 	@if $styletype == inherit {
 		font-size: inherit;
 		font-weight: inherit;
@@ -104,6 +109,7 @@
 .typo-h1 { @include fontsize(h1); margin-bottom: 0.4em; }
 .typo-h2 { @include fontsize(h2); }
 .typo-h3 { @include fontsize(h3); }
+.typo-cxl, .typo-cxl p { @include fontsize(cxl); }
 .typo-cl, .typo-cl p { @include fontsize(cl); }
 .typo-c, .typo-c p { @include fontsize(c); }
 .typo-cs, .typo-cs p { @include fontsize(cs); }
