@@ -49,6 +49,7 @@ class PriceModal extends React.Component {
               onChangeStart={this.handleChangeStart}
               onChange={this.handleChange}
               onChangeComplete={this.handleChangeComplete}
+              tooltip={false}
             />
             <div style={ {fontSize: '0.9rem', letterSpacing: '0.02rem'} }><div style={ {float: 'left'} }>Slow</div><div style={ {float: 'right'} }>Fast</div></div>
           </div>
