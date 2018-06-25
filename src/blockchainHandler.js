@@ -119,32 +119,8 @@ export const tokenApprove = (token, dst, gasPrice) => {
   return promisify(objects[token].approve)(dst, -1, {gasPrice});
 }
 
-/*
-   On the contract side, there is a mapping (address) -> []DsProxy
-   A given address can have multiple proxies. Since lists cannot be
-   iterated, the way to access a give element is access it by index
- */
-export const getProxy = (account, proxyIndex) => {
-  return promisify(objects.proxyRegistry.proxies)(account, proxyIndex);
-}
-
-export const getProxiesCount = account => {
-  return promisify(objects.proxyRegistry.proxiesCount)(account);
-}
-
-export const getProxyAddress = account => {
-  if (!account) return null;
-  return getProxiesCount(account).then(async r => {
-    if (r.gt(0)) {
-      for (let i = r.toNumber() - 1; i >= 0; i--) {
-        const proxyAddr = await getProxy(account, i);
-        if (await getProxyOwner(proxyAddr) === account) {
-          return proxyAddr;
-        }
-      }
-    }
-    return null;
-  });
+export const getProxy = account => {
+  return promisify(objects.proxyRegistry.proxies)(account).then(r => r === '0x0000000000000000000000000000000000000000' ? null : getProxyOwner(r).then(r2 => r2 === account ? r : null));
 }
 
 export const getProxyOwner = proxy => {

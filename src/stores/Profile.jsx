@@ -17,7 +17,7 @@ class ProfileStore {
 
   getAndSetProxy = (callbacks = null) => {
     return new Promise((resolve, reject) => {
-      Blockchain.getProxyAddress(this.transactions.network.defaultAccount).then(proxy => {
+      Blockchain.getProxy(this.transactions.network.defaultAccount).then(proxy => {
         if (proxy) {
           this.setProxy(proxy);
           callbacks && this.transactions.executeCallbacks(callbacks);

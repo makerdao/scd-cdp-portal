@@ -231,7 +231,7 @@ class NetworkStore {
       Blockchain.loadObject('top', topAddress, 'top');
       Blockchain.loadObject('proxyregistry', proxyRegistryAddr, 'proxyRegistry');
 
-      const setUpPromises = [Blockchain.getContractAddr('top', 'tub'), Blockchain.getContractAddr('top', 'tap'), Blockchain.getProxyAddress(this.defaultAccount)];
+      const setUpPromises = [Blockchain.getContractAddr('top', 'tub'), Blockchain.getContractAddr('top', 'tap'), Blockchain.getProxy(this.defaultAccount)];
 
       Promise.all(setUpPromises).then(r => {
         if (r[0] && r[1] && isAddress(r[0]) && isAddress(r[1])) {

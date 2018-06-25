@@ -9,8 +9,8 @@
       "fromBlock": 5216602,
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
       "chart": true,
-      "proxyRegistry": "0x383a7fc29edde64aec7f776e2517ec8819e147f1",
-      "proxyFactory": "0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0",
+      "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
+      "proxyFactory": "0xe11e3b391f7e8bc47247866af32af67dd58dc800",
       "proxyContracts": {
         "sai": "0xe2d2f84e56e161a7f05e875b05af04e1c40c5d8e"
       }
@@ -23,8 +23,8 @@
       "fromBlock": 4752013,
       "service": "https://graphql.makerdao.com/v1",
       "chart": false,
-      "proxyRegistry": "0xaa63c8683647ef91b3fdab4b4989ee9588da297b",
-      "proxyFactory": "",
+      "proxyRegistry": "0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4",
+      "proxyFactory": "0xa26e15c895efc0616177b7c1e7270a4c7d51c997",
       "proxyContracts": {
         "sai": ""
       }
