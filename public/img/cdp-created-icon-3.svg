@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="27px" height="30px" viewBox="0 0 27 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="01_Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dashboard-Preview" transform="translate(-902.000000, -490.000000)" fill-rule="nonzero">
+            <g id="col-3" transform="translate(846.000000, 490.000000)">
+                <g id="Icon" transform="translate(56.000000, 0.000000)">
+                    <g id="Group-3" transform="translate(3.000000, 4.000000)">
+                        <polygon id="Shape" fill="#DEDEDE" transform="translate(9.940693, 9.932764) rotate(45.000000) translate(-9.940693, -9.932764) " points="2.91739314 2.9094646 16.9639921 2.9094646 16.9639921 16.9560636 2.91739314 16.9560636"></polygon>
+                        <path d="M9.9406248,12.6478289 L18.9510652,9.7096418 L9.9406248,0.706808361 L0.930184411,9.7096418 L9.9406248,12.6478289 Z" id="Shape" stroke="#9AA3AD" fill="#9AA3AD"></path>
+                        <polygon id="Shape" fill="#202930" points="4 9 8.13114754 9 9.90163934 7.20890332 11.8688525 9 16 9 9.90163934 3"></polygon>
+                        <polygon id="Shape" fill="#DEDEDE" style="mix-blend-mode: multiply;" points="9.9406248 19.8644651 9.9406248 0 19.8728574 9.93223255"></polygon>
+                    </g>
+                    <rect id="Rectangle-path-Copy" fill="#12BB9B" x="9" y="0" width="1" height="1"></rect>
+                    <rect id="Rectangle-path-Copy-4" fill="#12BB9B" x="16" y="29" width="1" height="1"></rect>
+                    <rect id="Rectangle-path-Copy-2" fill="#12BB9B" x="0" y="14" width="1" height="1"></rect>
+                    <rect id="Rectangle-path-Copy-3" fill="#12BB9B" x="26" y="15" width="1" height="1"></rect>
+                    <g id="Group-2" transform="translate(20.000000, 2.000000)" fill="#12BB9B">
+                        <rect id="Rectangle-path" x="1" y="0" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="1" y="2" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="0" y="1" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="2" y="1" width="1" height="1"></rect>
+                    </g>
+                    <g id="Group-2-Copy" transform="translate(5.000000, 25.000000)" fill="#12BB9B">
+                        <rect id="Rectangle-path" x="1" y="0" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="1" y="2" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="0" y="1" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="2" y="1" width="1" height="1"></rect>
+                    </g>
+                    <g id="Group-2-Copy-2" transform="translate(2.000000, 5.000000)" fill="#12BB9B">
+                        <rect id="Rectangle-path" x="1" y="0" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="1" y="2" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="0" y="1" width="1" height="1"></rect>
+                        <rect id="Rectangle-path" x="2" y="1" width="1" height="1"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

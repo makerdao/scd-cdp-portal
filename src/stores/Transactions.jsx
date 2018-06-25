@@ -1,4 +1,4 @@
-import {observable, decorate} from "mobx";
+import {observable, decorate, computed} from "mobx";
 import * as Blockchain from "../blockchainHandler";
 
 import {etherscanTx, methodSig} from '../helpers';
@@ -9,6 +9,11 @@ class TransactionsStore {
   cdpCreationTx = false;
   standardGasPrice = -1;
   priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+
+  get showCreatingCdpModal() {
+    const txs = Object.keys(this.registry).filter(tx => this.registry[tx].cdpCreationTx);
+    return txs.length > 0;
+  }
 
   setStandardGasPrice = async () => {
     this.standardGasPrice = (await Blockchain.getGasPrice()).div(10**9).ceil().toNumber();
@@ -175,7 +180,8 @@ decorate(TransactionsStore, {
   registry: observable,
   loading: observable,
   standardGasPrice: observable,
-  priceModal: observable
+  priceModal: observable,
+  showCreatingCdpModal: computed
 });
 
 const store = new TransactionsStore();

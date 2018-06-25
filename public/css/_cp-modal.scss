@@ -44,3 +44,62 @@
     }
   }
 }
+
+.modal.create-cdp .modal-inner {
+  width: 54rem;
+  margin-top: 115px;
+  h2 {
+    color: #fff;
+    text-align: center;
+    padding: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.02rem;
+    font-weight: 200;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #313D47;
+  }
+  img.main {
+    display: block;
+    margin: 0 auto;
+    margin-top: 4rem;
+    width: 488px;
+    height: 176px;
+  }
+  p {
+    color: #879099;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    letter-spacing: 0.02rem;
+    margin: 2rem auto 1.5rem;
+    font-weight: 200;
+  }
+  ul {
+    display: block;
+    font-size: 1rem;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: 0.02rem;
+    text-align: center;
+    margin: 0;
+    padding-bottom: 3.7rem;
+    li {
+      display: inline-block;
+      margin: 1rem 3rem 0;
+      min-width: 10rem;
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+      div.icon {
+        height: 30px;
+        margin-bottom: 0.7rem;
+        img {
+          width: auto;
+          height: 24px;
+        }
+      }
+    }
+  }
+}
