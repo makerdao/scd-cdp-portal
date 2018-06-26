@@ -132,7 +132,7 @@ class Wizard extends Component {
           this.state.step === 1
           ?
             <React.Fragment>
-              <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } changePage={ this.props.changePage } />
+              <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
 
               <form ref={ input => this.wizardForm = input } onSubmit={ () => this.goToStep(2) }>
                 <div className="row">

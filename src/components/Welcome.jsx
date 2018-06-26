@@ -1,4 +1,5 @@
 import React from 'react';
+import {observer} from 'mobx-react';
 
 import LegacyCupsAlert from './LegacyCupsAlert';
 
@@ -27,4 +28,4 @@ class Welcome extends React.Component {
   }
 }
 
-export default Welcome;
+export default observer(Welcome);

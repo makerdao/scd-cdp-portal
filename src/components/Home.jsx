@@ -54,27 +54,27 @@ class Home extends React.Component {
                     ?
                       <div>Loading...</div>
                     :
-                      Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
+                      this.state.migrateCDP
                       ?
-                        <Welcome system={ this.props.system } setOpenMigrate={ this.setOpenMigrate } setOpenCDPWizard={ this.setOpenCDPWizard } />
+                        <LegacyCups system={ this.props.system } transactions={ this.props.transactions } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
                       :
-                        <React.Fragment>
-                          {
-                            this.state.migrateCDP
-                            ?
-                              <LegacyCups system={ this.props.system } transactions={ this.props.transactions } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
-                            :
+                        Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
+                        ?
+                          <Welcome system={ this.props.system } setOpenMigrate={ this.setOpenMigrate } setOpenCDPWizard={ this.setOpenCDPWizard } />
+                        :
+                          <React.Fragment>
+                            {
                               <React.Fragment>
                                 {
                                   Object.keys(this.props.system.tub.cups).length === 0
                                   ?
-                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } />
+                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
                                   :
                                     <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
                                 }
                               </React.Fragment>
-                          }
-                        </React.Fragment>
+                            }
+                          </React.Fragment>
                   }
                 </React.Fragment>
             }
