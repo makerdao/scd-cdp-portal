@@ -1,6 +1,31 @@
 import React from 'react';
 import {observer} from "mobx-react";
 
+class CreatingCDPAnimation extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = { currentCount: 1 }
+  }
+  timer() {
+    this.setState({
+      currentCount: this.state.currentCount === 6 ? 1 : this.state.currentCount + 1
+    })
+  }
+  componentDidMount() {
+    this.intervalId = setInterval(this.timer.bind(this), 2000);
+  }
+  componentWillUnmount(){
+    clearInterval(this.intervalId);
+  }
+  render() {
+    return(
+      <React.Fragment>
+        <img className="main" src={ `../img/cdp-creating-${this.state.currentCount}.svg` } alt="Creating CDP" />
+      </React.Fragment>
+    );
+  }
+}
+
 class NotifySetUp extends React.Component {
   render() {
     const txs = Object.keys(this.props.transactions.registry).filter(tx => this.props.transactions.registry[tx].cdpCreationTx);
@@ -14,7 +39,7 @@ class NotifySetUp extends React.Component {
             ?
               <React.Fragment>
                 <h2>Creating your CDP</h2>
-                <img className="main" src="../img/cdp-creating-1.svg" />
+                <CreatingCDPAnimation />
                 <p style={ {margin: 'margin: 0 auto', padding: '2rem 0 2.5rem'} }>
                   Creating your new CDP...
                 </p>
@@ -22,7 +47,7 @@ class NotifySetUp extends React.Component {
             :
               <React.Fragment>
                 <h2>Congratulations on your new CDP</h2>
-                <img className="main" src="../img/cdp-created.svg" />
+                <img className="main" src="../img/cdp-created.svg" alt="CDP created" />
                 <p>
                   Welcome to your CDP dashboard where you can view and manage<br />your collateral and debt position on a decentralized system.
                 </p>
