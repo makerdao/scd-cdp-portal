@@ -98,7 +98,7 @@ class Dialog extends React.Component {
         <p id="warningMessage" className="error">
           { this.props.dialog.error }
         </p>
-        { method === 'shut' && this.renderFeeTypeSelector() }
+        { method === 'shut' && this.props.system.tub.cups[this.props.dialog.cupId] && this.props.system.tub.cups[this.props.dialog.cupId].art.gt(0) && this.renderFeeTypeSelector() }
         <div>
           <button className="text-btn text-btn-primary" type="submit" onClick={ this.updateValue }>Yes</button>
           <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>

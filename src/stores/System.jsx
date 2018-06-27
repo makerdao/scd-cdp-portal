@@ -917,31 +917,29 @@ class SystemStore {
                     ];
         break;
       case 'shut':
-        const futureGovFee = fromWei(this.tub.fee).pow(180).round(0); // 3 minutes of future fee
-        const govDebtSai = wmul(this.rap(this.tub.cups[this.dialog.cupId]), futureGovFee);
-        const govDebtGov = wmul(govDebtSai, this.pep.val);
-
-        const valuePlusGovFee = params.govFeeType === 'dai' ? this.tab(this.tub.cups[this.dialog.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[this.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
-
-        if (valuePlusGovFee.gt(this.dai.myBalance)) {
-          error = 'Not enough DAI to close this CDP';
-        } else if (params.govFeeType === 'mkr' && govDebtGov.gt(this.gov.myBalance)) {
-          error = 'Not enough MKR to close this CDP';
-        }
         callbacks = [
-                      ['system/checkAllowance', 'dai',
-                        [
-                          ['system/shut', this.dialog.cupId, params.govFeeType === 'dai']
-                        ]
-                      ]
-                    ];
-        if (params.govFeeType === 'mkr') {
-          // If fee will be paid with MKR it is necessary to check its allowance
+          ['system/shut', this.dialog.cupId, this.tub.cups[this.dialog.cupId].art.gt(0) && params.govFeeType === 'dai']
+        ];
+        if (this.tub.cups[this.dialog.cupId].art.gt(0)) {
+          const futureGovFee = fromWei(this.tub.fee).pow(180).round(0); // 3 minutes of future fee
+          const govDebtSai = wmul(this.rap(this.tub.cups[this.dialog.cupId]), futureGovFee);
+          const govDebtGov = wmul(govDebtSai, this.pep.val);
+
+          const valuePlusGovFee = params.govFeeType === 'dai' ? this.tab(this.tub.cups[this.dialog.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[this.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
+          if (valuePlusGovFee.gt(this.dai.myBalance)) {
+            error = 'Not enough DAI to close this CDP';
+          } else if (params.govFeeType === 'mkr' && govDebtGov.gt(this.gov.myBalance)) {
+            error = 'Not enough MKR to close this CDP';
+          }
           callbacks = [
-                        ['system/checkAllowance', 'gov',
-                          callbacks
-                        ]
+                        ['system/checkAllowance', 'dai', callbacks]
                       ];
+          if (params.govFeeType === 'mkr') {
+            // If fee will be paid with MKR it is necessary to check its allowance
+            callbacks = [
+                          ['system/checkAllowance', 'gov', callbacks]
+                        ];
+          }
         }
         break;
       case 'migrate':
