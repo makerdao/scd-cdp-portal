@@ -148,7 +148,7 @@ class TransactionsStore {
     this.loading = loading;
   }
 
-  lookForCleanCallBack = callbacks => {
+  lookForCleanCallBack = (callbacks = []) => {
     callbacks.forEach(callback => {
       if (callback[0] === 'transactions/cleanLoading') {
         this.executeCallback(callback)
