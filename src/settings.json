@@ -12,8 +12,9 @@
       "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
       "proxyFactory": "0xe11e3b391f7e8bc47247866af32af67dd58dc800",
       "proxyContracts": {
-        "sai": "0xe2d2f84e56e161a7f05e875b05af04e1c40c5d8e"
-      }
+        "sai": "0xe6c58c4341a6bc5a6451a26fe5f832f7d9a7514e"
+      },
+      "proxyCreationAndExecute": "0x8cc4bfa51cf92d1bd0cb019668a38e4f87727bcc"
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
@@ -27,7 +28,8 @@
       "proxyFactory": "0xa26e15c895efc0616177b7c1e7270a4c7d51c997",
       "proxyContracts": {
         "sai": ""
-      }
+      },
+      "proxyCreationAndExecute": ""
     }
   }
 }

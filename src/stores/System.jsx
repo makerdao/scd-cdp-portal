@@ -814,16 +814,36 @@ class SystemStore {
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
     this.executeProxyTx(action, 0, {title, callbacks: [['system/getMyCups']]});
   }
-  
+
   lockAndDraw = (cupId, eth, dai) => {
     let action = false;
     let title = '';
-  
+    let callbacks = [];
+
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
-        title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-        action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
+        callbacks = [
+          ['system/getMyCups', true], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
+        ];
+
+        if (this.profile.proxy) {
+          title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
+        } else {
+          title = `Create Proxy + Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          this.transactions.askPriceAndSend(
+                                            title,
+                                            Blockchain.loadObject('proxycreationandexecute', settings.chain[this.network.network].proxyCreationAndExecute).createLockAndDraw,
+                                            [settings.chain[this.network.network].proxyRegistry, this.tub.address, toWei(dai)],
+                                            {value: toWei(eth)},
+                                            [['profile/getAndSetProxy', callbacks]]
+                                            );
+          return;
+        }
       } else {
+        callbacks = [
+          ['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
+        ];
         if (dai.equals(0)) {
           title = `Lock ${eth.valueOf()} ETH`;
           action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
@@ -838,15 +858,7 @@ class SystemStore {
 
       this.executeProxyTx(action, toWei(eth), {
                                                 title,
-                                                callbacks:
-                                                  cupId
-                                                  ?
-                                                    [
-                                                      ['system/reloadCupData', cupId], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
-                                                    ]
-                                                  : [
-                                                      ['system/getMyCups', true], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
-                                                    ]
+                                                callbacks
                                               });
     }
   }

@@ -3,12 +3,14 @@ import * as Blockchain from "../blockchainHandler";
 
 import {etherscanTx, methodSig} from '../helpers';
 
+const settings = require('../settings');
+
 class TransactionsStore {
   registry = {};
   loading = {};
   cdpCreationTx = false;
   standardGasPrice = -1;
-  priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+  priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
 
   get showCreatingCdpModal() {
     const txs = Object.keys(this.registry).filter(tx => this.registry[tx].cdpCreationTx);
@@ -50,29 +52,30 @@ class TransactionsStore {
 
   closePriceModal = () => {
     this.lookForCleanCallBack(this.priceModal.callbacks);
-    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
+    this.priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
   }
 
-  sendTransaction = (title, func, params, settings, callbacks) => {
-    const cdpCreationTx = typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10);
+  sendTransaction = (title, func, params, options, callbacks) => {
+    const cdpCreationTx = params[0] === settings.chain[this.network.network].proxyRegistry || // This means it is calling to the createLockAndDraw
+                          (typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10));
     const id = Math.random();
     this.logRequestTransaction(id, title, cdpCreationTx);
-    func(...params, settings, (e, tx) => this.log(e, tx, id, title, callbacks));
+    func(...params, options, (e, tx) => this.log(e, tx, id, title, callbacks));
   }
 
-  askPriceAndSend = (title, func, params, settings, callbacks) => {
+  askPriceAndSend = (title, func, params, options, callbacks) => {
     if (this.network.hw.active) { // If user is using HW, gas price modal will appear
-      this.priceModal = { open: true, title, func, params, settings, callbacks };
+      this.priceModal = { open: true, title, func, params, options, callbacks };
     } else {
-      this.sendTransaction(title, func, params, settings, callbacks);
+      this.sendTransaction(title, func, params, options, callbacks);
     }
   }
 
   setPriceAndSend = gasPriceGwei => {
-    const {func, params, settings, title, callbacks} = {...this.priceModal};
-    settings.gasPrice = gasPriceGwei * 10 ** 9;
-    this.priceModal = { open: false, title: null, func: null, params: null, settings: {}, callbacks: null };
-    this.sendTransaction(title, func, params, settings, callbacks);
+    const {func, params, options, title, callbacks} = {...this.priceModal};
+    options.gasPrice = gasPriceGwei * 10 ** 9;
+    this.priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
+    this.sendTransaction(title, func, params, options, callbacks);
   }
 
   logPendingTransaction = (id, tx, title, callbacks = []) => {
