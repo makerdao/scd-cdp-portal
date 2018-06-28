@@ -113,10 +113,10 @@ class TransactionsStore {
     if (this.registry[tx]) {
       const registry = {...this.registry};
       registry[tx].pending = false;
+      registry[tx].cdpCreationTx = false;
       this.registry = registry;
-      if (!this.registry[tx].cdpCreationTx) {
-        this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 5000);
-      }
+      console.log(msgTemp.replace('TX', tx));
+      this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 5000);
       this.lookForCleanCallBack(this.registry[tx].callbacks);
     }
   }
