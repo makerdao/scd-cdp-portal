@@ -60,7 +60,15 @@ class CupHistory extends React.Component {
                             image = 'history-icon-unknown.svg';
                             break;
                           case 'BITE':
-                            message = 'Liquidated your CDP';
+                            const art = toWei(this.props.history[key + 1].art);
+                            const liqInk = toWei(this.props.history[key + 1].ink - action.ink);
+                            const liqETH = liqInk * action.per;
+                            const pip = toWei(this.props.history[key].pip);
+                            message = `Your CDP has been liquidated to pay back ` +
+                                      `${ReactDOMServer.renderToString(printNumber(art))} DAI. ` +
+                                      `Total ${ReactDOMServer.renderToString(printNumber(liqETH))} ETH ` +
+                                      `(${ReactDOMServer.renderToString(printNumber(liqInk))} PETH) ` +
+                                      `has been liquidated at ${ReactDOMServer.renderToString(printNumber(pip))} USD.`;
                             image = 'history-icon-liquidation.svg';
                             break;
                           default:
