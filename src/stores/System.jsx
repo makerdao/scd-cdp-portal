@@ -954,6 +954,12 @@ class SystemStore {
           }
         }
         break;
+      case 'give':
+        callbacks = [['system/give', this.dialog.cupId, params.value]];
+        if (!isAddress(params.value) || params.value.slice(0, 2) !== '0x') {
+          error = 'Invalid address';
+        }
+        break;
       case 'migrate':
         this.transactions.addLoading('migrate', this.dialog.cupId);
         callbacks = [

@@ -36,13 +36,16 @@ class Cup extends React.Component {
               helper: 'Close a CDP - Wipe all debt, Free all collateral, and delete the CDP'
             },
       give: {
-              active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false,
+              active: this.props.system.tub.off === false,
               helper: 'Transfer CDP ownership'
             },
     };
-
     return (
       <div>
+        <div>
+          <a href="#action" data-method="give" data-cup={ this.props.cupId } disabled={ !actions.free.give } onClick={ this.props.handleOpenDialog }>Send CDP</a>&nbsp;-&nbsp;
+          <a href="#action" data-method="shut" data-cup={ this.props.cupId } disabled={ !actions.free.shut } onClick={ this.props.handleOpenDialog }>Close CDP</a>
+        </div>
         <div className="row">
           <div className="col col-2">
             <div style={ {marginBottom: '1rem'}}>
@@ -186,7 +189,6 @@ class Cup extends React.Component {
             </div>
           </div>
         </div>
-        <button className="text-btn" data-method="shut" data-cup={ this.props.cupId } onClick={ this.props.handleOpenDialog }>Close this CDP</button>
         {
           cup.history &&
           <CupHistory actions={ cup.history } network={ this.props.network }/>

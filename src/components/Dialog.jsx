@@ -34,7 +34,14 @@ class Dialog extends React.Component {
   updateValue = e => {
     e.preventDefault();
     if (this.submitEnabled) {
-      const value = this.updateVal !== 'undefined' && this.updateVal && typeof this.updateVal.value !== 'undefined' ? toBigNumber(this.updateVal.value) : false;
+      const value = this.updateVal && typeof this.updateVal.value !== 'undefined'
+                    ?
+                      this.props.dialog.method !== 'give'
+                      ?
+                        toBigNumber(this.updateVal.value)
+                      :
+                        this.updateVal.value
+                    : false;
       const params = { value };
       if (['wipe', 'shut'].indexOf(this.props.dialog.method) !== -1) {
         params.govFeeType = this.state.govFeeType;
@@ -337,7 +344,7 @@ class Dialog extends React.Component {
         }
         break;
       case 'give':
-        text = `Please set the new address to be owner of CDP ${dialog.cupId}`;
+        text = `Transferring ownership to an address which you do not control will result in loss of funds.`;
         renderForm = 'renderInputTextForm';
         this.submitEnabled = true;
         break;
@@ -370,6 +377,10 @@ class Dialog extends React.Component {
             {
               dialog.method === 'wipe' &&
               <React.Fragment>Payback DAI</React.Fragment>
+            }
+            {
+              dialog.method === 'give' &&
+              <React.Fragment>Transfer CDP #{ this.props.dialog.cupId }</React.Fragment>
             }
           </h2>
           <div>
