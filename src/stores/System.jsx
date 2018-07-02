@@ -570,10 +570,7 @@ class SystemStore {
               setTimeout(() => this.getMyCups(true), 3000)
             } else if (!this.network.stopIntervals && keys.length > 0 && settings.chain[this.network.network].service) {
               keys.forEach(key => {
-                Promise.resolve(this.getCupHistoryFromService(key)).then(response => {
-                  this.tub.cups[key].history = response;
-                  // this.calculateCupChart(); // TODO
-                }, () => {});
+                this.loadCupHistory(key);
               });
               this.transactions.executeCallbacks(callbacks);
             }
@@ -603,9 +600,7 @@ class SystemStore {
     const cups = {...this.tub.cups};
     cups[cupId] = {...this.tub.legacyCups[cupId]};
     this.tub.cups = cups;
-    Promise.resolve(this.getCupHistoryFromService(cupId)).then(response => {
-      this.tub.cups[cupId].history = response;
-    }, () => {});
+    this.loadCupHistory(cupId);
     this.transactions.executeCallbacks(callbacks);
   }
 
@@ -638,14 +633,30 @@ class SystemStore {
     return cup;
   }
 
-  reloadCupData = (id) => {
+  loadCupHistory = id => {
+    let cup = {...this.tub.cups[id]};
+    cup.history = 'loading';
+    this.tub.cups[id] = cup;
+    if (settings.chain[this.network.network].service) {
+      Promise.resolve(this.getCupHistoryFromService(id)).then(response => {
+        let cup = {...this.tub.cups[id]};
+        cup.history = response;
+        this.tub.cups[id] = cup;
+      }, () => {
+        let cup = {...this.tub.cups[id]};
+        cup.history = false;
+        this.tub.cups[id] = cup;
+      });
+    } else {
+      cup.history = false;
+      this.tub.cups[id] = cup;
+    }
+  }
+
+  reloadCupData = id => {
     Promise.resolve(this.getCup(id).then(cup => {
       this.tub.cups[id] = {...cup};
-      if (settings.chain[this.network.network].service) {
-        Promise.resolve(this.getCupHistoryFromService(id)).then(response => {
-          this.tub.cups[id].history = response;
-        }, () => {});
-      }
+      this.loadCupHistory(id);
     }));
   }
 

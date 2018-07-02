@@ -189,10 +189,7 @@ class Cup extends React.Component {
             </div>
           </div>
         </div>
-        {
-          cup.history &&
-          <CupHistory actions={ cup.history } network={ this.props.network }/>
-        }
+        <CupHistory history={ cup.history } network={ this.props.network } />
       </div>
     )
   }
