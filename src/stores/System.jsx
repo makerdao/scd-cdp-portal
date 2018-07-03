@@ -1,7 +1,8 @@
+import ReactDOMServer from 'react-dom/server';
 import {observable, decorate} from "mobx"
 import * as Blockchain from "../blockchainHandler";
 
-import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress} from '../helpers';
+import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress, printNumber, formatDate} from '../helpers';
 
 const settings = require('../settings');
 
@@ -642,6 +643,47 @@ class SystemStore {
         let cup = {...this.tub.cups[id]};
         cup.history = response;
         this.tub.cups[id] = cup;
+        const latestAction = response[0];
+        if (latestAction.act === 'BITE') {
+          const prevlatestAction = response[1];
+          const date = formatDate((new Date(latestAction.time)).getTime() / 1000);
+          const art = toWei(prevlatestAction.art);
+          const liqPrice =  (art * 1.5 / latestAction.per) / prevlatestAction.ink;
+          const liqInk = toWei(prevlatestAction.ink - latestAction.ink);
+          const liqETH = liqInk * latestAction.per;
+          const liqInkCol = liqInk / 1.13;
+          const liqETHCol = liqInkCol * latestAction.per;
+          const liqInkPen = liqInk - liqInkCol;
+          const liqETHPen = liqInkPen * latestAction.per;
+          const pip = toWei(latestAction.pip);
+          const printNumberString = number => ReactDOMServer.renderToString(printNumber(number));
+          const body =
+          `
+          <p>
+            Your CDP #${id} was liquidated on ${date} to pay back ${printNumberString(art)} DAI.
+          <p>
+          <p>
+            Total ETH (PETH) liquidated<br />
+            ${printNumberString(liqETH)} ETH<br />
+            ${printNumberString(liqInk)} PETH<br />
+          </p>
+          <p>
+            Collateral<br />
+            ${printNumberString(liqETHCol)} ETH<br />
+            ${printNumberString(liqInkCol)} PETH<br />
+            13% liquidation penalty<br />
+            ${printNumberString(liqETHPen)} ETH<br />
+            ${printNumberString(liqInkPen)} PETH<br />
+          </p>
+          <p>
+            Liquidation Price<br />
+            ${printNumberString(liqPrice)} USD<br />
+            Liquidated at Price<br />
+            ${printNumberString(pip)} USD
+          </p>
+          `
+          this.transactions.notificator.notice(Math.random(), 'CDP Liquidated', body, 0);
+        }
       }, () => {
         let cup = {...this.tub.cups[id]};
         cup.history = false;

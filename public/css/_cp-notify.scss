@@ -57,6 +57,19 @@
 			}
 		}
 	}
+	.nf-notice {
+		background-color: $notice-gray;
+		color: $white;
+		.notification-headline {
+			&:after {
+				content: url('../img/icon-check.svg');
+				position: absolute;
+				left: -1.5em;
+				top: auto;
+				margin-top: 0.05em;
+			}
+		}
+	}
 	.close-box {
 		position: absolute;
 		top: 0.785em;
