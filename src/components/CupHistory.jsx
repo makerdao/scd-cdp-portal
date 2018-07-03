@@ -29,6 +29,7 @@ class CupHistory extends React.Component {
                     {
                       this.props.history && this.props.history.length > 0 &&
                       this.props.history.map((action, key) => {
+                        const printNumberString = number => ReactDOMServer.renderToString(printNumber(number));
                         let message = '', image = 'history-icon-unknown.svg';
                         switch(action.act) {
                           case 'OPEN':
@@ -40,19 +41,19 @@ class CupHistory extends React.Component {
                             image = 'history-icon-unknown.svg';
                             break;
                           case 'LOCK':
-                            message = `Deposited ${ReactDOMServer.renderToString(printNumber(toWei(action.arg)))} PETH to your CDP`;
+                            message = `Deposited ${printNumberString(toWei(action.arg * action.per))} ETH (${printNumberString(toWei(action.arg))} PETH) to your CDP`;
                             image = 'history-icon-locked.svg';
                             break;
                           case 'FREE':
-                            message = `Withdrew ${ReactDOMServer.renderToString(printNumber(toWei(action.arg)))} PETH from your CDP`;
+                            message = `Withdrew ${printNumberString(toWei(action.arg * action.per))} ETH (${printNumberString(toWei(action.arg))} PETH) from your CDP`;
                             image = 'history-icon-payback.svg';
                             break;
                           case 'DRAW':
-                            message = `Generated ${ReactDOMServer.renderToString(printNumber(toWei(action.arg)))} DAI from your CDP`;
+                            message = `Generated ${printNumberString(toWei(action.arg))} DAI from your CDP`;
                             image = 'history-icon-borrow.svg';
                             break;
                           case 'WIPE':
-                            message = `Paidback ${ReactDOMServer.renderToString(printNumber(toWei(action.arg)))} DAI to your CDP`;
+                            message = `Paidback ${printNumberString(toWei(action.arg))} DAI to your CDP`;
                             image = 'history-icon-transfer.svg'; // Should this be 'history-icon-payback.svg' instead?
                             break;
                           case 'SHUT':
