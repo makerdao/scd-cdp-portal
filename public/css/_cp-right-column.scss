@@ -40,19 +40,38 @@
 			margin: 2rem 0 2.1rem;
 		}
 		a {
+			display: block;
 			user-select: none;
 			font-size: 1.1rem;
 			color: #fff;
-			text-align: center;
-			display: block;
+			text-align: left;
 			text-decoration: none;
 			letter-spacing: 0.02rem;
 			border: 1px solid #c0c0c0;
 			padding: 0.8rem 0;
 			width: 60%;
 			margin: 3px auto;
+			margin-bottom: 2rem;
 			&:hover {
 				background-color: #2d404c;
+			}
+			svg {
+				float: left;
+				margin-left: 1.95rem;
+				margin-right: 2.15rem;
+				display: block;
+				height: auto;
+				max-height: 21px;
+				width: 18px;
+				margin-top: 1px;
+				@include respond-to(xl) {
+					margin-top: 3px;
+				}
+			}
+			@include respond-to(xl) {
+				&.web-wallet svg {
+					margin-top: 4px;
+				}
 			}
 		}
 	}
