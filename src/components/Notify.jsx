@@ -10,8 +10,8 @@ class Item extends React.Component {
 
   render = () => {
     return (
-      React.createElement("div", { className: "col nf-" + this.props.theme, onClick: this.hideNotification },
-        React.createElement("button", { className: "close-box" }),
+      React.createElement("div", { className: "col nf-" + this.props.theme },
+        React.createElement("button", { className: "close-box" , onClick: this.hideNotification}),
         React.createElement("h3", { className: "notification-headline" }, this.props.title),
         React.createElement("p", { className: "", dangerouslySetInnerHTML: { __html: this.props.msg } })
       )
@@ -36,25 +36,25 @@ class Notify extends React.Component {
     return {};
   }
 
-  success = (key, title, msg, time) => {
-    this.addNotify(key, title, msg, time, 'success');
+  success = (key, title, msg, time, onClose = () => null) => {
+    this.addNotify(key, title, msg, time, 'success', onClose);
   }
 
-  error = (key, title, msg, time) => {
-    this.addNotify(key, title, msg, time, 'error');
+  error = (key, title, msg, time, onClose = () => null) => {
+    this.addNotify(key, title, msg, time, 'error', onClose);
   }
 
-  info = (key, title, msg, time) => {
-    this.addNotify(key, title, msg, time, 'info');
+  info = (key, title, msg, time, onClose = () => null) => {
+    this.addNotify(key, title, msg, time, 'info', onClose);
   }
 
-  notice = (key, title, msg, time) => {
-    this.addNotify(key, title, msg, time, 'notice');
+  notice = (key, title, msg, time, onClose = () => null) => {
+    this.addNotify(key, title, msg, time, 'notice', onClose);
   }
 
-  addNotify = (key, title, msg, time, theme) => {
+  addNotify = (key, title, msg, time, theme, onClose = () => null) => {
     const state = {...this.state}
-    state[key] = { title: title, msg: msg, time: time, theme: theme };
+    state[key] = { title, msg, time, theme, onClose };
     this.setState(state);
     this.countToHide(time, key);
   }
@@ -68,7 +68,10 @@ class Notify extends React.Component {
     }
   }
 
-  hideNotification = (key) => {
+  hideNotification = key => {
+    if (this.state[key]) {
+      this.state[key].onClose();
+    }
     delete this.state[key];
     this.setState(this.state);
   }

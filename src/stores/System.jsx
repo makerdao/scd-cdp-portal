@@ -644,7 +644,7 @@ class SystemStore {
         cup.history = response;
         this.tub.cups[id] = cup;
         const latestAction = response[0];
-        if (latestAction.act === 'BITE') {
+        if (latestAction.act === 'BITE' && !localStorage.getItem(`CDPLiquidated${latestAction.time}Closed`)) {
           const prevlatestAction = response[1];
           const date = formatDate((new Date(latestAction.time)).getTime() / 1000);
           const art = toWei(prevlatestAction.art);
@@ -658,8 +658,7 @@ class SystemStore {
           const pip = toWei(latestAction.pip);
           const printNumberString = number => ReactDOMServer.renderToString(printNumber(number));
           const body =
-          `
-          <p>
+          `<p>
             Your CDP #${id} was liquidated on ${date} to pay back ${printNumberString(art)} DAI.
           <p>
           <p>
@@ -680,9 +679,8 @@ class SystemStore {
             ${printNumberString(liqPrice)} USD<br />
             Liquidated @<br />
             ${printNumberString(pip)} USD
-          </p>
-          `
-          this.transactions.notificator.notice(Math.random(), 'CDP Liquidated', body, 0);
+          </p>`;
+          this.transactions.notificator.notice(Math.random(), 'CDP Liquidated', body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
         }
       }, () => {
         let cup = {...this.tub.cups[id]};
