@@ -30,6 +30,28 @@
 
 	.heading {
 		position: relative;
+
+		div.back-arrow {
+			position: absolute;
+			width: 50px;
+			height: 100%;
+			cursor: pointer;
+
+			svg {
+				float: left;
+				position: absolute;
+				left: 20px;
+				top: calc(50% - 9px);
+
+				path {
+					fill: #d8d8d8;
+				}
+			}
+
+			&:hover svg path {
+				fill: #fff;
+			}
+		}
 	}
 
 	.no-account section {
@@ -333,28 +355,6 @@
 					border-color: #1abc9c;
 					box-shadow: inset 2px 2px 4px 0 rgba(0, 0, 0, 0.15);
 				}
-			}
-		}
-
-		div.back-arrow {
-			position: absolute;
-			width: 50px;
-			height: 100%;
-			cursor: pointer;
-
-			svg {
-				float: left;
-				position: absolute;
-				left: 20px;
-				top: calc(50% - 9px);
-
-				path {
-					fill: #d8d8d8;
-				}
-			}
-
-			&:hover svg path {
-				fill: #fff;
 			}
 		}
 	}
