@@ -122,6 +122,7 @@ class Wizard extends Component {
   render() {
     return (
       <div>
+        <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col" style={ {borderBottom: 'none'} }>
           <Steps current={this.state.step - 1}>
             <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
@@ -132,8 +133,6 @@ class Wizard extends Component {
           this.state.step === 1
           ?
             <React.Fragment>
-              <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
-
               <form ref={ input => this.wizardForm = input } onSubmit={ () => this.goToStep(2) }>
                 <div className="row">
 

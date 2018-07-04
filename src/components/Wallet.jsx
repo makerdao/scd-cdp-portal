@@ -69,9 +69,9 @@ class Wallet extends React.Component {
 
   render() {
     const tokens = {
-      'eth': {'balance': this.props.profile.accountBalance, 'allowance': false},
-      'dai': {'balance': this.props.system.dai.myBalance, 'allowance': false},
-      'gov': {'balance': this.props.system.gov.myBalance, 'allowance': false}
+      'eth': {'balance': this.props.profile.accountBalance, 'usdPrice': this.props.system.gem.usdPrice, 'allowance': false},
+      'dai': {'balance': this.props.system.dai.myBalance, 'usdPrice': this.props.system.dai.usdPrice, 'allowance': false},
+      'gov': {'balance': this.props.system.gov.myBalance, 'usdPrice': this.props.system.gov.usdPrice , 'allowance': false}
     };
     return (
       <div>
@@ -140,14 +140,20 @@ class Wallet extends React.Component {
                               {
                                 Object.keys(tokens).map(token =>
                                   <tr key={ token }>
-                                    <td>{ this.tokenName(token) }</td>
+                                    <td>
+                                      { this.tokenName(token) }<br />
+                                      USD
+                                    </td>
                                     <td>
                                       {
-                                        tokens[token].balance.eq(-1)
+                                        tokens[token].balance.eq(-1) || tokens[token].usdPrice.eq(-1)
                                         ?
                                           'Loading...'
                                         :
-                                          printNumber(tokens[token].balance)
+                                          <React.Fragment>
+                                            {printNumber(tokens[token].balance)}<br />
+                                            {printNumber(tokens[token].balance.times(tokens[token].usdPrice))}
+                                          </React.Fragment>
                                       }
                                     </td>
                                     <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>

@@ -8,9 +8,9 @@ class Welcome extends React.Component {
   render() {
     return (
       <div>
+        <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col">
           <h1 className="typo-h1 inline-headline">Dashboard</h1>
-          <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
         </header>
         <div className="row" style={ {borderBottom: '0'} }>
           <div className="align-center typo-cxl" style={ {margin: '3rem 0'} }>

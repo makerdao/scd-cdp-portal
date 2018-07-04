@@ -9,9 +9,9 @@ class Dashboard extends React.Component {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
       <div>
+        <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col">
           <h1 className="typo-h1 inline-headline">Dashboard <span className="typo-c typo-mid-grey">My collateralized debt position #{ cupId }</span></h1>
-          <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
         </header>
         <Cup system={ this.props.system } profile={ this.props.profile } network={ this.props.network } cupId={ cupId } handleOpenDialog={ this.props.handleOpenDialog } />
       </div>

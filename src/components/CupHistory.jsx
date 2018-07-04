@@ -37,8 +37,8 @@ class CupHistory extends React.Component {
                             image = 'history-icon-open.svg';
                             break;
                           case 'GIVE':
-                            message = `Transferred your CDP to ${ReactDOMServer.renderToString(etherscanAddress(this.props.network, `${action.arg.substring(0,20)}...`, action.arg))}`;
-                            image = 'history-icon-unknown.svg';
+                            message = `Transferred CDP from ${ReactDOMServer.renderToString(etherscanAddress(this.props.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy))}`;
+                            image = 'history-icon-give.svg';
                             break;
                           case 'LOCK':
                             message = `Deposited ${printNumberString(toWei(action.arg * action.per))} ETH (${printNumberString(toWei(action.arg))} PETH) to your CDP`;
