@@ -18,6 +18,12 @@ import * as Blockchain from "../blockchainHandler";
 window.Blockchain = Blockchain;
 
 class App extends React.Component {
+  componentDidUpdate = prevProps => {
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   render() {
     const page = this.props.location.pathname.replace('/', '');
     const props = Object.assign({...this.props}, {page});
