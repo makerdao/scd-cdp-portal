@@ -10,7 +10,7 @@ import WalletSendToken from './WalletSendToken';
 import ToggleSwitch from './ToggleSwitch';
 
 import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
-import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize} from '../helpers';
+import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from '../helpers';
 import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from './DropdownMenu';
 
 class Wallet extends React.Component {
@@ -69,9 +69,9 @@ class Wallet extends React.Component {
 
   render() {
     const tokens = {
-      'eth': {'balance': this.props.profile.accountBalance, 'usdPrice': this.props.system.gem.usdPrice, 'allowance': false},
-      'dai': {'balance': this.props.system.dai.myBalance, 'usdPrice': this.props.system.dai.usdPrice, 'allowance': false},
-      'gov': {'balance': this.props.system.gov.myBalance, 'usdPrice': this.props.system.gov.usdPrice , 'allowance': false}
+      'eth': {'balance': this.props.profile.accountBalance, 'usdPrice': this.props.system.pip.val, 'allowance': false},
+      'dai': {'balance': this.props.system.dai.myBalance, 'usdPrice': this.props.system.vox.par, 'allowance': false},
+      'gov': {'balance': this.props.system.gov.myBalance, 'usdPrice': this.props.system.pip.val, 'allowance': false}
     };
     return (
       <div>
@@ -152,7 +152,7 @@ class Wallet extends React.Component {
                                         :
                                           <React.Fragment>
                                             {printNumber(tokens[token].balance)}<br />
-                                            {printNumber(tokens[token].balance.times(tokens[token].usdPrice))}
+                                            {printNumber(wmul(tokens[token].balance, tokens[token].usdPrice))}
                                           </React.Fragment>
                                       }
                                     </td>

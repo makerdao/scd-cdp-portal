@@ -81,7 +81,6 @@ class SystemStore {
       myBalance: toBigNumber(-1),
       tubBalance: toBigNumber(-1),
       tapBalance: toBigNumber(-1),
-      usdPrice: toBigNumber(-1),
     };
     this.gov = {
       address: null,
@@ -89,7 +88,6 @@ class SystemStore {
       myBalance: toBigNumber(-1),
       pitBalance: toBigNumber(-1),
       allowance: toBigNumber(-1),
-      usdPrice: toBigNumber(-1),
     };
     this.skr = {
       address: null,
@@ -104,7 +102,6 @@ class SystemStore {
       myBalance: toBigNumber(-1),
       tapBalance: toBigNumber(-1),
       allowance: toBigNumber(-1),
-      usdPrice: toBigNumber(-1),
     };
     this.sin = {
       address: null,
@@ -732,9 +729,6 @@ class SystemStore {
   
   getDataFromToken = token => {
     this.getTotalSupply(token);
-    if (token === 'gem' || token === 'gov' || token === 'dai') {
-      this.getPriceInUSD(token);
-    }
     if (token !== 'sin' && isAddress(this.network.defaultAccount)) {
       this.getBalanceOf(token, this.network.defaultAccount, 'myBalance');
     }
@@ -753,21 +747,6 @@ class SystemStore {
     }
     if (token === 'gov' || token === 'dai') {
       this.getAllowance(token);
-    }
-  }
-
-  getPriceInUSD = token => {
-    if (token === 'dai') {
-      this[token].usdPrice = toBigNumber(1);
-    } else {
-      const id = token === 'gem' ? 1027 : (token === 'gov' ? 1518 : '');
-      fetch(`https://api.coinmarketcap.com/v2/ticker/${id}/`)
-      .then(data => {
-        return data.json();
-      })
-      .then(json => {
-        this[token].usdPrice = toBigNumber(json.data.quotes.USD.price);
-      });
     }
   }
   
