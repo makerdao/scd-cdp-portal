@@ -27,6 +27,12 @@ class Menu extends React.Component {
                 </li>
               )
             }
+            {
+              Object.keys(this.props.system.tub.legacyCups).length > 0 &&
+              <li className={ this.props.isMigrateCDPPage ? 'active' : '' } onClick={ () => this.props.setOpenMigrate(true) }>
+                Migrate CDPs
+              </li>
+            }
             <li value="help" className={ this.props.page === 'help' ? 'active' : '' }>
               <Link to="/help">
                 <img src="img/icon-help.svg" draggable="false" alt="" />

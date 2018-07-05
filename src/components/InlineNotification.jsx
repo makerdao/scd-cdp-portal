@@ -17,11 +17,13 @@ class InlineNotification extends React.Component {
             { this.props.caption }
           </div>
         }
-
+        {
+          this.props.onCloseButtonClick &&
+          <a href="#action" onClick={ e => { e.preventDefault(); this.props.onCloseButtonClick() } }>Close</a>
+        }
         { !this.props.caption && icon }
         <div className={ "message" + (this.props.onButtonClick ? " has-button" : "") + (!this.props.caption ? " no-caption" : "") }>
         { this.props.message }
-
         {
           this.props.onButtonClick && <button className="text-btn disable-on-dialog" onClick={ this.props.onButtonClick }>{ this.props.buttonText || "OK" }</button>
         }
