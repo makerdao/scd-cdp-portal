@@ -2,18 +2,23 @@
   clear: both;
   background-color: $white-two;
   color: #26323a;
-  padding: 2rem 2.5rem !important;
+  padding: 1rem 1.2rem !important;
   margin: 2rem 0 1rem;
-
+  border-radius: 2px;
   .caption {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
+    position: relative;
+    top: 0.1rem;
+    font-size: 1.3rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
   }
   .message {
     position: relative;
     font-size: 1.1rem;
-    font-weight: 400;
+    @include respond-to(xl) {
+      font-size: 1rem;
+    }
+    font-weight: 200;
     &.has-button {
       padding-right: 12rem;
     }
@@ -33,6 +38,9 @@
     float: left;
     width: auto;
     height: 1.6rem;
+    @include respond-to(xl) {
+      height: 1.5rem;
+    }
     top: 0.3rem;
     position: relative;
     margin-right: 1rem;
