@@ -13,7 +13,7 @@ class Menu extends React.Component {
         </div>
         <nav>
           <ul className="menu">
-            <li value="home" className={ this.props.page === '' ? 'active' : '' }>
+            <li value="home" className={ this.props.page === '' && !this.props.isMigrateCDPPage ? 'active' : '' } onClick={ () => this.props.page === '' && this.props.setOpenMigrate(false) }>
               <Link to="/">
                 <img src="img/icon-home.svg" draggable="false" alt="" />
                 <span className="menu-label">Dashboard</span>
