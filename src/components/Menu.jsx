@@ -28,7 +28,7 @@ class Menu extends React.Component {
               )
             }
             {
-              Object.keys(this.props.system.tub.legacyCups).length > 0 &&
+              this.props.showLegacyCDPs && Object.keys(this.props.system.tub.legacyCups).length > 0 &&
               <li className={ this.props.isMigrateCDPPage ? 'active' : '' } onClick={ () => this.props.setOpenMigrate(true) }>
                 Migrate CDPs
               </li>

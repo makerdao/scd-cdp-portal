@@ -40,7 +40,7 @@ class Home extends React.Component {
         <div className="wrapper">
           {
             this.props.network.isConnected && this.props.network.defaultAccount &&
-            <Menu system={ this.props.system } page={ this.props.page } showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
+            <Menu system={ this.props.system } page={ this.props.page } showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
           }
           <main className="main-column">
             {
