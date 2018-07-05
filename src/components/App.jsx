@@ -18,6 +18,10 @@ import * as Blockchain from "../blockchainHandler";
 window.Blockchain = Blockchain;
 
 class App extends React.Component {
+  componentDidMount = () => {
+    setTimeout(() => window.scrollTo(0, 0), 100);
+  }
+
   componentDidUpdate = prevProps => {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       window.scrollTo(0, 0);
