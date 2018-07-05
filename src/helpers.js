@@ -90,8 +90,8 @@ export const copyToClipboard = e => {
   setTimeout(() => parent.removeChild(div), 1000);
 }
 
-export const printNumber = number => {
-  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18) }>{ formatNumber(number, 3) }</span>
+export const printNumber = (number, decimalPlaces = 3) => {
+  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18) }>{ formatNumber(number, decimalPlaces) }</span>
 }
 
 export const truncateAddress = (address, chars = 8) => {
