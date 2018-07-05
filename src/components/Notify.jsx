@@ -13,7 +13,7 @@ class Item extends React.Component {
       React.createElement("div", { className: "col nf-" + this.props.theme },
         React.createElement("button", { className: "close-box" , onClick: this.hideNotification}),
         React.createElement("h3", { className: "notification-headline" }, this.props.title),
-        React.createElement("p", { className: "", dangerouslySetInnerHTML: { __html: this.props.msg } })
+        React.createElement("div", { className: "" }, this.props.msg)
       )
     )
   }

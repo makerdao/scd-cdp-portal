@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import {observer} from 'mobx-react';
 
 import LoadingSpinner from './LoadingSpinner';
@@ -29,35 +28,34 @@ class CupHistory extends React.Component {
                     {
                       this.props.history && this.props.history.length > 0 &&
                       this.props.history.map((action, key) => {
-                        const printNumberString = number => ReactDOMServer.renderToString(printNumber(number));
                         let message = '', image = 'history-icon-unknown.svg';
                         switch(action.act) {
                           case 'OPEN':
-                            message = 'Opened your CDP';
+                            message = <React.Fragment>Opened your CDP</React.Fragment>;
                             image = 'history-icon-open.svg';
                             break;
                           case 'GIVE':
-                            message = `Transferred CDP from ${ReactDOMServer.renderToString(etherscanAddress(this.props.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy))}`;
+                            message = <React.Fragment>Transferred CDP from {etherscanAddress(this.props.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy)}</React.Fragment>;
                             image = 'history-icon-give.svg';
                             break;
                           case 'LOCK':
-                            message = `Deposited ${printNumberString(toWei(action.arg * action.per))} ETH (${printNumberString(toWei(action.arg))} PETH) to your CDP`;
+                            message = <React.Fragment>Deposited {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) to your CDP</React.Fragment>;
                             image = 'history-icon-locked.svg';
                             break;
                           case 'FREE':
-                            message = `Withdrew ${printNumberString(toWei(action.arg * action.per))} ETH (${printNumberString(toWei(action.arg))} PETH) from your CDP`;
+                            message = <React.Fragment>Withdrew {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) from your CDP</React.Fragment>;
                             image = 'history-icon-payback.svg';
                             break;
                           case 'DRAW':
-                            message = `Generated ${printNumberString(toWei(action.arg))} DAI from your CDP`;
+                            message = <React.Fragment>Generated {printNumber(toWei(action.arg))} DAI from your CDP</React.Fragment>;
                             image = 'history-icon-borrow.svg';
                             break;
                           case 'WIPE':
-                            message = `Paidback ${printNumberString(toWei(action.arg))} DAI to your CDP`;
+                            message = <React.Fragment>Paidback {printNumber(toWei(action.arg))} DAI to your CDP</React.Fragment>;
                             image = 'history-icon-transfer.svg'; // Should this be 'history-icon-payback.svg' instead?
                             break;
                           case 'SHUT':
-                            message = 'Closed your CDP';
+                            message = <React.Fragment>Closed your CDP</React.Fragment>;
                             image = 'history-icon-unknown.svg';
                             break;
                           case 'BITE':
@@ -65,11 +63,13 @@ class CupHistory extends React.Component {
                             const liqInk = toWei(this.props.history[key + 1].ink - action.ink);
                             const liqETH = liqInk * action.per;
                             const pip = toWei(this.props.history[key].pip);
-                            message = `Your CDP has been liquidated to pay back ` +
-                                      `${ReactDOMServer.renderToString(printNumber(art))} DAI. ` +
-                                      `Total ${ReactDOMServer.renderToString(printNumber(liqETH))} ETH ` +
-                                      `(${ReactDOMServer.renderToString(printNumber(liqInk))} PETH) ` +
-                                      `has been liquidated at ${ReactDOMServer.renderToString(printNumber(pip))} USD.`;
+                            message = <React.Fragment>
+                                        Your CDP has been liquidated to pay back
+                                        {printNumber(art)} DAI.
+                                        Total {printNumber(liqETH)} ETH
+                                        ({printNumber(liqInk)} PETH)
+                                        has been liquidated at {printNumber(pip)} USD.
+                                      </React.Fragment>;
                             image = 'history-icon-liquidation.svg';
                             break;
                           default:
@@ -83,7 +83,9 @@ class CupHistory extends React.Component {
                             </div>
                             <div className="history-details">
                               <div className="history-date">{ formatDate(new Date(action.time).getTime() / 1000) }</div>
-                              <span dangerouslySetInnerHTML={{ __html: message }}></span>
+                              <span>
+                                { message }
+                              </span>
                               <span className="history-tx-links">
                               { etherscanAddress(this.props.network.network, 'Sender', action.guy) }
                               <span className="pipe-separator">&nbsp;|&nbsp;</span>

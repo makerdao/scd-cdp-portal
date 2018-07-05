@@ -1,5 +1,6 @@
-import ReactDOMServer from 'react-dom/server';
+import React from 'react';
 import {observable, decorate} from "mobx"
+
 import * as Blockchain from "../blockchainHandler";
 
 import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress, printNumber, formatDate} from '../helpers';
@@ -656,30 +657,30 @@ class SystemStore {
           const liqInkPen = liqInk - liqInkCol;
           const liqETHPen = liqInkPen * latestAction.per;
           const pip = toWei(latestAction.pip);
-          const printNumberString = number => ReactDOMServer.renderToString(printNumber(number));
-          const body =
-          `<p>
-            Your CDP #${id} was liquidated on ${date} to pay back ${printNumberString(art)} DAI.
-          <p>
-          <p>
-            Total ETH (PETH) liquidated<br />
-            ${printNumberString(liqETH)} ETH<br />
-            ${printNumberString(liqInk)} PETH<br />
-          </p>
-          <p>
-            Collateral<br />
-            ${printNumberString(liqETHCol)} ETH<br />
-            ${printNumberString(liqInkCol)} PETH<br />
-            13% liquidation penalty<br />
-            ${printNumberString(liqETHPen)} ETH<br />
-            ${printNumberString(liqInkPen)} PETH<br />
-          </p>
-          <p>
-            Became vulnerable to liquidation @<br />
-            ${printNumberString(liqPrice)} USD<br />
-            Liquidated @<br />
-            ${printNumberString(pip)} USD
-          </p>`;
+          const body =  <React.Fragment>
+                          <p>
+                            Your CDP #{id} was liquidated on {date} to pay back {printNumber(art)} DAI.
+                          </p>
+                          <p>
+                            Total ETH (PETH) liquidated<br />
+                            {printNumber(liqETH)} ETH<br />
+                            {printNumber(liqInk)} PETH<br />
+                          </p>
+                          <p>
+                            Collateral<br />
+                            {printNumber(liqETHCol)} ETH<br />
+                            {printNumber(liqInkCol)} PETH<br />
+                            13% liquidation penalty<br />
+                            {printNumber(liqETHPen)} ETH<br />
+                            {printNumber(liqInkPen)} PETH<br />
+                          </p>
+                          <p>
+                            Became vulnerable to liquidation @ price<br />
+                            {printNumber(liqPrice)} USD<br />
+                            Liquidated @ price<br />
+                            {printNumber(pip)} USD
+                          </p>
+                        </React.Fragment>;
           this.transactions.notificator.notice(Math.random(), 'CDP Liquidated', body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
         }
       }, () => {
