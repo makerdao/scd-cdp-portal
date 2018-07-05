@@ -134,7 +134,7 @@ class Dialog extends React.Component {
   renderInputForm = (type, method) => {
     return (
       <form ref={ input => this.updateValueForm = input } onSubmit={ this.updateValue }>
-        <input ref={ input => this.updateVal = input } type={ type } id="inputValue" className="number-input" required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } />
+        <input ref={ input => this.updateVal = input } type={ type } id="inputValue" className="number-input" required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } } />
         {
           type === 'number' &&
           <span className="unit">
@@ -198,7 +198,7 @@ class Dialog extends React.Component {
       </form>
     )
   }
-  
+
   render() {
     const dialog = this.props.dialog;
     const cup = dialog.cupId ? this.props.system.tub.cups[dialog.cupId] : null;
