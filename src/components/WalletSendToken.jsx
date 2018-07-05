@@ -58,7 +58,7 @@ class WalletSendToken extends React.Component {
               <div style={ {marginTop: '1.2rem'} }>
                 <label>
                   Destination<br/>
-                  <input className={ this.state.fieldErrors.address ? 'has-error' : '' } type="text" ref={ input => this.destination = input } maxlength="42" placeholder="0x01234..." />
+                  <input className={ this.state.fieldErrors.address ? 'has-error' : '' } type="text" ref={ input => this.destination = input } maxLength="42" placeholder="0x01234..." />
                 </label>
               </div>
               { this.state.fieldErrors.address && <p className="error">{ this.state.fieldErrors.address }</p> }
