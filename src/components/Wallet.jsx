@@ -141,8 +141,8 @@ class Wallet extends React.Component {
                                 Object.keys(tokens).map(token =>
                                   <tr key={ token }>
                                     <td>
-                                      { this.tokenName(token) }<br />
-                                      USD
+                                      { this.tokenName(token) }
+                                      <div className="usd-equivalent">USD</div>
                                     </td>
                                     <td>
                                       {
@@ -151,8 +151,8 @@ class Wallet extends React.Component {
                                           'Loading...'
                                         :
                                           <React.Fragment>
-                                            {printNumber(tokens[token].balance)}<br />
-                                            {printNumber(wmul(tokens[token].balance, tokens[token].usdPrice))}
+                                            { printNumber(tokens[token].balance) }
+                                            <div className="usd-equivalent">${ printNumber(wmul(tokens[token].balance, tokens[token].usdPrice), 2) }</div>
                                           </React.Fragment>
                                       }
                                     </td>
