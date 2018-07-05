@@ -221,7 +221,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: 'none'} }>
                   <div className="col">
-                    <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; GENERATE</button>
+                    <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; BORROW</button>
                   </div>
                 </div>
 
@@ -304,8 +304,8 @@ class Wizard extends Component {
                     </label>
                   </div>
                   <div>
-                    <button className="text-btn text-btn-primary" onClick={ () => this.goToStep(1) }>Go back</button>
-                    <button className="text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms }>Process CDP</button>
+                    <button className="bright-style text-btn" onClick={ () => this.goToStep(1) }>GO BACK</button>
+                    <button className="bright-style text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms }>PROCESS CDP</button>
                   </div>
                 </div>
               </div>
