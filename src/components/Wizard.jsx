@@ -133,7 +133,7 @@ class Wizard extends Component {
           this.state.step === 1
           ?
             <React.Fragment>
-              <form ref={ input => this.wizardForm = input } onSubmit={ () => this.goToStep(2) }>
+              <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
                 <div className="row">
 
                   <div className="col col-2" style={ {border: 'none'} }>
@@ -221,7 +221,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: 'none'} }>
                   <div className="col">
-                    <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; BORROW</button>
+                    <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
                   </div>
                 </div>
 
