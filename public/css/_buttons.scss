@@ -218,3 +218,16 @@ button, .btn {
 		}
 	}
 }
+
+// Expand section SVG
+svg.expand-section-btn {
+  cursor: pointer;
+  width: 1.7rem;
+  height: 1.7rem;
+  path {
+    fill: $text-grey;
+  }
+  &:hover path {
+    fill: $silver;
+  }
+}
