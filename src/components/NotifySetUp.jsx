@@ -58,7 +58,7 @@ class NotifySetUp extends React.Component {
                   </li>
                   <li>
                     <div className="icon"><img src="../img/cdp-created-icon-2.svg" alt="*" style={ {height: '25px'} } /></div>
-                    Add more or withdraw<br />collateral
+                    Deposit or withdraw<br />collateral
                   </li>
                   <li>
                     <div className="icon"><img src="../img/cdp-created-icon-3.svg" alt="*" style={ {height: '30px'} } /></div>
