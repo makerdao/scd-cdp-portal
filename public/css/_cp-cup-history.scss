@@ -21,9 +21,12 @@
     }
   }
   .history-details {
-    float: left;
+    position: relative;
+    top: 6px;
+    @include respond-to(xl) {
+      top: 2px;
+    }
     line-height: 1.5;
-    margin-top: 2px;
   }
   .history-date {
     font-size: 0.85em;

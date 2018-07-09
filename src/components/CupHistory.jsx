@@ -64,11 +64,8 @@ class CupHistory extends React.Component {
                             const liqETH = liqInk * action.per;
                             const pip = toWei(this.props.history[key].pip);
                             message = <React.Fragment>
-                                        Your CDP has been liquidated to pay back
-                                        {printNumber(art)} DAI.
-                                        Total {printNumber(liqETH)} ETH
-                                        ({printNumber(liqInk)} PETH)
-                                        has been liquidated at {printNumber(pip)} USD.
+                                        Your CDP has been liquidated to pay back { printNumber(art, 2) } DAI.
+                                        Total {printNumber(liqETH)} ETH ({ printNumber(liqInk) } PETH) has been liquidated at { printNumber(pip, 2) } USD.
                                       </React.Fragment>;
                             image = 'history-icon-liquidation.svg';
                             break;
