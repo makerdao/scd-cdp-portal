@@ -1,6 +1,19 @@
+.cup-history-items {
+  overflow: hidden;
+  max-height: 0;
+  min-height: 435px;
+  transition: max-height 0.15s ease-out;
+
+  &.expanded {
+    max-height: 10000px;
+    transition: max-height 0.25s ease-in;
+  }
+}
+
 .history-cointainer {
   clear: both;
   margin-top: 35px;
+  position: relative;
   .history-icon {
     float: left;
     height: 100px;
@@ -50,9 +63,33 @@
       line-height: 1;
     }
   }
-  &:last-child {
-    .vertical-line {
-      display: none;
+}
+.cup-history-items.hide-expander .history-cointainer:last-child .vertical-line {
+  display: none;
+}
+
+.history-expand {
+  clear: both;
+  &.hide-expander {
+    display: none;
+  }
+  .history-icon {
+    float: left;
+    height: 100px;
+    width: 80px;
+    svg {
+      position: absolute;
+      display: block;
+      width: auto;
+      height: 32px;
+      margin-left: 7px;
+      z-index: 1;
+    }
+  }
+  .history-details {
+    padding-top: 5px;
+    @include respond-to(xl) {
+      padding-top: 2px;
     }
   }
 }

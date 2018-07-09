@@ -5,7 +5,21 @@ import LoadingSpinner from './LoadingSpinner';
 
 import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from '../helpers';
 
+const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;
+
 class CupHistory extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      stepsExpanded: false
+    }
+  }
+  get showExpander() {
+    return this.props.history.length > MAX_HISTORY_ITEMS_BEFORE_COLLAPSE;
+  }
+  toggleExpand = () => {
+    this.setState({stepsExpanded: !this.state.stepsExpanded});
+  }
   render() {
     return (
       <div className="col col-extra-padding">
@@ -24,7 +38,8 @@ class CupHistory extends React.Component {
                     <div>History is not available at this moment</div>
                   </div>
                 :
-                  <div>
+                <React.Fragment>
+                  <div className={ "cup-history-items" + (this.state.stepsExpanded ? " expanded" : "") + (!this.showExpander ? " hide-expander" : "") }>
                     {
                       this.props.history && this.props.history.length > 0 &&
                       this.props.history.map((action, key) => {
@@ -94,6 +109,28 @@ class CupHistory extends React.Component {
                       })
                     }
                   </div>
+
+                  <div className={ "history-expand" + (!this.showExpander ? " hide-expander" : "") } key="history-expand">
+                    <div className="history-icon">
+                    {
+                      this.state.stepsExpanded ?
+                      <svg className="expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => this.toggleExpand() }>
+                        <path d="m1022.95113 481.269219-4.95267-4.953847-4.95267 4.953847-1.50733-1.507693 6.46-6.461538 6.46 6.461538zm-4.95113 10.730781c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" fill="#9aa3ad" transform="translate(-1004 -464)"/>
+                      </svg>
+                      :
+                      <svg className="expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => this.toggleExpand() }>
+                        <path d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" transform="translate(-1062 -464)"/>
+                      </svg>
+                    }
+                    </div>
+                    <div className="history-details">
+                      <span>
+                        { this.state.stepsExpanded ? 'Collapse' : 'Expand'} complete history
+                      </span>
+                    </div>
+                  </div>
+
+                </React.Fragment>
             }
           </div>
       </div>
