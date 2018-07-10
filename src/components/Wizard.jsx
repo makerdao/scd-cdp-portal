@@ -305,7 +305,7 @@ class Wizard extends Component {
                   </div>
                   <div>
                     <button className="bright-style text-btn" onClick={ () => this.goToStep(1) }>GO BACK</button>
-                    <button className="bright-style text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms }>PROCESS CDP</button>
+                    <button className="bright-style text-btn text-btn-primary" onClick={ this.execute } disabled={ !this.state.checkTerms }>FINALIZE AND CREATE CDP</button>
                   </div>
                 </div>
               </div>
