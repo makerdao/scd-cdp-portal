@@ -105,11 +105,15 @@ class Wallet extends React.Component {
                             </span>
                             <DropdownMenu icon="../img/wallet-icon.png">
                               <MenuItems>
-                              {
-                                this.renderWalletOptions().map(key =>
-                                  <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.svg` } key={ key } data-client={ key } onClick={ this.switchConnection } />
-                                )
-                              }
+                                {
+                                  (getCurrentProviderName() === 'ledger' || getCurrentProviderName() === 'trezor') &&
+                                  <MenuItem href="#action" text="Switch Address" icon="../img/menu-icon-web.svg" data-client={ getCurrentProviderName() } onClick={ this.switchConnection } />
+                                }
+                                {
+                                  this.renderWalletOptions().map(key =>
+                                    <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.svg` } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                                  )
+                                }
                               </MenuItems>
                               <MenuFooter>
                                 <Link to="/help">
