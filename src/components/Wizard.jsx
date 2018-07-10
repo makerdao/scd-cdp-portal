@@ -71,19 +71,24 @@ class Wizard extends Component {
 
     this.setState(state, () => {
       this.setState(prevState => {
-        const state = {...this.state};
+        const state = {...prevState};
 
         state.submitEnabled = false;
         state.error = false;
+
+        if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
+          state.error = 'The amount of ETH exceeds your balance.';
+          return state;
+        }
 
         if (state.eth.gt(0) && state.dai.gt(0)) {
           const pro = wmul(wmul(state.eth, this.props.system.tub.per), this.props.system.tub.tag).round(0);
           const availDai = wdiv(pro, wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
 
           if (this.props.system.sin.totalSupply.add(state.dai).gt(this.props.system.tub.cap)) {
-            state.error = 'This amount of DAI exceeds the system debt ceiling.';
+            state.error = 'The amount of DAI exceeds the system debt ceiling.';
           } else if (state.dai.gt(availDai)) {
-            state.error = 'ETH to be deposited is not enough to draw this amount of DAI.';
+            state.error = 'The amount of ETH to be deposited is not enough to draw this amount of DAI.';
           } else {
             state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
             state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
