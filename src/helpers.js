@@ -71,7 +71,7 @@ export const fromRaytoWad = x => {
 export const copyToClipboard = e => {
   const value = e.target.title.replace(',', '');
   var aux = document.createElement("input");
-  aux.setAttribute('value', value);
+  aux.setAttribute('value', web3.toBigNumber(value).valueOf());
   document.body.appendChild(aux);
   aux.select();
   document.execCommand("copy");
