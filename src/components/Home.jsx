@@ -96,7 +96,7 @@ class Home extends React.Component {
                     </React.Fragment>
                 }
                 <div className="footer col col-no-border typo-cs typo-grid-grey">
-                  <Link to="/terms">Terms of Service</Link><span className="separator">||</span><Link to="/announcement">Announcement</Link>
+                  <Link to="/terms">Terms of Service</Link>
                 </div>
               </div>
             }

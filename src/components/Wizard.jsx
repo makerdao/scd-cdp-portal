@@ -300,7 +300,7 @@ class Wizard extends Component {
                   <div style={ {marginBottom: '2rem'} }>
                     <label>
                       <input style={ {visibility: 'initial'} } type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, 'checkTerms')}/>&nbsp;
-                      I have read and the accepted the MakerDao’s terms and conditions and the announcement.
+                      I have read and the accepted the MakerDao’s terms and conditions.
                     </label>
                   </div>
                   <div>

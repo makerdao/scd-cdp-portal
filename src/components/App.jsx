@@ -2,7 +2,6 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {Route, Switch, withRouter} from 'react-router-dom';
 
-import Announcement from './Announcement';
 import Help from './Help';
 import Home from './Home';
 import Modal from './Modal';
@@ -35,9 +34,6 @@ class App extends React.Component {
           )}/>
           <Route exact path='/terms' render={() => (
             <Terms {...props} />
-          )}/>
-          <Route exact path='/announcement' render={() => (
-            <Announcement {...props} />
           )}/>
           <Route exact path='/' render={() => (
             <Home {...props} />
