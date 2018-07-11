@@ -12,7 +12,7 @@ export function MenuItem(props) {
   return (
     <a { ...props } className={ "dropdown-item" + (props.icon ? " has-icon" : "") }>
       {
-        props.icon && <img className="dropdown-item-icon" src={ props.icon } alt=">" />
+        props.iconsvg ? props.iconsvg : props.icon && <img className="dropdown-item-icon" src={ props.icon } alt=">" />
       }
       <span>{ props.text }</span>
     </a>

@@ -107,7 +107,14 @@ class Wallet extends React.Component {
                               <MenuItems>
                                 {
                                   (getCurrentProviderName() === 'ledger' || getCurrentProviderName() === 'trezor') &&
-                                  <MenuItem href="#action" text="Switch Address" icon="../img/menu-icon-web.svg" data-client={ getCurrentProviderName() } onClick={ this.switchConnection } />
+                                  <MenuItem href="#action" text="Switch Address" iconsvg={
+                                    <svg className="dropdown-item-icon" width="16" height="14" viewBox="0 0 16 14" xmlns="http://www.w3.org/2000/svg">
+                                      <g fill="none" fillRule="evenodd" stroke="#000" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1)">
+                                        <path d="m14 1v4h-4"/><path d="m0 11.2v-4h4"/>
+                                        <path d="m1.59727273 3.999512c.65601558-1.94259944 2.21726092-3.39668309 4.13527336-3.85143401 1.91801245-.45475092 3.92455263.15342908 5.31472661 1.61088745l2.9527273 2.90737589m-14 2.66731734 2.95272727 2.90737593c1.39017401 1.4574583 3.39671419 2.0656383 5.31472664 1.6108874 1.91801239-.4547509 3.47925779-1.90883456 4.13527339-3.851434"/>
+                                      </g>
+                                    </svg>
+                                  } data-client={ getCurrentProviderName() } onClick={ this.switchConnection } />
                                 }
                                 {
                                   this.renderWalletOptions().map(key =>
