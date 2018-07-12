@@ -105,7 +105,7 @@ class WalletHardHWSelector extends React.Component {
               {
                 this.props.network.hw.option === 'ledger' &&
                 <React.Fragment>
-                  <h2>Plugin Ledger &amp; Enter Pin</h2>
+                  <h2>Plug in Ledger &amp; Enter Pin</h2>
                   <p className="typo-c align-center">Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
                 </React.Fragment>
               }
