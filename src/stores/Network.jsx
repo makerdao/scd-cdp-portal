@@ -6,6 +6,7 @@ const settings = require('../settings');
 
 class NetworkStore {
   stopIntervals = false;
+  loadingAddress = false;
   accounts = [];
   defaultAccount = null;
   isConnected = false;
