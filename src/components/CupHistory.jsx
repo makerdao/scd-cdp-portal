@@ -110,7 +110,7 @@ class CupHistory extends React.Component {
                     }
                   </div>
 
-                  <div className={ "history-expand" + (!this.showExpander ? " hide-expander" : "") } key="history-expand">
+                  <div className={ "history-expand" + (!this.showExpander ? " hide-expander" : "") } onClick={ () => this.toggleExpand() } key="history-expand">
                     <div className="history-icon">
                     {
                       this.state.stepsExpanded ?
@@ -124,7 +124,7 @@ class CupHistory extends React.Component {
                     }
                     </div>
                     <div className="history-details">
-                      <span>
+                      <span onClick={ () => this.toggleExpand() }>
                         { this.state.stepsExpanded ? 'Collapse' : 'Expand'} complete history
                       </span>
                     </div>
