@@ -1,0 +1,35 @@
+.cup-top-right-buttons {
+  float: right;
+  height: 0;
+  position: relative;
+  top: -47px;
+  @include respond-to(xl) {
+    top: -58px;
+  }
+
+  a {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.8rem;
+    margin-right: 1.5rem;
+    &:last-child {
+      margin-right: 0.5rem;
+    }
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      path {
+        stroke: #9aa3ad;
+        transition: stroke .2s ease-in;
+      }
+    }
+    &:hover svg path {
+      stroke: #fff;
+    }
+    span {
+      display: block;
+      padding-top: 0.2rem;
+    }
+  }
+}
