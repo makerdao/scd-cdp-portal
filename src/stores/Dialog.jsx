@@ -11,8 +11,8 @@ class DialogStore {
   handleOpenDialog = e => {
     e.preventDefault();
     this.show = true;
-    this.method = e.target.getAttribute('data-method');
-    this.cupId = e.target.getAttribute('data-cup') ? e.target.getAttribute('data-cup') : false;
+    this.method = e.currentTarget.getAttribute('data-method');
+    this.cupId = e.currentTarget.getAttribute('data-cup') ? e.currentTarget.getAttribute('data-cup') : false;
   }
 
   handleCloseDialog = e => {
