@@ -1,7 +1,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 
-import {printNumber, isAddress, toWei} from '../helpers';
+import {printNumber, formatNumber, isAddress, toWei} from '../helpers';
 
 class WalletSendToken extends React.Component {
   constructor() {
@@ -9,6 +9,10 @@ class WalletSendToken extends React.Component {
     this.state = {
       fieldErrors: {}
     }
+  }
+
+  setAmount = () => {
+    this.amount.value = formatNumber(this.props.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, 18);
   }
 
   transfer = e => {
@@ -51,7 +55,7 @@ class WalletSendToken extends React.Component {
                   Amount<br/>
                   <input className={ this.state.fieldErrors.amount ? 'has-error' : '' } type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
                 </label>
-                <div className="below-input-info">{ printNumber(this.props.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
+                <div className="below-input-info" style={ {cursor: 'pointer'} } onClick={ this.setAmount }>{ printNumber(this.props.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
               </div>
               { this.state.fieldErrors.amount && <p className="error">{ this.state.fieldErrors.amount }</p> }
 
