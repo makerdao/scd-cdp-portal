@@ -4,11 +4,7 @@ import {observer} from 'mobx-react';
 import {printNumber, wdiv, wmul} from '../helpers';
 
 class SystemInfo extends React.Component {
-  state = {
-    viewMore: false
-  };
-
-  render = () => {
+  render() {
     return (
       <div className="col col-2-m info-section">
         <div className="price-info">

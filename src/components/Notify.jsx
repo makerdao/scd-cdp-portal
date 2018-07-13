@@ -8,7 +8,7 @@ class Item extends React.Component {
     this.props.hideNotification(this.props.id);
   }
 
-  render = () => {
+  render() {
     return (
       React.createElement("div", { className: "col nf-" + this.props.theme },
         React.createElement("button", { className: "close-box" , onClick: this.hideNotification}),
