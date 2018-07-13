@@ -84,7 +84,6 @@ class Wallet extends React.Component {
             ?
               <WalletHWSelector network={ this.props.network }
                                 loadHWAddresses={ this.props.network.loadHWAddresses }
-                                selectHWAddress={ this.props.network.selectHWAddress }
                                 importAddress={ this.props.network.importAddress } />
             :
               !this.props.network.isConnected

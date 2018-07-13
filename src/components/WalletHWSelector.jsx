@@ -80,22 +80,20 @@ class WalletHardHWSelector extends React.Component {
     selectedOption: null
   }
   selectAccount = selectedOption => {
-   if (selectedOption) {
-     this.setState({ selectedOption });
-     this.props.network.selectHWAddress(selectedOption.value);
-   }
- }
+    if (selectedOption) {
+      this.setState({ selectedOption: selectedOption.value });
+    }
+  }
   render() {
-    let selectOptions = []
+    const selectOptions = []
     for (var i = 0; i < this.props.network.hw.addresses.length - 1 && i < SHOW_ADDRESSES_MAX; i++) {
       selectOptions.push({
         value: this.props.network.hw.addresses[i],
         label: truncateAddress(this.props.network.hw.addresses[i], 10)
       })
     }
-    let { selectedOption } = this.state;
-    let value = selectedOption && selectedOption.value;
-    if (!value && this.props.network.hw.addresses.length > 0) value = selectOptions[this.props.network.hw.addressIndex];
+    let value = this.state.selectedOption;
+    if (!value && this.props.network.hw.addresses.length > 0) value = selectOptions[0].value;
     return (
       <div>
         {
@@ -165,7 +163,7 @@ class WalletHardHWSelector extends React.Component {
                           />
                         </div>
                         <div className="align-center">
-                          <button className="sidebar-btn is-primary-green" style={ {width: '100%'} } onClick={ this.props.network.importAddress }>Connect this address</button>
+                          <button className="sidebar-btn is-primary-green" style={ {width: '100%'} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
                         </div>
                         <div className="align-center" style={ {margin: '4rem 0 2rem'} }>
                           <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>

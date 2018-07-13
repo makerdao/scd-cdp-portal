@@ -14,7 +14,7 @@ class NetworkStore {
   network = "";
   outOfSync = true;
   isHw = false;
-  hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+  hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
   downloadClient = false;
 
   checkNetwork = () => {
@@ -93,7 +93,7 @@ class NetworkStore {
     clearInterval(this.checkAccountsInterval);
     clearInterval(this.checkNetworkInterval);
     this.network = "";
-    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], addressIndex: null, loading: false, error: null};
+    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
     this.accounts = [];
     this.defaultAccount = null;
     this.isConnected = false;
@@ -163,7 +163,6 @@ class NetworkStore {
       await Blockchain.setHWProvider(this.hw.option, settings.hwNetwork, `${this.hw.derivationPath.replace('m/', '')}/0`, 0, 50);
       const accounts = await Blockchain.getAccounts();
       this.hw.addresses = accounts;
-      this.hw.addressIndex = 0;
     } catch(e) {
       Blockchain.stopProvider();
       this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
@@ -172,16 +171,11 @@ class NetworkStore {
     }
   }
 
-  selectHWAddress = address => {
-    this.hw.addressIndex = this.hw.addresses.indexOf(address);
-  }
-
-  importAddress = async () => {
+  importAddress = account => {
     try {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.hw.showSelector = false;
-      const account = await Blockchain.getDefaultAccountByIndex(this.hw.addressIndex);
       Blockchain.setDefaultAccount(account);
       this.checkNetwork();
       this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
