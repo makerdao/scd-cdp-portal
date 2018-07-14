@@ -4,15 +4,15 @@ class DialogStore {
   show = false;
   method = null;
   cupId = false;
-  error = '';
-  warning = '';
+  error = "";
+  warning = "";
 
 
   handleOpenDialog = e => {
     e.preventDefault();
     this.show = true;
-    this.method = e.currentTarget.getAttribute('data-method');
-    this.cupId = e.currentTarget.getAttribute('data-cup') ? e.currentTarget.getAttribute('data-cup') : false;
+    this.method = e.currentTarget.getAttribute("data-method");
+    this.cupId = e.currentTarget.getAttribute("data-cup") ? e.currentTarget.getAttribute("data-cup") : false;
   }
 
   handleCloseDialog = e => {

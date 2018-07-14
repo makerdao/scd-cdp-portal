@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 import {Provider} from "mobx-react";
 
-import App from './components/App';
-import {BrowserRouter} from 'react-router-dom';
+import App from "./components/App";
+import {BrowserRouter} from "react-router-dom";
 
 import dialog from "./stores/Dialog";
 import network from "./stores/Network";
@@ -23,4 +23,4 @@ ReactDOM.render((
       <App />
     </Provider>
   </BrowserRouter>
-), document.getElementById('root'));
+), document.getElementById("root"));

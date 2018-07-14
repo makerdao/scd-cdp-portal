@@ -1,30 +1,30 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import {inject} from "mobx-react";
-import Steps, {Step} from 'rc-steps';
+import Steps, {Step} from "rc-steps";
 
-import InlineNotification from './InlineNotification';
-import LegacyCupsAlert from './LegacyCupsAlert';
-import TooltipHint from './TooltipHint';
+import InlineNotification from "./InlineNotification";
+import LegacyCupsAlert from "./LegacyCupsAlert";
+import TooltipHint from "./TooltipHint";
 
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from '../helpers';
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../helpers";
 
-import 'rc-steps/assets/index.css';
+import "rc-steps/assets/index.css";
 
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 const steps = [
-  { text: 'Creating your new CDP' },
+  { text: "Creating your new CDP" },
   {
-    text: 'Wrap ETH to WETH - ERC 20 tokenization',
+    text: "Wrap ETH to WETH - ERC 20 tokenization",
     tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
   },
   {
-    text: 'Converting WETH to PETH',
+    text: "Converting WETH to PETH",
     tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
   },
-  { text: 'CDP is collateralized with PETH - Your converted ETH is locked' },
-  { text: 'DAI generated -  Your requested DAI are generated' },
-  { text: 'DAI transferred - Your requested DAI are transferred to your wallet' }
+  { text: "CDP is collateralized with PETH - Your converted ETH is locked" },
+  { text: "DAI generated -  Your requested DAI are generated" },
+  { text: "DAI transferred - Your requested DAI are transferred to your wallet" }
 ];
 
 class Wizard extends Component {
@@ -78,7 +78,7 @@ class Wizard extends Component {
         state.error = false;
 
         if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
-          state.error = 'The amount of ETH exceeds your balance.';
+          state.error = "The amount of ETH exceeds your balance.";
           return state;
         }
 
@@ -87,14 +87,14 @@ class Wizard extends Component {
           const availDai = wdiv(pro, wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
 
           if (this.props.system.sin.totalSupply.add(state.dai).gt(this.props.system.tub.cap)) {
-            state.error = 'The amount of DAI exceeds the system debt ceiling.';
+            state.error = "The amount of DAI exceeds the system debt ceiling.";
           } else if (state.dai.gt(availDai)) {
-            state.error = 'The amount of ETH to be deposited is not enough to draw this amount of DAI.';
+            state.error = "The amount of ETH to be deposited is not enough to draw this amount of DAI.";
           } else {
             state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
             state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
             if (state.ratio.lt(WAD.times(2))) {
-              state.warning = 'The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.';
+              state.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
             }
             state.submitEnabled = true;
           }
@@ -129,7 +129,7 @@ class Wizard extends Component {
     return (
       <div>
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
-        <header className="col" style={ {borderBottom: 'none'} }>
+        <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
             <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
             <Step title="Confirm details" icon={<StepIcon step="2" />} />
@@ -142,11 +142,11 @@ class Wizard extends Component {
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
                 <div className="row">
 
-                  <div className="col col-2" style={ {border: 'none'} }>
+                  <div className="col col-2" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
-                    <div style={ {display: 'inline-block'} }>
-                      <input ref={ input => this.eth = input } style={ {minWidth: '15rem'} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues('eth', e.target.value) } } />
-                      <span className="unit" style={ {marginBottom: '0.35rem' } }>ETH</span>
+                    <div style={ {display: "inline-block"} }>
+                      <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } />
+                      <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
                       <div className="typo-cs align-right">{printNumber(this.state.skr)} PETH
                         <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                       </div>
@@ -159,9 +159,9 @@ class Wizard extends Component {
 
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
-                    <div style={ {display: 'inline-block'} }>
-                      <input ref={ input => this.dai = input } style={ {minWidth: '15rem'} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues('dai', e.target.value) } } />
-                      <span className="unit" style={ {marginBottom: '0.35rem' } }>DAI</span>
+                    <div style={ {display: "inline-block"} }>
+                      <input ref={ input => this.dai = input } style={ {minWidth: "15rem"} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } />
+                      <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
                         <p className="typo-cs align-right">Max DAI available to borrow: { printNumber(this.state.maxDaiAvail) } DAI</p>
@@ -174,10 +174,10 @@ class Wizard extends Component {
                 <div className="row">
 
                   <div className="col col-2">
-                    <div style={ {marginBottom: '1rem'}}>
+                    <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
                       <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-                      <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : '--' } USD</div>
+                      <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
@@ -192,10 +192,10 @@ class Wizard extends Component {
                   </div>
 
                   <div className="col col-2">
-                    <div style={ {marginBottom: '1rem'}}>
+                    <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
                       <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-                      <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : '--' }%</div>
+                      <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Minimum ratio</h3>
@@ -209,14 +209,14 @@ class Wizard extends Component {
 
                 </div>
 
-                <div className="row" style={ {borderBottom: 'none'} }>
+                <div className="row" style={ {borderBottom: "none"} }>
                   <p className="no-select">
                     Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
                     <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
                   </p>
                 </div>
 
-                <div className="row" style={ {borderBottom: 'none'} }>
+                <div className="row" style={ {borderBottom: "none"} }>
                   {
                     this.state.error &&
                     <p id="errorMessage" className="error">
@@ -225,7 +225,7 @@ class Wizard extends Component {
                   }
                 </div>
 
-                <div className="row" style={ {borderBottom: 'none'} }>
+                <div className="row" style={ {borderBottom: "none"} }>
                   <div className="col">
                     <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
                   </div>
@@ -255,7 +255,7 @@ class Wizard extends Component {
                 </div>
               </div>
 
-              <div className="row" style={ {marginTop: '50px'} }>
+              <div className="row" style={ {marginTop: "50px"} }>
                 <div className="col">
                   <h3 className="typo-cl">Transaction details</h3>
                 </div>
@@ -263,7 +263,7 @@ class Wizard extends Component {
 
               <div className="row">
                 <div className="col">
-                  <h3 className="typo-cl" style={ {marginBottom: '1rem'} }>Automated smart contract transaction</h3>
+                  <h3 className="typo-cl" style={ {marginBottom: "1rem"} }>Automated smart contract transaction</h3>
 
                   <div className="typo-c no-select clear-left">
                     {
@@ -298,11 +298,11 @@ class Wizard extends Component {
                 </div>
               </div>
 
-              <div className="row" style={ {marginTop: '50px', border: 'none'} }>
+              <div className="row" style={ {marginTop: "50px", border: "none"} }>
                 <div className="col">
-                  <div style={ {marginBottom: '2rem'} }>
+                  <div style={ {marginBottom: "2rem"} }>
                     <label>
-                      <input style={ {visibility: 'initial'} } type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, 'checkTerms')}/>&nbsp;
+                      <input style={ {visibility: "initial"} } type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, "checkTerms")}/>&nbsp;
                       I have read and the accepted the MakerDao’s terms and conditions.
                     </label>
                   </div>
@@ -319,4 +319,4 @@ class Wizard extends Component {
   }
 }
 
-export default inject('profile')(inject('system')(Wizard));
+export default inject("profile")(inject("system")(Wizard));

@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
 import {observer} from "mobx-react";
-import Markdown from 'markdown-to-jsx';
-import Menu from './Menu';
+import Markdown from "markdown-to-jsx";
+
+import Menu from "./Menu";
 
 const md = `# Dai Terms of Service
 

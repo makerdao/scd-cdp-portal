@@ -1,6 +1,6 @@
 
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
 class WalletClientSelector extends React.Component {
   render() {
@@ -60,4 +60,4 @@ class WalletClientSelector extends React.Component {
   }
 }
 
-export default inject('network')(observer(WalletClientSelector));
+export default inject("network")(observer(WalletClientSelector));

@@ -1,11 +1,14 @@
 import {observable, decorate, computed} from "mobx";
-import * as Blockchain from "../blockchainHandler";
 
 import NetworkStore from "./Network";
+import ProfileStore from "./Profile";
+import SystemStore from "./System";
 
-import {etherscanTx, methodSig} from '../helpers';
 
-const settings = require('../settings');
+import * as Blockchain from "../blockchainHandler";
+import {etherscanTx, methodSig} from "../helpers";
+
+const settings = require("../settings");
 
 class TransactionsStore {
   registry = {};
@@ -48,7 +51,7 @@ class TransactionsStore {
 
   logRequestTransaction = (id, title, cdpCreationTx) => {
     this.cdpCreationTx = cdpCreationTx;
-    const msgTemp = 'Waiting for transaction signature...';
+    const msgTemp = "Waiting for transaction signature...";
     this.notificator.info(id, title, msgTemp, false);
   }
 
@@ -59,7 +62,7 @@ class TransactionsStore {
 
   sendTransaction = (title, func, params, options, callbacks) => {
     const cdpCreationTx = params[0] === settings.chain[NetworkStore.network].proxyRegistry || // This means it is calling to the createLockAndDraw
-                          (typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10));
+                          (typeof params[1] === "string" && methodSig("lockAndDraw(address,uint256)") === params[1].substring(0, 10));
     const id = Math.random();
     this.logRequestTransaction(id, title, cdpCreationTx);
     func(...params, options, (e, tx) => this.log(e, tx, id, title, callbacks));
@@ -81,50 +84,50 @@ class TransactionsStore {
   }
 
   logPendingTransaction = (id, tx, title, callbacks = []) => {
-    const msgTemp = 'Transaction TX was created. Waiting for confirmation...';
+    const msgTemp = "Transaction TX was created. Waiting for confirmation...";
     const registry = {...this.registry};
     registry[tx] = {pending: true, title, callbacks, cdpCreationTx: this.cdpCreationTx};
     this.registry = registry;
     this.cdpCreationTx = false;
-    console.log(msgTemp.replace('TX', tx));
+    console.log(msgTemp.replace("TX", tx));
     this.notificator.hideNotification(id);
     if (!this.registry[tx].cdpCreationTx) {
-      this.notificator.info(tx, title, etherscanTx(NetworkStore.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
+      this.notificator.info(tx, title, etherscanTx(NetworkStore.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), false);
     }
   }
 
   logTransactionConfirmed = tx => {
-    const msgTemp = 'Transaction TX was confirmed.';
+    const msgTemp = "Transaction TX was confirmed.";
     if (this.registry[tx] && this.registry[tx].pending) {
       const registry = {...this.registry};
       registry[tx].pending = false;
       this.registry = registry;
-      console.log(msgTemp.replace('TX', tx));
+      console.log(msgTemp.replace("TX", tx));
       this.notificator.hideNotification(tx);
       if (!this.registry[tx].cdpCreationTx) {
-        this.notificator.success(tx, this.registry[tx].title, etherscanTx(NetworkStore.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 6000);
+        this.notificator.success(tx, this.registry[tx].title, etherscanTx(NetworkStore.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
       }
-      if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
+      if (typeof this.registry[tx].callbacks !== "undefined" && this.registry[tx].callbacks.length > 0) {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
       }
     }
   }
 
   logTransactionFailed = tx => {
-    const msgTemp = 'Transaction TX failed.';
+    const msgTemp = "Transaction TX failed.";
     if (this.registry[tx]) {
       const registry = {...this.registry};
       registry[tx].pending = false;
       registry[tx].cdpCreationTx = false;
       this.registry = registry;
-      console.log(msgTemp.replace('TX', tx));
-      this.notificator.error(tx, this.registry[tx].title, msgTemp.replace('TX', `${tx.substring(0,10)}...`), 5000);
+      console.log(msgTemp.replace("TX", tx));
+      this.notificator.error(tx, this.registry[tx].title, msgTemp.replace("TX", `${tx.substring(0,10)}...`), 5000);
       this.lookForCleanCallBack(this.registry[tx].callbacks);
     }
   }
 
   logTransactionRejected = (id, title, callbacks = []) => {
-    const msg = 'User denied transaction signature.';
+    const msg = "User denied transaction signature.";
     this.notificator.error(id, title, msg, 5000);
     this.lookForCleanCallBack(callbacks);
   }
@@ -139,7 +142,7 @@ class TransactionsStore {
 
   addLoading = (method, param) => {
     const loading = {...this.loading};
-    if (typeof loading[method] === 'undefined') loading[method] = {};
+    if (typeof loading[method] === "undefined") loading[method] = {};
     loading[method][param] = true;
     this.loading = loading;
   }
@@ -152,10 +155,10 @@ class TransactionsStore {
 
   lookForCleanCallBack = (callbacks = []) => {
     callbacks.forEach(callback => {
-      if (callback[0] === 'transactions/cleanLoading') {
+      if (callback[0] === "transactions/cleanLoading") {
         this.executeCallback(callback)
       }
-      if (typeof callback[callback.length - 1] === 'object') {
+      if (typeof callback[callback.length - 1] === "object") {
         this.lookForCleanCallBack(callback[callback.length - 1]);
       }
     });
@@ -168,14 +171,25 @@ class TransactionsStore {
   executeCallback = args => {
     let method = args.shift();
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
-    const timeout = ['transactions/cleanLoading', 'system/setAllowance', 'system/checkAllowance', 'system/lockAndDraw', 'system/wipeAndFree', 'system/lock', 'system/draw', 'system/wipe', 'system/free', 'system/shut', 'system/give', 'system/migrateCDP', 'system/moveLegacyCDP'].indexOf(method) !== -1 ? 0 : 5000;
+    const timeout = ["transactions/cleanLoading", "system/setAllowance", "system/checkAllowance", "system/lockAndDraw", "system/wipeAndFree", "system/lock", "system/draw", "system/wipe", "system/free", "system/shut", "system/give", "system/migrateCDP", "system/moveLegacyCDP"].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
-      method = method.split('/');
-      console.log('executeCallback', `${method[0]}.${method[1]}`, args);
-      if (method[0] === 'transactions') {
+      method = method.split("/");
+      console.log("executeCallback", `${method[0]}.${method[1]}`, args);
+      if (method[0] === "transactions") {
         this[method[1]](...args);
       } else {
-        this[method[0]][method[1]](...args);
+        let object = null;
+        switch(method[0]){
+          case "system":
+            object = SystemStore;
+            break;
+          case "profile":
+            object = ProfileStore;
+            break;
+          default:
+            break;
+        }
+        object && object[method[1]](...args);
       }
     }, timeout);
   }

@@ -1,7 +1,7 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-import {printNumber, wdiv, wmul} from '../helpers';
+import {printNumber, wdiv, wmul} from "../helpers";
 
 class SystemInfo extends React.Component {
   render() {
@@ -9,7 +9,7 @@ class SystemInfo extends React.Component {
       <div className="col col-2-m info-section">
         <div className="price-info">
           <h2 className="typo-h2">Price Info
-            <span className="typo-c right" style={ {textTransform: 'capitalize'} }>{ this.props.network.network === 'main' ? 'mainnet' : this.props.network.network }</span>
+            <span className="typo-c right" style={ {textTransform: "capitalize"} }>{ this.props.network.network === "main" ? "mainnet" : this.props.network.network }</span>
           </h2>
           <h3 className="typo-c">ETH/USD</h3>
           <div className="value">
@@ -71,7 +71,7 @@ class SystemInfo extends React.Component {
                   <span className="unit">%</span>
                 </span>
               :
-                'Loading...'
+                "Loading..."
             }
           </div>
           <h3 className="typo-c">Maximum Global DAI Available</h3>
@@ -91,4 +91,4 @@ class SystemInfo extends React.Component {
   }
 }
 
-export default inject('network')(inject('system')(observer(SystemInfo)));
+export default inject("network")(inject("system")(observer(SystemInfo)));

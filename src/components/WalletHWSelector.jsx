@@ -1,22 +1,24 @@
-import React from 'react';
+import React from "react";
 import {inject, observer} from "mobx-react";
-import createClass from 'create-react-class';
-import { getJazziconIcon, capitalize, truncateAddress } from "../helpers";
-import LoadingSpinner from './LoadingSpinner';
-import Select from 'react-select';
-import PropTypes from 'prop-types';
+import createClass from "create-react-class";
+import PropTypes from "prop-types";
+import Select from "react-select";
 
-const settings = require('../settings');
+import LoadingSpinner from "./LoadingSpinner";
+
+import { getJazziconIcon, capitalize, truncateAddress } from "../helpers";
+
+const settings = require("../settings");
 
 const SHOW_ADDRESSES_MAX = 10;
 const IDENTICON_SIZE = 18;
 const identiconStyle = {
   borderRadius: 3,
-  display: 'inline-block',
+  display: "inline-block",
   marginRight: 10,
-  position: 'relative',
+  position: "relative",
   top: -2,
-  verticalAlign: 'middle',
+  verticalAlign: "middle",
 };
 
 const stringOrNode = PropTypes.oneOfType([
@@ -101,21 +103,21 @@ class WalletHardHWSelector extends React.Component {
           ?
             <React.Fragment>
               {
-                this.props.network.hw.option === 'ledger' &&
+                this.props.network.hw.option === "ledger" &&
                 <React.Fragment>
                   <h2>Plug in Ledger &amp; Enter Pin</h2>
                   <p className="typo-c align-center">Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
                 </React.Fragment>
               }
               {
-                this.props.network.hw.option === 'trezor' &&
+                this.props.network.hw.option === "trezor" &&
                 <React.Fragment>
                   <h2>Plugin Trezor</h2>
                   <p className="typo-c align-center">Export account from Trezor Popup.<br />Make sure your browser is not blocking it.</p>
                 </React.Fragment>
               }
               <LoadingSpinner />
-              <div className="align-center" style={ {margin: '1rem 0'} }>
+              <div className="align-center" style={ {margin: "1rem 0"} }>
                 <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
               </div>
             </React.Fragment>
@@ -127,7 +129,7 @@ class WalletHardHWSelector extends React.Component {
                   <React.Fragment>
                     <h2 className="connect-fail">{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
-                      this.props.network.hw.option === 'ledger' &&
+                      this.props.network.hw.option === "ledger" &&
                       <p className="typo-c">
                         <ol>
                           <li>Unlock your Ledger and open the ETH application.</li>
@@ -137,10 +139,10 @@ class WalletHardHWSelector extends React.Component {
                       </p>
                     }
                     {
-                      this.props.network.hw.option === 'trezor' &&
+                      this.props.network.hw.option === "trezor" &&
                       <p className="typo-c align-center">Error connecting to Trezor.</p>
                     }
-                    <div className="align-center" style={ {margin: '2rem 0 1rem '} }>
+                    <div className="align-center" style={ {margin: "2rem 0 1rem "} }>
                       <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button><button className="sidebar-btn is-primary" href="#action" onClick={ this.props.network.loadHWAddresses }>Detect</button>
                     </div>
                   </React.Fragment>
@@ -148,9 +150,9 @@ class WalletHardHWSelector extends React.Component {
                   this.props.network.hw.addresses.length > 0 &&
                   <React.Fragment>
                     <h2 className="connect-success">{ capitalize(this.props.network.hw.option) } Connected</h2>
-                    <section style={ { width: '75%', margin: '0 auto' } }>
-                      <p className="typo-c align-center" style={ {color: '#fff'} }><span className="green-dot"></span>{ settings.hwNetwork === 'main' ? 'Etherem' : 'Test' } { settings.hwNetwork } Network</p>
-                      <div style={ {margin: '2.5rem 0 2.4rem'} }>
+                    <section style={ { width: "75%", margin: "0 auto" } }>
+                      <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ settings.hwNetwork === "main" ? "Etherem" : "Test" } { settings.hwNetwork } Network</p>
+                      <div style={ {margin: "2.5rem 0 2.4rem"} }>
                         <Select
                           name="wallet-address"
                           value={ value }
@@ -163,9 +165,9 @@ class WalletHardHWSelector extends React.Component {
                           />
                         </div>
                         <div className="align-center">
-                          <button className="sidebar-btn is-primary-green" style={ {width: '100%'} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
+                          <button className="sidebar-btn is-primary-green" style={ {width: "100%"} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
                         </div>
-                        <div className="align-center" style={ {margin: '4rem 0 2rem'} }>
+                        <div className="align-center" style={ {margin: "4rem 0 2rem"} }>
                           <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
                         </div>
                     </section>
@@ -178,4 +180,4 @@ class WalletHardHWSelector extends React.Component {
   }
 }
 
-export default inject('network')(observer(WalletHardHWSelector));
+export default inject("network")(observer(WalletHardHWSelector));

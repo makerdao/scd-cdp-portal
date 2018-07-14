@@ -1,6 +1,6 @@
-import React from 'react';
-import web3 from './web3';
-import jazzicon from 'jazzicon';
+import React from "react";
+import web3 from "./web3";
+import jazzicon from "jazzicon";
 
 export const WAD = web3.toBigNumber(web3.toWei(1));
 
@@ -12,24 +12,24 @@ var padLeft = (string, chars, sign) => {
 
 export const toBytes32 = (x, prefix = true) => {
   let y = web3.toHex(x);
-  y = y.replace('0x', '');
+  y = y.replace("0x", "");
   y = padLeft(y, 64);
-  if (prefix) y = '0x' + y;
+  if (prefix) y = "0x" + y;
   return y;
 }
 
 export const toBytes12 = (x, prefix = true) => {
   let y = web3.toHex(x);
-  y = y.replace('0x', '');
+  y = y.replace("0x", "");
   y = padLeft(y, 24);
-  if (prefix) y = '0x' + y;
+  if (prefix) y = "0x" + y;
   return y;
 }
 
 export const addressToBytes32 = (x, prefix = true) => {
-  let y = x.replace('0x', '');
+  let y = x.replace("0x", "");
   y = padLeft(y, 64);
-  if (prefix) y = '0x' + y;
+  if (prefix) y = "0x" + y;
   return y;
 }
 
@@ -47,9 +47,9 @@ export const formatNumber = (number, decimals = false, isWei = true/*, trimTrail
     object = object.valueOf();
   }
 
-  const parts = object.toString().split('.');
-  // if (trimTrailingZeroes && parts[1]) parts[1] = parts[1].replace(/0+$/, '');
-  return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (parts[1] ? `.${parts[1]}` : '');
+  const parts = object.toString().split(".");
+  // if (trimTrailingZeroes && parts[1]) parts[1] = parts[1].replace(/0+$/, "");
+  return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? `.${parts[1]}` : "");
 }
 
 export const formatDate = timestamp => {
@@ -70,22 +70,22 @@ export const fromRaytoWad = x => {
 }
 
 export const copyToClipboard = e => {
-  const value = e.target.title.replace(',', '');
+  const value = e.target.title.replace(",", "");
   var aux = document.createElement("input");
-  aux.setAttribute('value', web3.toBigNumber(value).valueOf());
+  aux.setAttribute("value", web3.toBigNumber(value).valueOf());
   document.body.appendChild(aux);
   aux.select();
   document.execCommand("copy");
   document.body.removeChild(aux);
   const div = document.createElement("div");
   div.innerHTML = "Copied to clipboard";
-  div.style.position = 'absolute';
-  div.style.fontSize = '10px';
-  div.style.border = '1px solid #D2D2D2';
-  div.style.color = '#555';
-  div.style.padding = '2px';
-  div.style.background = '#FFF';
-  div.style.marginTop = '5px';
+  div.style.position = "absolute";
+  div.style.fontSize = "10px";
+  div.style.border = "1px solid #D2D2D2";
+  div.style.color = "#555";
+  div.style.padding = "2px";
+  div.style.background = "#FFF";
+  div.style.marginTop = "5px";
   e.target.appendChild(div);
   const parent = e.target;
   setTimeout(() => parent.removeChild(div), 1000);
@@ -110,7 +110,7 @@ export const wdiv = (a, b) => {
 }
 
 const etherscanUrl = network => {
-  return `https://${ network !== 'main' ? `${network}.` : '' }etherscan.io`;
+  return `https://${ network !== "main" ? `${network}.` : "" }etherscan.io`;
 }
 
 export const etherscanAddress = (network, text, address) => {
@@ -122,7 +122,7 @@ export const etherscanTx = (network, text, tx) => {
 }
 
 export const etherscanToken = (network, text, token, holder = false) => {
-  return <a href={ `${etherscanUrl(network)}/token/${token}${holder ? `?a=${holder}` : ''}` } target="_blank" rel="noopener noreferrer">{ text }</a>
+  return <a href={ `${etherscanUrl(network)}/token/${token}${holder ? `?a=${holder}` : ""}` } target="_blank" rel="noopener noreferrer">{ text }</a>
 }
 
 export const methodSig = method => {
@@ -142,7 +142,7 @@ export const jsNumberForAddress = address => {
 }
 
 export const getJazziconIcon = (address, size) => {
-  return <div className="identicon" style={ {width: `${size}px`, height: `${size}px`, overflow: 'hidden', borderRadius: '50%' } } dangerouslySetInnerHTML={ {__html: jazzicon(size, jsNumberForAddress(address)).innerHTML} } />
+  return <div className="identicon" style={ {width: `${size}px`, height: `${size}px`, overflow: "hidden", borderRadius: "50%" } } dangerouslySetInnerHTML={ {__html: jazzicon(size, jsNumberForAddress(address)).innerHTML} } />
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;

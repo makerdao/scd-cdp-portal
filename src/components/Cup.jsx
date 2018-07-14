@@ -1,11 +1,11 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-// import CupChart from './CupChart'
-import CupHistory from './CupHistory';
-import TooltipHint from './TooltipHint';
+// import CupChart from "./CupChart"
+import CupHistory from "./CupHistory";
+import TooltipHint from "./TooltipHint";
 
-import {WAD, printNumber, wmul, toBigNumber, toWei} from '../helpers';
+import {WAD, printNumber, wmul, toBigNumber, toWei} from "../helpers";
 
 class Cup extends React.Component {
   componentDidMount() {
@@ -17,27 +17,27 @@ class Cup extends React.Component {
     const actions = {
       lock: {
               active: this.props.system.tub.off === false && this.props.profile.accountBalance && this.props.profile.accountBalance.gt(0),
-              helper: 'Add collateral to a CDP'
+              helper: "Add collateral to a CDP"
             },
       free: {
               active: this.props.system.pip.val.gt(0) && cup.ink.gt(0) && cup.safe && (this.props.system.tub.off === false || cup.art.eq(0)),
-              helper: 'Remove collateral from a CDP'
+              helper: "Remove collateral from a CDP"
             },
       draw: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup.ink.gt(0) && cup.safe,
-              helper: 'Create Dai against a CDP'
+              helper: "Create Dai against a CDP"
             },
       wipe: {
               active: this.props.system.tub.off === false && cup.art.gt(0),
-              helper: 'Use Dai to cancel CDP debt'
+              helper: "Use Dai to cancel CDP debt"
             },
       shut: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false,
-              helper: 'Close a CDP - Wipe all debt, Free all collateral, and delete the CDP'
+              helper: "Close a CDP - Wipe all debt, Free all collateral, and delete the CDP"
             },
       give: {
               active: this.props.system.tub.off === false,
-              helper: 'Transfer CDP ownership'
+              helper: "Transfer CDP ownership"
             },
     };
     return (
@@ -58,7 +58,7 @@ class Cup extends React.Component {
         </div>
         <div className="row">
           <div className="col col-2">
-            <div style={ {marginBottom: '1rem'}}>
+            <div style={ {marginBottom: "1rem"}}>
               <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
@@ -67,7 +67,7 @@ class Cup extends React.Component {
                   ?
                     <span>{ printNumber(cup.liq_price) }<span className="unit">USD</span></span>
                   :
-                    '-'
+                    "-"
                 }
               </div>
             </div>
@@ -87,7 +87,7 @@ class Cup extends React.Component {
             </div>
           </div>
           <div className="col col-2">
-            <div style={ {marginBottom: '1rem'}}>
+            <div style={ {marginBottom: "1rem"}}>
               <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
               <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               <div className="value typo-cl right">
@@ -100,9 +100,9 @@ class Cup extends React.Component {
                           { printNumber(toWei(cup.ratio).times(100)) }<span className="unit">%</span>
                         </span>
                       :
-                        '-'
+                        "-"
                     :
-                      '-'
+                      "-"
                 }
               </div>
             </div>
@@ -123,13 +123,13 @@ class Cup extends React.Component {
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Deposited</h4>
               <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Deposit</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Deposit</button>
               </div>
-              <div className="right align-right" style={ {marginRight: '1rem'} }>
+              <div className="right align-right" style={ {marginRight: "1rem"} }>
                 <div className="value block typo-cl">
                   { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span>
                 </div>
-                <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                   { printNumber(cup.ink) }<span className="unit">PETH</span>
                   <span className="separator">&nbsp;|&nbsp;</span>
                   { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
@@ -137,27 +137,27 @@ class Cup extends React.Component {
               </div>
             </div>
             <div className="inner-row">
-              <h4 className="typo-c inline-headline" style={ {maxWidth: '8rem' } }>Max. available to withdraw
+              <h4 className="typo-c inline-headline" style={ {maxWidth: "8rem" } }>Max. available to withdraw
                 <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
               </h4>
               <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Withdraw</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Withdraw</button>
               </div>
               {
                 this.props.system.tub.off === false
                 ?
-                <div className="right align-right" style={ {marginRight: '1rem'} }>
+                <div className="right align-right" style={ {marginRight: "1rem"} }>
                   <div className="value block typo-cl">
                     { printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span>
                   </div>
-                  <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                  <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                     { printNumber(cup.avail_skr) }<span className="unit">PETH</span>
                     <span className="separator">&nbsp;|&nbsp;</span>
                     { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
                   </div>
                 </div>
                 :
-                  '-'
+                  "-"
               }
             </div>
           </div>
@@ -166,13 +166,13 @@ class Cup extends React.Component {
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Generated</h4>
               <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Payback</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Payback</button>
               </div>
-              <div className="right align-right" style={ {marginRight: '1rem'} }>
+              <div className="right align-right" style={ {marginRight: "1rem"} }>
                 <div className="value block typo-cl">
                   { printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span>
                 </div>
-                <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                   { printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span>
                 </div>
               </div>
@@ -180,21 +180,21 @@ class Cup extends React.Component {
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Max. available to generate</h4>
               <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: '8rem' } } disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Generate</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Generate</button>
               </div>
               {
                 this.props.system.tub.off === false
                 ?
-                <div className="right align-right" style={ {marginRight: '1rem'} }>
+                <div className="right align-right" style={ {marginRight: "1rem"} }>
                   <div className="value block typo-cl">
                     { printNumber(cup.avail_dai) }<span className="unit">DAI</span>
                   </div>
-                  <div className="value block typo-c" style={ {lineHeight: '1rem'} }>
+                  <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                     { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span>
                   </div>
                 </div>
                 :
-                  '-'
+                  "-"
               }
             </div>
           </div>
@@ -205,4 +205,4 @@ class Cup extends React.Component {
   }
 }
 
-export default inject('profile')(inject('system')(inject('dialog')(observer(Cup))));
+export default inject("profile")(inject("system")(inject("dialog")(observer(Cup))));

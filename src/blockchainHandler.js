@@ -1,20 +1,20 @@
-import web3 from './web3';
-import Promise from 'bluebird';
+import web3 from "./web3";
+import Promise from "bluebird";
 
-// const settings = require('./settings');
+// const settings = require("./settings");
 const promisify = Promise.promisify;
 const schema = {};
 
-schema.tub = require('./abi/saitub');
-schema.top = require('./abi/saitop');
-schema.tap = require('./abi/saitap');
-schema.vox = require('./abi/saivox');
-schema.proxyregistry = require('./abi/proxyregistry');
-schema.dsproxy = require('./abi/dsproxy');
-schema.dsethtoken = require('./abi/dsethtoken');
-schema.dstoken = require('./abi/dstoken');
-schema.dsvalue = require('./abi/dsvalue');
-schema.proxycreationandexecute = require('./abi/proxycreationandexecute');
+schema.tub = require("./abi/saitub");
+schema.top = require("./abi/saitop");
+schema.tap = require("./abi/saitap");
+schema.vox = require("./abi/saivox");
+schema.proxyregistry = require("./abi/proxyregistry");
+schema.dsproxy = require("./abi/dsproxy");
+schema.dsethtoken = require("./abi/dsethtoken");
+schema.dstoken = require("./abi/dstoken");
+schema.dsvalue = require("./abi/dsvalue");
+schema.proxycreationandexecute = require("./abi/proxycreationandexecute");
 
 export const objects = {
 }
@@ -37,7 +37,7 @@ export const setDefaultAccount = account => {
 }
 
 export const getDefaultAccount = () => {
-  return typeof web3.eth.defaultAccount !== 'undefined' ? web3.eth.defaultAccount : null;
+  return typeof web3.eth.defaultAccount !== "undefined" ? web3.eth.defaultAccount : null;
 }
 
 export const getDefaultAccountByIndex = index => {
@@ -72,7 +72,7 @@ export const getTransactionReceipt = tx => {
 }
 
 export const getTransactionCount = address => {
-  return promisify(web3.eth.getTransactionCount)(address, 'pending');
+  return promisify(web3.eth.getTransactionCount)(address, "pending");
 }
 
 export const getNode = () => {
@@ -121,15 +121,15 @@ export const tokenApprove = (token, dst, gasPrice) => {
 }
 
 export const getProxy = account => {
-  return promisify(objects.proxyRegistry.proxies)(account).then(r => r === '0x0000000000000000000000000000000000000000' ? null : getProxyOwner(r).then(r2 => r2 === account ? r : null));
+  return promisify(objects.proxyRegistry.proxies)(account).then(r => r === "0x0000000000000000000000000000000000000000" ? null : getProxyOwner(r).then(r2 => r2 === account ? r : null));
 }
 
 export const getProxyOwner = proxy => {
-  return promisify(loadObject('dsproxy', proxy).owner)();
+  return promisify(loadObject("dsproxy", proxy).owner)();
 }
 
 export const proxyExecute = (proxyAddr, targetAddr, calldata, gasPrice, value = 0) => {
-  const proxyExecuteCall = loadObject('dsproxy', proxyAddr).execute['address,bytes'];
+  const proxyExecuteCall = loadObject("dsproxy", proxyAddr).execute["address,bytes"];
   return promisify(proxyExecuteCall)(targetAddr,calldata, {value, gasPrice});
 }
 
@@ -174,4 +174,4 @@ export const setWebClientProvider = () => {
   return web3.setWebClientProvider();
 }
 
-export const {getWebClientProviderName} = require('./web3');
+export const {getWebClientProviderName} = require("./web3");

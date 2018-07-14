@@ -1,8 +1,8 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-import Cup from './Cup';
-import LegacyCupsAlert from './LegacyCupsAlert';
+import Cup from "./Cup";
+import LegacyCupsAlert from "./LegacyCupsAlert";
 
 class Dashboard extends React.Component {
   render() {
@@ -19,4 +19,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default inject('system')(observer(Dashboard));
+export default inject("system")(observer(Dashboard));

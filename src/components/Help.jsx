@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import {observer} from "mobx-react";
 
-import Menu from './Menu';
+import Menu from "./Menu";
 
 class Help extends React.Component {
   render() {

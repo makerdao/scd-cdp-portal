@@ -1,17 +1,17 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
-import {Link} from 'react-router-dom';
+import React from "react";
+import {inject, observer} from "mobx-react";
+import {Link} from "react-router-dom";
 
-import WalletClientDownload from './WalletClientDownload';
-import WalletClientSelector from './WalletClientSelector';
-import WalletHWSelector from './WalletHWSelector';
-import WalletNoAccount from './WalletNoAccount';
-import WalletSendToken from './WalletSendToken';
-import ToggleSwitch from './ToggleSwitch';
+import ToggleSwitch from "./ToggleSwitch";
+import WalletClientDownload from "./WalletClientDownload";
+import WalletClientSelector from "./WalletClientSelector";
+import WalletHWSelector from "./WalletHWSelector";
+import WalletNoAccount from "./WalletNoAccount";
+import WalletSendToken from "./WalletSendToken";
 
-import {getCurrentProviderName, getWebClientProviderName} from '../blockchainHandler';
-import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from '../helpers';
-import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from './DropdownMenu';
+import {getCurrentProviderName, getWebClientProviderName} from "../blockchainHandler";
+import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../helpers";
+import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from "./DropdownMenu";
 
 class Wallet extends React.Component {
   constructor() {
@@ -26,17 +26,17 @@ class Wallet extends React.Component {
     this.setState({ sendToken: null });
   }
 
-  tokenName = token => token.replace('gov', 'mkr').toUpperCase();
+  tokenName = token => token.replace("gov", "mkr").toUpperCase();
 
   formatClientName = name => {
     switch (name) {
-      case 'ledger':
-        return 'Ledger Nano S';
-      case 'metamask':
-        return 'MetaMask';
-      case 'web':
+      case "ledger":
+        return "Ledger Nano S";
+      case "metamask":
+        return "MetaMask";
+      case "web":
         let webClientName = getWebClientProviderName();
-        return webClientName === 'metamask' ? 'MetaMask' : capitalize(webClientName);
+        return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
       default:
         return capitalize(name);
     }
@@ -44,14 +44,14 @@ class Wallet extends React.Component {
 
   renderWalletOptions = () => {
     const options = [];
-    if (getWebClientProviderName() && (getCurrentProviderName() === 'ledger' || getCurrentProviderName() === 'trezor')) {
-      options.push('web');
+    if (getWebClientProviderName() && (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor")) {
+      options.push("web");
     }
-    if (getCurrentProviderName() !== 'ledger') {
-      options.push('ledger');
+    if (getCurrentProviderName() !== "ledger") {
+      options.push("ledger");
     }
-    if (getCurrentProviderName() !== 'trezor') {
-      options.push('trezor');
+    if (getCurrentProviderName() !== "trezor") {
+      options.push("trezor");
     }
     return options;
   }
@@ -59,8 +59,8 @@ class Wallet extends React.Component {
   switchConnection = e => {
     e.preventDefault();
     this.props.network.stopNetwork();
-    const client = e.currentTarget.getAttribute('data-client');
-    if (client === 'ledger' || client === 'trezor') {
+    const client = e.currentTarget.getAttribute("data-client");
+    if (client === "ledger" || client === "trezor") {
       this.props.network.showHW(client);
     } else {
       this.props.network.setWeb3WebClient();
@@ -69,9 +69,9 @@ class Wallet extends React.Component {
 
   render() {
     const tokens = {
-      'eth': {'balance': this.props.profile.accountBalance, 'usdPrice': this.props.system.pip.val, 'allowance': false},
-      'dai': {'balance': this.props.system.dai.myBalance, 'usdPrice': this.props.system.vox.par, 'allowance': false},
-      'gov': {'balance': this.props.system.gov.myBalance, 'usdPrice': this.props.system.pip.val, 'allowance': false}
+      "eth": {"balance": this.props.profile.accountBalance, "usdPrice": this.props.system.pip.val, "allowance": false},
+      "dai": {"balance": this.props.system.dai.myBalance, "usdPrice": this.props.system.vox.par, "allowance": false},
+      "gov": {"balance": this.props.system.gov.myBalance, "usdPrice": this.props.system.pip.val, "allowance": false}
     };
     return (
       <div>
@@ -103,7 +103,7 @@ class Wallet extends React.Component {
                             <DropdownMenu icon="../img/wallet-icon.png">
                               <MenuItems>
                                 {
-                                  (getCurrentProviderName() === 'ledger' || getCurrentProviderName() === 'trezor') &&
+                                  (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor") &&
                                   <MenuItem href="#action" text="Switch Address" iconsvg={
                                     <svg className="dropdown-item-icon" width="16" height="14" viewBox="0 0 16 14" xmlns="http://www.w3.org/2000/svg">
                                       <g fill="none" fillRule="evenodd" stroke="#000" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1)">
@@ -156,7 +156,7 @@ class Wallet extends React.Component {
                                       {
                                         tokens[token].balance.eq(-1) || tokens[token].usdPrice.eq(-1)
                                         ?
-                                          'Loading...'
+                                          "Loading..."
                                         :
                                           <React.Fragment>
                                             { printNumber(tokens[token].balance) }
@@ -167,7 +167,7 @@ class Wallet extends React.Component {
                                     <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>
                                     <td>
                                       {
-                                        token !== 'eth' &&
+                                        token !== "eth" &&
                                         <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.setAllowance && this.props.transactions.loading.setAllowance[token] } />
                                       }
                                     </td>
@@ -188,4 +188,4 @@ class Wallet extends React.Component {
   }
 }
 
-export default inject('network')(inject('profile')(inject('transactions')(inject('system')(observer(Wallet)))));
+export default inject("network")(inject("profile")(inject("transactions")(inject("system")(observer(Wallet)))));

@@ -1,9 +1,9 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from "./LoadingSpinner";
 
-import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from '../helpers';
+import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../helpers";
 
 const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;
 
@@ -26,7 +26,7 @@ class CupHistory extends React.Component {
         <h2 className="underline">CDP History</h2>
           <div>
             {
-              this.props.history === 'loading'
+              this.props.history === "loading"
               ?
                 <div className="col-md-12 system-status">
                   <LoadingSpinner />
@@ -43,37 +43,37 @@ class CupHistory extends React.Component {
                     {
                       this.props.history && this.props.history.length > 0 &&
                       this.props.history.map((action, key) => {
-                        let message = '', image = 'history-icon-unknown.svg';
+                        let message = "", image = "history-icon-unknown.svg";
                         switch(action.act) {
-                          case 'OPEN':
+                          case "OPEN":
                             message = <React.Fragment>Opened your CDP</React.Fragment>;
-                            image = 'history-icon-open.svg';
+                            image = "history-icon-open.svg";
                             break;
-                          case 'GIVE':
+                          case "GIVE":
                             message = <React.Fragment>Transferred CDP from {etherscanAddress(this.props.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy)}</React.Fragment>;
-                            image = 'history-icon-give.svg';
+                            image = "history-icon-give.svg";
                             break;
-                          case 'LOCK':
+                          case "LOCK":
                             message = <React.Fragment>Deposited {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) to your CDP</React.Fragment>;
-                            image = 'history-icon-locked.svg';
+                            image = "history-icon-locked.svg";
                             break;
-                          case 'FREE':
+                          case "FREE":
                             message = <React.Fragment>Withdrew {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) from your CDP</React.Fragment>;
-                            image = 'history-icon-payback.svg';
+                            image = "history-icon-payback.svg";
                             break;
-                          case 'DRAW':
+                          case "DRAW":
                             message = <React.Fragment>Generated {printNumber(toWei(action.arg))} DAI from your CDP</React.Fragment>;
-                            image = 'history-icon-borrow.svg';
+                            image = "history-icon-borrow.svg";
                             break;
-                          case 'WIPE':
+                          case "WIPE":
                             message = <React.Fragment>Paidback {printNumber(toWei(action.arg))} DAI to your CDP</React.Fragment>;
-                            image = 'history-icon-transfer.svg'; // Should this be 'history-icon-payback.svg' instead?
+                            image = "history-icon-transfer.svg"; // Should this be "history-icon-payback.svg" instead?
                             break;
-                          case 'SHUT':
+                          case "SHUT":
                             message = <React.Fragment>Closed your CDP</React.Fragment>;
-                            image = 'history-icon-unknown.svg';
+                            image = "history-icon-unknown.svg";
                             break;
-                          case 'BITE':
+                          case "BITE":
                             const art = toWei(this.props.history[key + 1].art);
                             const liqInk = toWei(this.props.history[key + 1].ink - action.ink);
                             const liqETH = liqInk * action.per;
@@ -82,7 +82,7 @@ class CupHistory extends React.Component {
                                         Your CDP has been liquidated to pay back { printNumber(art, 2) } DAI.
                                         Total {printNumber(liqETH)} ETH ({ printNumber(liqInk) } PETH) has been liquidated at { printNumber(pip, 2) } USD.
                                       </React.Fragment>;
-                            image = 'history-icon-liquidation.svg';
+                            image = "history-icon-liquidation.svg";
                             break;
                           default:
                             break;
@@ -99,9 +99,9 @@ class CupHistory extends React.Component {
                                 { message }
                               </span>
                               <span className="history-tx-links">
-                              { etherscanAddress(this.props.network.network, 'Sender', action.guy) }
+                              { etherscanAddress(this.props.network.network, "Sender", action.guy) }
                               <span className="pipe-separator">&nbsp;|&nbsp;</span>
-                              { etherscanTx(this.props.network.network, 'Tx Hash', action.tx) }
+                              { etherscanTx(this.props.network.network, "Tx Hash", action.tx) }
                               </span>
                             </div>
                           </div>
@@ -125,7 +125,7 @@ class CupHistory extends React.Component {
                     </div>
                     <div className="history-details">
                       <span onClick={ () => this.toggleExpand() }>
-                        { this.state.stepsExpanded ? 'Collapse' : 'Expand'} complete history
+                        { this.state.stepsExpanded ? "Collapse" : "Expand"} complete history
                       </span>
                     </div>
                   </div>
@@ -137,4 +137,4 @@ class CupHistory extends React.Component {
   }
 }
 
-export default inject('network')(observer(CupHistory));
+export default inject("network")(observer(CupHistory));

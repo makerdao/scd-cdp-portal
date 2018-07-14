@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {observer} from "mobx-react";
 
 class Modal extends React.Component {
@@ -7,10 +7,10 @@ class Modal extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
   componentWillMount() {
-    window.addEventListener('keydown', this.handleKeyDown.bind(this));
+    window.addEventListener("keydown", this.handleKeyDown.bind(this));
   }
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+    window.removeEventListener("keydown", this.handleKeyDown.bind(this));
   }
   handleKeyDown(event) {
     if (event.keyCode === 27) this.props.close();

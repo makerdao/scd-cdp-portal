@@ -1,7 +1,7 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-import {printNumber, toBigNumber, toWei} from '../helpers';
+import {printNumber, toBigNumber, toWei} from "../helpers";
 
 class LegacyCups extends React.Component {
   render() {
@@ -39,36 +39,36 @@ class LegacyCups extends React.Component {
                             ? <span>
                                 { printNumber(toWei(this.props.system.tub.legacyCups[key].ratio).times(100)) }%
                               </span>
-                            : '-'
-                          : '-'
+                            : "-"
+                          : "-"
                       }
                     </td>
                     <td>
-                      { this.props.system.tub.off === false && this.props.system.tub.legacyCups[key].liq_price && this.props.system.tub.legacyCups[key].liq_price.gt(0) ? printNumber(this.props.system.tub.legacyCups[key].liq_price) : '-' }
+                      { this.props.system.tub.off === false && this.props.system.tub.legacyCups[key].liq_price && this.props.system.tub.legacyCups[key].liq_price.gt(0) ? printNumber(this.props.system.tub.legacyCups[key].liq_price) : "-" }
                     </td>
                     <td>
                       {
                         this.props.system.tub.off === false
                         ?
-                          this.props.system.tub.legacyCups[key].lad === '0x0000000000000000000000000000000000000000'
+                          this.props.system.tub.legacyCups[key].lad === "0x0000000000000000000000000000000000000000"
                           ?
-                            'Closed'
+                            "Closed"
                           :
-                            this.props.system.tub.legacyCups[key].safe === 'N/A' || this.props.system.pip.val.lt(0)
+                            this.props.system.tub.legacyCups[key].safe === "N/A" || this.props.system.pip.val.lt(0)
                             ?
-                              'N/A'
+                              "N/A"
                             :
                               this.props.system.tub.legacyCups[key].safe
                               ?
                                 this.props.system.tub.legacyCups[key].art.eq(0) || this.props.system.tub.legacyCups[key].ratio.gte(2)
                                 ?
-                                  'Safe'
+                                  "Safe"
                                 :
-                                  'Risk'
+                                  "Risk"
                               :
-                                'Unsafe'
+                                "Unsafe"
                         :
-                          '-'
+                          "-"
                       }
                     </td>
                   </tr>
@@ -78,9 +78,9 @@ class LegacyCups extends React.Component {
                 {
                   this.props.system.tub.cups[key]
                   ?
-                    'CDP Migrated'
+                    "CDP Migrated"
                   :
-                    <button style={ {display: 'block'} } data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.dialog.handleOpenDialog }>Migrate CDP #{ key }</button>
+                    <button style={ {display: "block"} } data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.dialog.handleOpenDialog }>Migrate CDP #{ key }</button>
                 }
               </div>
             </React.Fragment>
@@ -95,4 +95,4 @@ class LegacyCups extends React.Component {
   }
 }
 
-export default inject('transactions')(inject('system')(inject('dialog')(observer(LegacyCups))));
+export default inject("transactions")(inject("system")(inject("dialog")(observer(LegacyCups))));

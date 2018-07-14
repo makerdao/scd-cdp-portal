@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {inject, observer} from "mobx-react";
 
 class CreatingCDPAnimation extends React.Component {
@@ -40,7 +40,7 @@ class NotifySetUp extends React.Component {
               <React.Fragment>
                 <h2>Creating your CDP</h2>
                 <CreatingCDPAnimation />
-                <p style={ {margin: 'margin: 0 auto', padding: '2rem 0 2.5rem'} }>
+                <p style={ {margin: "margin: 0 auto", padding: "2rem 0 2.5rem"} }>
                   Creating your new CDP...
                 </p>
               </React.Fragment>
@@ -53,20 +53,20 @@ class NotifySetUp extends React.Component {
                 </p>
                 <ul>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-1.svg" alt="*" style={ {height: '24px'} } /></div>
+                    <div className="icon"><img src="../img/cdp-created-icon-1.svg" alt="*" style={ {height: "24px"} } /></div>
                     Check current collateral<br />to debt position
                   </li>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-2.svg" alt="*" style={ {height: '25px'} } /></div>
+                    <div className="icon"><img src="../img/cdp-created-icon-2.svg" alt="*" style={ {height: "25px"} } /></div>
                     Deposit or withdraw<br />collateral
                   </li>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-3.svg" alt="*" style={ {height: '30px'} } /></div>
+                    <div className="icon"><img src="../img/cdp-created-icon-3.svg" alt="*" style={ {height: "30px"} } /></div>
                     Generate or pay<br />back DAI
                   </li>
                 </ul>
-                <div className="align-center" style={ {paddingBottom: '3.7rem', userSelect: 'none'} }>
-                  <button className="modal-btn is-primary" onClick={ () => this.props.transactions.cleanCdpCreationProperty(txs[0]) } style={ {width: '13rem'} }>OK</button>
+                <div className="align-center" style={ {paddingBottom: "3.7rem", userSelect: "none"} }>
+                  <button className="modal-btn is-primary" onClick={ () => this.props.transactions.cleanCdpCreationProperty(txs[0]) } style={ {width: "13rem"} }>OK</button>
                 </div>
               </React.Fragment>
           }
@@ -76,4 +76,4 @@ class NotifySetUp extends React.Component {
   }
 }
 
-export default inject('transactions')(inject('system')(observer(NotifySetUp)));
+export default inject("transactions")(inject("system")(observer(NotifySetUp)));

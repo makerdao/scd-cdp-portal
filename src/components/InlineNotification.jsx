@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const icon = (
   <svg height="19" viewBox="0 0 21 19" width="21" xmlns="http://www.w3.org/2000/svg">
@@ -9,7 +9,7 @@ const icon = (
 class InlineNotification extends React.Component {
   render() {
     return (
-      <div className={ "inline-notification " + (this.props.type === 'warning' ? "is-warning" : "") }>
+      <div className={ "inline-notification " + (this.props.type === "warning" ? "is-warning" : "") }>
         { this.props.caption && icon }
         {
           this.props.caption &&

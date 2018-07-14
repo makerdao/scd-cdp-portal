@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import {observer} from "mobx-react";
 
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from "./LoadingSpinner";
 
-import {getCurrentProviderName} from '../blockchainHandler';
+import {getCurrentProviderName} from "../blockchainHandler";
 
 class NoAccount extends React.Component {
   render() {
@@ -12,7 +12,7 @@ class NoAccount extends React.Component {
         <h2>Log In to { this.props.formatClientName(getCurrentProviderName()) }</h2>
         <p className="typo-c align-center">Please unlock your { this.props.formatClientName(getCurrentProviderName()) } account to continue.</p>
         <LoadingSpinner />
-        <div className="align-center" style={ {margin: '1rem 0'} }>
+        <div className="align-center" style={ {margin: "1rem 0"} }>
           <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.stopNetwork }>Cancel</button>
         </div>
       </div>

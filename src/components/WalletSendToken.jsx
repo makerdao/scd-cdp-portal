@@ -1,7 +1,7 @@
-import React from 'react';
-import {inject, observer} from 'mobx-react';
+import React from "react";
+import {inject, observer} from "mobx-react";
 
-import {printNumber, formatNumber, isAddress, toWei} from '../helpers';
+import {printNumber, formatNumber, isAddress, toWei} from "../helpers";
 
 class WalletSendToken extends React.Component {
   constructor() {
@@ -12,7 +12,7 @@ class WalletSendToken extends React.Component {
   }
 
   setAmount = () => {
-    this.amount.value = formatNumber(this.props.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, 18);
+    this.amount.value = formatNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, 18);
   }
 
   transfer = e => {
@@ -20,19 +20,19 @@ class WalletSendToken extends React.Component {
     const token = this.props.sendToken;
     const amount = this.amount.value;
     const destination = this.destination.value;
-    const myBalance = token === 'eth' ? this.props.profile.accountBalance : this.props.system[token].myBalance;
+    const myBalance = token === "eth" ? this.props.profile.accountBalance : this.props.system[token].myBalance;
     this.setState({ fieldErrors: {} });
 
     if (!destination || !isAddress(destination)) {
-      this.setState({ fieldErrors: { address: 'Please enter a valid address' } });
+      this.setState({ fieldErrors: { address: "Please enter a valid address" } });
     } else if (!amount) {
-      this.setState({ fieldErrors: { amount: 'Please enter a valid amount' } });
+      this.setState({ fieldErrors: { amount: "Please enter a valid amount" } });
     } else if (myBalance.lt(toWei(amount))) {
       this.setState({ fieldErrors: { amount: `Not enough balance to transfer ${amount} ${this.props.tokenName(token)}` } });
     } else {
       this.props.system.transferToken(token, destination, amount);
-      this.amount.value = '';
-      this.destination.value = '';
+      this.amount.value = "";
+      this.destination.value = "";
     }
   }
 
@@ -53,21 +53,21 @@ class WalletSendToken extends React.Component {
               <div>
                 <label>
                   Amount<br/>
-                  <input className={ this.state.fieldErrors.amount ? 'has-error' : '' } type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
+                  <input className={ this.state.fieldErrors.amount ? "has-error" : "" } type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" />
                 </label>
-                <div className="below-input-info" style={ {cursor: 'pointer'} } onClick={ this.setAmount }>{ printNumber(this.props.sendToken === 'eth' ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
+                <div className="below-input-info" style={ {cursor: "pointer"} } onClick={ this.setAmount }>{ printNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
               </div>
               { this.state.fieldErrors.amount && <p className="error">{ this.state.fieldErrors.amount }</p> }
 
-              <div style={ {marginTop: '1.2rem'} }>
+              <div style={ {marginTop: "1.2rem"} }>
                 <label>
                   Destination<br/>
-                  <input className={ this.state.fieldErrors.address ? 'has-error' : '' } type="text" ref={ input => this.destination = input } maxLength="42" placeholder="0x01234..." />
+                  <input className={ this.state.fieldErrors.address ? "has-error" : "" } type="text" ref={ input => this.destination = input } maxLength="42" placeholder="0x01234..." />
                 </label>
               </div>
               { this.state.fieldErrors.address && <p className="error">{ this.state.fieldErrors.address }</p> }
 
-              <div className="align-center" style={ {margin: '3rem 0'} }>
+              <div className="align-center" style={ {margin: "3rem 0"} }>
                 <button className="sidebar-btn is-secondary" onClick={ this.props.closeSendBox }>Cancel</button>
                 <button className="sidebar-btn is-primary-green" type="submit">Send</button>
               </div>
@@ -79,4 +79,4 @@ class WalletSendToken extends React.Component {
   }
 }
 
-export default inject('profile')(inject('system')(observer(WalletSendToken)));
+export default inject("profile")(inject("system")(observer(WalletSendToken)));

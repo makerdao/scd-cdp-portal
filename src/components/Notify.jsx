@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {inject, observer} from "mobx-react";
 
 class Item extends React.Component {
@@ -37,19 +37,19 @@ class Notify extends React.Component {
   }
 
   success = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, 'success', onClose);
+    this.addNotify(key, title, msg, time, "success", onClose);
   }
 
   error = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, 'error', onClose);
+    this.addNotify(key, title, msg, time, "error", onClose);
   }
 
   info = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, 'info', onClose);
+    this.addNotify(key, title, msg, time, "info", onClose);
   }
 
   notice = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, 'notice', onClose);
+    this.addNotify(key, title, msg, time, "notice", onClose);
   }
 
   addNotify = (key, title, msg, time, theme, onClose = () => null) => {
@@ -95,4 +95,4 @@ class Notify extends React.Component {
   }
 };
 
-export default inject('network')(inject('transactions')(observer(Notify)));
+export default inject("network")(inject("transactions")(observer(Notify)));

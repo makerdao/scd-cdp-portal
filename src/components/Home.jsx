@@ -1,17 +1,17 @@
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import React from "react";
+import ReactTooltip from "react-tooltip";
 import {inject, observer} from "mobx-react";
-import {Link} from 'react-router-dom';
+import {Link} from "react-router-dom";
 
-import Dashboard from './Dashboard';
-import Dialog from './Dialog';
-import Landing from './Landing';
-import LegacyCups from './LegacyCups';
-import Menu from './Menu';
-import SystemInfo from './SystemInfo';
-import Wallet from './Wallet';
-import Welcome from './Welcome';
-import Wizard from './Wizard';
+import Dashboard from "./Dashboard";
+import Dialog from "./Dialog";
+import Landing from "./Landing";
+import LegacyCups from "./LegacyCups";
+import Menu from "./Menu";
+import SystemInfo from "./SystemInfo";
+import Wallet from "./Wallet";
+import Welcome from "./Welcome";
+import Wizard from "./Wizard";
 
 class Home extends React.Component {
   constructor() {
@@ -103,10 +103,10 @@ class Home extends React.Component {
           </aside>
         </div>
         <Dialog />
-        <ReactTooltip place="top" type="light" effect="solid" globalEventOff='click' html={true} />
+        <ReactTooltip place="top" type="light" effect="solid" globalEventOff="click" html={true} />
       </div>
     )
   }
 }
 
-export default inject('network')(inject('system')(inject('dialog')(observer(Home))));
+export default inject("network")(inject("system")(inject("dialog")(observer(Home))));
