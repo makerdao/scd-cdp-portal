@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 
 class Item extends React.Component {
   displayName = "Item";
@@ -95,4 +95,4 @@ class Notify extends React.Component {
   }
 };
 
-export default observer(Notify);
+export default inject('network')(inject('transactions')(observer(Notify)));

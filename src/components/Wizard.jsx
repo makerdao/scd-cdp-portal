@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {inject} from "mobx-react";
 import Steps, {Step} from 'rc-steps';
 
 import InlineNotification from './InlineNotification';
@@ -127,7 +128,7 @@ class Wizard extends Component {
   render() {
     return (
       <div>
-        <LegacyCupsAlert legacyCups={ this.props.system.tub.legacyCups } setOpenMigrate={ this.props.setOpenMigrate } />
+        <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col" style={ {borderBottom: 'none'} }>
           <Steps current={this.state.step - 1}>
             <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
@@ -229,13 +230,10 @@ class Wizard extends Component {
                     <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
                   </div>
                 </div>
-
               </form>
-
             </React.Fragment>
           :
             <React.Fragment>
-
               <div className="row">
                 <div className="col">
                   <h3 className="typo-cl">Collateralize &amp; generate Dai</h3>
@@ -314,7 +312,6 @@ class Wizard extends Component {
                   </div>
                 </div>
               </div>
-
             </React.Fragment>
         }
       </div>
@@ -322,4 +319,4 @@ class Wizard extends Component {
   }
 }
 
-export default Wizard;
+export default inject('profile')(inject('system')(Wizard));

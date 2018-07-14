@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
 
 import WalletClientDownload from './WalletClientDownload';
@@ -78,17 +78,15 @@ class Wallet extends React.Component {
         {
           this.props.network.downloadClient
           ?
-            <WalletClientDownload network={ this.props.network } />
+            <WalletClientDownload />
           :
             this.props.network.hw.showSelector
             ?
-              <WalletHWSelector network={ this.props.network }
-                                loadHWAddresses={ this.props.network.loadHWAddresses }
-                                importAddress={ this.props.network.importAddress } />
+              <WalletHWSelector />
             :
               !this.props.network.isConnected
               ?
-                <WalletClientSelector network={ this.props.network } formatClientName={ this.formatClientName } />
+                <WalletClientSelector formatClientName={ this.formatClientName } />
               :
                 <React.Fragment>
                   {
@@ -135,7 +133,7 @@ class Wallet extends React.Component {
                         {
                           this.state.sendToken
                           ?
-                            <WalletSendToken profile={ this.props.profile } system={ this.props.system } sendToken={ this.state.sendToken } tokenName={ this.tokenName } closeSendBox={ this.closeSendBox } />
+                            <WalletSendToken sendToken={ this.state.sendToken } tokenName={ this.tokenName } closeSendBox={ this.closeSendBox } />
                           :
                           <table>
                             <thead>
@@ -170,9 +168,7 @@ class Wallet extends React.Component {
                                     <td>
                                       {
                                         token !== 'eth' &&
-                                        <React.Fragment>
-                                          <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.setAllowance && this.props.transactions.loading.setAllowance[token] } />
-                                        </React.Fragment>
+                                        <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.setAllowance && this.props.transactions.loading.setAllowance[token] } />
                                       }
                                     </td>
                                   </tr>
@@ -183,7 +179,7 @@ class Wallet extends React.Component {
                         }
                       </React.Fragment>
                     :
-                      <WalletNoAccount network={ this.props.network } formatClientName={ this.formatClientName } />
+                      <WalletNoAccount formatClientName={ this.formatClientName } />
                     }
                 </React.Fragment>
         }
@@ -192,4 +188,4 @@ class Wallet extends React.Component {
   }
 }
 
-export default observer(Wallet);
+export default inject('network')(inject('profile')(inject('transactions')(inject('system')(observer(Wallet)))));

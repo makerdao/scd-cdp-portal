@@ -1,10 +1,9 @@
 import React from 'react';
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 class PriceModal extends React.Component {
-
   constructor (props, context) {
     super(props, context);
     this.state = {
@@ -63,4 +62,4 @@ class PriceModal extends React.Component {
   }
 }
 
-export default observer(PriceModal);
+export default inject('transactions')(observer(PriceModal));

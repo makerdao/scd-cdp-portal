@@ -1,6 +1,6 @@
 import React from 'react';
 import {intercept} from 'mobx';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from '../helpers';
 
@@ -395,4 +395,4 @@ class Dialog extends React.Component {
   }
 }
 
-export default observer(Dialog);
+export default inject('profile')(inject('system')(inject('dialog')(observer(Dialog))));

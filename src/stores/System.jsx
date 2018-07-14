@@ -1,5 +1,10 @@
 import React from 'react';
-import {observable, decorate} from "mobx"
+import {observable, decorate} from "mobx";
+
+import DialogStore from "./Dialog";
+import NetworkStore from "./Network";
+import ProfileStore from "./Profile";
+import TransactionsStore from "./Transactions";
 
 import * as Blockchain from "../blockchainHandler";
 
@@ -124,7 +129,7 @@ class SystemStore {
   }
 
   init = (top, tub, tap, vox, pit) => {
-    if (this.network.network && !this.network.stopIntervals) {
+    if (NetworkStore.network && !NetworkStore.stopIntervals) {
       this.top.address = top;
       this.tub.address = tub;
       this.tap.address = tap;
@@ -134,8 +139,8 @@ class SystemStore {
 
       this.loadVariables();
 
-      if (settings.chain[this.network.network].service) {
-        if (settings.chain[this.network.network].chart) {
+      if (settings.chain[NetworkStore.network].service) {
+        if (settings.chain[NetworkStore.network].chart) {
           // this.getPricesFromService(); // TODO
         }
         // this.getStats();
@@ -287,7 +292,7 @@ class SystemStore {
 
     Blockchain.objects.tub.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
-        this.transactions.logTransactionConfirmed(r.transactionHash);
+        TransactionsStore.logTransactionConfirmed(r.transactionHash);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== 'undefined') {
           this.reloadCupData(parseInt(r.args.foo, 16));
         } else if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
@@ -320,7 +325,7 @@ class SystemStore {
     if (!Blockchain.getProviderUseLogs()) return;
     Blockchain.objects.tap.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
-        this.transactions.logTransactionConfirmed(r.transactionHash);
+        TransactionsStore.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
           this.getParameterFromTap('gap', false, this.getBoomBustValues());
         }
@@ -332,7 +337,7 @@ class SystemStore {
     if (!Blockchain.getProviderUseLogs()) return;
     Blockchain.objects.vox.LogNote({}, {fromBlock: 'latest'}, (e, r) => {
       if (!e) {
-        this.transactions.logTransactionConfirmed(r.transactionHash);
+        TransactionsStore.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig('mold(bytes32,uint256)')) {
           this.getParameterFromVox('way', true);
         }
@@ -440,7 +445,7 @@ class SystemStore {
   getFromService = query => {
     const p = new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', settings.chain[this.network.network].service, true);
+      xhr.open('POST', settings.chain[NetworkStore.network].service, true);
       xhr.setRequestHeader("Content-type", "application/graphql");
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -531,13 +536,13 @@ class SystemStore {
   }
 
   getCups = async (type, keepTrying = false, callbacks = []) => {
-    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    const lad = type === 'new' ? ProfileStore.proxy : NetworkStore.defaultAccount;
     const me = this;
     let promisesCups = [];
-    let fromBlock = settings.chain[this.network.network].fromBlock;
+    let fromBlock = settings.chain[NetworkStore.network].fromBlock;
 
     try {
-      const serviceData = settings.chain[this.network.network].service ? await this.getCupsFromService(lad) : [];
+      const serviceData = settings.chain[NetworkStore.network].service ? await this.getCupsFromService(lad) : [];
       serviceData.forEach(v => {
         promisesCups.push(me.getCup(v.id));
         fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
@@ -549,7 +554,7 @@ class SystemStore {
   }
   
   filterCups = (keepTrying, type, promisesCups, callbacks = []) => {
-    const lad = type === 'new' ? this.profile.proxy : this.network.defaultAccount;
+    const lad = type === 'new' ? ProfileStore.proxy : NetworkStore.defaultAccount;
     const conditions = {lad};
     conditions.closed = false;
     if (type === 'legacy' || this.tub.cupsLoading) {
@@ -570,23 +575,23 @@ class SystemStore {
             if (this.tub.cupsLoading) {
               // If we know there is a new CDP and it still not available, keep trying & loading
               setTimeout(() => this.getMyCups(true), 3000)
-            } else if (!this.network.stopIntervals && keys.length > 0 && settings.chain[this.network.network].service) {
+            } else if (!NetworkStore.stopIntervals && keys.length > 0 && settings.chain[NetworkStore.network].service) {
               keys.forEach(key => {
                 this.loadCupHistory(key);
               });
-              this.transactions.executeCallbacks(callbacks);
+              TransactionsStore.executeCallbacks(callbacks);
             }
           }
         } else if (type === 'legacy') {
           this.tub.legacyCups = cupsFiltered;
-          this.transactions.executeCallbacks(callbacks);
+          TransactionsStore.executeCallbacks(callbacks);
         }
       });
     }
   }
 
   getMyCups = (keepTrying = false, callbacks = []) => {
-    if (this.profile.proxy) {
+    if (ProfileStore.proxy) {
       this.tub.cupsLoading = true;
       this.getCups('new', keepTrying, callbacks);
     } else {
@@ -603,7 +608,7 @@ class SystemStore {
     cups[cupId] = {...this.tub.legacyCups[cupId]};
     this.tub.cups = cups;
     this.loadCupHistory(cupId);
-    this.transactions.executeCallbacks(callbacks);
+    TransactionsStore.executeCallbacks(callbacks);
   }
 
   addExtraCupData = cup => {
@@ -639,7 +644,7 @@ class SystemStore {
     let cup = {...this.tub.cups[id]};
     cup.history = 'loading';
     this.tub.cups[id] = cup;
-    if (settings.chain[this.network.network].service) {
+    if (settings.chain[NetworkStore.network].service) {
       Promise.resolve(this.getCupHistoryFromService(id)).then(response => {
         let cup = {...this.tub.cups[id]};
         cup.history = response;
@@ -681,7 +686,7 @@ class SystemStore {
                             {printNumber(pip)} USD
                           </p>
                         </React.Fragment>;
-          this.transactions.notificator.notice(Math.random(), 'CDP Liquidated', body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
+          TransactionsStore.notificator.notice(Math.random(), 'CDP Liquidated', body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
         }
       }, () => {
         let cup = {...this.tub.cups[id]};
@@ -728,8 +733,8 @@ class SystemStore {
   
   getDataFromToken = token => {
     this.getTotalSupply(token);
-    if (token !== 'sin' && isAddress(this.network.defaultAccount)) {
-      this.getBalanceOf(token, this.network.defaultAccount, 'myBalance');
+    if (token !== 'sin' && isAddress(NetworkStore.defaultAccount)) {
+      this.getBalanceOf(token, NetworkStore.defaultAccount, 'myBalance');
     }
     if (token === 'gem' || token === 'skr' || token === 'sin') {
       this.getBalanceOf(token, this.tub.address, 'tubBalance');
@@ -772,10 +777,10 @@ class SystemStore {
   }
 
   getAllowance = (token, callbacks = []) => {
-    Blockchain.objects[token].allowance.call(this.network.defaultAccount, this.profile.proxy, (e, r) => {
+    Blockchain.objects[token].allowance.call(NetworkStore.defaultAccount, ProfileStore.proxy, (e, r) => {
       if (!e) {
         this[token].allowance = r;
-        this.transactions.executeCallbacks(callbacks);
+        TransactionsStore.executeCallbacks(callbacks);
       }
     })
   }
@@ -797,7 +802,7 @@ class SystemStore {
       if (Blockchain.objects[token][filters[i]]) {
         Blockchain.objects[token][filters[i]](conditions, {fromBlock: 'latest'}, (e, r) => {
           if (!e) {
-            this.transactions.logTransactionConfirmed(r.transactionHash);
+            TransactionsStore.logTransactionConfirmed(r.transactionHash);
             this.getDataFromToken(token);
           }
         });
@@ -807,14 +812,14 @@ class SystemStore {
 
   setAllowance = (token, value, callbacks = []) => {
     const title = `${token.replace('gem', 'weth').replace('gov', 'mkr').replace('skr', 'peth').toUpperCase()}: ${value ? 'unlock' : 'lock'}`;
-    this.transactions.askPriceAndSend(title, Blockchain.objects[token].approve, [this.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
+    TransactionsStore.askPriceAndSend(title, Blockchain.objects[token].approve, [ProfileStore.proxy, value ? -1 : 0], {value: 0}, callbacks);
   }
 
   // Actions
   checkAllowance = (token, callbacks) => {
-    Blockchain.getAllowance(token, this.network.defaultAccount, this.profile.proxy).then(r => {
+    Blockchain.getAllowance(token, NetworkStore.defaultAccount, ProfileStore.proxy).then(r => {
       if (r.equals(BIGGESTUINT256)) {
-        this.transactions.executeCallbacks(callbacks);
+        TransactionsStore.executeCallbacks(callbacks);
       } else {
         this.setAllowance(token, true, callbacks);
       }
@@ -822,30 +827,30 @@ class SystemStore {
   }
 
   checkProxyAndSetAllowance = (token, value) => {
-    this.transactions.addLoading('setAllowance', token);
-    this.profile.checkProxy([['system/setAllowance', token, value, [['system/getAllowance', token, [['transactions/cleanLoading', 'setAllowance', token]]]]]]);
+    TransactionsStore.addLoading('setAllowance', token);
+    ProfileStore.checkProxy([['system/setAllowance', token, value, [['system/getAllowance', token, [['transactions/cleanLoading', 'setAllowance', token]]]]]]);
   }
   
   transferToken = (token, to, amount) => {
     const title = `${token.replace('gov', 'mkr').toUpperCase()}: transfer ${to} ${amount}`;
     if (token === 'eth') {
-      this.transactions.askPriceAndSend(title, Blockchain.sendTransaction, [], {to, value: toWei(amount)}, [['system/setUpToken', token]]);
+      TransactionsStore.askPriceAndSend(title, Blockchain.sendTransaction, [], {to, value: toWei(amount)}, [['system/setUpToken', token]]);
     } else {
-      this.transactions.askPriceAndSend(title, Blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [['system/setUpToken', token]]);
+      TransactionsStore.askPriceAndSend(title, Blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [['system/setUpToken', token]]);
     }
   }
 
   migrateCDP = async (cup, callbacks) => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
-    const proxy = this.profile.proxy;
-    if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === this.network.defaultAccount) {
+    const proxy = ProfileStore.proxy;
+    if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === NetworkStore.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
-      this.transactions.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
+      TransactionsStore.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
     }
   }
 
   executeProxyTx = (action, value, notificator) => {
-    this.transactions.askPriceAndSend(notificator.title, Blockchain.objects.proxy.execute['address,bytes'], [settings.chain[this.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
+    TransactionsStore.askPriceAndSend(notificator.title, Blockchain.objects.proxy.execute['address,bytes'], [settings.chain[NetworkStore.network].proxyContracts.sai, action], {value}, notificator.callbacks);
   }
   
   open = () => {
@@ -856,7 +861,7 @@ class SystemStore {
   
   shut = (cupId, useOTC = false) => {
     const title = `Shut CDP ${cupId}`;
-    const action = `${methodSig(`shut(address,bytes32${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
+    const action = `${methodSig(`shut(address,bytes32${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[NetworkStore.network].otc, false) : ''}`;
     this.executeProxyTx(action, 0, {title, callbacks: [['system/getMyCups'], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']]});
   }
   
@@ -877,15 +882,15 @@ class SystemStore {
           ['system/getMyCups', true], ['profile/getAccountBalance'], ['system/setUpToken', 'dai'], ['system/setUpToken', 'sin']
         ];
 
-        if (this.profile.proxy) {
+        if (ProfileStore.proxy) {
           title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
           action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
         } else {
           title = `Create Proxy + Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          this.transactions.askPriceAndSend(
+          TransactionsStore.askPriceAndSend(
                                             title,
-                                            Blockchain.loadObject('proxycreationandexecute', settings.chain[this.network.network].proxyCreationAndExecute).createLockAndDraw,
-                                            [settings.chain[this.network.network].proxyRegistry, this.tub.address, toWei(dai)],
+                                            Blockchain.loadObject('proxycreationandexecute', settings.chain[NetworkStore.network].proxyCreationAndExecute).createLockAndDraw,
+                                            [settings.chain[NetworkStore.network].proxyRegistry, this.tub.address, toWei(dai)],
                                             {value: toWei(eth)},
                                             [['profile/getAndSetProxy', callbacks]]
                                             );
@@ -923,10 +928,10 @@ class SystemStore {
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
       } else if (eth.equals(0)) {
         title = `Wipe ${dai.valueOf()} DAI`;
-        action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
+        action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[NetworkStore.network].otc, false) : ''}`;
       } else {
         title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
-        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.network.network].otc, false) : ''}`;
+        action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ',address' : ''})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[NetworkStore.network].otc, false) : ''}`;
       }
         this.executeProxyTx(action, 0, {
                                         title,
@@ -941,7 +946,7 @@ class SystemStore {
     const value = params.value;
     let callbacks = [];
     let error = false;
-    switch (this.dialog.method) {
+    switch (DialogStore.method) {
       case 'open':
         callbacks = [
                       ['system/open']
@@ -949,19 +954,19 @@ class SystemStore {
         break;
       case 'lock':
         callbacks = [
-                      ['system/lockAndDraw', this.dialog.cupId, value, toBigNumber(0)]
+                      ['system/lockAndDraw', DialogStore.cupId, value, toBigNumber(0)]
                     ];
         break;
       case 'draw':
         callbacks = [
-                      ['system/lockAndDraw', this.dialog.cupId, toBigNumber(0), value]
+                      ['system/lockAndDraw', DialogStore.cupId, toBigNumber(0), value]
                     ];
         break;
       case 'wipe':
         callbacks = [
                       ['system/checkAllowance', 'dai',
                         [
-                          ['system/wipeAndFree', this.dialog.cupId, toBigNumber(0), value, params.govFeeType === 'dai']
+                          ['system/wipeAndFree', DialogStore.cupId, toBigNumber(0), value, params.govFeeType === 'dai']
                         ]
                       ]
                     ];
@@ -976,19 +981,19 @@ class SystemStore {
         break;
       case 'free':
         callbacks = [
-                      ['system/wipeAndFree', this.dialog.cupId, value, toBigNumber(0)]
+                      ['system/wipeAndFree', DialogStore.cupId, value, toBigNumber(0)]
                     ];
         break;
       case 'shut':
         callbacks = [
-          ['system/shut', this.dialog.cupId, this.tub.cups[this.dialog.cupId].art.gt(0) && params.govFeeType === 'dai']
+          ['system/shut', DialogStore.cupId, this.tub.cups[DialogStore.cupId].art.gt(0) && params.govFeeType === 'dai']
         ];
-        if (this.tub.cups[this.dialog.cupId].art.gt(0)) {
+        if (this.tub.cups[DialogStore.cupId].art.gt(0)) {
           const futureGovFee = fromWei(this.tub.fee).pow(180).round(0); // 3 minutes of future fee
-          const govDebtSai = wmul(this.rap(this.tub.cups[this.dialog.cupId]), futureGovFee);
+          const govDebtSai = wmul(this.rap(this.tub.cups[DialogStore.cupId]), futureGovFee);
           const govDebtGov = wmul(govDebtSai, this.pep.val);
 
-          const valuePlusGovFee = params.govFeeType === 'dai' ? this.tab(this.tub.cups[this.dialog.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[this.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
+          const valuePlusGovFee = params.govFeeType === 'dai' ? this.tab(this.tub.cups[DialogStore.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[DialogStore.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
           if (valuePlusGovFee.gt(this.dai.myBalance)) {
             error = 'Not enough DAI to close this CDP';
           } else if (params.govFeeType === 'mkr' && govDebtGov.gt(this.gov.myBalance)) {
@@ -1006,15 +1011,15 @@ class SystemStore {
         }
         break;
       case 'give':
-        callbacks = [['system/give', this.dialog.cupId, params.value]];
+        callbacks = [['system/give', DialogStore.cupId, params.value]];
         if (!isAddress(params.value) || params.value.slice(0, 2) !== '0x') {
           error = 'Invalid address';
         }
         break;
       case 'migrate':
-        this.transactions.addLoading('migrate', this.dialog.cupId);
+        TransactionsStore.addLoading('migrate', DialogStore.cupId);
         callbacks = [
-                      ['system/migrateCDP', this.dialog.cupId, [['system/moveLegacyCDP', this.dialog.cupId, [['transactions/cleanLoading', 'migrate', this.dialog.cupId]]]]]
+                      ['system/migrateCDP', DialogStore.cupId, [['system/moveLegacyCDP', DialogStore.cupId, [['transactions/cleanLoading', 'migrate', DialogStore.cupId]]]]]
                     ];
         break;
       default:
@@ -1022,10 +1027,10 @@ class SystemStore {
     }
   
     if (error) {
-      this.dialog.error = error;
+      DialogStore.error = error;
     } else {
-      this.dialog.show = false;
-      this.profile.checkProxy(callbacks);
+      DialogStore.show = false;
+      ProfileStore.checkProxy(callbacks);
     }
   }
 }

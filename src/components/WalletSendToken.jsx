@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import {printNumber, formatNumber, isAddress, toWei} from '../helpers';
 
@@ -79,4 +79,4 @@ class WalletSendToken extends React.Component {
   }
 }
 
-export default observer(WalletSendToken);
+export default inject('profile')(inject('system')(observer(WalletSendToken)));

@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 import {Link} from 'react-router-dom';
 
 class Menu extends React.Component {
@@ -46,4 +46,4 @@ class Menu extends React.Component {
   }
 }
 
-export default observer(Menu);
+export default inject('system')(observer(Menu));

@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 
 class CreatingCDPAnimation extends React.Component {
   constructor(props){
@@ -76,4 +76,4 @@ class NotifySetUp extends React.Component {
   }
 }
 
-export default observer(NotifySetUp);
+export default inject('transactions')(inject('system')(observer(NotifySetUp)));

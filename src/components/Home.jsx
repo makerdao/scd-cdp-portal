@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import {Link} from 'react-router-dom';
 
 import Dashboard from './Dashboard';
@@ -36,11 +36,11 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className={ (this.props.network.isConnected ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + (this.props.modal.show || this.props.transactions.showCreatingCdpModal ? " modal-open" : "") }>
+      <div className={ (this.props.network.isConnected ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") }>
         <div className="wrapper">
           {
             this.props.network.isConnected && this.props.network.defaultAccount &&
-            <Menu system={ this.props.system } page={ this.props.page } showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
+            <Menu page={ this.props.page } showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
           }
           <main className="main-column">
             {
@@ -56,11 +56,11 @@ class Home extends React.Component {
                     :
                       this.state.migrateCDP
                       ?
-                        <LegacyCups system={ this.props.system } transactions={ this.props.transactions } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
+                        <LegacyCups setOpenMigrate={ this.setOpenMigrate } />
                       :
                         Object.keys(this.props.system.tub.cups).length === 0 && !this.state.wizardOpenCDP
                         ?
-                          <Welcome system={ this.props.system } setOpenMigrate={ this.setOpenMigrate } setOpenCDPWizard={ this.setOpenCDPWizard } />
+                          <Welcome setOpenMigrate={ this.setOpenMigrate } setOpenCDPWizard={ this.setOpenCDPWizard } />
                         :
                           <React.Fragment>
                             {
@@ -68,9 +68,9 @@ class Home extends React.Component {
                                 {
                                   Object.keys(this.props.system.tub.cups).length === 0
                                   ?
-                                    <Wizard system={ this.props.system } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
+                                    <Wizard setOpenMigrate={ this.setOpenMigrate } />
                                   :
-                                    <Dashboard system={ this.props.system } network={ this.props.network } profile={ this.props.profile } handleOpenDialog={ this.props.dialog.handleOpenDialog } setOpenMigrate={ this.setOpenMigrate } />
+                                    <Dashboard setOpenMigrate={ this.setOpenMigrate } />
                                 }
                               </React.Fragment>
                             }
@@ -88,10 +88,10 @@ class Home extends React.Component {
                     <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
                   :
                     <React.Fragment>
-                      <Wallet system={ this.props.system } network={ this.props.network } profile={ this.props.profile } transactions={ this.props.transactions } />
+                      <Wallet />
                       {
                         this.props.network.defaultAccount &&
-                        <SystemInfo system={ this.props.system } network={ this.props.network.network } profile={ this.props.profile } />
+                        <SystemInfo />
                       }
                     </React.Fragment>
                 }
@@ -102,11 +102,11 @@ class Home extends React.Component {
             }
           </aside>
         </div>
-        <Dialog system={ this.props.system } profile={ this.props.profile } dialog={ this.props.dialog } />
+        <Dialog />
         <ReactTooltip place="top" type="light" effect="solid" globalEventOff='click' html={true} />
       </div>
     )
   }
 }
 
-export default observer(Home);
+export default inject('network')(inject('system')(inject('dialog')(observer(Home))));

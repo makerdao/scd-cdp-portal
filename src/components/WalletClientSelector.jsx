@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import {getWebClientProviderName} from '../blockchainHandler';
 
@@ -49,4 +49,4 @@ class WalletClientSelector extends React.Component {
   }
 }
 
-export default observer(WalletClientSelector);
+export default inject('network')(observer(WalletClientSelector));

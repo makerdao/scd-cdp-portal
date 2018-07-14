@@ -1,4 +1,9 @@
 import { observable, decorate } from "mobx";
+
+import ProfileStore from "./Profile";
+import SystemStore from "./System";
+import TransactionsStore from "./Transactions";
+
 import * as Blockchain from "../blockchainHandler";
 import {isAddress} from '../helpers';
 
@@ -193,22 +198,22 @@ class NetworkStore {
 
   setTimeVariablesInterval = () => {
     this.timeVariablesInterval = setInterval(() => {
-      this.system.loadVariables(true);
-      this.profile.getAccountBalance(this.network.defaultAccount);
-      this.transactions.setStandardGasPrice();
+      SystemStore.loadVariables(true);
+      ProfileStore.getAccountBalance(this.network.defaultAccount);
+      TransactionsStore.setStandardGasPrice();
     }, 5000);
   }
 
   setNonTimeVariablesInterval = () => {
     // This interval should not be necessary if we can rely on the events
     this.nonTimeVariablesInterval = setInterval(() => {
-      this.system.loadVariables();
+      SystemStore.loadVariables();
     }, 30000);
   }
 
   setPendingTxInterval = () => {
     this.pendingTxInterval = setInterval(() => {
-      this.transactions.checkPendingTransactions();
+      TransactionsStore.checkPendingTransactions();
     }, 10000);
   }
 
@@ -218,7 +223,7 @@ class NetworkStore {
       if (typeof this.timeVariablesInterval !== 'undefined') clearInterval(this.timeVariablesInterval);
       if (typeof this.nonTimeVariablesInterval !== 'undefined') clearInterval(this.nonTimeVariablesInterval);
       if (typeof this.pendingTxInterval !== 'undefined') clearInterval(this.pendingTxInterval);
-      this.system.clear();
+      SystemStore.clear();
 
       const topAddress = settings.chain[this.network].top;
       const proxyRegistryAddr = settings.chain[this.network].proxyRegistry;
@@ -234,14 +239,14 @@ class NetworkStore {
 
           Promise.all(setUpPromises2).then(r2 => {
             if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
-              this.profile.getAccountBalance(this.defaultAccount);
+              ProfileStore.getAccountBalance(this.defaultAccount);
 
               // Set profile proxy and system contracts
-              this.profile.setProxy(r[2]);
-              this.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
+              ProfileStore.setProxy(r[2]);
+              SystemStore.init(topAddress, r[0], r[1], r2[0], r2[1]);
               this.loadingAddress = false;
 
-              this.transactions.setStandardGasPrice();
+              TransactionsStore.setStandardGasPrice();
 
               // Intervals
               this.setTimeVariablesInterval();

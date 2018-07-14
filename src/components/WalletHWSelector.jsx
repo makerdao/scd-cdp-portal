@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer } from "mobx-react";
+import {inject, observer} from "mobx-react";
 import createClass from 'create-react-class';
 import { getJazziconIcon, capitalize, truncateAddress } from "../helpers";
 import LoadingSpinner from './LoadingSpinner';
@@ -178,4 +178,4 @@ class WalletHardHWSelector extends React.Component {
   }
 }
 
-export default observer(WalletHardHWSelector);
+export default inject('network')(observer(WalletHardHWSelector));

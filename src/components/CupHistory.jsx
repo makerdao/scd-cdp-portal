@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import LoadingSpinner from './LoadingSpinner';
 
@@ -129,7 +129,6 @@ class CupHistory extends React.Component {
                       </span>
                     </div>
                   </div>
-
                 </React.Fragment>
             }
           </div>
@@ -138,4 +137,4 @@ class CupHistory extends React.Component {
   }
 }
 
-export default observer(CupHistory);
+export default inject('network')(observer(CupHistory));

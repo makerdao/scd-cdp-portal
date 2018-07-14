@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import {printNumber, wdiv, wmul} from '../helpers';
 
@@ -9,7 +9,7 @@ class SystemInfo extends React.Component {
       <div className="col col-2-m info-section">
         <div className="price-info">
           <h2 className="typo-h2">Price Info
-            <span className="typo-c right" style={ {textTransform: 'capitalize'} }>{ this.props.network === 'main' ? 'mainnet' : this.props.network }</span>
+            <span className="typo-c right" style={ {textTransform: 'capitalize'} }>{ this.props.network.network === 'main' ? 'mainnet' : this.props.network.network }</span>
           </h2>
           <h3 className="typo-c">ETH/USD</h3>
           <div className="value">
@@ -91,4 +91,4 @@ class SystemInfo extends React.Component {
   }
 }
 
-export default observer(SystemInfo);
+export default inject('network')(inject('system')(observer(SystemInfo)));

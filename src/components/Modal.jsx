@@ -12,9 +12,6 @@ class Modal extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown.bind(this));
   }
-  componentWillReceiveProps(props) {
-    this.props.modal.show = props.show;
-  }
   handleKeyDown(event) {
     if (event.keyCode === 27) this.props.close();
   }

@@ -1,6 +1,8 @@
 import {observable, decorate, computed} from "mobx";
 import * as Blockchain from "../blockchainHandler";
 
+import NetworkStore from "./Network";
+
 import {etherscanTx, methodSig} from '../helpers';
 
 const settings = require('../settings');
@@ -56,7 +58,7 @@ class TransactionsStore {
   }
 
   sendTransaction = (title, func, params, options, callbacks) => {
-    const cdpCreationTx = params[0] === settings.chain[this.network.network].proxyRegistry || // This means it is calling to the createLockAndDraw
+    const cdpCreationTx = params[0] === settings.chain[NetworkStore.network].proxyRegistry || // This means it is calling to the createLockAndDraw
                           (typeof params[1] === 'string' && methodSig('lockAndDraw(address,uint256)') === params[1].substring(0, 10));
     const id = Math.random();
     this.logRequestTransaction(id, title, cdpCreationTx);
@@ -64,7 +66,7 @@ class TransactionsStore {
   }
 
   askPriceAndSend = (title, func, params, options, callbacks) => {
-    if (this.network.hw.active) { // If user is using HW, gas price modal will appear
+    if (NetworkStore.hw.active) { // If user is using HW, gas price modal will appear
       this.priceModal = { open: true, title, func, params, options, callbacks };
     } else {
       this.sendTransaction(title, func, params, options, callbacks);
@@ -87,7 +89,7 @@ class TransactionsStore {
     console.log(msgTemp.replace('TX', tx));
     this.notificator.hideNotification(id);
     if (!this.registry[tx].cdpCreationTx) {
-      this.notificator.info(tx, title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
+      this.notificator.info(tx, title, etherscanTx(NetworkStore.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), false);
     }
   }
 
@@ -100,7 +102,7 @@ class TransactionsStore {
       console.log(msgTemp.replace('TX', tx));
       this.notificator.hideNotification(tx);
       if (!this.registry[tx].cdpCreationTx) {
-        this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.network.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 6000);
+        this.notificator.success(tx, this.registry[tx].title, etherscanTx(NetworkStore.network, msgTemp.replace('TX', `${tx.substring(0,10)}...`), tx), 6000);
       }
       if (typeof this.registry[tx].callbacks !== 'undefined' && this.registry[tx].callbacks.length > 0) {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));

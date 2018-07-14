@@ -9,7 +9,7 @@ class Help extends React.Component {
       <div className="full-width-page">
         <div className="wrapper">
           {
-            <Menu system={ this.props.system } page={ this.props.page } />
+            <Menu page={ this.props.page } />
           }
           <main className="main-column fullwidth">
             <div>

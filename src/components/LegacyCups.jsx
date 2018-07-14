@@ -1,5 +1,5 @@
 import React from 'react';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import {printNumber, toBigNumber, toWei} from '../helpers';
 
@@ -80,7 +80,7 @@ class LegacyCups extends React.Component {
                   ?
                     'CDP Migrated'
                   :
-                    <button style={ {display: 'block'} } data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.handleOpenDialog }>Migrate CDP #{ key }</button>
+                    <button style={ {display: 'block'} } data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.dialog.handleOpenDialog }>Migrate CDP #{ key }</button>
                 }
               </div>
             </React.Fragment>
@@ -95,4 +95,4 @@ class LegacyCups extends React.Component {
   }
 }
 
-export default observer(LegacyCups);
+export default inject('transactions')(inject('system')(inject('dialog')(observer(LegacyCups))));
