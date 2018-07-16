@@ -92,7 +92,7 @@ export const copyToClipboard = e => {
 }
 
 export const printNumber = (number, decimalPlaces = 3) => {
-  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18) }>{ formatNumber(number, decimalPlaces) }</span>
+  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18, true, true) }>{ formatNumber(number, decimalPlaces) }</span>
 }
 
 export const truncateAddress = (address, chars = 8) => {
