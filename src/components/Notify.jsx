@@ -10,7 +10,7 @@ class Item extends React.Component {
 
   render() {
     return (
-      React.createElement("div", { className: "col nf-" + this.props.theme },
+      React.createElement("div", { className: "col " + this.props.classNames.join(' ') },
         React.createElement("button", { className: "close-box" , onClick: this.hideNotification}),
         React.createElement("h3", { className: "notification-headline" }, this.props.title),
         React.createElement("div", { className: "" }, this.props.msg)
@@ -37,24 +37,24 @@ class Notify extends React.Component {
   }
 
   success = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, "success", onClose);
+    this.addNotify(key, title, msg, time, ["nf-success"], onClose);
   }
 
   error = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, "error", onClose);
+    this.addNotify(key, title, msg, time, ["nf-error"], onClose);
   }
 
   info = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, "info", onClose);
+    this.addNotify(key, title, msg, time, ["nf-info"], onClose);
   }
 
   notice = (key, title, msg, time, onClose = () => null) => {
-    this.addNotify(key, title, msg, time, "notice", onClose);
+    this.addNotify(key, title, msg, time, ["nf-notice", "bright-style"], onClose);
   }
 
-  addNotify = (key, title, msg, time, theme, onClose = () => null) => {
+  addNotify = (key, title, msg, time, classNames, onClose = () => null) => {
     const state = {...this.state}
-    state[key] = { title, msg, time, theme, onClose };
+    state[key] = { title, msg, time, classNames, onClose };
     this.setState(state);
     this.countToHide(time, key);
   }
@@ -84,7 +84,7 @@ class Notify extends React.Component {
       return React.createElement(Item, {
         id: key,
         key: key,
-        theme: state[key].theme,
+        classNames: state[key].classNames,
         hideNotification: hide,
         title: state[key].title,
         msg: state[key].msg
