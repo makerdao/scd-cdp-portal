@@ -10,7 +10,7 @@
 		padding: 32px 44px;
 		position: relative;
 		border: 0;
-		
+
 		p {
 			max-width: 30em;
 		}
@@ -58,17 +58,45 @@
 		}
 	}
 	.nf-notice {
-		background-color: $notice-gray;
-		color: $white;
-		.notification-headline {
-			&:after {
-				content: url('../img/icon-check.svg');
-				position: absolute;
-				left: -1.5em;
-				top: auto;
-				margin-top: 0.05em;
-			}
-		}
+	  background-color: #EAEAEA;
+	  .notification-headline {
+	    color: #C0392B;
+	    &:after {
+	      content: url("../img/icon-warning.svg");
+	      position: absolute;
+	      left: -30px;
+	      top: auto;
+	      margin-top: 3px;
+	    }
+	  }
+	  p {
+	    color: #C0392B;
+	    font-size: 1.05rem;
+	    letter-spacing: 0.01rem;
+	  }
+	  .dark-text {
+	    color: #202930;
+	  }
+	  .indented-section {
+	    position: relative;
+	    padding-left: 2.5rem;
+	  }
+	  .line-indent {
+	    width: 7px;
+	    height: 94%;
+	    top: 3%;
+	    position: absolute;
+	    left: 10px;
+	    border-bottom: 1px solid #313D47;
+	    &:after {
+	      border-left: 1px solid #313D47;
+	      width: 1px;
+	      height: 100%;
+	      content: ' ';
+	      position: absolute;
+	      left: 3px;
+	    }
+	  }
 	}
 	.close-box {
 		position: absolute;

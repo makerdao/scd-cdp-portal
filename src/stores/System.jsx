@@ -479,7 +479,7 @@ class SystemStore {
             art: cupData[2],
             ire: cupData[3],
           };
-  
+
           Promise.resolve(this.addExtraCupData(cupBaseData)).then(cup => {
             resolve(cup);
           }, e => {
@@ -552,7 +552,7 @@ class SystemStore {
       this.filterCups(keepTrying, type, promisesCups, callbacks);
     }
   }
-  
+
   filterCups = (keepTrying, type, promisesCups, callbacks = []) => {
     const lad = type === "new" ? ProfileStore.proxy : NetworkStore.defaultAccount;
     const conditions = {lad};
@@ -664,26 +664,31 @@ class SystemStore {
           const pip = toWei(latestAction.pip);
           const body =  <React.Fragment>
                           <p>
-                            Your CDP #{id} was liquidated on {date} to pay back {printNumber(art)} DAI.
+                            Your CDP #{id} was liquidated on { date } to pay back { printNumber(art) } DAI.
                           </p>
                           <p>
-                            Total ETH (PETH) liquidated<br />
-                            {printNumber(liqETH)} ETH<br />
-                            {printNumber(liqInk)} PETH<br />
+                            <div className="dark-text">Total ETH (PETH) liquidated</div>
+                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqETH) } ETH</div>
+                            <div className="dark-text">{ printNumber(liqInk) } PETH</div>
                           </p>
+                          <div className="indented-section">
+                            <div className="line-indent"></div>
+                            <p>
+                              <div className="dark-text">Collateral</div>
+                              <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{ printNumber(liqETHCol) } ETH</div>
+                              <div className="dark-text">{ printNumber(liqInkCol) } PETH</div>
+                            </p>
+                            <p>
+                              <div className="dark-text">13% liquidation penalty</div>
+                              <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{printNumber(liqETHPen)} ETH</div>
+                              <div className="dark-text">{printNumber(liqInkPen)} PETH</div>
+                            </p>
+                          </div>
                           <p>
-                            Collateral<br />
-                            {printNumber(liqETHCol)} ETH<br />
-                            {printNumber(liqInkCol)} PETH<br />
-                            13% liquidation penalty<br />
-                            {printNumber(liqETHPen)} ETH<br />
-                            {printNumber(liqInkPen)} PETH<br />
-                          </p>
-                          <p>
-                            Became vulnerable to liquidation @ price<br />
-                            {printNumber(liqPrice)} USD<br />
-                            Liquidated @ price<br />
-                            {printNumber(pip)} USD
+                            <div className="dark-text">Became vulnerable to liquidation @ price</div>
+                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqPrice)} USD</div>
+                            <div className="dark-text">Liquidated @ price</div>
+                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(pip) } USD</div>
                           </p>
                         </React.Fragment>;
           TransactionsStore.notificator.notice(Math.random(), "CDP Liquidated", body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
@@ -715,7 +720,7 @@ class SystemStore {
   tab = cup => {
     return wmul(cup.art, this.tub.chi).round(0);
   }
-  
+
   rap = cup => {
     return wmul(cup.ire, this.tub.rhi).minus(this.tab(cup)).round(0);
   }
@@ -730,7 +735,7 @@ class SystemStore {
       }
     })
   }
-  
+
   getDataFromToken = token => {
     this.getTotalSupply(token);
     if (token !== "sin" && isAddress(NetworkStore.defaultAccount)) {
@@ -753,7 +758,7 @@ class SystemStore {
       this.getAllowance(token);
     }
   }
-  
+
   getTotalSupply = token => {
     Blockchain.objects[token].totalSupply.call((e, r) => {
       if (!e) {
@@ -764,7 +769,7 @@ class SystemStore {
       }
     })
   }
-  
+
   getBalanceOf = (token, address, field) => {
     Blockchain.objects[token].balanceOf.call(address, (e, r) => {
       if (!e) {
@@ -788,7 +793,7 @@ class SystemStore {
   setFilterToken = token => {
     if (!Blockchain.getProviderUseLogs()) return;
     const filters = ["Transfer", "Approval"];
-  
+
     if (token === "gem") {
       filters.push("Deposit");
       filters.push("Withdrawal");
@@ -796,7 +801,7 @@ class SystemStore {
       filters.push("Mint");
       filters.push("Burn");
     }
-  
+
     for (let i = 0; i < filters.length; i++) {
       const conditions = {};
       if (Blockchain.objects[token][filters[i]]) {
@@ -830,7 +835,7 @@ class SystemStore {
     TransactionsStore.addLoading("setAllowance", token);
     ProfileStore.checkProxy([["system/setAllowance", token, value, [["system/getAllowance", token, [["transactions/cleanLoading", "setAllowance", token]]]]]]);
   }
-  
+
   transferToken = (token, to, amount) => {
     const title = `${token.replace("gov", "mkr").toUpperCase()}: transfer ${to} ${amount}`;
     if (token === "eth") {
@@ -852,19 +857,19 @@ class SystemStore {
   executeProxyTx = (action, value, notificator) => {
     TransactionsStore.askPriceAndSend(notificator.title, Blockchain.objects.proxy.execute["address,bytes"], [settings.chain[NetworkStore.network].proxyContracts.sai, action], {value}, notificator.callbacks);
   }
-  
+
   open = () => {
     const title = "Open CDP";
     const action = `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`;
     this.executeProxyTx(action, 0, {title, callbacks: [["system/getMyCups"]]});
   }
-  
+
   shut = (cupId, useOTC = false) => {
     const title = `Shut CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[NetworkStore.network].otc, false) : ""}`;
     this.executeProxyTx(action, 0, {title, callbacks: [["system/getMyCups"], ["profile/getAccountBalance"], ["system/setUpToken", "dai"], ["system/setUpToken", "sin"]]});
   }
-  
+
   give = (cupId, newOwner) => {
     const title = `Transfer CDP ${cupId} to ${newOwner}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
@@ -918,7 +923,7 @@ class SystemStore {
                                               });
     }
   }
-  
+
   wipeAndFree = (cupId, eth, dai, useOTC = false) => {
     let action = false;
     let title = "";
@@ -941,7 +946,7 @@ class SystemStore {
                                       });
     }
   }
-  
+
   executeAction = params => {
     const value = params.value;
     let callbacks = [];
@@ -1025,7 +1030,7 @@ class SystemStore {
       default:
         break;
     }
-  
+
     if (error) {
       DialogStore.error = error;
     } else {
