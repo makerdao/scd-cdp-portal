@@ -33,8 +33,24 @@
     right: 0;
     margin-bottom: 0;
   }
+  // Close button
+  svg.close-button {
+    position: relative;
+    float: right;
+    cursor: pointer;
+    overflow: hidden;
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    path + g {
+      stroke: #2b3943;
+    }
+    &:hover path + g {
+      stroke: lighten(#2b3943, 20%);
+    }
+  }
   // Icon
-  svg {
+  svg.notification-icon {
     float: left;
     width: auto;
     height: 1.6rem;
@@ -49,7 +65,7 @@
     }
   }
   &.is-warning {
-    svg path {
+    svg.notification-icon path {
       fill: $white;
     }
     & {
