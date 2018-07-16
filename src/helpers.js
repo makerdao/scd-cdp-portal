@@ -33,7 +33,7 @@ export const addressToBytes32 = (x, prefix = true) => {
   return y;
 }
 
-export const formatNumber = (number, decimals = false, isWei = true/*, trimTrailingZeroes = true*/) => {
+export const formatNumber = (number, decimals = false, isWei = true, trimTrailingZeroes = false) => {
   web3.BigNumber.config({ ROUNDING_MODE: 4 });
 
   let object = toBigNumber(number);
@@ -48,7 +48,7 @@ export const formatNumber = (number, decimals = false, isWei = true/*, trimTrail
   }
 
   const parts = object.toString().split(".");
-  // if (trimTrailingZeroes && parts[1]) parts[1] = parts[1].replace(/0+$/, "");
+  if (trimTrailingZeroes && parts[1]) parts[1] = parts[1].replace(/0+$/, "");
   return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? `.${parts[1]}` : "");
 }
 
