@@ -56,7 +56,7 @@ export const formatDate = timestamp => {
   const date = new Date(timestamp * 1000);
   let string = date.toDateString();
   string = string.slice(4, string.length);
-  string = `${string.slice(0, string.length - 4)}, ${date.getFullYear()}`;
+  string = `${string.slice(0, string.length - 5)}, ${date.getFullYear()}`;
   return `${string} at ${addZero(date.getHours())}:${addZero(date.getMinutes())}:${addZero(date.getSeconds())}`;
 }
 
