@@ -63,6 +63,9 @@
 
 		li a {
 			padding: 1.76rem;
+			@include respond-to(m) {
+				padding: 0;
+			}
 			width: 100%;
 			height: 100%;
 		}
