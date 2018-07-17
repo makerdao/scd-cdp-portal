@@ -5,9 +5,6 @@ class NotFound extends React.Component {
   static contextTypes = {
     router: PropTypes.object
   }
-  constructor(props, context) {
-     super(props, context);
-  }
   render() {
     return (
       <React.Fragment>
