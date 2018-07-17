@@ -1,0 +1,45 @@
+// Customized inline notification
+.inline-notification.migrate-cups {
+  padding: 1rem 1.5rem 1.1rem !important;
+  .message {
+    font-weight: 300;
+  }
+}
+
+// Migrate cups menu item
+ul.menu {
+  li.migrate-cups {
+    padding-top: 12px;
+    padding-bottom: 10px;
+    height: auto;
+
+    color: #dedede;
+    &.active, &:hover {
+      color: #fff;
+      svg path {
+        fill: #fff;
+      }
+    }
+
+    svg {
+      display: block;
+      margin: 0 auto 5px;
+      width: 20px;
+      height: auto;
+      path {
+        transition: fill 0.2s linear;
+      }
+    }
+
+    @include respond-to(m) {
+      height: 100%;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      width: auto;
+      svg {
+        margin: 2px auto 4px;
+        width: 18px;
+      }
+    }
+  }
+}
