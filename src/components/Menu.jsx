@@ -8,7 +8,14 @@ class Menu extends React.Component {
     return (
       <div className="menu-bar">
         <div className="logo">
-          <img src="img/mkr-logo-rounded.svg" draggable="false" alt="" />
+          <svg width="33" height="23" viewBox="0 0 33 23" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" fillRule="evenodd">
+              <path d="m14.242 22.89v-11.492l-13.24-10.033v21.525" stroke="#1abc9c"/>
+              <path d="m18.316 22.89v-11.492l13.24-10.033v21.525" stroke="#546979"/>
+              <path d="m14.242 22.89v-11.492l-13.24-10.033v21.525" stroke="#1abc9c"/>
+              <path d="m18.316 22.89v-11.492l13.24-10.033v21.525" stroke="#1b1b1b"/>
+            </g>
+          </svg>
           <span className="menu-label">Maker</span>
         </div>
         <nav>
