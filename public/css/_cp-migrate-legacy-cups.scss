@@ -43,3 +43,68 @@ ul.menu {
     }
   }
 }
+
+// Migrate cups page
+.migrate-cups-section {
+
+  .number-of-cdps-to-migrate {
+    font-size: 1.1rem;
+    font-weight: 200;
+    letter-spacing: 0.02rem;
+    clear: both;
+    padding-top: 0.5rem;
+  }
+
+  .cup-to-migrate {
+
+    .cdp-id-heading {
+      margin-top: 3rem;
+      margin-bottom: 0.4rem
+    }
+
+    table {
+      float: left;
+      border: 1px solid #728391;
+      padding: 0.7rem 1rem 0.6rem;
+      width: calc(100% - 200px);
+      @include respond-to(xl) {
+        width: calc(100% - 230px);
+      }
+      th, tr {
+        text-align: left;
+        color: #fff;
+        letter-spacing: 0.01rem;
+      }
+      th {
+        text-transform: uppercase;
+        font-weight: 300;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        &.status-column {
+          width: 75px;
+        }
+      }
+      tr {
+        font-weight: 200;
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.85);
+        td {
+          padding-top: 3px;
+          &.cdp-status {
+            svg {
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+    .migrate-button {
+      float: right;
+      margin-top: 1.2rem;
+      button {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+    }
+  }
+}
