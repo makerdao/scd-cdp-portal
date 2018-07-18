@@ -1,8 +1,11 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Components
 import LoadingSpinner from "./LoadingSpinner";
 
+// Utils
 import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../utils/helpers";
 
 const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;

@@ -1,15 +1,17 @@
+// Libraries
 import React, {Component} from "react";
 import {inject} from "mobx-react";
 import Steps, {Step} from "rc-steps";
 
+// Components
 import InlineNotification from "./InlineNotification";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
 
+// Utils
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
-
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
 const steps = [

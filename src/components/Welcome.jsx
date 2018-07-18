@@ -1,6 +1,8 @@
+// Libraries
 import React from "react";
 import {observer} from "mobx-react";
 
+// Components
 import LegacyCupsAlert from "./LegacyCupsAlert";
 
 class Welcome extends React.Component {

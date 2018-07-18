@@ -1,3 +1,4 @@
+// Libraries
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -28,7 +29,7 @@ class NotFound extends React.Component {
         <div className="not-found-2">
           <div className="not-found-text-container-1">
             <p>We are confident you will find what you were<br />looking for on the main page.</p>
-            <button className="text-btn" onClick={ () => { this.context.router.history.push('/') }}>GO TO MAIN PAGE</button>
+            <button className="text-btn" onClick={ () => { this.context.router.history.push("/") }}>GO TO MAIN PAGE</button>
           </div>
         </div>
       </React.Fragment>

@@ -1,6 +1,8 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Components
 import InlineNotification from "./InlineNotification";
 
 class LegacyCupsAlert extends React.Component {

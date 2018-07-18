@@ -1,7 +1,9 @@
+// Libraries
 import React from "react";
-import {inject, observer} from "mobx-react";
-import {Route, Switch, withRouter} from "react-router-dom";
+import {observer, Provider} from "mobx-react";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 
+// Components
 import Help from "./Help";
 import Home from "./Home";
 import Modal from "./Modal";
@@ -11,10 +13,25 @@ import NotifySetUp from "./NotifySetUp";
 import PriceModal from "./PriceModal";
 import Terms from "./Terms";
 
+// Stores
+import DialogStore from "../stores/Dialog";
+import NetworkStore from "../stores/Network";
+import ProfileStore from "../stores/Profile";
+import SystemStore from "../stores/System";
+import TransactionsStore from "../stores/Transactions";
+
+// Utils
+import * as Blockchain from "../utils/blockchain-handler";
+
 import "./App.css";
 
-import * as Blockchain from "../utils/blockchain-handler";
-window.Blockchain = Blockchain;
+// Convenient console access
+window.blockchain = Blockchain;
+window.dialog = DialogStore;
+window.network = NetworkStore;
+window.profile = ProfileStore;
+window.system = SystemStore;
+window.transactions = TransactionsStore;
 
 class App extends React.Component {
   componentDidUpdate = prevProps => {
@@ -24,29 +41,26 @@ class App extends React.Component {
   }
 
   render() {
-    const page = this.props.location.pathname.replace("/", "");
     return (
-      <React.Fragment>
-        <Switch>
-          <Route exact path="/help" render={() => (
-            <Help page={page}/>
-          )}/>
-          <Route exact path="/terms" render={() => (
-            <Terms page={page}/>
-          )}/>
-          <Route exact path="/" render={() => (
-            <Home page={page}/>
-          )}/>
-          <Route component={ NotFound } />
-        </Switch>
-        <Notify ref="notificator" />
-        <NotifySetUp />
-        <Modal show={ this.props.transactions.priceModal.open } close={ this.props.transactions.closePriceModal }>
-          <PriceModal/>
-        </Modal>
-      </React.Fragment>
+      <Provider network={NetworkStore} profile={ProfileStore} transactions={TransactionsStore} system={SystemStore} dialog={DialogStore}>
+        <BrowserRouter>
+          <React.Fragment>
+            <Switch>
+              <Route exact path="/help" render={() => <Help />} />
+              <Route exact path="/terms" render={() => <Terms />} />
+              <Route exact path="/" render={() => <Home />} />
+              <Route component={ NotFound } />
+            </Switch>
+            <Notify ref="notificator" />
+            <NotifySetUp />
+            <Modal show={ TransactionsStore.priceModal.open } close={ TransactionsStore.closePriceModal }>
+              <PriceModal />
+            </Modal>
+          </React.Fragment>
+        </BrowserRouter>
+      </Provider>
     )
   }
 }
 
-export default inject("transactions")(withRouter(observer(App)));
+export default observer(App);

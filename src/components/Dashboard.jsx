@@ -1,6 +1,8 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Components
 import Cup from "./Cup";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 

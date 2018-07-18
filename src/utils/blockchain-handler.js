@@ -1,7 +1,9 @@
-import web3 from "./web3";
+// Libraries
 import Promise from "bluebird";
 
-// const settings = require("./settings");
+// Utils
+import web3 from "./web3";
+
 const promisify = Promise.promisify;
 const schema = {};
 

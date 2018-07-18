@@ -1,7 +1,10 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
+// Components
+import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from "./DropdownMenu";
 import ToggleSwitch from "./ToggleSwitch";
 import WalletClientDownload from "./WalletClientDownload";
 import WalletClientSelector from "./WalletClientSelector";
@@ -9,9 +12,9 @@ import WalletHWSelector from "./WalletHWSelector";
 import WalletNoAccount from "./WalletNoAccount";
 import WalletSendToken from "./WalletSendToken";
 
+// Utils
 import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain-handler";
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
-import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from "./DropdownMenu";
 
 class Wallet extends React.Component {
   constructor() {

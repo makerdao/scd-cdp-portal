@@ -1,14 +1,18 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 import createClass from "create-react-class";
 import PropTypes from "prop-types";
 import Select from "react-select";
 
+// Components
 import LoadingSpinner from "./LoadingSpinner";
 
-import { getJazziconIcon, capitalize, truncateAddress } from "../utils/helpers";
+// Utils
+import {getJazziconIcon, capitalize, truncateAddress} from "../utils/helpers";
 
-const settings = require("../settings");
+// Settings
+import * as settings from "../settings";
 
 const SHOW_ADDRESSES_MAX = 10;
 const IDENTICON_SIZE = 18;

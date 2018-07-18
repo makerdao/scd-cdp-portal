@@ -1,8 +1,11 @@
+// Libraries
 import React from "react";
 import {observer} from "mobx-react";
 
+// Components
 import LoadingSpinner from "./LoadingSpinner";
 
+// Utils
 import {getCurrentProviderName} from "../utils/blockchain-handler";
 
 class NoAccount extends React.Component {

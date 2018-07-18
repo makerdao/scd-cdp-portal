@@ -1,3 +1,4 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
@@ -10,7 +11,7 @@ class Item extends React.Component {
 
   render() {
     return (
-      React.createElement("div", { className: "col " + this.props.classNames.join(' ') },
+      React.createElement("div", { className: "col " + this.props.classNames.join(" ") },
         React.createElement("button", { className: "close-box" , onClick: this.hideNotification}),
         React.createElement("h3", { className: "notification-headline" }, this.props.title),
         React.createElement("div", { className: "" }, this.props.msg)

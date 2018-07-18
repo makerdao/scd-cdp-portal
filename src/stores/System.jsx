@@ -1,16 +1,19 @@
+// Libraries
 import React from "react";
 import {observable, decorate} from "mobx";
 
+// Stores
 import DialogStore from "./Dialog";
 import NetworkStore from "./Network";
 import ProfileStore from "./Profile";
 import TransactionsStore from "./Transactions";
 
+// Utils
 import * as Blockchain from "../utils/blockchain-handler";
-
 import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress, printNumber, formatDate} from "../utils/helpers";
 
-const settings = require("../settings");
+// Settings
+import * as settings from "../settings";
 
 class SystemStore {
   network = null;

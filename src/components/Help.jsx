@@ -1,6 +1,8 @@
+// Libraries
 import React from "react";
 import {observer} from "mobx-react";
 
+// Components
 import Menu from "./Menu";
 
 class Help extends React.Component {
@@ -9,7 +11,7 @@ class Help extends React.Component {
       <div className="full-width-page">
         <div className="wrapper">
           {
-            <Menu page={ this.props.page } />
+            <Menu page="help" />
           }
           <main className="main-column fullwidth">
             <div>

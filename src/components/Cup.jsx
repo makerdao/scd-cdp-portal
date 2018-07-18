@@ -1,10 +1,13 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Components
 // import CupChart from "./CupChart"
 import CupHistory from "./CupHistory";
 import TooltipHint from "./TooltipHint";
 
+// Utils
 import {WAD, printNumber, wmul, toBigNumber, toWei} from "../utils/helpers";
 
 class Cup extends React.Component {

@@ -1,3 +1,4 @@
+// Libraries
 import ethUtil from "ethereumjs-util";
 import HDKey from "hdkey";
 

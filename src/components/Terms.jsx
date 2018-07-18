@@ -1,7 +1,9 @@
+// Libraries
 import React from "react";
 import {observer} from "mobx-react";
 import Markdown from "markdown-to-jsx";
 
+// Components
 import Menu from "./Menu";
 
 const md = `# Dai Terms of Service
@@ -162,7 +164,7 @@ class Terms extends React.Component {
     return (
       <div className="full-width-page">
         <div className="wrapper">
-          <Menu page={ this.props.page } />
+          <Menu page="terms" />
           <main className="main-column fullwidth markdown">
             <Markdown children={ md } />
           </main>

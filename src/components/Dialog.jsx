@@ -1,7 +1,9 @@
+// Libraries
 import React from "react";
 import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 
+// Utils
 import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from "../utils/helpers";
 
 class Dialog extends React.Component {

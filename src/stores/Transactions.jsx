@@ -1,14 +1,17 @@
+// Libraries
 import {observable, decorate, computed} from "mobx";
 
+// Components
 import NetworkStore from "./Network";
 import ProfileStore from "./Profile";
 import SystemStore from "./System";
 
-
+// Utils
 import * as Blockchain from "../utils/blockchain-handler";
 import {etherscanTx, methodSig} from "../utils/helpers";
 
-const settings = require("../settings");
+// Settings
+import * as settings from "../settings";
 
 class TransactionsStore {
   registry = {};

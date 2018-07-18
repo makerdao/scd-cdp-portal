@@ -1,13 +1,17 @@
+// Libraries
 import { observable, decorate } from "mobx";
 
+// Stores
 import ProfileStore from "./Profile";
 import SystemStore from "./System";
 import TransactionsStore from "./Transactions";
 
+// Utils
 import * as Blockchain from "../utils/blockchain-handler";
 import {isAddress} from "../utils/helpers";
 
-const settings = require("../settings");
+// Settings
+import * as settings from "../settings";
 
 class NetworkStore {
   stopIntervals = false;

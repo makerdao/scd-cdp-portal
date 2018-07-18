@@ -1,6 +1,8 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Utils
 import {printNumber, toBigNumber, toWei} from "../utils/helpers";
 
 class LegacyCups extends React.Component {
@@ -11,7 +13,7 @@ class LegacyCups extends React.Component {
         <header className="col">
           <h1 className="typo-h1 inline-headline">Migrate CDPs</h1>
         </header>
-        <div className="number-of-cdps-to-migrate">Your account has <b>{ Object.keys(this.props.system.tub.legacyCups).length }</b> existing { 'CDP' + (Object.keys(this.props.system.tub.legacyCups).length > 1 ? 's' : '') } to be migrated.</div>
+        <div className="number-of-cdps-to-migrate">Your account has <b>{ Object.keys(this.props.system.tub.legacyCups).length }</b> existing { `CDP${(Object.keys(this.props.system.tub.legacyCups).length > 1 ? "s" : "")}` } to be migrated.</div>
         {
           Object.keys(this.props.system.tub.legacyCups).map(key =>
             <div className="cup-to-migrate" key={ key }>
@@ -103,7 +105,7 @@ class LegacyCups extends React.Component {
           )
         }
         <div className="clearfix"></div>
-        <button className="bright-style text-btn" style={ {display: 'block', margin: '4rem auto 0'} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO DASHBOARD</button>
+        <button className="bright-style text-btn" style={ {display: "block", margin: "4rem auto 0"} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO DASHBOARD</button>
       </div>
     )
   }

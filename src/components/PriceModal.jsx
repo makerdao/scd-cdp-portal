@@ -1,3 +1,4 @@
+// Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
 import Slider from "react-rangeslider";

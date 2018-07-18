@@ -1,7 +1,10 @@
+// Libraries
 import { observable, decorate } from "mobx";
 
+// Stores
 import TransactionsStore from "./Transactions";
 
+// Utils
 import * as Blockchain from "../utils/blockchain-handler";
 import { toBigNumber, isAddress } from "../utils/helpers";
 

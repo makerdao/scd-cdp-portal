@@ -1,8 +1,10 @@
+// Libraries
 import React from "react";
 import ReactTooltip from "react-tooltip";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
+// Components
 import Dashboard from "./Dashboard";
 import Dialog from "./Dialog";
 import Landing from "./Landing";
@@ -40,7 +42,7 @@ class Home extends React.Component {
         <div className="wrapper">
           {
             this.props.network.isConnected && this.props.network.defaultAccount &&
-            <Menu page={ this.props.page } showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
+            <Menu page="" showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
           }
           <main className="main-column">
             {
