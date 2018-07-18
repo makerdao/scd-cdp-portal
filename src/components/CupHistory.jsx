@@ -3,7 +3,7 @@ import {inject, observer} from "mobx-react";
 
 import LoadingSpinner from "./LoadingSpinner";
 
-import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../helpers";
+import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../utils/helpers";
 
 const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;
 

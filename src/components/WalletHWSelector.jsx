@@ -6,7 +6,7 @@ import Select from "react-select";
 
 import LoadingSpinner from "./LoadingSpinner";
 
-import { getJazziconIcon, capitalize, truncateAddress } from "../helpers";
+import { getJazziconIcon, capitalize, truncateAddress } from "../utils/helpers";
 
 const settings = require("../settings");
 

@@ -2,8 +2,8 @@ import { observable, decorate } from "mobx";
 
 import TransactionsStore from "./Transactions";
 
-import * as Blockchain from "../blockchainHandler";
-import { toBigNumber, isAddress } from "../helpers";
+import * as Blockchain from "../utils/blockchain-handler";
+import { toBigNumber, isAddress } from "../utils/helpers";
 
 class ProfileStore {
   accountBalance = toBigNumber(-1);

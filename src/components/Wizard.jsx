@@ -6,7 +6,7 @@ import InlineNotification from "./InlineNotification";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
 
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../helpers";
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
 

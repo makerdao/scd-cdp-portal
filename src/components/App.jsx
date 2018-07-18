@@ -13,7 +13,7 @@ import Terms from "./Terms";
 
 import "./App.css";
 
-import * as Blockchain from "../blockchainHandler";
+import * as Blockchain from "../utils/blockchain-handler";
 window.Blockchain = Blockchain;
 
 class App extends React.Component {

@@ -9,8 +9,8 @@ import WalletHWSelector from "./WalletHWSelector";
 import WalletNoAccount from "./WalletNoAccount";
 import WalletSendToken from "./WalletSendToken";
 
-import {getCurrentProviderName, getWebClientProviderName} from "../blockchainHandler";
-import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../helpers";
+import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain-handler";
+import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
 import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from "./DropdownMenu";
 
 class Wallet extends React.Component {

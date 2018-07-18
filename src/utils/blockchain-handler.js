@@ -5,16 +5,16 @@ import Promise from "bluebird";
 const promisify = Promise.promisify;
 const schema = {};
 
-schema.tub = require("./abi/saitub");
-schema.top = require("./abi/saitop");
-schema.tap = require("./abi/saitap");
-schema.vox = require("./abi/saivox");
-schema.proxyregistry = require("./abi/proxyregistry");
-schema.dsproxy = require("./abi/dsproxy");
-schema.dsethtoken = require("./abi/dsethtoken");
-schema.dstoken = require("./abi/dstoken");
-schema.dsvalue = require("./abi/dsvalue");
-schema.proxycreationandexecute = require("./abi/proxycreationandexecute");
+schema.tub = require("../abi/saitub");
+schema.top = require("../abi/saitop");
+schema.tap = require("../abi/saitap");
+schema.vox = require("../abi/saivox");
+schema.proxyregistry = require("../abi/proxyregistry");
+schema.dsproxy = require("../abi/dsproxy");
+schema.dsethtoken = require("../abi/dsethtoken");
+schema.dstoken = require("../abi/dstoken");
+schema.dsvalue = require("../abi/dsvalue");
+schema.proxycreationandexecute = require("../abi/proxycreationandexecute");
 
 export const objects = {
 }

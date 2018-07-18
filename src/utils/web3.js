@@ -2,10 +2,10 @@ import Web3 from "web3";
 import * as Web3ProviderEngine from "web3-provider-engine/dist/es5";
 import * as RpcSource from "web3-provider-engine/dist/es5/subproviders/rpc";
 import Transport from "@ledgerhq/hw-transport-u2f";
-import LedgerSubProvider from "./vendor/ledger-subprovider";
-import TrezorSubProvider from "./vendor/trezor-subprovider";
+import LedgerSubProvider from "./ledger-subprovider";
+import TrezorSubProvider from "./trezor-subprovider";
 
-const settings = require("./settings");
+const settings = require("../settings");
 
 export const getWebClientProviderName = () => {
   if (!window.web3 || typeof window.web3.currentProvider === "undefined")

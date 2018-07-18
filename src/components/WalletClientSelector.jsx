@@ -2,7 +2,7 @@
 import React from "react";
 import {inject, observer} from "mobx-react";
 
-import {getWebClientProviderName} from "../blockchainHandler";
+import {getWebClientProviderName} from "../utils/blockchain-handler";
 
 class WalletClientSelector extends React.Component {
   render() {

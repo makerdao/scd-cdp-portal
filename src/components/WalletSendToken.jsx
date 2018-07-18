@@ -1,7 +1,7 @@
 import React from "react";
 import {inject, observer} from "mobx-react";
 
-import {printNumber, formatNumber, isAddress, toWei} from "../helpers";
+import {printNumber, formatNumber, isAddress, toWei} from "../utils/helpers";
 
 class WalletSendToken extends React.Component {
   constructor() {

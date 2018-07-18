@@ -2,7 +2,7 @@ import React from "react";
 import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 
-import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from "../helpers";
+import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from "../utils/helpers";
 
 class Dialog extends React.Component {
   constructor() {

@@ -5,8 +5,8 @@ import ProfileStore from "./Profile";
 import SystemStore from "./System";
 
 
-import * as Blockchain from "../blockchainHandler";
-import {etherscanTx, methodSig} from "../helpers";
+import * as Blockchain from "../utils/blockchain-handler";
+import {etherscanTx, methodSig} from "../utils/helpers";
 
 const settings = require("../settings");
 

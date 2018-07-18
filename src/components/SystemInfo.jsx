@@ -1,7 +1,7 @@
 import React from "react";
 import {inject, observer} from "mobx-react";
 
-import {printNumber, wdiv, wmul} from "../helpers";
+import {printNumber, wdiv, wmul} from "../utils/helpers";
 
 class SystemInfo extends React.Component {
   render() {

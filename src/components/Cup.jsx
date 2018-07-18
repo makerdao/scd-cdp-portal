@@ -5,7 +5,7 @@ import {inject, observer} from "mobx-react";
 import CupHistory from "./CupHistory";
 import TooltipHint from "./TooltipHint";
 
-import {WAD, printNumber, wmul, toBigNumber, toWei} from "../helpers";
+import {WAD, printNumber, wmul, toBigNumber, toWei} from "../utils/helpers";
 
 class Cup extends React.Component {
   componentDidMount() {
