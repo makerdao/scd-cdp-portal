@@ -134,13 +134,13 @@ class WalletHardHWSelector extends React.Component {
                     <h2 className="connect-fail">{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
                       this.props.network.hw.option === "ledger" &&
-                      <p className="typo-c">
+                      <div className="typo-c">
                         <ol>
                           <li>Unlock your Ledger and open the ETH application.</li>
                           <li>Verify Contract Data &amp; Browser Support are enabled in the ETH settings.</li>
                           <li>If Browser Support is not an option in settings, update to the latest firmware.</li>
                         </ol>
-                      </p>
+                      </div>
                     }
                     {
                       this.props.network.hw.option === "trezor" &&
