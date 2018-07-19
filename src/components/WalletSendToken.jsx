@@ -14,7 +14,7 @@ class WalletSendToken extends React.Component {
   }
 
   setAmount = () => {
-    this.amount.value = formatNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, 18, true, true);
+    this.amount.value = formatNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, false);
   }
 
   transfer = e => {

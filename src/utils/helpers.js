@@ -36,7 +36,7 @@ export const addressToBytes32 = (x, prefix = true) => {
   return y;
 }
 
-export const formatNumber = (number, decimals = false, isWei = true, trimTrailingZeroes = false) => {
+export const formatNumber = (number, decimals = false, isWei = true) => {
   web3.BigNumber.config({ ROUNDING_MODE: 4 });
 
   let object = toBigNumber(number);
@@ -51,7 +51,6 @@ export const formatNumber = (number, decimals = false, isWei = true, trimTrailin
   }
 
   const parts = object.toString().split(".");
-  if (trimTrailingZeroes && parts[1]) parts[1] = parts[1].replace(/0+$/, "");
   return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? `.${parts[1]}` : "");
 }
 
@@ -95,7 +94,7 @@ export const copyToClipboard = e => {
 }
 
 export const printNumber = (number, decimalPlaces = 3) => {
-  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, 18, true, true) }>{ formatNumber(number, decimalPlaces) }</span>
+  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, false) }>{ formatNumber(number, decimalPlaces) }</span>
 }
 
 export const truncateAddress = (address, chars = 8) => {
