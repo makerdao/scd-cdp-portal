@@ -167,7 +167,13 @@ class Wallet extends React.Component {
                                           </React.Fragment>
                                       }
                                     </td>
-                                    <td className="send-col"><a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }><img src="../img/send-icon.png" width="17" height="17" alt="Send" /></a></td>
+                                    <td className="send-col">
+                                      <a href="#action" onClick={ e => { e.preventDefault(); this.openSendBox(token) } }>
+                                        <svg width="17" height="17" viewBox="0 0 91 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M0.1031 85.7729L7.7031 52.8729C8.0031 51.4729 9.2031 50.3729 10.7031 50.1729L53.2031 45.7729C54.4031 45.6729 54.4031 43.8729 53.2031 43.6729L10.7031 39.5729C9.2031 39.4729 8.0031 38.3729 7.7031 36.9729L0.1031 4.17286C-0.5969 1.37286 2.4031 -0.927135 5.0031 0.372864L88.1031 41.9729C90.6031 43.2729 90.6031 46.8729 88.1031 48.1729L5.0031 89.5729C2.4031 90.8729 -0.5969 88.5729 0.1031 85.7729Z" transform="translate(0.996887)" fill="#D8D8D8"/>
+                                        </svg>
+                                      </a>
+                                    </td>
                                     <td>
                                       {
                                         token !== "eth" &&
