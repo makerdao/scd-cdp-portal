@@ -12,7 +12,7 @@
       letter-spacing: 0.1px;
       text-align: center;
       font-weight: 200;
-      margin: 3rem 0;
+      margin: 3rem 0 1.5rem;
     }
 
     // Below slider on landing page (What do I need to get started?)
@@ -117,19 +117,19 @@
       .first-slide {
         img.preview {
           display: block;
-          max-width: 600px;
-          width: 65%;
+          max-width: 900px;
+          width: 75%;
           height: auto;
           margin: 2rem auto;
         }
         p {
           max-width: unset;
           font-size: 1.5rem;
-          color: #fff;
+          color: #9AA3AD;
           letter-spacing: unset;
-          line-height: 1.7;
+          line-height: 1.4;
           font-weight: 200;
-          margin: 2rem 0;
+          margin: 0.5rem 0;
           width: 650px;
           display: inline-block;
         }

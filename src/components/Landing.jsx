@@ -34,12 +34,12 @@ class Landing extends React.Component {
           <Slider {...settings} className="landing-slider">
             <div className="first-slide">
               <div style={ {textAlign: "center"} }>
-                <img className="preview" src="../img/landing-preview.png" alt="CDP Portal" />
                 <p className="align-center">
                   This is the place to generate Dai!<br />
-                  Use this dApp from the Maker team to manage<br />
+                  Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
                 </p>
+                <img className="preview" src="../img/welcome-hero.svg" alt="Dai Dashboard" />
               </div>
             </div>
             <div>
