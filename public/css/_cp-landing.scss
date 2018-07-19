@@ -71,6 +71,9 @@
     }
 
     .landing-slider {
+      .slick-slide[data-index="4"] .info-slide p {
+        font-size: 1.3rem;
+      }
       .info-slide {
         display: block;
         margin: 8rem auto;
@@ -120,7 +123,7 @@
           max-width: 900px;
           width: 75%;
           height: auto;
-          margin: 2rem auto;
+          margin: 2rem auto 6rem;
         }
         p {
           max-width: unset;

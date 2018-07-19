@@ -46,7 +46,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>01.<span className="line"></span>THE CONCEPT</h1>
                 <h2 className="sm">What is a Collateralized Debt Position (CDP)?</h2>
-                <p>A CDP enables the generation of DAI stablecoins against the collateral (currently ETH) that you lock up in the CDP until you pay back the DAI you generated. Is Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
+                <p>A CDP enables the generation of DAI stablecoins against the collateral (currently ETH) that you lock up in the CDP until you pay back the DAI you generated.</p>
               </div>
             </div>
             <div>
@@ -74,7 +74,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>05.<span className="line"></span>THE COST</h1>
                 <h2>Does it cost anything?</h2>
-                <p>There is a stability fee on the Dai stablecoins of 0.05% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold. Is Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
+                <p>There is a stability fee on the Dai stablecoins of 0.05% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
               </div>
             </div>
           </Slider>
