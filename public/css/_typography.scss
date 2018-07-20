@@ -56,6 +56,9 @@
 	@if $styletype == c { // copy
 		font-size: 13px;
 		line-height: 1.5;
+		@include respond-to(s) {
+			font-size: 11px;
+		}
 		@include respond-to(xl) {
 			font-size: 16px;
 		}

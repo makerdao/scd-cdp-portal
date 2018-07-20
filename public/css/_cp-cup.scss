@@ -1,3 +1,10 @@
+@include respond-to(s) {
+  h1.dashboard-headline span {
+    display: block;
+    margin-top: 5px;
+  }
+}
+
 .cup-top-right-buttons {
   float: right;
   height: 0;
