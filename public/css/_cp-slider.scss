@@ -210,6 +210,9 @@ $slick-opacity-not-active: 1 !default;
 
 .slick-prev {
   left: -25px;
+  @include respond-to(s) {
+    left: -15px;
+  }
   [dir="rtl"] & {
     left: auto;
     right: -25px;
@@ -224,6 +227,9 @@ $slick-opacity-not-active: 1 !default;
 
 .slick-next {
   right: -25px;
+  @include respond-to(s) {
+    right: -15px;
+  }
   [dir="rtl"] & {
     left: -25px;
     right: auto;

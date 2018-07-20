@@ -14,6 +14,7 @@ import SystemInfo from "./SystemInfo";
 import Wallet from "./Wallet";
 import Welcome from "./Welcome";
 import Wizard from "./Wizard";
+import Footer from "./Footer";
 
 class Home extends React.Component {
   constructor() {
@@ -104,6 +105,10 @@ class Home extends React.Component {
             }
           </aside>
         </div>
+        {
+          (!this.props.network.isConnected || !this.props.network.defaultAccount) &&
+          <Footer />
+        }
         <Dialog />
         <ReactTooltip place="top" type="light" effect="solid" globalEventOff="click" html={true} />
       </div>

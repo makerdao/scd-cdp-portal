@@ -12,11 +12,15 @@
       letter-spacing: 0.1px;
       text-align: center;
       font-weight: 200;
+      font-size: 2.75rem;
       margin: 3rem 0 1.5rem;
     }
 
     // Below slider on landing page (What do I need to get started?)
     .getting-started {
+      @include respond-to(s) {
+        display: none;
+      }
       padding-top: 2rem;
       background-color: #2c3943;
       h1 {
@@ -93,8 +97,8 @@
           font-weight: 700;
           color: #dedede;
           letter-spacing: 0.02rem;
-          line-height: 1;
-          margin: 3.5rem 0 4rem;
+          line-height: 1.3;
+          margin: 3.2rem 0 3.5rem;
         }
         p {
           max-width: unset;
@@ -122,18 +126,27 @@
           display: block;
           max-width: 900px;
           width: 75%;
+          @include respond-to(s) {
+            width: 92%;
+          }
           height: auto;
           margin: 2rem auto 6rem;
+          @include respond-to(s) {
+            margin-top: 4rem;
+          }
         }
         p {
-          max-width: unset;
           font-size: 1.5rem;
           color: #9AA3AD;
           letter-spacing: unset;
           line-height: 1.4;
           font-weight: 200;
           margin: 0.5rem 0;
-          width: 650px;
+          @include respond-to(s) {
+            margin-top: 2rem;
+          }
+          max-width: 650px;
+          width: 100%;
           display: inline-block;
         }
       }
@@ -207,6 +220,9 @@
         font-size: 1.4rem;
         font-weight: 300;
         margin: 0px 5rem;
+        @include respond-to(s) {
+          margin: 0px 2rem;
+        }
         letter-spacing: 0.02rem;
         &:first-child {
           margin-left: 0;
