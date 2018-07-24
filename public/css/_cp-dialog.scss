@@ -15,11 +15,11 @@
 	max-width: 100vw;
 	overflow: auto;
 
-	// Visible class to blend in dialog
-	transition: right 0.2s ease-out 0.2s;
+	// Dialog slide in transition effect
+	transition: right 0.2s ease-out;
 	&.visible, .dialog-open & {
-		transition: right 0.2s ease-in 0s;
-		right: 0px;
+	  transition: right 0.2s ease-in;
+	  right: 0px;
 	}
 
 	// content container and wrapper
@@ -66,10 +66,10 @@
 		padding: 26px 26px;
 		padding: 2em 2em;
 
-
-		transition: bottom 0.2s ease-out 0.2s;
+		// Dialog slide in transition effect
+		transition: bottom 0.2s ease-out;
 		&.visible, .dialog-open & {
-			transition: bottom 0.2s ease-in 0s;
+			transition: bottom 0.2s ease-in;
 			bottom: 0px;
 		}
 
