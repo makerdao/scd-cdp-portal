@@ -5,28 +5,28 @@
 	@if $style == "liftAndPushIn" {
 		box-shadow: 0px 0px 0px 0px transparent;
 		transition-duration: .18s;
-		transition-property: box-shadow, background-color, opacity, border, color, margin-left, margin-right, padding-left, padding-right, width, min-width, max-width;
+		transition-property: box-shadow, background-color, opacity, border, color, margin-left, margin-right, width, min-width, max-width;
 		transition-timing-function: ease-out;
 		z-index: 0;
 
 		&:hover {
 			z-index: 1;
-			box-shadow: 0px 1px 6px 0px rgba(0,0,0,.9);
+			box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.9);
 		}
 		&:active, &:focus {
 			transition-duration: 0.18s;
-			box-shadow: 0 1px 2px 0px rgba(0,0,0,0.9);
+			box-shadow: 0 1px 2px 0px rgba(0, 0, 0, 0.9);
 		}
 		&:focus, &:hover, &:active {
 			outline: 0;
 		}
 
 		.bright-style &, &.bright-style {
-			&:hover {
-				box-shadow: 0px 1px 6px 0px rgba(0,0,0,.65);
+			&:enabled:hover {
+				box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
 			}
 			&:active, &:focus {
-				box-shadow: 0 1px 2px 0px rgba(0,0,0,0.65);
+				box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
 			}
 		}
 	}
@@ -39,11 +39,11 @@
 		outline: 0;
 
 		&:hover {
-			box-shadow: 0px 0px 0px 0px transparent, inset 0px 1px 2px 0px rgba(0,0,0,.9);
+			box-shadow: 0px 0px 0px 0px transparent, inset 0px 1px 2px 0px rgba(0, 0, 0, 0.9);
 		}
 		&:active, &:focus {
 			transition-duration: 0.18s;
-			box-shadow: 0px 0px 0px 1px $maker-green, inset 0px 2px 4px 0px rgba(0,0,0,.9);
+			box-shadow: 0px 0px 0px 1px $maker-green, inset 0px 2px 4px 0px rgba(0, 0, 0, 0.9);
 		}
 		&:focus, &:hover, &:active {
 			outline: 0;
@@ -51,12 +51,11 @@
 
 		.bright-style &, &.bright-style {
 			box-shadow: 0px 0px 0px 0px transparent, inset 0px 0px 0px 0px transparent;
-
 			&:hover {
-				box-shadow: 0px 0px 0px 0px transparent, inset 0px 1px 2px 0px rgba(0,0,0,.65);
+				box-shadow: 0px 0px 0px 1px #B3B3B3, inset 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
 			}
 			&:active, &:focus {
-				box-shadow: 0px 0px 0px 1px $maker-green, inset 0px 2px 4px 0px rgba(0,0,0,.65);
+				box-shadow: 0px 0px 0px 1px $maker-green, inset 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
 			}
 		}
 	}
