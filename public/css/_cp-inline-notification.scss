@@ -43,10 +43,10 @@
     height: 20px;
     z-index: 1;
     path + g {
-      stroke: #2b3943;
+      stroke: #2B3943;
     }
     &:hover path + g {
-      stroke: lighten(#2b3943, 20%);
+      stroke: lighten(#2B3943, 20%);
     }
   }
   // Icon
@@ -61,15 +61,24 @@
     position: relative;
     margin-right: 1rem;
     path {
-      fill: #26323a;
+      fill: #26323A;
     }
   }
   &.is-warning {
     svg.notification-icon path {
+      fill: #202930;
+    }
+    & {
+      background-color: #FBAE17;
+      color: #2B3943;
+    }
+  }
+  &.is-error {
+    svg.notification-icon path {
       fill: $white;
     }
     & {
-      background-color: $error-red;
+      background-color: #C0392B;
       color: $white;
     }
   }

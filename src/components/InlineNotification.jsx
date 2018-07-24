@@ -10,7 +10,7 @@ const icon = (
 class InlineNotification extends React.Component {
   render() {
     return (
-      <div className={ "inline-notification " + (this.props.type === "warning" ? "is-warning" : "") + (this.props.class ? " " + this.props.class : "") }>
+      <div className={ "inline-notification " + (this.props.type === "error" ? "is-error" : "") + (this.props.type === "warning" ? "is-warning" : "") + (this.props.class ? " " + this.props.class : "") }>
         {
           this.props.onCloseButtonClick &&
           <svg onClick={ e => { e.preventDefault(); this.props.onCloseButtonClick() } } className="close-button" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
