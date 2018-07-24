@@ -2,15 +2,26 @@
   background-color: #ffffff;
   box-shadow: 0 -2px 8px 0 rgba(0, 0, 0, 0.4);
   opacity: 1 !important;
+  z-index: 10000;
 }
 
 svg.tooltip-hint {
+  position: relative;
   cursor: pointer;
   width: 0.9rem;
   height: 0.9rem;
+
+  width: 12px;
+  height: 12px;
   margin-left: 0.4rem;
-  position: relative;
   top: 0.15rem;
+
+  @include respond-to(xl) {
+    width: 13px;
+    height: 13px;
+    top: 1px;
+  }
+
   path {
     fill: $text-grey;
   }
