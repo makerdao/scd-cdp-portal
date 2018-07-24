@@ -94,30 +94,32 @@ input[type="radio"] {
 	vertical-align: baseline;
 
 
-// add custom styles
+	// add custom styles
 	&:checked + label::before,
 	&:not(:checked) + label::before {
 		content:' ';
-		display:inline-block;
+		display: inline-block;
 		width: 16px;
 		width: 1.23077rem;
 		height:16px;
 		height: 1.23077rem;
 		position: relative;
-		top: 4px;
-		top: 0.3076rem;
+		top: 5px;
+		@include respond-to(xl) {
+			top: 6px;
+		}
 		border: 1px solid $mid-grey;
-		background: transparent;
+		background: rgba(255, 255, 255, 0.65);
 	 	//background: radial-gradient($white 0%, $white 0%, transparent 0%);
 		margin-right: 0.5em;
-		border-radius: 30px;
+		border-radius: 3px;
 		transition-property: border-color, background;
 		transition-duration: 0.2s;
 		transition-timing-function: ease-in;
 	}
-	&:checked  + label::before {
-	 	border-color: $white;
-	 	background: $white;
+	&:checked + label::before {
+		border-color: #1A826D;
+		background: #1ABC9C;
 	 	//background: radial-gradient($white 0%, $white 40%, transparent 40%);
 	}
 
