@@ -80,7 +80,7 @@ class Wizard extends Component {
         state.error = false;
 
         if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
-          state.error = "The amount of ETH exceeds your balance.";
+          state.error = "The amount of ETH to be deposited exceeds your current balance.";
           return state;
         }
 
@@ -89,7 +89,7 @@ class Wizard extends Component {
           const availDai = wdiv(pro, wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
 
           if (this.props.system.sin.totalSupply.add(state.dai).gt(this.props.system.tub.cap)) {
-            state.error = "The amount of DAI exceeds the system debt ceiling.";
+            state.error = "The amount of DAI you are trying to generate exceeds the current system debt ceiling.";
           } else if (state.dai.gt(availDai)) {
             state.error = "The amount of ETH to be deposited is not enough to draw this amount of DAI.";
           } else {
