@@ -60,19 +60,17 @@
 		}
 	}
 	@if $style == "enlightAndSrink" {
-		//box-shadow: 0px 0px 0px 0px rgba(0,0,0,.0);
-		background-color: rgba(255,255,255,0);
+		background-color: rgba(255, 255, 255, 0);
 		transition-duration: .18s;
 		transition-property: background-color, transform, box-shadow;
 		transition-timing-function: ease-out;
 
 		&:hover {
 			box-shadow: none;
-			background-color: rgba(255,255,255,0.15);
+			background-color: rgba(255, 255, 255, 0.15);
 		}
 		&:active {
-			transform: scale(0.15);
-			background-color: rgba(255,255,255,0.95);
+			background-color: rgba(255, 255, 255, 0.25);
 		}
 		&:focus, &:hover, &:active {
 			outline: 0;
@@ -80,13 +78,21 @@
 
 
 		.bright-style &, &.bright-style {
-			background-color: rgba(0,0,0,0);
+			background-color: rgba(0, 0, 0, 0);
 			&:hover {
-				background-color: rgba(0,0,0,0.10);
+				background-color: rgba(0, 0, 0, 0.10);
 				box-shadow: none;
 			}
 			&:active {
-				background-color: rgba(0,0,0,0.95);
+				background-color: rgba(0, 0, 0, 0.2);
+			}
+			&::after {
+				transition-duration: .18s;
+				transition-property: transform;
+				transition-timing-function: ease-out;
+			}
+			&:active::after {
+				transform: scale(0.7);
 			}
 		}
 
