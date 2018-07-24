@@ -1,10 +1,13 @@
 .inline-notification {
+  display: inline-block;
+  position: relative;
   clear: both;
   background-color: $white-two;
   color: #26323a;
-  padding: 1rem 1.2rem !important;
+  padding: 1rem 1.3rem !important;
   margin: 2rem 0 1rem;
   border-radius: 2px;
+  min-width: 250px;
   .caption {
     position: relative;
     top: 0.1rem;
@@ -23,7 +26,10 @@
       padding-right: 12rem;
     }
     &.no-caption {
-      margin-left: 3rem;
+      margin-left: 2.7rem;
+      @include respond-to(xl) {
+        margin-left: 2.5rem;
+      }
     }
   }
   button {
@@ -52,14 +58,13 @@
   // Icon
   svg.notification-icon {
     float: left;
-    width: auto;
-    height: 1.6rem;
+    position: absolute;
+    width: 21px;
+    height: 19px;
+    top: 1.1rem;
     @include respond-to(xl) {
-      height: 1.5rem;
+      top: 1.2rem;
     }
-    top: 0.3rem;
-    position: relative;
-    margin-right: 1rem;
     path {
       fill: #26323A;
     }
