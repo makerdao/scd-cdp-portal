@@ -32,9 +32,9 @@ class WalletClientSelector extends React.Component {
           <div className="helper-text no-wrap">Get started by connecting one of the wallets below</div>
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.setWeb3WebClient() } } className="web-wallet">
           {
-            providerName && walletIcons.hasOwnProperty(providerName) ?
+            providerName ?
               <React.Fragment>
-                { walletIcons[providerName] }
+                { walletIcons.hasOwnProperty(providerName) ? walletIcons[providerName] : walletIcons['web'] }
                 { this.props.formatClientName(providerName) }
               </React.Fragment>
             :
