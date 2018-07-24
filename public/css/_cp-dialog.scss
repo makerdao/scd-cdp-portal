@@ -22,9 +22,45 @@
 	  right: 0px;
 	}
 
-	// content container and wrapper
+	// Content container and wrapper
 	.dialog-content {
-		display: block;
+		h2 {
+			text-transform: capitalize;
+		}
+		p {
+			font-size: 1.3rem;
+			line-height: 1.3;
+			&.main-text {
+				font-size: 1.35rem;
+				margin-top: 4.5rem;
+				margin-bottom: 1rem;
+			}
+			&.indented-text {
+				font-size: 1.1rem;
+				line-height: 1.3;
+				padding-left: 1.5rem;
+				& + p.main-text {
+					margin-top: 2rem;
+				}
+			}
+		}
+		a {
+		  text-decoration: none;
+			color: #0B1216;
+		  border-bottom: 1px solid #676869;
+		  padding-bottom: 2px;
+		  position: relative;
+		  top: -1px;
+		  font-size: 0.85em;
+			font-weight: 300;
+		  display: inline-block;
+		  line-height: 1;
+			transition: color .2s ease-in, border-bottom-color .2s ease-in;
+		  &:hover {
+				color: #247F6D;
+				border-bottom-color: #247F6D;
+		  }
+		}
 	}
 
 	// Elements in Dialog
@@ -38,28 +74,26 @@
 		right: 1em;
 		top: 1em;
 	}
-	.dialog-action-area {
-		margin-top: 5em;
-	}
 	.typo-h1 {
-		margin-bottom: 2em;
+		font-size: 2rem;
+		margin-bottom: 1em;
 		display: block;
 	}
 	input[type="text"].number-input  {
 		margin-bottom: 4em;
 	}
 
-// large Screen layout
+	// Large Screen layout
 	@include respond-to(xl) {
 		width: 25%;
 		right: -33%;
 	}
-// medium Screen layout
+
+	// Medium Screen layout
 	@include respond-to(m) {
 		width: 100%;
 		height: auto;
 		max-height: 100vh;
-		overflow-y: scroll;
 		top: auto;
 		bottom: -100%;
 		right: 0px;
@@ -72,30 +106,115 @@
 			transition: bottom 0.2s ease-in;
 			bottom: 0px;
 		}
+	}
 
-		label {
-			width: 50%;
-			display: inline-block;
-			float: left;
-			margin-right: 1em;
-			margin-top: .2em;
-		}
-		.field-container  {
-			display: inline-block;
-			margin-bottom: 0;
-		}
-		input[type="text"].number-input  {
-			margin-bottom: 0em;
-		}
+	.info-section {
+	  margin-top: 3rem;
+	  margin-bottom: 3rem;
+	}
+	.info-heading {
+	  font-size: 1rem;
+	  margin-top: 0.5rem;
+	}
+	.info-value {
+	  font-size: 1.3rem;
+	  font-weight: 700;
+	  letter-spacing: 0.03rem;
+	  margin-bottom: 1rem;
+	  white-space: nowrap;
+	}
+	.info-value-smaller {
+	  font-size: 0.9rem;
+	  font-weight: 300;
+	  margin-bottom: 1rem;
+	}
 
-		.typo-h1 {
-			margin-bottom: 1em;
+	.fee-type-selector {
+	  margin: 1rem 0 1.5rem;
+	}
+
+	.text-green {
+	  color: #27AE60;
+	}
+	.text-yellow {
+	  color: #E09C16;
+	}
+	.text-red {
+	  color: #C0392B;
+	}
+
+	input[type="text"], input[type="number"] {
+	  &:active, &:focus {
+	    box-shadow: 0 0 0 1px $maker-green, inset 0 2px 2px 0 rgba(0,0,0,.2);
+	  }
+	  &.has-warning:active, &.has-warning:focus {
+	    box-shadow: 0 0 0 1px #FBAE17, inset 0 2px 2px 0 rgba(0,0,0,.2);
+	  }
+	  &.has-error:active, &.has-error:focus {
+	    box-shadow: 0 0 0 1px #CC3121, inset 0 2px 2px 0 rgba(0,0,0,.2);
+	  }
+	}
+
+	button.text-btn {
+		min-width: 47%;
+		float: left;
+		&.text-btn-primary {
+			float: right;
 		}
-		.dialog-action-area {
-			text-align: left;
-			margin-top: 1em;
+		&:active {
+			// Looks good on white/secondary button but not as good on primary button
+			padding: 13px 12px 11px 12px;
+			box-shadow: inset 0px 1px 0px 0px rgba(128, 128, 128, 0.4), 0px 0px 1px 0px rgba(152, 152, 152, 0.3) !important;
 		}
 	}
 
+	// Address value input field
+	input.address-input {
+		width: 100%;
+	}
+	// Number value input field
+	input.number-input {
+		width: 77%;
+		& + .unit {
+			float: none;
+			width: 23%;
+		}
+	}
+
+	// Radio select options
+	input[type="radio"] {
+		visibility: hidden;
+	}
+	label span {
+		font-size: 0.7rem;
+	}
+
+	// Tooltip icon custom colors
+	svg.tooltip-hint {
+		path {
+			fill: #2B3943;
+		}
+		&:hover path {
+			fill: lighten(#2B3943, 15%);
+		}
+	}
+
+	.input-section {
+		max-width: 300px;
+		.peth-equiv {
+			text-align: right;
+			font-size: 0.9rem;
+			margin-top: 0.7rem;
+		}
+		.set-max {
+			text-align: right;
+			margin-top: 0.4rem;
+			a {
+				padding-bottom: 1px;
+				position: unset;
+				font-size: 0.9rem;
+			}
+		}
+	}
 
 }
