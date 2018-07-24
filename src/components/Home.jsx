@@ -110,7 +110,7 @@ class Home extends React.Component {
           <Footer />
         }
         <Dialog />
-        <ReactTooltip place="top" type="light" effect="solid" globalEventOff="click" html={true} />
+        <ReactTooltip place="top" type="light" effect="solid" globalEventOff="click" html={ true } />
       </div>
     )
   }
