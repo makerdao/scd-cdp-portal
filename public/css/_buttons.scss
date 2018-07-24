@@ -118,14 +118,18 @@ button, .btn {
 			background: $white-two;
 			color: $black;
 
-			&:hover {
+			&:disabled, &[disabled] {
+				color: $black;
+			}
+
+			&:enabled:hover {
 				background: $very-light-grey;
 			}
 
 			&.text-btn-primary {
 				background: $maker-green;
 
-				&:hover {
+				&:enabled:hover {
 					background: $maker-green-light;
 				}
 			}
