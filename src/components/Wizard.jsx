@@ -203,10 +203,6 @@ class Wizard extends Component {
                       <h3 className="typo-c inline-headline">Minimum ratio</h3>
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
                     </div>
-                    {
-                      this.state.warning &&
-                      <InlineNotification type="warning" message={ this.state.warning } />
-                    }
                   </div>
 
                 </div>
@@ -219,12 +215,8 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row" style={ {borderBottom: "none"} }>
-                  {
-                    this.state.error &&
-                    <p id="errorMessage" className="error">
-                      { this.state.error }
-                    </p>
-                  }
+                  { this.state.warning && <InlineNotification type="warning" message={ this.state.warning } /> }
+                  { this.state.error && <InlineNotification type="error" message={ this.state.error } /> }
                 </div>
 
                 <div className="row" style={ {borderBottom: "none"} }>
