@@ -175,7 +175,10 @@
     background-color: #152128;
     text-align: center;
     padding-bottom: 5rem;
-
+    padding-right: 340px;
+    @include respond-to(m) {
+      padding-right: 0;
+    }
     .logo-block {
       position: relative;
       padding-top: 4.7rem;
