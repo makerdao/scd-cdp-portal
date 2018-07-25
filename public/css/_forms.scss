@@ -72,8 +72,7 @@ input[type='radio']+label {
 }
 
 input[type="radio"] {
-
-	/* remove standard-styles */
+	// Remove standard styles
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
@@ -81,56 +80,53 @@ input[type="radio"] {
 	border-radius: 0;
 	font-size: 1em;
 
-	/* graceful degradation for ie8 */
+	// Graceful degradation for IE8
 	width: auto;
 	float: left;
 	margin-right: .75em;
 
-	// hide native radio button
+	// Hide native radio button
 	background: transparent;
 	border: none;
 	display: inline-block;
 	line-height: inherit;
 	vertical-align: baseline;
 
-
-	// add custom styles
+	// Add custom styles
 	&:checked + label::before,
 	&:not(:checked) + label::before {
-		content:' ';
+		content: ' ';
 		display: inline-block;
-		width: 16px;
-		width: 1.23077rem;
-		height:16px;
-		height: 1.23077rem;
 		position: relative;
 		top: 5px;
+		width: 16px;
+		height: 16px;
 		@include respond-to(xl) {
-			top: 6px;
+			width: 18px;
+			height: 18px;
 		}
-		border: 1px solid $mid-grey;
+		border: 1px solid #828B94;
 		background: rgba(255, 255, 255, 0.65);
-	 	//background: radial-gradient($white 0%, $white 0%, transparent 0%);
+		box-shadow: inset 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
 		margin-right: 0.5em;
-		border-radius: 3px;
+		border-radius: 50%;
 		transition-property: border-color, background;
 		transition-duration: 0.2s;
 		transition-timing-function: ease-in;
 	}
 	&:checked + label::before {
-		border-color: #1A826D;
+		border-color: #0BAD8D;
 		background: #1ABC9C;
-	 	//background: radial-gradient($white 0%, $white 40%, transparent 40%);
+		box-shadow: inset 1px 1px 3px 0px rgba(255, 255, 255, 0.55);
 	}
 
-
-	// layout for labels
-	&+label {
+	// Layout for labels
+	& + label {
 		display: inline-block;
 		margin:0;
 		user-select: none;
 	}
-	&+label+&+label {
+	& + label + & + label {
 		margin-left: 3em;
 	}
 }
