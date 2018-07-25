@@ -111,22 +111,30 @@
 	.info-section {
 	  margin-top: 3rem;
 	  margin-bottom: 3rem;
-	}
-	.info-heading {
-	  font-size: 1rem;
-	  margin-top: 0.5rem;
-	}
-	.info-value {
-	  font-size: 1.3rem;
-	  font-weight: 700;
-	  letter-spacing: 0.03rem;
-	  margin-bottom: 1rem;
-	  white-space: nowrap;
-	}
-	.info-value-smaller {
-	  font-size: 0.9rem;
-	  font-weight: 300;
-	  margin-bottom: 1rem;
+
+		.info-heading {
+		  font-size: 1rem;
+		  margin-top: 0.5rem;
+		}
+		.info-value {
+		  font-size: 1.3rem;
+		  font-weight: 700;
+		  letter-spacing: 0.03rem;
+		  margin-bottom: 1rem;
+		  white-space: nowrap;
+		}
+		.info-value-smaller {
+		  font-size: 0.9rem;
+		  font-weight: 300;
+		  margin-bottom: 1rem;
+		}
+		.transfer-cdp-id {
+			font-size: 1.1rem;
+			padding-bottom: 5px;
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+			border-bottom: 1px solid #979797;
+		}
 	}
 
 	.fee-type-selector {
