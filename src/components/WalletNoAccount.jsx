@@ -1,6 +1,6 @@
 // Libraries
 import React from "react";
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 
 // Components
 import LoadingSpinner from "./LoadingSpinner";
@@ -23,4 +23,4 @@ class NoAccount extends React.Component {
   }
 }
 
-export default observer(NoAccount);
+export default inject("network")(observer(NoAccount));
