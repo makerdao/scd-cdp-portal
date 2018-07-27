@@ -18,11 +18,11 @@ const steps = [
   { text: "Creating your new CDP" },
   {
     text: "Wrap ETH to WETH - ERC 20 tokenization",
-    tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+    tip: <TooltipHint tipKey="wizard-wrap-eth-to-weth" />
   },
   {
     text: "Converting WETH to PETH",
-    tip: <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+    tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
   },
   { text: "CDP is collateralized with PETH - Your converted ETH is locked" },
   { text: "DAI generated -  Your requested DAI are generated" },
@@ -149,8 +149,8 @@ class Wizard extends Component {
                     <div style={ {display: "inline-block"} }>
                       <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
-                      <div className="typo-cs align-right">{printNumber(this.state.skr)} PETH
-                        <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      <div className="typo-cs align-right">
+                        { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
                       </div>
                       {
                         this.state.minETHReq &&
@@ -178,17 +178,17 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
-                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      <TooltipHint tipKey="liquidation-price" />
                       <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
-                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      <TooltipHint tipKey="current-price-information" />
                       <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
                     </div>
                     <div>
                       <h3 className="typo-c inline-headline">Liquidation penalty</h3>
-                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      <TooltipHint tipKey="liquidation-penalty" />
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
-                      <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                      <TooltipHint tipKey="collateralization-ratio" />
                       <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
                     </div>
                     <div>
@@ -210,7 +210,7 @@ class Wizard extends Component {
                 <div className="row" style={ {borderBottom: "none"} }>
                   <p className="no-select">
                     Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
-                    <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                    <TooltipHint tipKey="stability-fee" />
                   </p>
                 </div>
 

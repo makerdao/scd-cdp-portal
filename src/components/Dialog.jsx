@@ -176,7 +176,7 @@ class Dialog extends React.Component {
     return (
       this.props.system.pep.val.gte(0) &&
       <React.Fragment>
-        <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." /></div>
+        <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR <TooltipHint tipKey="stability-fee" /></div>
         <div className="info-value" style={ { marginBottom: '0'} }>{ printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR</div>
         <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr" style={ {marginLeft: '5px'} }>Get MKR</Link></div>
         <div className="fee-type-selector">
@@ -281,7 +281,7 @@ class Dialog extends React.Component {
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
                   { this.renderNumberInput('ETH') }
-                  <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." /></div>
+                  <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
                   { this.renderDetails() }
@@ -333,7 +333,7 @@ class Dialog extends React.Component {
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
                   { this.renderNumberInput('ETH') }
-                  <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." /></div>
+                  <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
                   { this.renderDetails() }

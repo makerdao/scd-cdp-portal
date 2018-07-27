@@ -63,7 +63,7 @@ class Cup extends React.Component {
           <div className="col col-2">
             <div style={ {marginBottom: "1rem"}}>
               <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
-              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              <TooltipHint tipKey="liquidation-price" />
               <div className="value typo-cl right">
                 {
                   this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0)
@@ -76,14 +76,14 @@ class Cup extends React.Component {
             </div>
             <div>
               <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
-              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              <TooltipHint tipKey="current-price-information" />
               <div className="value typo-c right">
                 <span>{ printNumber(this.props.system.pip.val) }<span className="unit">USD</span></span>
               </div>
             </div>
             <div>
               <h3 className="typo-c inline-headline">Liquidation penalty</h3>
-              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              <TooltipHint tipKey="liquidation-penalty" />
               <div className="value typo-c right">
                 <span>{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }<span className="unit">%</span></span>
               </div>
@@ -92,7 +92,7 @@ class Cup extends React.Component {
           <div className="col col-2">
             <div style={ {marginBottom: "1rem"}}>
               <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
-              <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit,<br />sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+              <TooltipHint tipKey="collateralization-ratio" />
               <div className="value typo-cl right">
                 {
                   this.props.system.tub.off === false
@@ -141,7 +141,7 @@ class Cup extends React.Component {
             </div>
             <div className="inner-row">
               <h4 className="typo-c inline-headline" style={ {maxWidth: "8rem" } }>Max. available to withdraw
-                <TooltipHint tip="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+                <TooltipHint tipKey="max-available-to-draw" />
               </h4>
               <div className="right">
                 <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Withdraw</button>
