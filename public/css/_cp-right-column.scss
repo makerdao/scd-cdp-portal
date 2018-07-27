@@ -77,24 +77,44 @@
 			&:hover {
 				background-color: #2d404c;
 			}
-			svg {
+			.provider-icon {
 				float: left;
 				margin-left: 1.95rem;
-				margin-right: 2.15rem;
+				margin-right: 1.8rem;
 				display: block;
 				height: auto;
+				width: 24px;
+			}
+
+			svg {
 				max-height: 21px;
 				width: 18px;
+				height: auto;
 				margin-top: 1px;
 				@include respond-to(xl) {
 					margin-top: 3px;
 				}
 			}
-			@include respond-to(xl) {
-				&.web-wallet svg {
+
+			&.web-wallet svg {
+		    margin-top: 1px;
+				&.mist {
+					margin-top: -1px;
+				}
+				&.parity {
+					width: 23px;
+				}
+				@include respond-to(xl) {
 					margin-top: 4px;
+					&.metamask {
+						margin-top: 4px;
+					}
+					&.parity, &.mist {
+						margin-top: 3px;
+					}
 				}
 			}
+
 		}
 	}
 
