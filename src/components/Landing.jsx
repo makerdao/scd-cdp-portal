@@ -1,6 +1,7 @@
 // Libraries
 import React from "react";
 import Slider from "react-slick";
+import TooltipHint from "./TooltipHint";
 
 class Landing extends React.Component {
   render() {
@@ -29,12 +30,14 @@ class Landing extends React.Component {
     };
     return (
       <div className="landing">
+
         <div className="landing-body">
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
           <Slider {...settings} className="landing-slider">
             <div className="first-slide">
               <div style={ {textAlign: "center"} }>
                 <p className="align-center">
+                Test <TooltipHint tipKey="what-is-peth" />
                   This is the place to generate Dai!<br />
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
