@@ -16,6 +16,7 @@ import NetworkStore from "../stores/Network";
 import ProfileStore from "../stores/Profile";
 import SystemStore from "../stores/System";
 import TransactionsStore from "../stores/Transactions";
+import ContentStore from "../stores/Content";
 
 // Utils
 import * as Blockchain from "../utils/blockchain-handler";
@@ -29,6 +30,7 @@ window.network = NetworkStore;
 window.profile = ProfileStore;
 window.system = SystemStore;
 window.transactions = TransactionsStore;
+window.content = ContentStore;
 
 class App extends React.Component {
   componentDidUpdate = prevProps => {
@@ -39,7 +41,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Provider network={NetworkStore} profile={ProfileStore} transactions={TransactionsStore} system={SystemStore} dialog={DialogStore}>
+      <Provider network={NetworkStore} profile={ProfileStore} transactions={TransactionsStore} system={SystemStore} dialog={DialogStore} content={ContentStore}>
         <BrowserRouter>
           <React.Fragment>
             <Routes />
