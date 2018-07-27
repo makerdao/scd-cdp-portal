@@ -3,7 +3,10 @@ import contentFaq from '../json/faq.json'
 import contentTooltips from '../json/tooltips.json'
 import contentTerms from '../json/terms.json'
 
-class ContentStore {
+export default class ContentStore {
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+  }
 
   getTooltip = tipKey => {
     if (contentTooltips.hasOwnProperty(tipKey)) {
@@ -31,6 +34,3 @@ class ContentStore {
     return contentTerms.markdown || null;
   }
 }
-
-const store = new ContentStore();
-export default store;

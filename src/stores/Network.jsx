@@ -1,11 +1,6 @@
 // Libraries
 import { observable, decorate } from "mobx";
 
-// Stores
-import ProfileStore from "./Profile";
-import SystemStore from "./System";
-import TransactionsStore from "./Transactions";
-
 // Utils
 import * as Blockchain from "../utils/blockchain-handler";
 import {isAddress} from "../utils/helpers";
@@ -13,7 +8,7 @@ import {isAddress} from "../utils/helpers";
 // Settings
 import * as settings from "../settings";
 
-class NetworkStore {
+export default class NetworkStore {
   stopIntervals = false;
   loadingAddress = false;
   accounts = [];
@@ -25,6 +20,10 @@ class NetworkStore {
   isHw = false;
   hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
   downloadClient = false;
+
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+  }
 
   checkNetwork = () => {
     let isConnected = null;
@@ -202,22 +201,22 @@ class NetworkStore {
 
   setTimeVariablesInterval = () => {
     this.timeVariablesInterval = setInterval(() => {
-      SystemStore.loadVariables(true);
-      ProfileStore.getAccountBalance(this.network.defaultAccount);
-      TransactionsStore.setStandardGasPrice();
+      this.rootStore.system.loadVariables(true);
+      this.rootStore.profile.getAccountBalance(this.network.defaultAccount);
+      this.rootStore.transactions.setStandardGasPrice();
     }, 5000);
   }
 
   setNonTimeVariablesInterval = () => {
     // This interval should not be necessary if we can rely on the events
     this.nonTimeVariablesInterval = setInterval(() => {
-      SystemStore.loadVariables();
+      this.rootStore.system.loadVariables();
     }, 30000);
   }
 
   setPendingTxInterval = () => {
     this.pendingTxInterval = setInterval(() => {
-      TransactionsStore.checkPendingTransactions();
+      this.rootStore.transactions.checkPendingTransactions();
     }, 10000);
   }
 
@@ -227,7 +226,7 @@ class NetworkStore {
       if (typeof this.timeVariablesInterval !== "undefined") clearInterval(this.timeVariablesInterval);
       if (typeof this.nonTimeVariablesInterval !== "undefined") clearInterval(this.nonTimeVariablesInterval);
       if (typeof this.pendingTxInterval !== "undefined") clearInterval(this.pendingTxInterval);
-      SystemStore.clear();
+      this.rootStore.system.clear();
 
       const topAddress = settings.chain[this.network].top;
       const proxyRegistryAddr = settings.chain[this.network].proxyRegistry;
@@ -243,14 +242,14 @@ class NetworkStore {
 
           Promise.all(setUpPromises2).then(r2 => {
             if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
-              ProfileStore.getAccountBalance(this.defaultAccount);
+              this.rootStore.profile.getAccountBalance(this.defaultAccount);
 
               // Set profile proxy and system contracts
-              ProfileStore.setProxy(r[2]);
-              SystemStore.init(topAddress, r[0], r[1], r2[0], r2[1]);
+              this.rootStore.profile.setProxy(r[2]);
+              this.rootStore.system.init(topAddress, r[0], r[1], r2[0], r2[1]);
               this.loadingAddress = false;
 
-              TransactionsStore.setStandardGasPrice();
+              this.rootStore.transactions.setStandardGasPrice();
 
               // Intervals
               this.setTimeVariablesInterval();
@@ -281,6 +280,3 @@ decorate(NetworkStore, {
   isHw: observable,
   downloadClient: observable
 });
-
-const store = new NetworkStore();
-export default store;

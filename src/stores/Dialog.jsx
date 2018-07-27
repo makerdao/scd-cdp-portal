@@ -1,13 +1,16 @@
 // Libraries
 import { observable, decorate } from "mobx";
 
-class DialogStore {
+export default class DialogStore {
   show = false;
   method = null;
   cupId = false;
   error = "";
   warning = "";
 
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+  }
 
   handleOpenDialog = e => {
     e.preventDefault();
@@ -29,6 +32,3 @@ decorate(DialogStore, {
   error: observable,
   warning: observable
 });
-
-const store = new DialogStore();
-export default store;

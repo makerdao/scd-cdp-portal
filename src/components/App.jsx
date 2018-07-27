@@ -11,12 +11,7 @@ import PriceModal from "./PriceModal";
 import Routes from "./Routes";
 
 // Stores
-import DialogStore from "../stores/Dialog";
-import NetworkStore from "../stores/Network";
-import ProfileStore from "../stores/Profile";
-import SystemStore from "../stores/System";
-import TransactionsStore from "../stores/Transactions";
-import ContentStore from "../stores/Content";
+import rootStore from "../stores/Root";
 
 // Utils
 import * as Blockchain from "../utils/blockchain-handler";
@@ -25,12 +20,12 @@ import "./App.css";
 
 // Convenient console access
 window.blockchain = Blockchain;
-window.dialog = DialogStore;
-window.network = NetworkStore;
-window.profile = ProfileStore;
-window.system = SystemStore;
-window.transactions = TransactionsStore;
-window.content = ContentStore;
+window.dialog = rootStore.dialog;
+window.network = rootStore.network;
+window.profile = rootStore.profileS
+window.system = rootStore.system;
+window.transactions = rootStore.transactions;
+window.content = rootStore.content;
 
 class App extends React.Component {
   componentDidUpdate = prevProps => {
@@ -41,13 +36,13 @@ class App extends React.Component {
 
   render() {
     return (
-      <Provider network={NetworkStore} profile={ProfileStore} transactions={TransactionsStore} system={SystemStore} dialog={DialogStore} content={ContentStore}>
+      <Provider network={rootStore.network} profile={rootStore.profile} transactions={rootStore.transactions} system={rootStore.system} dialog={rootStore.dialog} content={rootStore.content}>
         <BrowserRouter>
           <React.Fragment>
             <Routes />
             <Notify ref="notificator" />
             <NotifySetUp />
-            <Modal show={ TransactionsStore.priceModal.open } close={ TransactionsStore.closePriceModal }>
+            <Modal show={rootStore.transactions.priceModal.open} close={rootStore.transactions.closePriceModal}>
               <PriceModal />
             </Modal>
           </React.Fragment>

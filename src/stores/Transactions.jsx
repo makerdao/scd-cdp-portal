@@ -1,11 +1,6 @@
 // Libraries
 import {observable, decorate, computed} from "mobx";
 
-// Components
-import NetworkStore from "./Network";
-import ProfileStore from "./Profile";
-import SystemStore from "./System";
-
 // Utils
 import * as Blockchain from "../utils/blockchain-handler";
 import {etherscanTx, methodSig} from "../utils/helpers";
@@ -13,12 +8,16 @@ import {etherscanTx, methodSig} from "../utils/helpers";
 // Settings
 import * as settings from "../settings";
 
-class TransactionsStore {
+export default class TransactionsStore {
   registry = {};
   loading = {};
   cdpCreationTx = false;
   standardGasPrice = -1;
   priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
+
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+  }
 
   get showCreatingCdpModal() {
     const txs = Object.keys(this.registry).filter(tx => this.registry[tx].cdpCreationTx);
@@ -64,7 +63,7 @@ class TransactionsStore {
   }
 
   sendTransaction = (title, func, params, options, callbacks) => {
-    const cdpCreationTx = params[0] === settings.chain[NetworkStore.network].proxyRegistry || // This means it is calling to the createLockAndDraw
+    const cdpCreationTx = params[0] === settings.chain[this.rootStore.network.network].proxyRegistry || // This means it is calling to the createLockAndDraw
                           (typeof params[1] === "string" && methodSig("lockAndDraw(address,uint256)") === params[1].substring(0, 10));
     const id = Math.random();
     this.logRequestTransaction(id, title, cdpCreationTx);
@@ -72,7 +71,7 @@ class TransactionsStore {
   }
 
   askPriceAndSend = (title, func, params, options, callbacks) => {
-    if (NetworkStore.hw.active) { // If user is using HW, gas price modal will appear
+    if (this.rootStore.network.hw.active) { // If user is using HW, gas price modal will appear
       this.priceModal = { open: true, title, func, params, options, callbacks };
     } else {
       this.sendTransaction(title, func, params, options, callbacks);
@@ -95,7 +94,7 @@ class TransactionsStore {
     console.log(msgTemp.replace("TX", tx));
     this.notificator.hideNotification(id);
     if (!this.registry[tx].cdpCreationTx) {
-      this.notificator.info(tx, title, etherscanTx(NetworkStore.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), false);
+      this.notificator.info(tx, title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), false);
     }
   }
 
@@ -108,7 +107,7 @@ class TransactionsStore {
       console.log(msgTemp.replace("TX", tx));
       this.notificator.hideNotification(tx);
       if (!this.registry[tx].cdpCreationTx) {
-        this.notificator.success(tx, this.registry[tx].title, etherscanTx(NetworkStore.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
+        this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
       }
       if (typeof this.registry[tx].callbacks !== "undefined" && this.registry[tx].callbacks.length > 0) {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
@@ -184,10 +183,10 @@ class TransactionsStore {
         let object = null;
         switch(method[0]){
           case "system":
-            object = SystemStore;
+            object = this.rootStore.system;
             break;
           case "profile":
-            object = ProfileStore;
+            object = this.rootStore.profile;
             break;
           default:
             break;
@@ -205,6 +204,3 @@ decorate(TransactionsStore, {
   priceModal: observable,
   showCreatingCdpModal: computed
 });
-
-const store = new TransactionsStore();
-export default store;
