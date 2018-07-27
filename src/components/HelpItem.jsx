@@ -1,6 +1,6 @@
 // Libraries
 import React from "react";
-import {observer} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import Markdown from "markdown-to-jsx";
 import DocumentTitle from "react-document-title";
@@ -9,16 +9,14 @@ import DocumentTitle from "react-document-title";
 import Menu from "./Menu";
 import NotFound from "./NotFound";
 
-// JSON Content
-import markdown from '../json/faq.json'
-
 class HelpItem extends React.Component {
   render() {
     const helpId = this.props.match.params.helpId || null;
-    if (!helpId || !markdown[helpId]) return <NotFound />;
+    const helpItem = this.props.content.getHelpItem(helpId);
+    if (!helpId || !helpItem) return <NotFound />;
 
     return (
-      <DocumentTitle title={ "Dai Dashboard: " + markdown[helpId].title }>
+      <DocumentTitle title={ "Dai Dashboard: " + helpItem.title }>
         <div className="full-width-page">
           <div className="wrapper">
             <Menu page="help" />
@@ -29,9 +27,9 @@ class HelpItem extends React.Component {
                 </header>
                 <div className="row">
                   <div className="col col-extra-padding">
-                    <div className="breadcrumbs"><Link className="breadcrumb-root" to="/help">FAQ</Link><span className="breadcrumb-page">{ markdown[helpId].title }</span></div>
+                    <div className="breadcrumbs"><Link className="breadcrumb-root" to="/help">FAQ</Link><span className="breadcrumb-page">{ helpItem.title }</span></div>
                     <div className="help-faq-item-markdown-container">
-                      <Markdown className="help-faq-item-markdown" children={ markdown[helpId].markdown } />
+                      <Markdown className="help-faq-item-markdown" children={ helpItem.markdown } />
                     </div>
                   </div>
                 </div>
@@ -44,4 +42,4 @@ class HelpItem extends React.Component {
   }
 }
 
-export default observer(HelpItem);
+export default inject("content")(observer(HelpItem));
