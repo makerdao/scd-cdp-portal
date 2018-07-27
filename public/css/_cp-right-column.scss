@@ -101,6 +101,7 @@
 					margin-top: -1px;
 				}
 				&.parity {
+					margin-top: 0;
 					width: 23px;
 				}
 				@include respond-to(xl) {
