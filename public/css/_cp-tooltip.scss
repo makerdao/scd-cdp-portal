@@ -3,19 +3,23 @@
   box-shadow: 0 -2px 8px 0 rgba(0, 0, 0, 0.4);
   opacity: 1 !important;
   z-index: 10000;
+  pointer-events: all;
+  a:hover {
+    color: $maker-green;
+  }
+  a.more-info {
+    // margin-left: 5px;
+  }
 }
 
-svg.tooltip-hint {
+.tooltip-hint {
+  display: inline-block;
   position: relative;
   cursor: pointer;
-  width: 0.9rem;
-  height: 0.9rem;
-
-  width: 12px;
-  height: 12px;
   margin-left: 0.4rem;
   top: 0.15rem;
-
+  width: 12px;
+  height: 12px;
   @include respond-to(xl) {
     width: 13px;
     height: 13px;
