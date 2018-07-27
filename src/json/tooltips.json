@@ -1,0 +1,32 @@
+{
+  "what-is-peth": {
+    "text": "Collateralized ether is held in escrow inside a smart contract and users are issued pooled ether (PETH) in return.\nA user's PETH holdings represent a percentage share of the total pool of collateral assets.",
+    "more-info": "/help/what-is-peth"
+  },
+  "liquidation-price": {
+    "text": "This is the lowest price that the unit value of the staked collateral can reach before the CDP becomes vulnerable to liquidation.\nAlways ensure that you either return DAI, or are able to add more collateral to the position before the market price reaches X USD.\n",
+    "more-info": "/help/what-is-the-liquidation-price"
+  },
+  "current-price-information": {
+    "text": "The Dai Stablecoin System derives its internal prices for collateral, the market price of Dai,\nand the market price of MKR based on the median of the values returned by a set of trusted oracles.\nThis ensures a consistent and trusted source of price data is always available to the system."
+  },
+  "liquidation-penalty": {
+    "text": "Insert tooltip content here..."
+  },
+  "collateralization-ratio": {
+    "text": "Represents the total amount of over-collateralization in the CDP...\nETH vs drawn DAI, saftety buffer, general health of position, resilient to market movements..."
+  },
+  "max-available-to-draw": {
+    "text": "This is the maximum amount of Dai you can generate from this CDP without going below the collateralization ratio."
+  },
+  "stability-fee": {
+    "text": "A Governance Fee of 0.5% APR is accrued against the total amount of drawn DAI. Denominated in DAI and payable in MKR..."
+  },
+
+  "wizard-wrap-eth-to-weth": {
+    "text": "Insert tooltip content here..."
+  },
+  "wizard-convert-weth-to-peth": {
+    "text": "Insert tooltip content here..."
+  }
+}
