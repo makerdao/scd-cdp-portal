@@ -21,6 +21,7 @@
     "raf": "^3.3.0",
     "rc-steps": "^3.1.1",
     "react": "^16.3.2",
+    "react-document-title": "^2.0.3",
     "react-dom": "^16.3.2",
     "react-rangeslider": "^2.2.0",
     "react-router-dom": "^4.3.1",
