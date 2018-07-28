@@ -192,6 +192,24 @@ class Dialog extends React.Component {
     const cup = dialog.cupId ? this.props.system.tub.cups[dialog.cupId] : null;
 
     switch(dialog.method) {
+      case "migrate":
+        this.cond = () => { return false };
+        return (
+          <DialogContent
+            title={ `Migrate CDP #${dialog.cupId}` }
+            text="Are you sure to migrate this CDP?"
+            dialog={ this.props.dialog }
+            form={
+              <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
+                <div>
+                  <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Yes</button>
+                </div>
+              </form>
+            }
+          />
+        )
+
       case "give":
         this.cond = () => { return false };
         return (
@@ -447,7 +465,7 @@ class Dialog extends React.Component {
         )
 
       default:
-        return <DialogContent title="Unsupported dialog" dialog={ this.props.dialog } />
+        return <DialogContent dialog={ this.props.dialog } />
     }
   }
 }

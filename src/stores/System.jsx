@@ -1030,9 +1030,9 @@ export default class SystemStore {
     }
 
     if (error) {
-      this.rootStore.dialog.error = error;
+      this.rootStore.dialog.setError(error);
     } else {
-      this.rootStore.dialog.show = false;
+      this.rootStore.dialog.reset();
       this.rootStore.profile.checkProxy(callbacks);
     }
   }

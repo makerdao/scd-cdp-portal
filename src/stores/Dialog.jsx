@@ -12,6 +12,14 @@ export default class DialogStore {
     this.rootStore = rootStore;
   }
 
+  reset = () => {
+    this.show = false;
+    this.method = null;
+    this.cupId = false;
+    this.error = "";
+    this.warning = "";
+  }
+
   handleOpenDialog = e => {
     e.preventDefault();
     this.show = true;
@@ -21,7 +29,11 @@ export default class DialogStore {
 
   handleCloseDialog = e => {
     e.preventDefault();
-    this.show = false;
+    this.reset();
+  }
+
+  setError = e => {
+    this.error = e;
   }
 }
 
