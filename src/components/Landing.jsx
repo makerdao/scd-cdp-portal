@@ -1,7 +1,6 @@
 // Libraries
 import React from "react";
 import Slider from "react-slick";
-import TooltipHint from "./TooltipHint";
 
 class Landing extends React.Component {
   render() {
@@ -37,7 +36,6 @@ class Landing extends React.Component {
             <div className="first-slide">
               <div style={ {textAlign: "center"} }>
                 <p className="align-center">
-                Test <TooltipHint tipKey="what-is-peth" />
                   This is the place to generate Dai!<br />
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
