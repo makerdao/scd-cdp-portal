@@ -354,6 +354,8 @@ class Dialog extends React.Component {
                   <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
+                  <div className="info-heading">Max. available to withdraw</div>
+                  <div className="info-value">{ printNumber(cup.avail_skr, 3) } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
