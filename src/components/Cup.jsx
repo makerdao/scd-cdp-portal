@@ -140,8 +140,9 @@ class Cup extends React.Component {
               </div>
             </div>
             <div className="inner-row">
-              <h4 className="typo-c inline-headline" style={ {maxWidth: "8rem" } }>Max. available to withdraw
-                <TooltipHint tipKey="max-available-to-draw" />
+              <h4 className="typo-c inline-headline" style={ {maxWidth: "8rem" } }>
+                Max. available to withdraw
+                <TooltipHint tipKey="max-available-to-withdraw" />
               </h4>
               <div className="right">
                 <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Withdraw</button>
@@ -181,7 +182,10 @@ class Cup extends React.Component {
               </div>
             </div>
             <div className="inner-row">
-              <h4 className="typo-c inline-headline">Max. available to generate</h4>
+              <h4 className="typo-c inline-headline">
+                Max. available to generate
+                <TooltipHint tipKey="max-available-to-generate" />
+              </h4>
               <div className="right">
                 <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.draw.active } data-method="draw" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Generate</button>
               </div>

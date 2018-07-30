@@ -16,8 +16,11 @@
   "collateralization-ratio": {
     "text": "Represents the total amount of over-collateralization in the CDP...\nETH vs drawn DAI, saftety buffer, general health of position, resilient to market movements..."
   },
-  "max-available-to-draw": {
-    "text": "This is the maximum amount of Dai you can generate from this CDP without going below the collateralization ratio."
+  "max-available-to-generate": {
+    "text": "This is the maximum amount of Dai you can generate from this CDP without it going below the minimum collateralization ratio."
+  },
+  "max-available-to-withdraw": {
+    "text": "This is the maximum amount of collateral you can withdraw from this CDP without it going below the minimum collateralization ratio."
   },
   "stability-fee": {
     "text": "A Governance Fee of 0.5% APR is accrued against the total amount of drawn DAI. Denominated in DAI and payable in MKR..."
