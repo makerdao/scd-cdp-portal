@@ -227,12 +227,10 @@ class Dialog extends React.Component {
                   <div className="transfer-cdp-id">CDP #{ dialog.cupId }</div>
                   <div className="info-heading">Dai generated</div>
                   <div className="info-value">{ printNumber(this.props.system.tab(cup), 3) } DAI</div>
-                  { /*
                   <div className="info-heading">Liquidation price (ETH/USD)</div>
-                  <div className="info-value">{ this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice, 2) : "--" } USD</div>
+                  <div className="info-value">{ this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0) ? printNumber(cup.liq_price) : "--" } USD</div>
                   <div className="info-heading">Collateralization ratio</div>
-                  <div className={ "info-value" + (this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") + (this.props.dialog.error ? " text-red" : "") }>{ this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100), 2) : "--" } %</div>
-                  */ }
+                  <div className={ "info-value" + (cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") + (this.props.dialog.error ? " text-red" : "") }>{ cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? printNumber(toWei(cup.ratio).times(100), 2) : "--" } %</div>
                   { this.renderErrors() }
                 </div>
                 <div>
