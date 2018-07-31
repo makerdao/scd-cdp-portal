@@ -93,6 +93,9 @@ export default class NetworkStore {
     this.isConnected = true;
     this.latestBlock = 0;
     this.checkAccounts();
+    if (!this.hw.active) {
+      this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
+    }
   }
 
   stopNetwork = () => {
@@ -138,7 +141,6 @@ export default class NetworkStore {
       this.loadingAddress = true;
       await Blockchain.setWebClientProvider();
       this.checkNetwork();
-      this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
       this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
