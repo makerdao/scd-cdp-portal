@@ -186,8 +186,7 @@ export default class NetworkStore {
       this.hw.showSelector = false;
       Blockchain.setDefaultAccount(account);
       this.checkNetwork();
-      this.checkAccountsInterval = setInterval(this.checkAccounts, 1000);
-      this.checkNetworkInterval = setInterval(this.checkNetwork, 3000);
+      this.checkNetworkInterval = setInterval(this.checkNetwork, 10000);
     } catch(e) {
       this.loadingAddress = false;
       this.hw.showSelector = true;
