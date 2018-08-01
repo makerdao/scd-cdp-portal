@@ -26,7 +26,7 @@ class Help extends React.Component {
                     <h2 className="typo-h2 ">FAQ</h2>
                     <h3 className="typo-h3 typo-white">First steps</h3>
                     <ul className="typo-cl bullets">
-                      <li><Link to="/help/what-is-a-cdp">What is a Colleteral Dept Position (CDP)?</Link></li>
+                      <li><Link to="/help/what-is-a-cdp">What is a Colleteralized Dept Position (CDP)?</Link></li>
                       <li><Link to="/help/how-do-i-open-a-cdp">How do I open a CDP?</Link></li>
                       <li><Link to="/help/how-do-i-generate-dai">How do I generate DAI?</Link></li>
                       <li><Link to="/help/how-do-i-free-eth">How do I free ETH?</Link></li>
