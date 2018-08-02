@@ -197,13 +197,13 @@ class Dialog extends React.Component {
         return (
           <DialogContent
             title={ `Migrate CDP #${dialog.cupId}` }
-            text="Are you sure to migrate this CDP?"
+            text={ `Please confirm that you want to migrate CDP #${dialog.cupId} to be used in this dashboard. Once migrated, your CDP will no longer be accessible in the old dashboard.` }
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
-                <div>
-                  <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>No</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Yes</button>
+                <div style={ { marginTop: '4rem'} }>
+                  <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Migrate</button>
                 </div>
               </form>
             }
