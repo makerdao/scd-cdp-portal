@@ -177,7 +177,7 @@ class Wallet extends React.Component {
                                     <td>
                                       {
                                         token !== "eth" &&
-                                        <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.setAllowance && this.props.transactions.loading.setAllowance[token] } />
+                                        <ToggleSwitch enabled={ !this.props.system[token].allowance.eq(-1) } onClick={ e => { e.preventDefault(); this.props.system.checkProxyAndSetAllowance(token, !this.props.system[token].allowance.eq(BIGGESTUINT256)) } } on={ this.props.system[token].allowance.eq(BIGGESTUINT256) } pending={ this.props.transactions.loading.changeAllowance && this.props.transactions.loading.changeAllowance[token] } />
                                       }
                                     </td>
                                   </tr>

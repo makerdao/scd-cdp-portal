@@ -25,8 +25,8 @@ class RootStore {
 
   setTimeVariablesInterval = () => {
     this.timeVariablesInterval = setInterval(() => {
-      this.system.loadVariables(true);
-      this.profile.getAccountBalance(this.network.network.defaultAccount);
+      this.system.setVariables(true);
+      this.profile.setEthBalanceFromChain(this.network.network.defaultAccount);
       this.transactions.setStandardGasPrice();
     }, 5000);
   }
@@ -34,7 +34,7 @@ class RootStore {
   setNonTimeVariablesInterval = () => {
     // This interval should not be necessary if we can rely on the events
     this.nonTimeVariablesInterval = setInterval(() => {
-      this.system.loadVariables();
+      this.system.setVariables();
     }, 30000);
   }
 
@@ -66,7 +66,7 @@ class RootStore {
 
           Promise.all(setUpPromises2).then(r2 => {
             if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
-              this.profile.getAccountBalance(this.network.defaultAccount);
+              this.profile.setEthBalanceFromChain(this.network.defaultAccount);
 
               // Set profile proxy and system contracts
               this.profile.setProxy(r[2]);

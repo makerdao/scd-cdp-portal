@@ -3,7 +3,7 @@ import {observable, decorate} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
-import * as dai from "../utils/dai";
+import * as daisystem from "../utils/dai-system";
 
 import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
 
@@ -121,10 +121,10 @@ export default class SystemStore {
       this.vox.address = vox;
       this.pit.address = pit;
 
-      this.loadVariables();
+      this.setVariables();
 
-      this.getMyCups();
-      this.getMyLegacyCups();
+      this.setMyCupsFromChain();
+      this.setMyLegacyCupsFromChain();
 
       this.setFiltersTub();
       this.setFiltersTap();
@@ -134,39 +134,39 @@ export default class SystemStore {
     }
   }
 
-  loadVariables = (onlySecondDependent = false) => {
+  setVariables = (onlySecondDependent = false) => {
     if (!onlySecondDependent) {
-      this.setUpToken("gem");
-      this.setUpToken("gov");
-      this.setUpToken("skr");
-      this.setUpToken("dai");
-      this.setUpToken("sin");
-      this.getParameterFromTub("authority");
-      this.getParameterFromTub("off");
-      this.getParameterFromTub("out");
-      this.getParameterFromTub("axe", true);
-      this.getParameterFromTub("mat", true, this.calculateSafetyAndDeficit);
-      this.getParameterFromTub("cap");
-      this.getParameterFromTub("fit");
-      this.getParameterFromTub("tax", true);
-      this.getParameterFromTub("fee", true);
-      this.getParameterFromTub("per", true);
-      this.getParameterFromTub("gap");
-      this.getParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
-      this.getParameterFromTap("fix", true);
-      this.getParameterFromTap("gap", false);
-      this.getParameterFromVox("way", true);
+      this.setUpTokenFromChain("gem");
+      this.setUpTokenFromChain("gov");
+      this.setUpTokenFromChain("skr");
+      this.setUpTokenFromChain("dai");
+      this.setUpTokenFromChain("sin");
+      this.setParameterFromTub("authority");
+      this.setParameterFromTub("off");
+      this.setParameterFromTub("out");
+      this.setParameterFromTub("axe", true);
+      this.setParameterFromTub("mat", true, this.calculateSafetyAndDeficit);
+      this.setParameterFromTub("cap");
+      this.setParameterFromTub("fit");
+      this.setParameterFromTub("tax", true);
+      this.setParameterFromTub("fee", true);
+      this.setParameterFromTub("per", true);
+      this.setParameterFromTub("gap");
+      this.setParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
+      this.setParameterFromTap("fix", true);
+      this.setParameterFromTap("gap", false);
+      this.setParameterFromVox("way", true);
     }
-    this.getParameterFromTub("chi", true);
-    this.getParameterFromTub("rhi", true);
-    this.getParameterFromVox("par", true);
-    this.loadEraRho();
+    this.setParameterFromTub("chi", true);
+    this.setParameterFromTub("rhi", true);
+    this.setParameterFromVox("par", true);
+    this.setEraRho();
   }
 
-  loadEraRho = () => {
+  setEraRho = () => {
     const promises = [
-                      dai.getParameterFromTub("rho"),
-                      dai.getParameterFromVox("era")
+                      daisystem.getParameterFromTub("rho"),
+                      daisystem.getParameterFromVox("era")
                       ];
     Promise.all(promises).then(r => {
       if (r[0] === true && r[1] === true && this.tub.tax.gte(0) && this.sin.tubBalance.gte(0)) {
@@ -175,13 +175,13 @@ export default class SystemStore {
     });
   }
 
-  getParameterFromTub = async (field, ray = false, callback = false) => {
+  setParameterFromTub = async (field, ray = false, callback = false) => {
     try {
-      const value = await dai.getParameterFromTub(field, ray);
+      const value = await daisystem.getParameterFromTub(field, ray);
       this.tub[field] = value;
       const promises = [];
       Object.keys(this.tub.cups).map(key =>
-        promises.push(dai.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi))
+        promises.push(daisystem.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi))
       );
       Promise.all(promises).then(r => {
         if (r.length > 0) {
@@ -207,30 +207,228 @@ export default class SystemStore {
     }
   }
 
-  getParameterFromTap = async (field, ray = false) => {
+  setParameterFromTap = async (field, ray = false) => {
     try {
-      this.tap[field] = await dai.getParameterFromTap(field, ray);
+      this.tap[field] = await daisystem.getParameterFromTap(field, ray);
     } catch(e) {
       console.log(e);
     }
   }
 
-  getParameterFromVox = async (field, ray = false) => {
+  setParameterFromVox = async (field, ray = false) => {
     try {
-      this.vox[field] = await dai.getParameterFromVox(field, ray);
+      this.vox[field] = await daisystem.getParameterFromVox(field, ray);
     } catch(e) {
       console.log(e);
     }
   }
 
-  getValFromFeed = async obj => {
+  setValFromFeed = async obj => {
     try {
-      this[obj].val = await dai.getValFromFeed(obj);
+      this[obj].val = await daisystem.getValFromFeed(obj);
     } catch(e) {
       console.log(e);
     }
   }
 
+  calculateSafetyAndDeficit = () => {
+    const values = daisystem.calculateSafetyAndDeficit(this.tub.mat, this.skr.tubBalance, this.tub.tag, this.sin.totalSupply);
+    Object.keys(values).forEach(key => {
+      this[key] = {...this[key], ...values[key]};
+    });
+  }
+
+  getCup = id => {
+    return daisystem.getCup(id, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi);
+  }
+
+  setCups = async (type, keepTrying = false, callbacks = []) => {
+    const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
+    const me = this;
+    let promisesCups = [];
+    let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
+
+    try {
+      const serviceData = settings.chain[this.rootStore.network.network].service ? await daisystem.getCupsFromService(this.rootStore.network.network, lad) : [];
+      serviceData.forEach(v => {
+        promisesCups.push(me.getCup(v.id));
+        fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
+      });
+    } finally {
+      promisesCups = await daisystem.getCupsFromChain(lad, fromBlock, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi, promisesCups);
+
+      if (type === "legacy" || this.tub.cupsLoading) {
+        Promise.all(promisesCups).then(cups => {
+          const cupsFiltered = {};
+          for (let i = 0; i < cups.length; i++) {
+            if (lad === cups[i].lad) {
+                cupsFiltered[cups[i].id] = cups[i];
+            }
+          }
+          const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
+          if (type === "new") {
+            if (this.tub.cupsLoading) {
+              this.tub.cupId = null;
+              this.tub.cups = cupsFiltered;
+
+              this.tub.cupsLoading = keepTrying && keys.length === 0;
+              if (this.tub.cupsLoading) {
+                // If we know there is a new CDP and it still not available, keep trying & loading
+                setTimeout(() => this.setMyCupsFromChain(true), 3000)
+              } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
+                keys.forEach(key => {
+                  this.loadCupHistory(key);
+                });
+                this.rootStore.transactions.executeCallbacks(callbacks);
+              }
+            }
+          } else if (type === "legacy") {
+            this.tub.legacyCups = cupsFiltered;
+            this.rootStore.transactions.executeCallbacks(callbacks);
+          }
+        });
+      }
+    }
+  }
+
+  setMyCupsFromChain = (keepTrying = false, callbacks = []) => {
+    if (this.rootStore.profile.proxy) {
+      this.tub.cupsLoading = true;
+      this.setCups("new", keepTrying, callbacks);
+    } else {
+      this.tub.cupsLoading = false;
+    }
+  }
+
+  setMyLegacyCupsFromChain = (callbacks = []) => {
+    this.setCups("legacy", false, callbacks);
+  }
+
+  moveLegacyCDP = (cupId, callbacks = []) => {
+    const cups = {...this.tub.cups};
+    cups[cupId] = {...this.tub.legacyCups[cupId]};
+    this.tub.cups = cups;
+    this.loadCupHistory(cupId);
+    this.rootStore.transactions.executeCallbacks(callbacks);
+  }
+
+  loadCupHistory = id => {
+    let cup = {...this.tub.cups[id]};
+    cup.history = "loading";
+    this.tub.cups[id] = cup;
+    if (settings.chain[this.rootStore.network.network].service) {
+      Promise.resolve(daisystem.getCupHistoryFromService(this.rootStore.network.network, id)).then(history => {
+        let cup = {...this.tub.cups[id]};
+        cup.history = history;
+        this.tub.cups[id] = cup;
+        const notification = daisystem.getBiteNotification(id, history, localStorage.getItem(`CDPLiquidated${history[0].time}Closed`));
+        if (notification) {
+          this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", notification, 0, () => localStorage.setItem(`CDPLiquidated${history[0].time}Closed`, true));
+        }
+      }, () => {
+        let cup = {...this.tub.cups[id]};
+        cup.history = false;
+        this.tub.cups[id] = cup;
+      });
+    } else {
+      cup.history = false;
+      this.tub.cups[id] = cup;
+    }
+  }
+
+  reloadCupData = id => {
+    this.getCup(id).then(cup => {
+      this.tub.cups[id] = {...cup};
+      this.loadCupHistory(id);
+    });
+  }
+
+  calculateLiquidationPrice = (skr, dai) => {
+    return daisystem.calculateLiquidationPrice(this.vox.par, this.tub.per, this.tub.mat, skr, dai);
+  }
+  
+  calculateRatio = (skr, dai) => {
+    return daisystem.calculateRatio(this.tub.tag, this.vox.par, skr, dai);
+  }
+
+  tab = cup => {
+    return daisystem.tab(cup, this.tub.chi);
+  }
+
+  rap = cup => {
+    return daisystem.tab(cup, this.tub.rhi);
+  }
+
+  changeCup = cupId => {
+    this.tub.cupId = cupId;
+  }
+
+  // Token Data
+  setUpTokenFromChain = token => {
+    blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
+      if (!e) {
+        this[token].address = r;
+        blockchain.loadObject(token === "gem" ? "dsethtoken" : "dstoken", r, token);
+        this.setTokenDataFromChain(token);
+        this.setFilterToken(token);
+      }
+    })
+  }
+
+  setTokenDataFromChain = token => {
+    this.setTotalSupplyFromChain(token);
+    if (token !== "sin" && isAddress(this.rootStore.network.defaultAccount)) {
+      this.setBalanceOfFromChain(token, this.rootStore.network.defaultAccount, "myBalance");
+    }
+    if (token === "gem" || token === "skr" || token === "sin") {
+      this.setBalanceOfFromChain(token, this.tub.address, "tubBalance");
+    }
+    if (token === "gem" || token === "skr" || token === "dai" || token === "sin") {
+      this.setBalanceOfFromChain(token, this.tap.address, "tapBalance");
+    }
+    if (token === "gem" || token === "skr") {
+      this.setParameterFromTub("per", true);
+    }
+    if (token === "gov") {
+      this.setBalanceOfFromChain(token, this.pit.address, "pitBalance");
+    }
+    if (token === "gov" || token === "dai") {
+      this.setAllowanceFromChain(token);
+    }
+  }
+
+  setTotalSupplyFromChain = async token => {
+    try {
+      this[token].totalSupply = await blockchain.totalSupply(token);
+      if (token === "sin") {
+        this.calculateSafetyAndDeficit();
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  setBalanceOfFromChain = async (token, address, field) => {
+    try {
+      this[token][field] = await blockchain.balanceOf(token, address);
+      if ((token === "skr" || token === "dai") && field === "tubBalance") {
+        this.calculateSafetyAndDeficit();
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  setAllowanceFromChain = async (token, callbacks = []) => {
+    try {
+      this[token].allowance = await blockchain.allowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy);
+      this.rootStore.transactions.executeCallbacks(callbacks);
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  // Blockchain filters
   setFiltersTub = () => {
     if (!blockchain.getProviderUseLogs()) return;
     const cupSignatures = [
@@ -251,13 +449,13 @@ export default class SystemStore {
         } else if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
           const ray = ["axe", "mat", "tax", "fee"].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1;
           const callback = ["mat"].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1 ? this.calculateSafetyAndDeficit: () => {};
-          this.getParameterFromTub(toAscii(r.args.foo).substring(0,3), ray, callback);
+          this.setParameterFromTub(toAscii(r.args.foo).substring(0,3), ray, callback);
         } else if (r.args.sig === methodSig("cage(uint256,uint256)")) {
-          this.getParameterFromTub("off");
-          this.getParameterFromTub("fit");
-          this.getParameterFromTap("fix", true);
+          this.setParameterFromTub("off");
+          this.setParameterFromTub("fit");
+          this.setParameterFromTap("fix", true);
         } else if (r.args.sig === methodSig("flow()")) {
-          this.getParameterFromTub("out");
+          this.setParameterFromTub("out");
         }
         if (r.args.sig === methodSig("drip()") ||
             r.args.sig === methodSig("chi()") ||
@@ -266,9 +464,9 @@ export default class SystemStore {
             r.args.sig === methodSig("wipe(bytes32,uint256)") ||
             r.args.sig === methodSig("shut(bytes32)") ||
             (r.args.sig === methodSig("mold(bytes32,uint256)") && toAscii(r.args.foo).substring(0,3) === "tax")) {
-          this.getParameterFromTub("chi", true);
-          this.getParameterFromTub("rhi", true);
-          this.loadEraRho();
+          this.setParameterFromTub("chi", true);
+          this.setParameterFromTub("rhi", true);
+          this.setEraRho();
         }
       }
     });
@@ -280,7 +478,7 @@ export default class SystemStore {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.getParameterFromTap("gap", false);
+          this.setParameterFromTap("gap", false);
         }
       }
     });
@@ -292,7 +490,7 @@ export default class SystemStore {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.getParameterFromVox("way", true);
+          this.setParameterFromVox("way", true);
         }
       }
     });
@@ -303,7 +501,7 @@ export default class SystemStore {
       if (!e) {
         this[obj].address = r;
         blockchain.loadObject("dsvalue", r, obj);
-        this.getValFromFeed(obj);
+        this.setValFromFeed(obj);
 
         if (blockchain.getProviderUseLogs()){
           blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
@@ -312,210 +510,14 @@ export default class SystemStore {
                 r.args.sig === methodSig("poke(bytes32)") ||
                 r.args.sig === methodSig("poke()")
               ) {
-                this.getValFromFeed(obj);
+                this.setValFromFeed(obj);
                 if (obj === "pip") {
-                  this.getParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
+                  this.setParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
                 }
               }
             }
           });
         }
-      }
-    })
-  }
-
-  calculateSafetyAndDeficit = () => {
-    const values = dai.calculateSafetyAndDeficit(this.tub.mat, this.skr.tubBalance, this.tub.tag, this.sin.totalSupply);
-    Object.keys(values).forEach(key => {
-      this[key] = {...this[key], ...values[key]};
-    });
-  }
-
-  getCup = id => {
-    return dai.getCup(id, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi);
-  }
-
-  getCups = async (type, keepTrying = false, callbacks = []) => {
-    const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
-    const me = this;
-    let promisesCups = [];
-    let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
-
-    try {
-      const serviceData = settings.chain[this.rootStore.network.network].service ? await dai.getCupsFromService(this.rootStore.network.network, lad) : [];
-      serviceData.forEach(v => {
-        promisesCups.push(me.getCup(v.id));
-        fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
-      });
-    } finally {
-      promisesCups = await dai.getCupsFromChain(lad, fromBlock, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi, promisesCups);
-
-      if (type === "legacy" || this.tub.cupsLoading) {
-        Promise.all(promisesCups).then(cups => {
-          const cupsFiltered = {};
-          for (let i = 0; i < cups.length; i++) {
-            if (lad === cups[i].lad) {
-                cupsFiltered[cups[i].id] = cups[i];
-            }
-          }
-          const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-          if (type === "new") {
-            if (this.tub.cupsLoading) {
-              this.tub.cupId = null;
-              this.tub.cups = cupsFiltered;
-
-              this.tub.cupsLoading = keepTrying && keys.length === 0;
-              if (this.tub.cupsLoading) {
-                // If we know there is a new CDP and it still not available, keep trying & loading
-                setTimeout(() => this.getMyCups(true), 3000)
-              } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
-                keys.forEach(key => {
-                  this.loadCupHistory(key);
-                });
-                this.rootStore.transactions.executeCallbacks(callbacks);
-              }
-            }
-          } else if (type === "legacy") {
-            this.tub.legacyCups = cupsFiltered;
-            this.rootStore.transactions.executeCallbacks(callbacks);
-          }
-        });
-      }
-    }
-  }
-
-  getMyCups = (keepTrying = false, callbacks = []) => {
-    if (this.rootStore.profile.proxy) {
-      this.tub.cupsLoading = true;
-      this.getCups("new", keepTrying, callbacks);
-    } else {
-      this.tub.cupsLoading = false;
-    }
-  }
-
-  getMyLegacyCups = (callbacks = []) => {
-    this.getCups("legacy", false, callbacks);
-  }
-
-  moveLegacyCDP = (cupId, callbacks = []) => {
-    const cups = {...this.tub.cups};
-    cups[cupId] = {...this.tub.legacyCups[cupId]};
-    this.tub.cups = cups;
-    this.loadCupHistory(cupId);
-    this.rootStore.transactions.executeCallbacks(callbacks);
-  }
-
-  loadCupHistory = id => {
-    let cup = {...this.tub.cups[id]};
-    cup.history = "loading";
-    this.tub.cups[id] = cup;
-    if (settings.chain[this.rootStore.network.network].service) {
-      Promise.resolve(dai.getCupHistoryFromService(this.rootStore.network.network, id)).then(history => {
-        let cup = {...this.tub.cups[id]};
-        cup.history = history;
-        this.tub.cups[id] = cup;
-        const notification = dai.getBiteNotification(id, history, localStorage.getItem(`CDPLiquidated${history[0].time}Closed`));
-        if (notification) {
-          this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", notification, 0, () => localStorage.setItem(`CDPLiquidated${history[0].time}Closed`, true));
-        }
-      }, () => {
-        let cup = {...this.tub.cups[id]};
-        cup.history = false;
-        this.tub.cups[id] = cup;
-      });
-    } else {
-      cup.history = false;
-      this.tub.cups[id] = cup;
-    }
-  }
-
-  reloadCupData = id => {
-    Promise.resolve(this.getCup(id).then(cup => {
-      this.tub.cups[id] = {...cup};
-      this.loadCupHistory(id);
-    }));
-  }
-
-  calculateLiquidationPrice = (skr, dai) => {
-    return dai.calculateLiquidationPrice(this.vox.par, this.tub.per, this.tub.mat, skr, dai);
-  }
-  
-  calculateRatio = (skr, dai) => {
-    return dai.calculateRatio(this.tub.tag, this.vox.par, skr, dai);
-  }
-
-  tab = cup => {
-    return dai.tab(cup, this.tub.chi);
-  }
-
-  rap = cup => {
-    return dai.tab(cup, this.tub.rhi);
-  }
-
-  changeCup = cupId => {
-    this.tub.cupId = cupId;
-  }
-
-  setUpToken = token => {
-    blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
-      if (!e) {
-        this[token].address = r;
-        blockchain.loadObject(token === "gem" ? "dsethtoken" : "dstoken", r, token);
-        this.getDataFromToken(token);
-        this.setFilterToken(token);
-      }
-    })
-  }
-
-  getDataFromToken = token => {
-    this.getTotalSupply(token);
-    if (token !== "sin" && isAddress(this.rootStore.network.defaultAccount)) {
-      this.getBalanceOf(token, this.rootStore.network.defaultAccount, "myBalance");
-    }
-    if (token === "gem" || token === "skr" || token === "sin") {
-      this.getBalanceOf(token, this.tub.address, "tubBalance");
-    }
-    if (token === "gem" || token === "skr" || token === "dai" || token === "sin") {
-      this.getBalanceOf(token, this.tap.address, "tapBalance");
-    }
-    if (token === "gem" || token === "skr") {
-      this.getParameterFromTub("per", true);
-    }
-    if (token === "gov") {
-      this.getBalanceOf(token, this.pit.address, "pitBalance");
-    }
-    if (token === "gov" || token === "dai") {
-      this.getAllowance(token);
-    }
-  }
-
-  getTotalSupply = token => {
-    blockchain.objects[token].totalSupply.call((e, r) => {
-      if (!e) {
-        this[token].totalSupply = r;
-        if (token === "sin") {
-          this.calculateSafetyAndDeficit();
-        }
-      }
-    })
-  }
-
-  getBalanceOf = (token, address, field) => {
-    blockchain.objects[token].balanceOf.call(address, (e, r) => {
-      if (!e) {
-        this[token][field] = r;
-        if ((token === "skr" || token === "dai") && field === "tubBalance") {
-          this.calculateSafetyAndDeficit();
-        }
-      }
-    })
-  }
-
-  getAllowance = (token, callbacks = []) => {
-    blockchain.objects[token].allowance.call(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy, (e, r) => {
-      if (!e) {
-        this[token].allowance = r;
-        this.rootStore.transactions.executeCallbacks(callbacks);
       }
     })
   }
@@ -538,40 +540,40 @@ export default class SystemStore {
         blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
             this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
-            this.getDataFromToken(token);
+            this.setTokenDataFromChain(token);
           }
         });
       }
     }
   }
 
-  setAllowance = (token, value, callbacks = []) => {
+  // Blockchain actions
+  changeAllowance = (token, value, callbacks = []) => {
     const title = `${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}: ${value ? "unlock" : "lock"}`;
     this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
   }
 
-  // Actions
   checkAllowance = (token, callbacks) => {
-    blockchain.getAllowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
+    blockchain.allowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
       if (r.equals(BIGGESTUINT256)) {
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
-        this.setAllowance(token, true, callbacks);
+        this.changeAllowance(token, true, callbacks);
       }
     }, () => {});
   }
 
   checkProxyAndSetAllowance = (token, value) => {
-    this.rootStore.transactions.addLoading("setAllowance", token);
-    this.rootStore.profile.checkProxy([["system/setAllowance", token, value, [["system/getAllowance", token, [["transactions/cleanLoading", "setAllowance", token]]]]]]);
+    this.rootStore.transactions.addLoading("changeAllowance", token);
+    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAllowanceFromChain", token, [["transactions/cleanLoading", "changeAllowance", token]]]]]]);
   }
 
   transferToken = (token, to, amount) => {
     const title = `${token.replace("gov", "mkr").toUpperCase()}: transfer ${to} ${amount}`;
     if (token === "eth") {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpToken", token]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpTokenFromChain", token]]);
     } else {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpToken", token]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpTokenFromChain", token]]);
     }
   }
 
@@ -591,19 +593,19 @@ export default class SystemStore {
   open = () => {
     const title = "Open CDP";
     const action = `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/getMyCups"]]});
+    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   shut = (cupId, useOTC = false) => {
     const title = `Shut CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/getMyCups"], ["profile/getAccountBalance"], ["system/setUpToken", "dai"], ["system/setUpToken", "sin"]]});
+    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]]});
   }
 
   give = (cupId, newOwner) => {
     const title = `Transfer CDP ${cupId} to ${newOwner}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/getMyCups"]]});
+    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   lockAndDraw = (cupId, eth, dai) => {
@@ -614,7 +616,7 @@ export default class SystemStore {
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
         callbacks = [
-          ["system/getMyCups", true], ["profile/getAccountBalance"], ["system/setUpToken", "dai"], ["system/setUpToken", "sin"]
+          ["system/setMyCupsFromChain", true], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
         ];
 
         if (this.rootStore.profile.proxy) {
@@ -627,13 +629,13 @@ export default class SystemStore {
                                             blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
                                             [settings.chain[this.rootStore.network.network].proxyRegistry, this.tub.address, toWei(dai)],
                                             {value: toWei(eth)},
-                                            [["profile/getAndSetProxy", callbacks]]
+                                            [["profile/setProxyFromChain", callbacks]]
                                             );
           return;
         }
       } else {
         callbacks = [
-          ["system/reloadCupData", cupId], ["profile/getAccountBalance"], ["system/setUpToken", "dai"], ["system/setUpToken", "sin"]
+          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
         ];
         if (dai.equals(0)) {
           title = `Lock ${eth.valueOf()} ETH`;
@@ -671,7 +673,7 @@ export default class SystemStore {
         this.executeProxyTx(action, 0, {
                                         title,
                                         callbacks:  [
-                                                      ["system/reloadCupData", cupId], ["profile/getAccountBalance"], ["system/setUpToken", "dai"], ["system/setUpToken", "sin"]
+                                                      ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
                                                     ]
                                       });
     }

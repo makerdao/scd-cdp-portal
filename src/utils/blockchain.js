@@ -150,9 +150,33 @@ export const getContractAddr = (contractFrom, contractName) => {
   });
 }
 
-export const getAllowance = (token, srcAddr, dstAddr) => {
+export const allowance = (token, srcAddr, dstAddr) => {
   return new Promise((resolve, reject) => {
     objects[token].allowance.call(srcAddr, dstAddr, (e, r) => {
+      if (!e) {
+        resolve(r);
+      } else {
+        reject(e);
+      }
+    });
+  });
+}
+
+export const balanceOf = (token, address) => {
+  return new Promise((resolve, reject) => {
+    objects[token].balanceOf.call(address, (e, r) => {
+      if (!e) {
+        resolve(r);
+      } else {
+        reject(e);
+      }
+    });
+  });
+}
+
+export const totalSupply = (token) => {
+  return new Promise((resolve, reject) => {
+    objects[token].totalSupply.call((e, r) => {
       if (!e) {
         resolve(r);
       } else {

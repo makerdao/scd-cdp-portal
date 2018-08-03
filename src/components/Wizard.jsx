@@ -295,9 +295,9 @@ class Wizard extends Component {
               <div className="row" style={ {marginTop: "50px", border: "none"} }>
                 <div className="col">
                   <div style={ {marginBottom: "2rem"} }>
-                    <label class="checkbox-container">
+                    <label className="checkbox-container">
                       <input type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, "checkTerms")}/>
-                      <span class="checkmark"></span>
+                      <span className="checkmark"></span>
                       I have read and accept the terms and conditions.
                     </label>
                   </div>

@@ -13,7 +13,7 @@ export default class ProfileStore {
     this.rootStore = rootStore;
   }
 
-  getAccountBalance = account => {
+  setEthBalanceFromChain = account => {
     if (isAddress(account)) {
       blockchain.getEthBalanceOf(account).then(r => {
         this.accountBalance = r;
@@ -21,7 +21,7 @@ export default class ProfileStore {
     }
   }
 
-  getAndSetProxy = (callbacks = null) => {
+  setProxyFromChain = (callbacks = null) => {
     return new Promise((resolve, reject) => {
       blockchain.getProxy(this.rootStore.network.defaultAccount).then(proxy => {
         if (proxy) {
@@ -44,7 +44,7 @@ export default class ProfileStore {
       this.rootStore.transactions.executeCallbacks(callbacks);
     } else {
       const title = "Create Proxy";
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/getAndSetProxy", callbacks]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/setProxyFromChain", callbacks]]);
     }
   }
 }
