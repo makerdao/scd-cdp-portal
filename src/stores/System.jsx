@@ -1,36 +1,22 @@
 // Libraries
-import React from "react";
 import {observable, decorate} from "mobx";
 
 // Utils
-import * as Blockchain from "../utils/blockchain-handler";
-import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, wdiv, fromRaytoWad, WAD, toBytes32, addressToBytes32, methodSig, isAddress, toAscii, toChecksumAddress, printNumber, formatDate} from "../utils/helpers";
+import * as blockchain from "../utils/blockchain";
+import * as dai from "../utils/dai";
+
+import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
 
 export default class SystemStore {
-  network = null;
-  profile = null;
-  tub = null;
-  top = null;
-  tap = null;
-  vox = null;
-  pit = null;
-  gem = null;
-  gov = null;
-  skr = null;
-  dai = null;
-  sin = null;
-  pip = null;
-  pep = null;
-
   constructor(rootStore) {
     this.rootStore = rootStore;
-    this.clear();
+    this.reset();
   }
 
-  clear = () => {
+  reset = () => {
     this.tub = {
       address: null,
       authority: null,
@@ -137,13 +123,6 @@ export default class SystemStore {
 
       this.loadVariables();
 
-      if (settings.chain[this.rootStore.network.network].service) {
-        if (settings.chain[this.rootStore.network.network].chart) {
-          // this.getPricesFromService(); // TODO
-        }
-        // this.getStats();
-      }
-
       this.getMyCups();
       this.getMyLegacyCups();
 
@@ -175,7 +154,7 @@ export default class SystemStore {
       this.getParameterFromTub("gap");
       this.getParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
       this.getParameterFromTap("fix", true);
-      this.getParameterFromTap("gap", false, this.getBoomBustValues);
+      this.getParameterFromTap("gap", false);
       this.getParameterFromVox("way", true);
     }
     this.getParameterFromTub("chi", true);
@@ -186,8 +165,8 @@ export default class SystemStore {
 
   loadEraRho = () => {
     const promises = [
-                      this.getParameterFromTub("rho"),
-                      this.getParameterFromVox("era")
+                      dai.getParameterFromTub("rho"),
+                      dai.getParameterFromVox("era")
                       ];
     Promise.all(promises).then(r => {
       if (r[0] === true && r[1] === true && this.tub.tax.gte(0) && this.sin.tubBalance.gte(0)) {
@@ -196,88 +175,64 @@ export default class SystemStore {
     });
   }
 
-  getParameterFromTub = (field, ray = false, callback = false) => {
-    return new Promise((resolve, reject) => {
-      Blockchain.objects.tub[field].call((e, value) => {
-        if (!e) {
-          this.tub[field] = ray ? fromRaytoWad(value) : value;
-          this.getBoomBustValues();
-          const promises = [];
-          Object.keys(this.tub.cups).map(key =>
-            promises.push(this.addExtraCupData(this.tub.cups[key]))
-          );
-          Promise.all(promises).then(r => {
-            if (r.length > 0) {
-              for (let i = 0; i < r.length; i++) {
-                if (typeof this.tub.cups[r[i].id] !== "undefined") {
-                  this.tub.cups[r[i].id].pro = r[i].pro;
-                  this.tub.cups[r[i].id].ratio = r[i].ratio;
-                  this.tub.cups[r[i].id].avail_dai = r[i].avail_dai;
-                  this.tub.cups[r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
-                  this.tub.cups[r[i].id].avail_skr = r[i].avail_skr;
-                  this.tub.cups[r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
-                  this.tub.cups[r[i].id].liq_price = r[i].liq_price;
-                  this.tub.cups[r[i].id].safe = r[i].safe;
-                }
-              }
+  getParameterFromTub = async (field, ray = false, callback = false) => {
+    try {
+      const value = await dai.getParameterFromTub(field, ray);
+      this.tub[field] = value;
+      const promises = [];
+      Object.keys(this.tub.cups).map(key =>
+        promises.push(dai.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi))
+      );
+      Promise.all(promises).then(r => {
+        if (r.length > 0) {
+          for (let i = 0; i < r.length; i++) {
+            if (typeof this.tub.cups[r[i].id] !== "undefined") {
+              this.tub.cups[r[i].id].pro = r[i].pro;
+              this.tub.cups[r[i].id].ratio = r[i].ratio;
+              this.tub.cups[r[i].id].avail_dai = r[i].avail_dai;
+              this.tub.cups[r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
+              this.tub.cups[r[i].id].avail_skr = r[i].avail_skr;
+              this.tub.cups[r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
+              this.tub.cups[r[i].id].liq_price = r[i].liq_price;
+              this.tub.cups[r[i].id].safe = r[i].safe;
             }
-          });
-          if (callback) {
-            callback(value);
           }
-          resolve(this.tub[field]);
-        } else {
-          reject(e);
         }
       });
-    });
+      if (callback) {
+        callback(value);
+      }
+    } catch(e) {
+      console.log(e)
+    }
   }
 
-  getParameterFromTap = (field, ray = false) => {
-    const p = new Promise((resolve, reject) => {
-      Blockchain.objects.tap[field].call((e, value) => {
-        if (!e) {
-          this.tap[field] = ray ? fromRaytoWad(value) : value;
-          resolve(this.tap[field]);
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
+  getParameterFromTap = async (field, ray = false) => {
+    try {
+      this.tap[field] = await dai.getParameterFromTap(field, ray);
+    } catch(e) {
+      console.log(e);
+    }
   }
 
-  getParameterFromVox = (field, ray = false) => {
-    const p = new Promise((resolve, reject) => {
-      Blockchain.objects.vox[field].call((e, value) => {
-        if (!e) {
-          this.vox[field] = ray ? fromRaytoWad(value) : value;
-          resolve(this.vox[field]);
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
+  getParameterFromVox = async (field, ray = false) => {
+    try {
+      this.vox[field] = await dai.getParameterFromVox(field, ray);
+    } catch(e) {
+      console.log(e);
+    }
   }
 
-  getValFromFeed = obj => {
-    const p = new Promise((resolve, reject) => {
-      Blockchain.objects[obj].peek.call((e, r) => {
-        if (!e) {
-          this[obj].val = toBigNumber(r[1] ? parseInt(r[0], 16) : -1);
-          this.getBoomBustValues();
-          resolve(this[obj].val);
-        } else {
-          reject(e);
-        }
-      });
-    });
-    return p;
+  getValFromFeed = async obj => {
+    try {
+      this[obj].val = await dai.getValFromFeed(obj);
+    } catch(e) {
+      console.log(e);
+    }
   }
 
   setFiltersTub = () => {
-    if (!Blockchain.getProviderUseLogs()) return;
+    if (!blockchain.getProviderUseLogs()) return;
     const cupSignatures = [
       "lock(bytes32,uint256)",
       "free(bytes32,uint256)",
@@ -288,7 +243,7 @@ export default class SystemStore {
       "give(bytes32,address)",
     ].map(v => methodSig(v));
 
-    Blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
+    blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
@@ -320,20 +275,20 @@ export default class SystemStore {
   }
 
   setFiltersTap = () => {
-    if (!Blockchain.getProviderUseLogs()) return;
-    Blockchain.objects.tap.LogNote({}, {fromBlock: "latest"}, (e, r) => {
+    if (!blockchain.getProviderUseLogs()) return;
+    blockchain.objects.tap.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.getParameterFromTap("gap", false, this.getBoomBustValues());
+          this.getParameterFromTap("gap", false);
         }
       }
     });
   }
 
   setFiltersVox = () => {
-    if (!Blockchain.getProviderUseLogs()) return;
-    Blockchain.objects.vox.LogNote({}, {fromBlock: "latest"}, (e, r) => {
+    if (!blockchain.getProviderUseLogs()) return;
+    blockchain.objects.vox.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
@@ -344,14 +299,14 @@ export default class SystemStore {
   }
 
   setFilterFeedValue = obj => {
-    Blockchain.objects.tub[obj].call((e, r) => {
+    blockchain.objects.tub[obj].call((e, r) => {
       if (!e) {
         this[obj].address = r;
-        Blockchain.loadObject("dsvalue", r, obj);
+        blockchain.loadObject("dsvalue", r, obj);
         this.getValFromFeed(obj);
 
-        if (Blockchain.getProviderUseLogs()){
-          Blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
+        if (blockchain.getProviderUseLogs()){
+          blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
             if (!e) {
               if (
                 r.args.sig === methodSig("poke(bytes32)") ||
@@ -369,168 +324,15 @@ export default class SystemStore {
     })
   }
 
-  getBoomBustValues = () => {
-    if (this.dai.tapBalance.gte(0)
-    //&& this.sin.issuerFee.gte(0)
-    && this.sin.tapBalance.gte(0)
-    && this.vox.par.gte(0)
-    && this.tub.tag.gte(0)
-    && this.tap.gap.gte(0)
-    && this.pip.val.gte(0)
-    && this.skr.tapBalance.gte(0)
-    && this.sin.tubBalance.gte(0)
-    && this.tub.tax.gte(0)
-    && this.skr.tapBalance.gte(0)
-    && this.skr.totalSupply.gte(0)
-    && this.gem.tubBalance.gte(0)) {
-      // const dif = this.dai.tapBalance.add(this.sin.issuerFee).minus(this.sin.tapBalance); bust & boom don't execute drip anymore so we do not need to do the estimation
-      const dif = this.dai.tapBalance.minus(this.sin.tapBalance);
-      this.tub.avail_boom_dai = this.tub.avail_boom_skr = toBigNumber(0);
-      this.tub.avail_bust_dai = this.tub.avail_bust_skr = toBigNumber(0);
-
-      // if higher or equal, it means vox.par is static or increases over the time
-      // if lower, it means it decreases over the time, so we calculate a future par (in 10 minutes) to reduce risk of tx failures
-      const futurePar = this.vox.way.gte(WAD) ? this.vox.par : this.vox.par.times(fromWei(this.vox.way).pow(10*60));
-
-      if (dif.gt(0)) {
-        // We can boom
-        this.tub.avail_boom_dai = dif;
-        this.tub.avail_boom_skr = wdiv(wdiv(wmul(this.tub.avail_boom_dai, futurePar), this.tub.tag), WAD.times(2).minus(this.tap.gap));
-      }
-
-      if (this.skr.tapBalance.gt(0) || dif.lt(0)) {
-        // We can bust
-
-        // This is a margin we need to take into account as bust quantity goes down per second
-        // const futureFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(120)).minus(this.sin.tubBalance).round(0); No Drip anymore!!!
-        // const daiNeeded = dif.abs().minus(futureFee);
-        const daiNeeded = dif.gte(0) ? toBigNumber(0) : dif.abs();
-        const equivalentSKR = wdiv(wdiv(wmul(daiNeeded, futurePar), this.tub.tag), this.tap.gap);
-
-        if (this.skr.tapBalance.gte(equivalentSKR)) {
-          this.tub.avail_bust_skr = this.skr.tapBalance;
-          this.tub.avail_bust_ratio = wmul(wmul(wdiv(WAD, this.vox.par), this.tub.tag), this.tap.gap);
-          this.tub.avail_bust_dai = wmul(this.tub.avail_bust_skr, this.tub.avail_bust_ratio);
-        } else {
-          this.tub.avail_bust_dai = daiNeeded;
-          // We need to consider the case where PETH needs to be minted generating a change in "this.tub.tag"
-          this.tub.avail_bust_skr = wdiv(this.skr.totalSupply.minus(this.skr.tapBalance), wdiv(wmul(wmul(this.pip.val, this.tap.gap), this.gem.tubBalance), wmul(this.tub.avail_bust_dai, this.vox.par)).minus(WAD));
-          this.tub.avail_bust_ratio = wdiv(this.tub.avail_bust_dai, this.tub.avail_bust_skr);
-        }
-      }
-    }
-  }
-
   calculateSafetyAndDeficit = () => {
-    if (this.tub.mat.gte(0) && this.skr.tubBalance.gte(0) && this.tub.tag.gte(0) && this.sin.totalSupply.gte(0)) {
-      const pro = wmul(this.skr.tubBalance, this.tub.tag);
-      const con = this.sin.totalSupply;
-      this.tub.eek = pro.lt(con);
-
-      const min = wmul(con, this.tub.mat);
-      this.tub.safe = pro.gte(min);
-    }
-  }
-
-  calculateLiquidationPrice = (skr, dai) => {
-    return wdiv(wmul(wmul(dai, this.vox.par), this.tub.mat), wmul(skr, this.tub.per));
-  }
-
-  calculateRatio = (skr, dai) => {
-    return wdiv(wmul(skr, this.tub.tag).round(0), wmul(dai, this.vox.par));
-  }
-
-  getFromService = query => {
-    const p = new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", settings.chain[this.rootStore.network.network].service, true);
-      xhr.setRequestHeader("Content-type", "application/graphql");
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          resolve(response);
-        } else if (xhr.readyState === 4 && xhr.status !== 200) {
-          reject(xhr.status);
-        }
-      }
-      // xhr.send();
-      xhr.send(`query ${query}`);
-    });
-    return p;
-  }
-
-  getCupHistoryFromService = cupId => {
-    return new Promise((resolve, reject) => {
-      this.getFromService(`{ getCup(id: ${cupId}) { actions { nodes { act arg guy tx time ink art per pip } } } }`)
-      .then(r => resolve(r.data.getCup ? r.data.getCup.actions.nodes : null), e => reject(e))
+    const values = dai.calculateSafetyAndDeficit(this.tub.mat, this.skr.tubBalance, this.tub.tag, this.sin.totalSupply);
+    Object.keys(values).forEach(key => {
+      this[key] = {...this[key], ...values[key]};
     });
   }
 
   getCup = id => {
-    return new Promise((resolve, reject) => {
-      Blockchain.objects.tub.cups.call(toBytes32(id), (e, cupData) => {
-        if (!e) {
-          let cupBaseData = {
-            id: parseInt(id, 10),
-            lad: cupData[0],
-            ink: cupData[1],
-            art: cupData[2],
-            ire: cupData[3],
-          };
-
-          Promise.resolve(this.addExtraCupData(cupBaseData)).then(cup => {
-            resolve(cup);
-          }, e => {
-            reject(e);
-          });
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  getCupsFromService = lad => {
-    return new Promise((resolve, reject) => {
-      this.getFromService(`{ allCups( condition: { lad: "${toChecksumAddress(lad)}" } ) { nodes { id, block } } }`)
-      .then(r => resolve(r.data.allCups.nodes), e => reject(e))
-    });
-  }
-
-  getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
-    if (!Blockchain.getProviderUseLogs()) return promisesCups;
-    return new Promise((resolve, reject) => {
-      const promisesLogs = [];
-      promisesLogs.push(
-        new Promise((resolve, reject) => {
-          Blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
-            if (!e) {
-              for (let i = 0; i < r.length; i++) {
-                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16)));
-              }
-              resolve();
-            } else {
-              reject(e);
-            }
-          });
-        })
-      );
-      promisesLogs.push(
-        new Promise((resolve, reject) => {
-          Blockchain.objects.tub.LogNote({sig: methodSig("give(bytes32,address)"), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
-            if (!e) {
-              for (let i = 0; i < r.length; i++) {
-                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16)));
-              }
-              resolve();
-            } else {
-              reject(e);
-            }
-          });
-        })
-      );
-      Promise.all(promisesLogs).then(() => resolve(promisesCups), e => reject(e));
-    });
+    return dai.getCup(id, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi);
   }
 
   getCups = async (type, keepTrying = false, callbacks = []) => {
@@ -540,51 +342,45 @@ export default class SystemStore {
     let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
 
     try {
-      const serviceData = settings.chain[this.rootStore.network.network].service ? await this.getCupsFromService(lad) : [];
+      const serviceData = settings.chain[this.rootStore.network.network].service ? await dai.getCupsFromService(this.rootStore.network.network, lad) : [];
       serviceData.forEach(v => {
         promisesCups.push(me.getCup(v.id));
         fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
       });
     } finally {
-      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
-      this.filterCups(keepTrying, type, promisesCups, callbacks);
-    }
-  }
+      promisesCups = await dai.getCupsFromChain(lad, fromBlock, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi, promisesCups);
 
-  filterCups = (keepTrying, type, promisesCups, callbacks = []) => {
-    const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
-    const conditions = {lad};
-    conditions.closed = false;
-    if (type === "legacy" || this.tub.cupsLoading) {
-      Promise.all(promisesCups).then(cups => {
-        const cupsFiltered = {};
-        for (let i = 0; i < cups.length; i++) {
-          if (conditions.lad === cups[i].lad) {
-              cupsFiltered[cups[i].id] = cups[i];
-          }
-        }
-        const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
-        if (type === "new") {
-          if (this.tub.cupsLoading) {
-            this.tub.cupId = null;
-            this.tub.cups = cupsFiltered;
-
-            this.tub.cupsLoading = keepTrying && keys.length === 0;
-            if (this.tub.cupsLoading) {
-              // If we know there is a new CDP and it still not available, keep trying & loading
-              setTimeout(() => this.getMyCups(true), 3000)
-            } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
-              keys.forEach(key => {
-                this.loadCupHistory(key);
-              });
-              this.rootStore.transactions.executeCallbacks(callbacks);
+      if (type === "legacy" || this.tub.cupsLoading) {
+        Promise.all(promisesCups).then(cups => {
+          const cupsFiltered = {};
+          for (let i = 0; i < cups.length; i++) {
+            if (lad === cups[i].lad) {
+                cupsFiltered[cups[i].id] = cups[i];
             }
           }
-        } else if (type === "legacy") {
-          this.tub.legacyCups = cupsFiltered;
-          this.rootStore.transactions.executeCallbacks(callbacks);
-        }
-      });
+          const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
+          if (type === "new") {
+            if (this.tub.cupsLoading) {
+              this.tub.cupId = null;
+              this.tub.cups = cupsFiltered;
+
+              this.tub.cupsLoading = keepTrying && keys.length === 0;
+              if (this.tub.cupsLoading) {
+                // If we know there is a new CDP and it still not available, keep trying & loading
+                setTimeout(() => this.getMyCups(true), 3000)
+              } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
+                keys.forEach(key => {
+                  this.loadCupHistory(key);
+                });
+                this.rootStore.transactions.executeCallbacks(callbacks);
+              }
+            }
+          } else if (type === "legacy") {
+            this.tub.legacyCups = cupsFiltered;
+            this.rootStore.transactions.executeCallbacks(callbacks);
+          }
+        });
+      }
     }
   }
 
@@ -609,87 +405,18 @@ export default class SystemStore {
     this.rootStore.transactions.executeCallbacks(callbacks);
   }
 
-  addExtraCupData = cup => {
-    cup = this.calculateCupData(cup);
-    return new Promise((resolve, reject) => {
-      Blockchain.objects.tub.safe["bytes32"].call(toBytes32(cup.id), (e, safe) => {
-        if (!e) {
-          cup.safe = safe;
-          resolve(cup);
-        } else {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  calculateCupData = cup => {
-    cup.pro = wmul(cup.ink, this.tub.tag).round(0);
-    cup.ratio = cup.pro.div(wmul(this.tab(cup), this.vox.par));
-    // This is to give a window margin to get the maximum value (as "chi" is dynamic value per second)
-    const marginTax = fromWei(this.tub.tax).pow(120);
-    cup.avail_dai = wdiv(cup.pro, wmul(this.tub.mat, this.vox.par)).minus(this.tab(cup)).round(0).minus(1); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
-    cup.avail_dai_with_margin = wdiv(cup.pro, wmul(this.tub.mat, this.vox.par)).minus(this.tab(cup).times(marginTax)).round(0).minus(1);
-    cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? toBigNumber(0) : cup.avail_dai_with_margin;
-    cup.avail_skr = cup.ink.minus(wdiv(wmul(wmul(this.tab(cup), this.tub.mat), this.vox.par), this.tub.tag)).round(0);
-    cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(this.tab(cup).times(marginTax), this.tub.mat), this.vox.par), this.tub.tag)).round(0);
-    cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
-    cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(this.tab(cup), this.tub.mat), this.tub.per), cup.ink) : toBigNumber(0);
-    return cup;
-  }
-
   loadCupHistory = id => {
     let cup = {...this.tub.cups[id]};
     cup.history = "loading";
     this.tub.cups[id] = cup;
     if (settings.chain[this.rootStore.network.network].service) {
-      Promise.resolve(this.getCupHistoryFromService(id)).then(response => {
+      Promise.resolve(dai.getCupHistoryFromService(this.rootStore.network.network, id)).then(history => {
         let cup = {...this.tub.cups[id]};
-        cup.history = response;
+        cup.history = history;
         this.tub.cups[id] = cup;
-        const latestAction = response[0];
-        if (latestAction.act === "BITE" && !localStorage.getItem(`CDPLiquidated${latestAction.time}Closed`)) {
-          const prevlatestAction = response[1];
-          const date = formatDate((new Date(latestAction.time)).getTime() / 1000);
-          const art = toWei(prevlatestAction.art);
-          const liqPrice =  (art * 1.5 / latestAction.per) / prevlatestAction.ink;
-          const liqInk = toWei(prevlatestAction.ink - latestAction.ink);
-          const liqETH = liqInk * latestAction.per;
-          const liqInkCol = liqInk / 1.13;
-          const liqETHCol = liqInkCol * latestAction.per;
-          const liqInkPen = liqInk - liqInkCol;
-          const liqETHPen = liqInkPen * latestAction.per;
-          const pip = toWei(latestAction.pip);
-          const body =  <React.Fragment>
-                          <p>
-                            Your CDP #{id} was liquidated on { date } to pay back { printNumber(art) } DAI.
-                          </p>
-                          <p>
-                            <div className="dark-text">Total ETH (PETH) liquidated</div>
-                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqETH) } ETH</div>
-                            <div className="dark-text">{ printNumber(liqInk) } PETH</div>
-                          </p>
-                          <div className="indented-section">
-                            <div className="line-indent"></div>
-                            <p>
-                              <div className="dark-text">Collateral</div>
-                              <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{ printNumber(liqETHCol) } ETH</div>
-                              <div className="dark-text">{ printNumber(liqInkCol) } PETH</div>
-                            </p>
-                            <p>
-                              <div className="dark-text">13% liquidation penalty</div>
-                              <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{printNumber(liqETHPen)} ETH</div>
-                              <div className="dark-text">{printNumber(liqInkPen)} PETH</div>
-                            </p>
-                          </div>
-                          <p>
-                            <div className="dark-text">Became vulnerable to liquidation @ price</div>
-                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqPrice)} USD</div>
-                            <div className="dark-text">Liquidated @ price</div>
-                            <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(pip) } USD</div>
-                          </p>
-                        </React.Fragment>;
-          this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", body, 0, () => localStorage.setItem(`CDPLiquidated${latestAction.time}Closed`, true));
+        const notification = dai.getBiteNotification(id, history, localStorage.getItem(`CDPLiquidated${history[0].time}Closed`));
+        if (notification) {
+          this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", notification, 0, () => localStorage.setItem(`CDPLiquidated${history[0].time}Closed`, true));
         }
       }, () => {
         let cup = {...this.tub.cups[id]};
@@ -709,25 +436,31 @@ export default class SystemStore {
     }));
   }
 
-  changeCup = e => {
-    e.preventDefault();
-    this.tub.cupId = e.target.getAttribute("data-cupid");
-    // this.calculateCupChart();
+  calculateLiquidationPrice = (skr, dai) => {
+    return dai.calculateLiquidationPrice(this.vox.par, this.tub.per, this.tub.mat, skr, dai);
+  }
+  
+  calculateRatio = (skr, dai) => {
+    return dai.calculateRatio(this.tub.tag, this.vox.par, skr, dai);
   }
 
   tab = cup => {
-    return wmul(cup.art, this.tub.chi).round(0);
+    return dai.tab(cup, this.tub.chi);
   }
 
   rap = cup => {
-    return wmul(cup.ire, this.tub.rhi).minus(this.tab(cup)).round(0);
+    return dai.tab(cup, this.tub.rhi);
+  }
+
+  changeCup = cupId => {
+    this.tub.cupId = cupId;
   }
 
   setUpToken = token => {
-    Blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
+    blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
       if (!e) {
         this[token].address = r;
-        Blockchain.loadObject(token === "gem" ? "dsethtoken" : "dstoken", r, token);
+        blockchain.loadObject(token === "gem" ? "dsethtoken" : "dstoken", r, token);
         this.getDataFromToken(token);
         this.setFilterToken(token);
       }
@@ -744,7 +477,6 @@ export default class SystemStore {
     }
     if (token === "gem" || token === "skr" || token === "dai" || token === "sin") {
       this.getBalanceOf(token, this.tap.address, "tapBalance");
-      this.getBoomBustValues();
     }
     if (token === "gem" || token === "skr") {
       this.getParameterFromTub("per", true);
@@ -758,7 +490,7 @@ export default class SystemStore {
   }
 
   getTotalSupply = token => {
-    Blockchain.objects[token].totalSupply.call((e, r) => {
+    blockchain.objects[token].totalSupply.call((e, r) => {
       if (!e) {
         this[token].totalSupply = r;
         if (token === "sin") {
@@ -769,7 +501,7 @@ export default class SystemStore {
   }
 
   getBalanceOf = (token, address, field) => {
-    Blockchain.objects[token].balanceOf.call(address, (e, r) => {
+    blockchain.objects[token].balanceOf.call(address, (e, r) => {
       if (!e) {
         this[token][field] = r;
         if ((token === "skr" || token === "dai") && field === "tubBalance") {
@@ -780,7 +512,7 @@ export default class SystemStore {
   }
 
   getAllowance = (token, callbacks = []) => {
-    Blockchain.objects[token].allowance.call(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy, (e, r) => {
+    blockchain.objects[token].allowance.call(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy, (e, r) => {
       if (!e) {
         this[token].allowance = r;
         this.rootStore.transactions.executeCallbacks(callbacks);
@@ -789,7 +521,7 @@ export default class SystemStore {
   }
 
   setFilterToken = token => {
-    if (!Blockchain.getProviderUseLogs()) return;
+    if (!blockchain.getProviderUseLogs()) return;
     const filters = ["Transfer", "Approval"];
 
     if (token === "gem") {
@@ -802,8 +534,8 @@ export default class SystemStore {
 
     for (let i = 0; i < filters.length; i++) {
       const conditions = {};
-      if (Blockchain.objects[token][filters[i]]) {
-        Blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
+      if (blockchain.objects[token][filters[i]]) {
+        blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
             this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
             this.getDataFromToken(token);
@@ -815,12 +547,12 @@ export default class SystemStore {
 
   setAllowance = (token, value, callbacks = []) => {
     const title = `${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}: ${value ? "unlock" : "lock"}`;
-    this.rootStore.transactions.askPriceAndSend(title, Blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
+    this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
   }
 
   // Actions
   checkAllowance = (token, callbacks) => {
-    Blockchain.getAllowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
+    blockchain.getAllowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
       if (r.equals(BIGGESTUINT256)) {
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
@@ -837,23 +569,23 @@ export default class SystemStore {
   transferToken = (token, to, amount) => {
     const title = `${token.replace("gov", "mkr").toUpperCase()}: transfer ${to} ${amount}`;
     if (token === "eth") {
-      this.rootStore.transactions.askPriceAndSend(title, Blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpToken", token]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpToken", token]]);
     } else {
-      this.rootStore.transactions.askPriceAndSend(title, Blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpToken", token]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpToken", token]]);
     }
   }
 
   migrateCDP = async (cup, callbacks) => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
     const proxy = this.rootStore.profile.proxy;
-    if (proxy && isAddress(proxy) && await Blockchain.getProxyOwner(proxy) === this.rootStore.network.defaultAccount) {
+    if (proxy && isAddress(proxy) && await blockchain.getProxyOwner(proxy) === this.rootStore.network.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
-      this.rootStore.transactions.askPriceAndSend(title, Blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
     }
   }
 
   executeProxyTx = (action, value, notificator) => {
-    this.rootStore.transactions.askPriceAndSend(notificator.title, Blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
+    this.rootStore.transactions.askPriceAndSend(notificator.title, blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
   }
 
   open = () => {
@@ -892,7 +624,7 @@ export default class SystemStore {
           title = `Create Proxy + Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
           this.rootStore.transactions.askPriceAndSend(
                                             title,
-                                            Blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
+                                            blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
                                             [settings.chain[this.rootStore.network.network].proxyRegistry, this.tub.address, toWei(dai)],
                                             {value: toWei(eth)},
                                             [["profile/getAndSetProxy", callbacks]]

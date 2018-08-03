@@ -4,6 +4,11 @@ import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
 class Menu extends React.Component {
+  changeCup = e => {
+    e.preventDefault();
+    this.props.system.changeCup(e.target.getAttribute("data-cupid"));
+  }
+
   render() {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
@@ -30,7 +35,7 @@ class Menu extends React.Component {
             {
               this.props.showCDPs &&
               Object.keys(this.props.system.tub.cups).map(key =>
-                <li key={ key } data-cupid={ key } className={ cupId === key ? "active" : "" } onClick={ this.props.system.changeCup }>
+                <li key={ key } data-cupid={ key } className={ cupId === key ? "active" : "" } onClick={ this.changeCup }>
                   CDP #{ key }
                 </li>
               )

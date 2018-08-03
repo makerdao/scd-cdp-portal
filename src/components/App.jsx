@@ -14,12 +14,12 @@ import Routes from "./Routes";
 import rootStore from "../stores/Root";
 
 // Utils
-import * as Blockchain from "../utils/blockchain-handler";
+import * as blockchain from "../utils/blockchain";
 
 import "./App.css";
 
 // Convenient console access
-window.blockchain = Blockchain;
+window.blockchain = blockchain;
 window.dialog = rootStore.dialog;
 window.network = rootStore.network;
 window.profile = rootStore.profileS

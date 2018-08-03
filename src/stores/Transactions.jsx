@@ -2,7 +2,7 @@
 import {observable, decorate, computed} from "mobx";
 
 // Utils
-import * as Blockchain from "../utils/blockchain-handler";
+import * as blockchain from "../utils/blockchain";
 import {etherscanTx, methodSig} from "../utils/helpers";
 
 // Settings
@@ -25,13 +25,13 @@ export default class TransactionsStore {
   }
 
   setStandardGasPrice = async () => {
-    this.standardGasPrice = (await Blockchain.getGasPrice()).div(10**9).ceil().toNumber();
+    this.standardGasPrice = (await blockchain.getGasPrice()).div(10**9).ceil().toNumber();
   }
 
   checkPendingTransactions = () => {
     Object.keys(this.registry).map(tx => {
       if (this.registry[tx].pending) {
-        Blockchain.getTransactionReceipt(tx).then(r => {
+        blockchain.getTransactionReceipt(tx).then(r => {
           if (r !== null) {
             if (r.status === "0x1") {
               this.logTransactionConfirmed(tx);

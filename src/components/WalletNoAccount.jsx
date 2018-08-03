@@ -6,7 +6,7 @@ import {inject, observer} from "mobx-react";
 import LoadingSpinner from "./LoadingSpinner";
 
 // Utils
-import {getCurrentProviderName} from "../utils/blockchain-handler";
+import {getCurrentProviderName} from "../utils/blockchain";
 
 class NoAccount extends React.Component {
   render() {

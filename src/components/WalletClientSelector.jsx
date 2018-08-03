@@ -3,7 +3,7 @@ import React from "react";
 import {inject, observer} from "mobx-react";
 
 // Utils
-import {getWebClientProviderName} from "../utils/blockchain-handler";
+import {getWebClientProviderName} from "../utils/blockchain";
 
 const walletIcons = {
   metamask:

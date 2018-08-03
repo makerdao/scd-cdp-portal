@@ -13,7 +13,7 @@ import WalletNoAccount from "./WalletNoAccount";
 import WalletSendToken from "./WalletSendToken";
 
 // Utils
-import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain-handler";
+import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain";
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
 
 class Wallet extends React.Component {

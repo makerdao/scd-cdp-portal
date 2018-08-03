@@ -2,7 +2,7 @@
 import { observable, decorate } from "mobx";
 
 // Utils
-import * as Blockchain from "../utils/blockchain-handler";
+import * as blockchain from "../utils/blockchain";
 import { toBigNumber, isAddress } from "../utils/helpers";
 
 export default class ProfileStore {
@@ -15,7 +15,7 @@ export default class ProfileStore {
 
   getAccountBalance = account => {
     if (isAddress(account)) {
-      Blockchain.getEthBalanceOf(account).then(r => {
+      blockchain.getEthBalanceOf(account).then(r => {
         this.accountBalance = r;
       }, () => {});
     }
@@ -23,7 +23,7 @@ export default class ProfileStore {
 
   getAndSetProxy = (callbacks = null) => {
     return new Promise((resolve, reject) => {
-      Blockchain.getProxy(this.rootStore.transactions.network.defaultAccount).then(proxy => {
+      blockchain.getProxy(this.rootStore.network.defaultAccount).then(proxy => {
         if (proxy) {
           this.setProxy(proxy);
           callbacks && this.rootStore.transactions.executeCallbacks(callbacks);
@@ -35,7 +35,7 @@ export default class ProfileStore {
 
   setProxy = proxy => {
     this.proxy = proxy;
-    Blockchain.loadObject("dsproxy", this.proxy, "proxy");
+    blockchain.loadObject("dsproxy", this.proxy, "proxy");
     console.log("proxy", this.proxy);
   }
 
@@ -44,7 +44,7 @@ export default class ProfileStore {
       this.rootStore.transactions.executeCallbacks(callbacks);
     } else {
       const title = "Create Proxy";
-      this.rootStore.transactions.askPriceAndSend(title, Blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/getAndSetProxy", callbacks]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/getAndSetProxy", callbacks]]);
     }
   }
 }
