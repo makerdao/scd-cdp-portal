@@ -1,5 +1,5 @@
 // Libraries
-import {observable, decorate} from "mobx";
+import {computed, observable, decorate} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -110,6 +110,10 @@ export default class SystemStore {
       address: null,
       val: toBigNumber(-1),
     };
+  }
+
+  get showLegacyAlert() {
+    return !Object.keys(this.tub.legacyCups).every(elem => Object.keys(this.tub.cups).indexOf(elem) > -1);
   }
 
   init = (top, tub, tap, vox, pit) => {
@@ -787,4 +791,5 @@ decorate(SystemStore, {
   sin: observable,
   pip: observable,
   pep: observable,
+  showLegacyAlert: computed
 });

@@ -13,7 +13,7 @@ class LegacyCupsAlert extends React.Component {
 
   render() {
     return (
-      Object.keys(this.props.system.tub.legacyCups).length > 0 && this.state.show && !localStorage.getItem(`LegacyCDPsAlertClosed-${this.props.network.defaultAccount}`) &&
+      this.props.system.showLegacyAlert && this.state.show && !localStorage.getItem(`LegacyCDPsAlertClosed-${this.props.network.defaultAccount}`) &&
       <InlineNotification
         class="migrate-cups"
         caption="Migrate Existing CDPs"
