@@ -28,12 +28,6 @@ window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
 class App extends React.Component {
-  componentDidUpdate = prevProps => {
-    if (this.props.location.pathname !== prevProps.location.pathname) {
-      window.scrollTo(0, 0);
-    }
-  }
-
   render() {
     return (
       <Provider network={rootStore.network} profile={rootStore.profile} transactions={rootStore.transactions} system={rootStore.system} dialog={rootStore.dialog} content={rootStore.content}>
