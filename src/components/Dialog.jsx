@@ -180,8 +180,8 @@ class Dialog extends React.Component {
         <div className="info-value" style={ { marginBottom: '0'} }>{ printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR</div>
         <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr" style={ {marginLeft: '5px'} }>Get MKR</Link></div>
         <div className="fee-type-selector">
-          <input type="radio" id="govFeeMkr" name="govFeeMkr" value="mkr" checked={ this.state.govFeeType === "mkr" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeMkr">Pay Gov Fee with MKR</label><br />
-          <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay Gov Fee with DAI <span>(via Oasisdex best offer)</span></label>
+          <input type="radio" id="govFeeMkr" name="govFeeMkr" value="mkr" checked={ this.state.govFeeType === "mkr" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeMkr">Pay stability fee with MKR</label><br />
+          <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay stability fee with DAI <span>(via Oasisdex best offer)</span></label>
         </div>
       </React.Fragment>
     )
