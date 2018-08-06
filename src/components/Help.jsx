@@ -27,9 +27,9 @@ class Help extends React.Component {
                     <h3 className="typo-h3 typo-white">First steps</h3>
                     <ul className="typo-cl bullets">
                       <li><Link to="/help/what-is-a-cdp">What is a Colleteralized Dept Position (CDP)?</Link></li>
-                      <li><Link to="/help/how-do-i-open-a-cdp">How do I open a CDP?</Link></li>
-                      <li><Link to="/help/how-do-i-generate-dai">How do I generate DAI?</Link></li>
-                      <li><Link to="/help/how-do-i-free-eth">How do I free ETH?</Link></li>
+                      <li><Link to="/help/what-is-the-best-way-to-lower-my-risk-of-liquidation">What is the best way to lower my risk of liquidation?</Link></li>
+                      <li><Link to="/help/what-is-the-stability-fee">What is the Stability Fee?</Link></li>
+                      <li><Link to="/help/when-do-i-have-to-pay-the-stability-fee">When do I have to pay the Stability Fee?</Link></li>
                       <li><Link to="/help/what-is-peth">What is PETH?</Link></li>
                       <li><Link to="/help/how-do-i-get-mkr">How do I get MKR tokens?</Link></li>
                     </ul>
