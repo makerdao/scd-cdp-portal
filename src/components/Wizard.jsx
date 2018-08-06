@@ -1,6 +1,7 @@
 // Libraries
 import React, {Component} from "react";
 import {inject} from "mobx-react";
+import {Link} from "react-router-dom";
 import Steps, {Step} from "rc-steps";
 
 // Components
@@ -298,7 +299,7 @@ class Wizard extends Component {
                     <label className="checkbox-container">
                       <input type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, "checkTerms")}/>
                       <span className="checkmark"></span>
-                      I have read and accept the terms and conditions.
+                      I have read and accept the <Link to="/terms">Terms of Service</Link>
                     </label>
                   </div>
                   <div>
