@@ -217,28 +217,28 @@ export const getBiteNotification = (cupId, history, alreadyClosed) => {
     const liqETHPen = liqInkPen * latestAction.per;
     const pip = toWei(latestAction.pip);
     return <React.Fragment>
-              <div>
+              <div className="grouped-section">
                 Your CDP #{cupId} was liquidated on { date } to pay back { printNumber(art) } DAI.
               </div>
-              <div>
+              <div className="grouped-section">
                 <div className="dark-text">Total ETH (PETH) liquidated</div>
                 <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqETH) } ETH</div>
                 <div className="dark-text">{ printNumber(liqInk) } PETH</div>
               </div>
               <div className="indented-section">
                 <div className="line-indent"></div>
-                <div>
+                <div className="grouped-section">
                   <div className="dark-text">Collateral</div>
                   <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{ printNumber(liqETHCol) } ETH</div>
                   <div className="dark-text">{ printNumber(liqInkCol) } PETH</div>
                 </div>
-                <div>
+                <div className="grouped-section">
                   <div className="dark-text">13% liquidation penalty</div>
                   <div style={ {fontSize: "1.1rem", fontWeight: "600" } }>{printNumber(liqETHPen)} ETH</div>
                   <div className="dark-text">{printNumber(liqInkPen)} PETH</div>
                 </div>
               </div>
-              <div>
+              <div className="grouped-section">
                 <div className="dark-text">Became vulnerable to liquidation @ price</div>
                 <div style={ {fontSize: "1.3rem", fontWeight: "600" } }>{ printNumber(liqPrice)} USD</div>
                 <div className="dark-text">Liquidated @ price</div>
