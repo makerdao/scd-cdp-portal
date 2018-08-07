@@ -1,5 +1,6 @@
 // Libraries
 import React from "react";
+import {Link} from "react-router-dom";
 
 class Footer extends React.Component {
   render() {
@@ -15,7 +16,7 @@ class Footer extends React.Component {
             Our team consists of developers, economists and designers from all over the world. Our decentralized autonomous organization is governed by our token holders.
           </p>
           <ul>
-            <li><a href="">FAQ</a></li>
+            <li><Link to="/help">FAQ</Link></li>
             <li><a href="https://www.reddit.com/r/MakerDAO/">Reddit</a></li>
             <li><a href="https://chat.makerdao.com">Chat</a></li>
           </ul>
