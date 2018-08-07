@@ -22,12 +22,15 @@
         display: none;
       }
       padding-top: 2rem;
+      padding-left: 3rem;
+      padding-right: 3rem;
       background-color: #2c3943;
       h1 {
         text-align: center;
         letter-spacing: 0.1px;
         font-size: 2.5rem;
-        margin: 2.5rem 0 4.5rem;
+        margin: 2rem 0 4rem;
+        line-height: 1.2;
         font-weight: 700;
         color: #fff;
       }
@@ -39,7 +42,8 @@
         letter-spacing: unset;
         line-height: 1.7;
         font-weight: 200;
-        width: 650px;
+        max-width: 650px;
+        width: 100%;
         display: block;
         text-align: justify;
         a.faq {
@@ -57,6 +61,11 @@
           font-size: 1.3rem;
           font-weight: 300;
           margin: 6.5rem 4rem 0;
+          @include respond-to(m) {
+            font-size: 1.1rem;
+            margin-right: 4%;
+            margin-left: 4%;
+          }
           letter-spacing: 0.02rem;
           text-align: center;
           &:first-child {
@@ -69,6 +78,11 @@
             margin-bottom: 2.5rem;
             width: 75px;
             height: 75px;
+            @include respond-to(m) {
+              margin-bottom: 1rem;
+              width: 50px;
+              height: 50px;
+            }
           }
         }
       }
