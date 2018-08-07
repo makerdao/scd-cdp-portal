@@ -95,10 +95,13 @@ class WalletClientSelector extends React.Component {
               </React.Fragment>
           }
           </a>
+          {
+          navigator.userAgent.toLowerCase().indexOf('firefox') === -1 &&
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW("ledger") } }>
             <div className="provider-icon">{ walletIcons['ledger'] }</div>
             Ledger Nano S
           </a>
+          }
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW("trezor") } }>
             <div className="provider-icon">{ walletIcons['trezor'] }</div>
             Trezor
