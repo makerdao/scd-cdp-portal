@@ -61,7 +61,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>03.<span className="line"></span>THE SETUP</h1>
                 <h2>How does it work?</h2>
-                <p>You determine how much ETH you want to lock up in the CDP. You generate DAI stablecoins against the ETH you locked up, and spend them as you wish. You pay back the DAI stablecoins when you no longer need the liquidity, together with a small stability fee, and then you can withdraw the collateral that you locked up.</p>
+                <p>You determine how much ETH you want to lock up in the CDP. You generate DAI stablecoins against the ETH you locked up, and spend them as you wish. You pay back the DAI stablecoins when you no longer need the liquidity, together with a stability fee, and then you can withdraw the collateral that you locked up.</p>
               </div>
             </div>
             <div>
@@ -75,7 +75,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>05.<span className="line"></span>THE COST</h1>
                 <h2>Does it cost anything?</h2>
-                <p>There is a stability fee on the Dai stablecoins of 0.05% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
+                <p>There is a stability fee on the Dai stablecoins of 0.5% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
               </div>
             </div>
           </Slider>
