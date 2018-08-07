@@ -8,10 +8,10 @@ class Footer extends React.Component {
         <div className="landing-footer">
           <div className="logo-block">
             <div className="line" />
-            <div className="logo-center"><img src="../img/maker-logo-footer.svg" alt="Maker" />&copy; DAI Foundation 2018</div>
+            <div className="logo-center"><img src="../img/maker-logo-footer.svg" alt="Maker" />Maker</div>
           </div>
           <p>
-            The DAI Stablecoin System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />
+            The Dai Credit System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />
             Our team consists of developers, economists and designers from all over the world. Our decentralized autonomous organization is governed by our token holders.
           </p>
           <ul>
