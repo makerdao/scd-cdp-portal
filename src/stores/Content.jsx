@@ -3,6 +3,9 @@ import {observable, decorate} from "mobx";
 import axios from 'axios';
 import ReactTooltip from "react-tooltip";
 
+// Utils
+import {WAD, formatNumber, fromWei, toWei} from "../utils/helpers";
+
 // Settings
 import * as settings from "../settings";
 
@@ -10,8 +13,8 @@ import * as settings from "../settings";
 import contentTerms from '../json/terms.json';
 
 export default class ContentStore {
-    content = { faq: {}, tooltips: {} }
-    contentLoaded = false
+  content = { faq: {}, tooltips: {} }
+  contentLoaded = false
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -23,9 +26,27 @@ export default class ContentStore {
       });
   }
 
+  replaceVariables = text => {
+    return text.replace(/\$\{(.+?)\}/g, (match, capture) => {
+      switch(capture) {
+        case 'stability_fee':
+          return formatNumber(toWei(fromWei(this.rootStore.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1) + '%';
+        case 'liquidation_penalty':
+          return formatNumber(this.rootStore.system.tub.axe.minus(WAD).times(100)) + '%';
+        case 'min_collateralization_ratio':
+          return formatNumber(this.rootStore.system.tub.mat.times(100)) + '%';
+        default:
+          return '?';
+      }
+    });
+  }
+
   getTooltip = tipKey => {
     if (this.content.tooltips && this.content.tooltips.hasOwnProperty(tipKey)) {
-      return this.content.tooltips[tipKey]['text'].replace(/\n|\\n/g, '<br/>');
+      let tipText = this.content.tooltips[tipKey]['text'].replace(/\n|\\n/g, '<br/>');
+      // Does the tooltip text contain variables that need replacing?
+      if (/\$\{.+?\}/.test(tipText)) tipText = this.replaceVariables(tipText);
+      return tipText;
     }
     else return '';
     // Solution for having a More Info link rendered using JSX
