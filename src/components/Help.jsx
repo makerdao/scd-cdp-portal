@@ -26,7 +26,7 @@ class Help extends React.Component {
                     <h2 className="typo-h2 ">FAQ</h2>
                     <h3 className="typo-h3 typo-white">First steps</h3>
                     <ul className="typo-cl bullets">
-                      <li><Link to="/help/what-is-a-cdp">What is a Colleteralized Dept Position (CDP)?</Link></li>
+                      <li><Link to="/help/what-is-a-cdp">What is a Collateralized Debt Position (CDP)?</Link></li>
                       <li><Link to="/help/what-is-the-best-way-to-lower-my-risk-of-liquidation">What is the best way to lower my risk of liquidation?</Link></li>
                       <li><Link to="/help/what-is-the-stability-fee">What is the Stability Fee?</Link></li>
                       <li><Link to="/help/when-do-i-have-to-pay-the-stability-fee">When do I have to pay the Stability Fee?</Link></li>
