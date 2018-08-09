@@ -1,13 +1,13 @@
 // Libraries
-import { observable, decorate } from "mobx";
+import { observable } from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
 import { toBigNumber, isAddress } from "../utils/helpers";
 
 export default class ProfileStore {
-  accountBalance = toBigNumber(-1);
-  proxy = -1;
+  @observable accountBalance = toBigNumber(-1);
+  @observable proxy = -1;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -48,8 +48,3 @@ export default class ProfileStore {
     }
   }
 }
-
-decorate(ProfileStore, {
-  accountBalance: observable,
-  proxy: observable
-});

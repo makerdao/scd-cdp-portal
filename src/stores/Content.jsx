@@ -1,5 +1,5 @@
 // Libraries
-import {observable, decorate} from "mobx";
+import { observable } from "mobx";
 import axios from 'axios';
 import ReactTooltip from "react-tooltip";
 
@@ -13,8 +13,8 @@ import * as settings from "../settings";
 import contentTerms from '../json/terms.json';
 
 export default class ContentStore {
-  content = { faq: {}, tooltips: {} }
-  contentLoaded = false
+  @observable content = { faq: {}, tooltips: {} }
+  @observable contentLoaded = false
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -71,8 +71,3 @@ export default class ContentStore {
     return contentTerms.markdown || null;
   }
 }
-
-decorate(ContentStore, {
-  content: observable,
-  contentLoaded: observable
-});

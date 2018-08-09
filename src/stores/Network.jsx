@@ -1,5 +1,5 @@
 // Libraries
-import { observable, decorate } from "mobx";
+import { observable } from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -8,17 +8,17 @@ import * as blockchain from "../utils/blockchain";
 import * as settings from "../settings";
 
 export default class NetworkStore {
-  stopIntervals = false;
-  loadingAddress = false;
-  accounts = [];
-  defaultAccount = null;
-  isConnected = false;
-  latestBlock = null;
-  network = "";
-  outOfSync = true;
-  isHw = false;
-  hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
-  downloadClient = false;
+  @observable stopIntervals = false;
+  @observable loadingAddress = false;
+  @observable accounts = [];
+  @observable defaultAccount = null;
+  @observable isConnected = false;
+  @observable latestBlock = null;
+  @observable network = "";
+  @observable outOfSync = true;
+  @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
+  @observable isHw = false;
+  @observable downloadClient = false;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -145,17 +145,3 @@ export default class NetworkStore {
     this.loadingAddress = false;
   }
 }
-
-decorate(NetworkStore, {
-  stopIntervals: observable,
-  loadingAddress: observable,
-  accounts: observable,
-  defaultAccount: observable,
-  isConnected: observable,
-  latestBlock: observable,
-  network: observable,
-  outOfSync: observable,
-  hw: observable,
-  isHw: observable,
-  downloadClient: observable
-});

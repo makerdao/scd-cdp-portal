@@ -1,5 +1,5 @@
 // Libraries
-import {observable, decorate, computed} from "mobx";
+import { observable, computed } from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -9,17 +9,17 @@ import {etherscanTx, methodSig} from "../utils/helpers";
 import * as settings from "../settings";
 
 export default class TransactionsStore {
-  registry = {};
-  loading = {};
+  @observable registry = {};
+  @observable loading = {};
   cdpCreationTx = false;
-  standardGasPrice = -1;
-  priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
+  @observable standardGasPrice = -1;
+  @observable priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
-  get showCreatingCdpModal() {
+  @computed get showCreatingCdpModal() {
     const txs = Object.keys(this.registry).filter(tx => this.registry[tx].cdpCreationTx);
     return txs.length > 0;
   }
@@ -197,11 +197,3 @@ export default class TransactionsStore {
     }, timeout);
   }
 }
-
-decorate(TransactionsStore, {
-  registry: observable,
-  loading: observable,
-  standardGasPrice: observable,
-  priceModal: observable,
-  showCreatingCdpModal: computed
-});
