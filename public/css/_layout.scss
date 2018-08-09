@@ -3,7 +3,7 @@
 }
 
 html {
-	background-color: $black;
+	background-color: $bg-grey;
 }
 
 body {
@@ -26,7 +26,6 @@ body {
 .wrapper {
 	width: 100%;
 	min-height: 100vh;
-	overflow: hidden;
 	position: relative;
 	padding-left: 65px;
 	padding-right: 340px;
