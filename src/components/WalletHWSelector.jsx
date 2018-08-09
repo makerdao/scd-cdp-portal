@@ -81,6 +81,8 @@ const IdenticonValue = createClass({
   }
 });
 
+@inject("network")
+@observer
 class WalletHardHWSelector extends React.Component {
   state = {
     selectedOption: null
@@ -184,4 +186,4 @@ class WalletHardHWSelector extends React.Component {
   }
 }
 
-export default inject("network")(observer(WalletHardHWSelector));
+export default WalletHardHWSelector;

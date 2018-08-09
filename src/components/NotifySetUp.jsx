@@ -27,6 +27,9 @@ class CreatingCDPAnimation extends React.Component {
   }
 }
 
+@inject("transactions")
+@inject("system")
+@observer
 class NotifySetUp extends React.Component {
   render() {
     const txs = Object.keys(this.props.transactions.registry).filter(tx => this.props.transactions.registry[tx].cdpCreationTx);
@@ -77,4 +80,4 @@ class NotifySetUp extends React.Component {
   }
 }
 
-export default inject("transactions")(inject("system")(observer(NotifySetUp)));
+export default NotifySetUp;

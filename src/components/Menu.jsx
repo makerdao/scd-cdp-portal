@@ -3,6 +3,8 @@ import React from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
+@inject("system")
+@observer
 class Menu extends React.Component {
   changeCup = e => {
     e.preventDefault();
@@ -64,4 +66,4 @@ class Menu extends React.Component {
   }
 }
 
-export default inject("system")(observer(Menu));
+export default Menu;

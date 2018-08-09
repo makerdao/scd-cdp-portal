@@ -5,6 +5,9 @@ import {inject, observer} from "mobx-react";
 // Utils
 import {printNumber, wdiv, wmul} from "../utils/helpers";
 
+@inject("network")
+@inject("system")
+@observer
 class SystemInfo extends React.Component {
   render() {
     return (
@@ -93,4 +96,4 @@ class SystemInfo extends React.Component {
   }
 }
 
-export default inject("network")(inject("system")(observer(SystemInfo)));
+export default SystemInfo;

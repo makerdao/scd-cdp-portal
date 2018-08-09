@@ -1,9 +1,9 @@
 // Libraries
-import { observable } from "mobx";
+import {observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
-import { toBigNumber, isAddress } from "../utils/helpers";
+import {toBigNumber, isAddress} from "../utils/helpers";
 
 export default class ProfileStore {
   @observable accountBalance = toBigNumber(-1);

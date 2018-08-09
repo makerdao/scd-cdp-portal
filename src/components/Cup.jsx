@@ -10,6 +10,10 @@ import TooltipHint from "./TooltipHint";
 // Utils
 import {WAD, printNumber, wmul, toBigNumber, toWei} from "../utils/helpers";
 
+@inject("profile")
+@inject("system")
+@inject("dialog")
+@observer
 class Cup extends React.Component {
   componentDidMount() {
     TooltipHint.rebuildTooltips();
@@ -212,4 +216,4 @@ class Cup extends React.Component {
   }
 }
 
-export default inject("profile")(inject("system")(inject("dialog")(observer(Cup))));
+export default Cup;

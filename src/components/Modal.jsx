@@ -2,6 +2,7 @@
 import React from "react";
 import {observer} from "mobx-react";
 
+@observer
 class Modal extends React.Component {
   constructor() {
     super();
@@ -35,4 +36,4 @@ class Modal extends React.Component {
   }
 }
 
-export default observer(Modal);
+export default Modal;

@@ -5,6 +5,9 @@ import {inject, observer} from "mobx-react";
 // Utils
 import {printNumber, formatNumber, isAddress, toWei} from "../utils/helpers";
 
+@inject("profile")
+@inject("system")
+@observer
 class WalletSendToken extends React.Component {
   constructor() {
     super();
@@ -81,4 +84,4 @@ class WalletSendToken extends React.Component {
   }
 }
 
-export default inject("profile")(inject("system")(observer(WalletSendToken)));
+export default WalletSendToken;

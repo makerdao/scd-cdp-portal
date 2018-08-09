@@ -71,6 +71,8 @@ const walletIcons = {
     </svg>
 };
 
+@inject("network")
+@observer
 class WalletClientSelector extends React.Component {
   render() {
     const providerName = getWebClientProviderName()
@@ -112,4 +114,4 @@ class WalletClientSelector extends React.Component {
   }
 }
 
-export default inject("network")(observer(WalletClientSelector));
+export default WalletClientSelector;

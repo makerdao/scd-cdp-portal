@@ -1,6 +1,6 @@
 // Libraries
 import React from "react";
-import {inject, observer} from "mobx-react";
+import {inject} from "mobx-react";
 
 // Components
 import LoadingSpinner from "./LoadingSpinner";
@@ -8,6 +8,7 @@ import LoadingSpinner from "./LoadingSpinner";
 // Utils
 import {getCurrentProviderName} from "../utils/blockchain";
 
+@inject("network")
 class NoAccount extends React.Component {
   render() {
     return (
@@ -23,4 +24,4 @@ class NoAccount extends React.Component {
   }
 }
 
-export default inject("network")(observer(NoAccount));
+export default NoAccount;

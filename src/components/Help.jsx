@@ -1,6 +1,5 @@
 // Libraries
 import React from "react";
-import {inject} from "mobx-react";
 import {Link} from "react-router-dom";
 import DocumentTitle from "react-document-title";
 
@@ -51,4 +50,4 @@ class Help extends React.Component {
   }
 }
 
-export default inject("content")(Help);
+export default Help;

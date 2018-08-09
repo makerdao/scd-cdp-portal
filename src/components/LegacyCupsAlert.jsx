@@ -5,6 +5,9 @@ import {inject, observer} from "mobx-react";
 // Components
 import InlineNotification from "./InlineNotification";
 
+@inject("network")
+@inject("system")
+@observer
 class LegacyCupsAlert extends React.Component {
   constructor(props){
     super(props);
@@ -26,4 +29,4 @@ class LegacyCupsAlert extends React.Component {
   }
 }
 
-export default inject("network")(inject("system")(observer(LegacyCupsAlert)));
+export default LegacyCupsAlert;

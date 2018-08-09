@@ -1,5 +1,5 @@
 // Libraries
-import { observable } from "mobx";
+import {observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";

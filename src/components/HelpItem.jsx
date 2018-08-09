@@ -9,6 +9,8 @@ import DocumentTitle from "react-document-title";
 import Menu from "./Menu";
 import NotFound from "./NotFound";
 
+@inject("content")
+@observer
 class HelpItem extends React.Component {
   render() {
     const helpId = this.props.match.params.helpId || null;
@@ -45,4 +47,4 @@ class HelpItem extends React.Component {
   }
 }
 
-export default inject("content")(observer(HelpItem));
+export default HelpItem;

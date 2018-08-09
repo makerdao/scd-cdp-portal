@@ -1,5 +1,5 @@
 // Libraries
-import { observable } from "mobx";
+import {observable} from "mobx";
 
 export default class DialogStore {
   @observable show = false;

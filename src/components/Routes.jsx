@@ -12,6 +12,8 @@ import Terms from "./Terms";
 
 import "./App.css";
 
+@withRouter
+@observer
 class App extends React.Component {
   componentDidUpdate = prevProps => {
     if (this.props.location.pathname !== prevProps.location.pathname) {
@@ -32,4 +34,4 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(observer(App));
+export default App;

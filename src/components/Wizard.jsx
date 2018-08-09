@@ -1,6 +1,6 @@
 // Libraries
 import React, {Component} from "react";
-import {inject} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import Steps, {Step} from "rc-steps";
 
@@ -30,6 +30,9 @@ const steps = [
   { text: "DAI transferred - Your requested DAI are transferred to your wallet" }
 ];
 
+@inject("profile")
+@inject("system")
+@observer
 class Wizard extends Component {
   constructor() {
     super();
@@ -315,4 +318,4 @@ class Wizard extends Component {
   }
 }
 
-export default inject("profile")(inject("system")(Wizard));
+export default Wizard;

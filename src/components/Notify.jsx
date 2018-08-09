@@ -20,6 +20,9 @@ class Item extends React.Component {
   }
 };
 
+@inject("network")
+@inject("transactions")
+@observer
 class Notify extends React.Component {
   displayName = "Notify";
   key = 0;
@@ -96,4 +99,4 @@ class Notify extends React.Component {
   }
 };
 
-export default inject("network")(inject("transactions")(observer(Notify)));
+export default Notify;

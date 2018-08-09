@@ -1,8 +1,10 @@
 // Libraries
 import React from "react";
 import ReactTooltip from "react-tooltip";
-import {inject} from "mobx-react";
+import {inject, observer} from "mobx-react";
 
+@inject("content")
+@observer
 class TooltipHint extends React.Component {
   static rebuildTooltips() {
     ReactTooltip.rebuild();
@@ -18,4 +20,4 @@ class TooltipHint extends React.Component {
   }
 }
 
-export default inject("content")(TooltipHint);
+export default TooltipHint;

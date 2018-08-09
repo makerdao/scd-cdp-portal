@@ -17,6 +17,11 @@ import Welcome from "./Welcome";
 import Wizard from "./Wizard";
 import Footer from "./Footer";
 
+@inject("content")
+@inject("network")
+@inject("system")
+@inject("dialog")
+@observer
 class Home extends React.Component {
   constructor() {
     super();
@@ -119,4 +124,4 @@ class Home extends React.Component {
   }
 }
 
-export default inject("content")(inject("network")(inject("system")(inject("dialog")(observer(Home)))));
+export default Home;

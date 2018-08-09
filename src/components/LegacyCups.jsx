@@ -5,6 +5,10 @@ import {inject, observer} from "mobx-react";
 // Utils
 import {printNumber, toBigNumber, toWei} from "../utils/helpers";
 
+@inject("transactions")
+@inject("system")
+@inject("dialog")
+@observer
 class LegacyCups extends React.Component {
   render() {
     return (
@@ -111,4 +115,4 @@ class LegacyCups extends React.Component {
   }
 }
 
-export default inject("transactions")(inject("system")(inject("dialog")(observer(LegacyCups))));
+export default LegacyCups;

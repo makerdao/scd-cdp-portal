@@ -27,6 +27,10 @@ class DialogContent extends React.Component {
   }
 }
 
+@inject("profile")
+@inject("system")
+@inject("dialog")
+@observer
 class Dialog extends React.Component {
   constructor() {
     super();
@@ -470,4 +474,4 @@ class Dialog extends React.Component {
   }
 }
 
-export default inject("profile")(inject("system")(inject("dialog")(observer(Dialog))));
+export default Dialog;

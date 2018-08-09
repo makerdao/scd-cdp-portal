@@ -1,5 +1,5 @@
 // Libraries
-import { observable } from "mobx";
+import {observable} from "mobx";
 import axios from 'axios';
 import ReactTooltip from "react-tooltip";
 

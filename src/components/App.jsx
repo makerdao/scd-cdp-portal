@@ -27,6 +27,7 @@ window.system = rootStore.system;
 window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
+@observer
 class App extends React.Component {
   render() {
     return (
@@ -46,4 +47,4 @@ class App extends React.Component {
   }
 }
 
-export default observer(App);
+export default App;

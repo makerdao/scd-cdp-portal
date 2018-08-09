@@ -5,6 +5,8 @@ import Slider from "react-rangeslider";
 
 import "react-rangeslider/lib/index.css";
 
+@inject("transactions")
+@observer
 class PriceModal extends React.Component {
   constructor (props, context) {
     super(props, context);
@@ -64,4 +66,4 @@ class PriceModal extends React.Component {
   }
 }
 
-export default inject("transactions")(observer(PriceModal));
+export default PriceModal;

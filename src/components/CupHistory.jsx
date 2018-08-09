@@ -10,6 +10,8 @@ import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../
 
 const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;
 
+@inject("network")
+@observer
 class CupHistory extends React.Component {
   constructor() {
     super();
@@ -140,4 +142,4 @@ class CupHistory extends React.Component {
   }
 }
 
-export default inject("network")(observer(CupHistory));
+export default CupHistory;

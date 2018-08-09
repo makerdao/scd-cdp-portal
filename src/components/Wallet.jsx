@@ -16,6 +16,11 @@ import WalletSendToken from "./WalletSendToken";
 import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain";
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
 
+@inject("network")
+@inject("profile")
+@inject("transactions")
+@inject("system")
+@observer
 class Wallet extends React.Component {
   constructor() {
     super();
@@ -197,4 +202,4 @@ class Wallet extends React.Component {
   }
 }
 
-export default inject("network")(inject("profile")(inject("transactions")(inject("system")(observer(Wallet)))));
+export default Wallet;

@@ -6,6 +6,8 @@ import {inject, observer} from "mobx-react";
 import Cup from "./Cup";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 
+@inject("system")
+@observer
 class Dashboard extends React.Component {
   render() {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
@@ -21,4 +23,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default inject("system")(observer(Dashboard));
+export default Dashboard;

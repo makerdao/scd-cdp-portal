@@ -7,6 +7,8 @@ import DocumentTitle from "react-document-title";
 // Components
 import Menu from "./Menu";
 
+@inject("content")
+@observer
 class Terms extends React.Component {
   render() {
     return (
@@ -24,4 +26,4 @@ class Terms extends React.Component {
   }
 }
 
-export default inject("content")(observer(Terms));
+export default Terms;
