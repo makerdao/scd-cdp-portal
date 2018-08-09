@@ -1,5 +1,5 @@
 // Libraries
-import {computed, observable, decorate} from "mobx";
+import {computed, observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -11,9 +11,26 @@ import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, toBytes32, addressToB
 import * as settings from "../settings";
 
 export default class SystemStore {
+  @observable tub = {};
+  @observable top = {};
+  @observable tap = {};
+  @observable vox = {};
+  @observable pit = {};
+  @observable gem = {};
+  @observable gov = {};
+  @observable skr = {};
+  @observable dai = {};
+  @observable sin = {};
+  @observable pip = {};
+  @observable pep = {};
+
   constructor(rootStore) {
     this.rootStore = rootStore;
     this.reset();
+  }
+
+  @computed get showLegacyAlert() {
+    return !Object.keys(this.tub.legacyCups).every(elem => Object.keys(this.tub.cups).indexOf(elem) > -1);
   }
 
   reset = () => {
@@ -110,10 +127,6 @@ export default class SystemStore {
       address: null,
       val: toBigNumber(-1),
     };
-  }
-
-  get showLegacyAlert() {
-    return !Object.keys(this.tub.legacyCups).every(elem => Object.keys(this.tub.cups).indexOf(elem) > -1);
   }
 
   init = (top, tub, tap, vox, pit) => {
@@ -775,21 +788,3 @@ export default class SystemStore {
     }
   }
 }
-
-decorate(SystemStore, {
-  network: observable,
-  profile: observable,
-  tub: observable,
-  top: observable,
-  tap: observable,
-  vox: observable,
-  pit: observable,
-  gem: observable,
-  gov: observable,
-  skr: observable,
-  dai: observable,
-  sin: observable,
-  pip: observable,
-  pep: observable,
-  showLegacyAlert: computed
-});
