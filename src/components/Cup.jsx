@@ -8,7 +8,7 @@ import CupHistory from "./CupHistory";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, printNumber, wmul, toBigNumber, toWei} from "../utils/helpers";
+import {WAD, printNumber, wmul, toWei} from "../utils/helpers";
 
 @inject("profile")
 @inject("system")
@@ -70,11 +70,15 @@ class Cup extends React.Component {
               <TooltipHint tipKey="liquidation-price" />
               <div className="value typo-cl right">
                 {
-                  this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0)
+                  this.props.system.tub.off === true || (cup.liq_price && cup.liq_price.eq(0))
                   ?
-                    <span>{ printNumber(cup.liq_price) }<span className="unit">USD</span></span>
-                  :
                     "-"
+                  :
+                    cup.liq_price && cup.liq_price.gte(0)
+                    ?
+                      <span>{ printNumber(cup.liq_price) }<span className="unit">USD</span></span>
+                    :
+                      "Loading..."
                 }
               </div>
             </div>
@@ -82,14 +86,26 @@ class Cup extends React.Component {
               <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
               <TooltipHint tipKey="current-price-information" />
               <div className="value typo-c right">
-                <span>{ printNumber(this.props.system.pip.val) }<span className="unit">USD</span></span>
+                {
+                  this.props.system.pip.val.gte(0)
+                  ?
+                    <span>{ printNumber(this.props.system.pip.val) }<span className="unit">USD</span></span>
+                  :
+                    "Loading..."
+                }
               </div>
             </div>
             <div>
               <h3 className="typo-c inline-headline">Liquidation penalty</h3>
               <TooltipHint tipKey="liquidation-penalty" />
               <div className="value typo-c right">
-                <span>{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }<span className="unit">%</span></span>
+                {
+                  this.props.system.tub.axe.gte(0)
+                  ?
+                    <span>{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }<span className="unit">%</span></span>
+                  :
+                    "Loading..."
+                }
               </div>
             </div>
           </div>
@@ -101,15 +117,19 @@ class Cup extends React.Component {
                 {
                   this.props.system.tub.off === false
                   ?
-                    cup.art.gt(toBigNumber(0)) && cup.pro
+                    cup.ratio.lt(0)
+                    ?
+                      'Loading...'
+                    :
+                      cup.ratio.gt(0)
                       ?
                         <span>
                           { printNumber(toWei(cup.ratio).times(100)) }<span className="unit">%</span>
                         </span>
                       :
                         "-"
-                    :
-                      "-"
+                  :
+                    "-"
                 }
               </div>
             </div>
@@ -117,7 +137,11 @@ class Cup extends React.Component {
               <h3 className="typo-c inline-headline">Minimum ratio</h3>
               <div className="value typo-cl right">
                 {
-                  printNumber(this.props.system.tub.mat.times(100))
+                  this.props.system.tub.mat.gte(0)
+                  ?
+                    printNumber(this.props.system.tub.mat.times(100))
+                  :
+                    "Loading..."
                 }
               </div>
             </div>
@@ -134,12 +158,30 @@ class Cup extends React.Component {
               </div>
               <div className="right align-right" style={ {marginRight: "1rem"} }>
                 <div className="value block typo-cl">
-                  { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span>
+                  {
+                    cup.ink.gte(0) && this.props.system.tub.per.gte(0)
+                    ?
+                      <React.Fragment>{ printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span></React.Fragment>
+                    :
+                      "Loading..."
+                  }
                 </div>
                 <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                  { printNumber(cup.ink) }<span className="unit">PETH</span>
+                  {
+                    cup.ink.gte(0)
+                    ?
+                      <React.Fragment>{ printNumber(cup.ink) }<span className="unit">PETH</span></React.Fragment>
+                    :
+                      "Loading..."
+                  }
                   <span className="separator">&nbsp;|&nbsp;</span>
-                  { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
+                  {
+                    cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
+                    ?
+                      <React.Fragment>{ printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span></React.Fragment>
+                    :
+                      "Loading..."
+                  }
                 </div>
               </div>
             </div>
@@ -156,12 +198,30 @@ class Cup extends React.Component {
                 ?
                 <div className="right align-right" style={ {marginRight: "1rem"} }>
                   <div className="value block typo-cl">
-                    { printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span>
+                    {
+                      cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0)
+                      ?
+                        <React.Fragment>{ printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span></React.Fragment>
+                      :
+                        "Loading..."
+                    }
                   </div>
                   <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                    { printNumber(cup.avail_skr) }<span className="unit">PETH</span>
+                    {
+                      cup.avail_skr.gte(0)
+                      ?
+                        <React.Fragment>{ printNumber(cup.avail_skr) }<span className="unit">PETH</span></React.Fragment>
+                      :
+                        "Loading..."
+                    }
                     <span className="separator">&nbsp;|&nbsp;</span>
-                    { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
+                    {
+                      cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
+                      ?
+                        <React.Fragment>{ printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span></React.Fragment>
+                      :
+                        "Loading..."
+                    }
                   </div>
                 </div>
                 :
@@ -178,10 +238,22 @@ class Cup extends React.Component {
               </div>
               <div className="right align-right" style={ {marginRight: "1rem"} }>
                 <div className="value block typo-cl">
-                  { printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span>
+                  {
+                    this.props.system.tab(cup).gte(0)
+                    ?
+                      <React.Fragment>{ printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span></React.Fragment>
+                    :
+                      "Loading..."
+                  }
                 </div>
                 <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                  { printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span>
+                  {
+                    this.props.system.tab(cup).gte(0) && this.props.system.vox.par.gte(0)
+                    ?
+                      <React.Fragment>{ printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span></React.Fragment>
+                    :
+                      "Loading..."
+                  }
                 </div>
               </div>
             </div>
@@ -198,10 +270,22 @@ class Cup extends React.Component {
                 ?
                 <div className="right align-right" style={ {marginRight: "1rem"} }>
                   <div className="value block typo-cl">
-                    { printNumber(cup.avail_dai) }<span className="unit">DAI</span>
+                    {
+                      cup.avail_dai.gte(0)
+                      ?
+                        <React.Fragment>{ printNumber(cup.avail_dai) }<span className="unit">DAI</span></React.Fragment>
+                      :
+                        "Loading..."
+                    }
                   </div>
                   <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                    { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span>
+                    {
+                      cup.avail_dai.gte(0) && this.props.system.vox.par.gte(0)
+                      ?
+                        <React.Fragment>{ printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span></React.Fragment>
+                      :
+                        "Loading..."
+                    }
                   </div>
                 </div>
                 :
