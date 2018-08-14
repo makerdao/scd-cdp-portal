@@ -197,9 +197,11 @@ export default class SystemStore {
       const value = await daisystem.getParameterFromTub(field, ray);
       this.tub[field] = value;
       const promises = [];
-      Object.keys(this.tub.cups).map(key =>
-        promises.push(daisystem.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi))
-      );
+      Object.keys(this.tub.cups).forEach(key => {
+        if (this.vox.par.gte(0) && this.tub.tag.gte(0) && this.tub.tax.gte(0) && this.tub.mat.gte(0) && this.tub.per.gte(0) && this.tub.chi.gte(0)) {
+          promises.push(daisystem.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi));
+        }
+      });
       Promise.all(promises).then(r => {
         if (r.length > 0) {
           for (let i = 0; i < r.length; i++) {

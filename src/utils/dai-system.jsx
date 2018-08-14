@@ -89,19 +89,30 @@ export const getCup = (id, par, tag, tax, mat, per, chi) => {
   return new Promise((resolve, reject) => {
     blockchain.objects.tub.cups.call(toBytes32(id), (e, cupData) => {
       if (!e) {
-        let cupBaseData = {
+        const cupBaseData = {
           id: parseInt(id, 10),
           lad: cupData[0],
           ink: cupData[1],
           art: cupData[2],
           ire: cupData[3],
+          pro: toBigNumber(-1),
+          ratio: toBigNumber(-1),
+          avail_dai: toBigNumber(-1),
+          avail_dai_with_margin: toBigNumber(-1),
+          avail_skr: toBigNumber(-1),
+          avail_skr_with_margin: toBigNumber(-1),
+          liq_price: toBigNumber(-1)
         };
 
-        Promise.resolve(addExtraCupData(cupBaseData, par, tag, tax, mat, per, chi)).then(cup => {
-          resolve(cup);
-        }, e => {
-          reject(e);
-        });
+        if (par.gte(0) && tag.gte(0) && tax.gte(0) && mat.gte(0) && per.gte(0) && chi.gte(0)) {
+          Promise.resolve(addExtraCupData(cupBaseData, par, tag, tax, mat, per, chi)).then(cup => {
+            resolve(cup);
+          }, e => {
+            reject(e);
+          });
+        } else {
+          resolve(cupBaseData);
+        }
       } else {
         reject(e);
       }
