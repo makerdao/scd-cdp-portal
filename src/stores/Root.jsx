@@ -26,7 +26,7 @@ class RootStore {
   setTimeVariablesInterval = () => {
     this.timeVariablesInterval = setInterval(() => {
       this.system.setVariables(true);
-      this.profile.setEthBalanceFromChain(this.network.network.defaultAccount);
+      this.profile.setEthBalanceFromChain();
       this.transactions.setStandardGasPrice();
     }, 5000);
   }
@@ -66,7 +66,7 @@ class RootStore {
 
           Promise.all(setUpPromises2).then(r2 => {
             if (r2[0] && r2[1] && isAddress(r2[0]) && isAddress(r2[1])) {
-              this.profile.setEthBalanceFromChain(this.network.defaultAccount);
+              this.profile.setEthBalanceFromChain();
 
               // Set profile proxy and system contracts
               this.profile.setProxy(r[2]);

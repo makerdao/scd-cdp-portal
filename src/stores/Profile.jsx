@@ -3,7 +3,7 @@ import {observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
-import {toBigNumber, isAddress} from "../utils/helpers";
+import {toBigNumber} from "../utils/helpers";
 
 export default class ProfileStore {
   @observable accountBalance = toBigNumber(-1);
@@ -13,12 +13,10 @@ export default class ProfileStore {
     this.rootStore = rootStore;
   }
 
-  setEthBalanceFromChain = account => {
-    if (isAddress(account)) {
-      blockchain.getEthBalanceOf(account).then(r => {
-        this.accountBalance = r;
-      }, () => {});
-    }
+  setEthBalanceFromChain = () => {
+    blockchain.getEthBalanceOf(this.rootStore.network.defaultAccount).then(r => {
+      this.accountBalance = r;
+    }, () => {});
   }
 
   setProxyFromChain = (callbacks = null) => {
