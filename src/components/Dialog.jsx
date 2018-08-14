@@ -424,17 +424,25 @@ class Dialog extends React.Component {
           }, () => {
             this.props.dialog.error = "";
             this.submitEnabled = true;
-            const futureGovFee = fromWei(this.props.system.tub.fee).pow(180).round(0); // 3 minutes of future fee
-            const govDebtSai = wmul(wmul(valueWei,wdiv(this.props.system.rap(cup), this.props.system.tab(cup))), futureGovFee);
-            const govDebtGov = wmul(govDebtSai, this.props.system.pep.val);
-            const valuePlusGovFee = this.state.govFeeType === "dai" ? valueWei.add(govDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
+            const futureGovDebtSai =  wmul(
+                                        valueWei,
+                                        wdiv(
+                                          this.props.system.futureRap(this.props.system.tub.cups[dialog.cupId], 1200),
+                                          this.props.system.tab(this.props.system.tub.cups[dialog.cupId])
+                                        )
+                                      ).round(0);
+            const futureGovDebtMKR =  wdiv(
+                                        futureGovDebtSai,
+                                        this.props.system.pep.val
+                                      ).round(0);
+            const valuePlusGovFee = this.state.govFeeType === "dai" ? valueWei.add(futureGovDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
             if (this.props.system.dai.myBalance.lt(valuePlusGovFee)) {
               this.props.dialog.error = "You don't have enough DAI in your wallet to wipe this amount.";
               this.submitEnabled = false;
             } else if (this.props.system.tab(cup).lt(valueWei)) {
               this.props.dialog.error = `The amount of DAI generated in your CDP ${dialog.cupId} is lower than this amount of DAI.`;
               this.submitEnabled = false;
-            } else if (this.state.govFeeType === "mkr" && govDebtGov.gt(this.props.system.gov.myBalance)) {
+            } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
               this.props.dialog.error = `You don't have enough MKR in your wallet to wipe this amount.`;
               this.submitEnabled = false;
             }

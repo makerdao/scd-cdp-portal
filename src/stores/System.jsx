@@ -5,7 +5,7 @@ import {computed, observable} from "mobx";
 import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 
-import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wmul, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
+import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -376,6 +376,10 @@ export default class SystemStore {
     return daisystem.tab(cup, this.tub.rhi);
   }
 
+  futureRap = (cup, age) => {
+    return daisystem.futureRap(cup, age, this.tub.chi, this.tub.rhi, this.tub.tax, this.tub.fee);
+  }
+
   changeCup = cupId => {
     this.tub.cupId = cupId;
   }
@@ -743,14 +747,15 @@ export default class SystemStore {
           ["system/shut", this.rootStore.dialog.cupId, this.tub.cups[this.rootStore.dialog.cupId].art.gt(0) && params.govFeeType === "dai"]
         ];
         if (this.tub.cups[this.rootStore.dialog.cupId].art.gt(0)) {
-          const futureGovFee = fromWei(this.tub.fee).pow(180).round(0); // 3 minutes of future fee
-          const govDebtSai = wmul(this.rap(this.tub.cups[this.rootStore.dialog.cupId]), futureGovFee);
-          const govDebtGov = wmul(govDebtSai, this.pep.val);
-
-          const valuePlusGovFee = params.govFeeType === "dai" ? this.tab(this.tub.cups[this.rootStore.dialog.cupId]).add(govDebtSai.times(1.25)) : this.tab(this.tub.cups[this.rootStore.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
+          const futureGovDebtSai = this.futureRap(this.tub.cups[this.rootStore.dialog.cupId], 1200);
+          const futureGovDebtMKR = wdiv(
+                                      futureGovDebtSai,
+                                      this.pep.val
+                                    ).round(0);
+          const valuePlusGovFee = params.govFeeType === "dai" ? this.tab(this.tub.cups[this.rootStore.dialog.cupId]).add(futureGovDebtSai.times(1.25)) : this.tab(this.tub.cups[this.rootStore.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
           if (valuePlusGovFee.gt(this.dai.myBalance)) {
             error = "Not enough DAI to close this CDP";
-          } else if (params.govFeeType === "mkr" && govDebtGov.gt(this.gov.myBalance)) {
+          } else if (params.govFeeType === "mkr" && futureGovDebtMKR.gt(this.gov.myBalance)) {
             error = "Not enough MKR to close this CDP";
           }
           callbacks = [

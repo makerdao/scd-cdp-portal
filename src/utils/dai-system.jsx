@@ -248,3 +248,32 @@ export const getBiteNotification = (cupId, history, alreadyClosed) => {
   }
   return null;
 }
+
+export const futureRap = (cup, age, chi, rhi, tax, fee) => {
+  return  wmul(
+            wmul(
+              cup.ire,
+              rhi
+            ),
+            toWei(
+              fromWei(
+                wmul(
+                  tax,
+                  fee
+                )
+              ).pow(age)
+            )
+          ).minus(
+            wmul(
+              wmul(
+                cup.art,
+                chi
+              ),
+              toWei(
+                fromWei(
+                  tax
+                ).pow(age)
+              )
+            )
+          ).round(0);
+}
