@@ -192,32 +192,37 @@ export default class SystemStore {
     });
   }
 
+  loadExtraCupData = type => {
+    const promises = [];
+    Object.keys(this.tub[type]).forEach(key => {
+      if (this.vox.par.gte(0) && this.tub.tag.gte(0) && this.tub.tax.gte(0) && this.tub.mat.gte(0) && this.tub.per.gte(0) && this.tub.chi.gte(0)) {
+        promises.push(daisystem.addExtraCupData(this.tub[type][key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi));
+      }
+    });
+    Promise.all(promises).then(r => {
+      if (r.length > 0) {
+        for (let i = 0; i < r.length; i++) {
+          if (typeof this.tub[type][r[i].id] !== "undefined") {
+            this.tub[type][r[i].id].pro = r[i].pro;
+            this.tub[type][r[i].id].ratio = r[i].ratio;
+            this.tub[type][r[i].id].avail_dai = r[i].avail_dai;
+            this.tub[type][r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
+            this.tub[type][r[i].id].avail_skr = r[i].avail_skr;
+            this.tub[type][r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
+            this.tub[type][r[i].id].liq_price = r[i].liq_price;
+            this.tub[type][r[i].id].safe = r[i].safe;
+          }
+        }
+      }
+    });
+  }
+
   setParameterFromTub = async (field, ray = false, callback = false) => {
     try {
       const value = await daisystem.getParameterFromTub(field, ray);
       this.tub[field] = value;
-      const promises = [];
-      Object.keys(this.tub.cups).forEach(key => {
-        if (this.vox.par.gte(0) && this.tub.tag.gte(0) && this.tub.tax.gte(0) && this.tub.mat.gte(0) && this.tub.per.gte(0) && this.tub.chi.gte(0)) {
-          promises.push(daisystem.addExtraCupData(this.tub.cups[key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi));
-        }
-      });
-      Promise.all(promises).then(r => {
-        if (r.length > 0) {
-          for (let i = 0; i < r.length; i++) {
-            if (typeof this.tub.cups[r[i].id] !== "undefined") {
-              this.tub.cups[r[i].id].pro = r[i].pro;
-              this.tub.cups[r[i].id].ratio = r[i].ratio;
-              this.tub.cups[r[i].id].avail_dai = r[i].avail_dai;
-              this.tub.cups[r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
-              this.tub.cups[r[i].id].avail_skr = r[i].avail_skr;
-              this.tub.cups[r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
-              this.tub.cups[r[i].id].liq_price = r[i].liq_price;
-              this.tub.cups[r[i].id].safe = r[i].safe;
-            }
-          }
-        }
-      });
+      this.loadExtraCupData('cups');
+      this.loadExtraCupData('legacyCups');
       if (callback) {
         callback(value);
       }

@@ -3,7 +3,7 @@ import React from "react";
 import {inject, observer} from "mobx-react";
 
 // Utils
-import {printNumber, toBigNumber, toWei} from "../utils/helpers";
+import {printNumber, toWei} from "../utils/helpers";
 
 @inject("transactions")
 @inject("system")
@@ -36,21 +36,51 @@ class LegacyCups extends React.Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{ printNumber(this.props.system.tab(this.props.system.tub.legacyCups[key])) }</td>
-                    <td>{ printNumber(this.props.system.tub.legacyCups[key].ink) }</td>
                     <td>
                       {
-                        this.props.system.tub.off === false
-                          ? this.props.system.tub.legacyCups[key].art.gt(toBigNumber(0)) && this.props.system.tub.legacyCups[key].pro
-                            ? <span>
-                                { printNumber(toWei(this.props.system.tub.legacyCups[key].ratio).times(100)) }%
-                              </span>
-                            : "-"
-                          : "-"
+                        this.props.system.tab(this.props.system.tub.legacyCups[key]).gte(0)
+                        ?
+                          printNumber(this.props.system.tab(this.props.system.tub.legacyCups[key]))
+                        :
+                          "Loading..."
                       }
                     </td>
                     <td>
-                      { this.props.system.tub.off === false && this.props.system.tub.legacyCups[key].liq_price && this.props.system.tub.legacyCups[key].liq_price.gt(0) ? printNumber(this.props.system.tub.legacyCups[key].liq_price) : "-" }
+                      {
+                        this.props.system.tub.legacyCups[key].ink.gte(0)
+                        ?
+                          printNumber(this.props.system.tub.legacyCups[key].ink)
+                        :
+                          "Loading..."
+                      }
+                    </td>
+                    <td>
+                      {
+                        this.props.system.tub.off === false
+                        ?
+                          this.props.system.tub.legacyCups[key].ratio.gte(0)
+                          ?
+                            <span>
+                              { printNumber(toWei(this.props.system.tub.legacyCups[key].ratio).times(100)) }%
+                            </span>
+                          :
+                            "Loading..."
+                        :
+                          "-"
+                      }
+                    </td>
+                    <td>
+                      {
+                        this.props.system.tub.off === true || this.props.system.tub.legacyCups[key].liq_price.eq(0)
+                        ?
+                          "-"
+                        :
+                          this.props.system.tub.legacyCups[key].liq_price.gte(0)
+                          ?
+                            printNumber(this.props.system.tub.legacyCups[key].liq_price)
+                          :
+                            "Loading..."
+                      }
                     </td>
                     <td className="cdp-status">
                       {
@@ -64,30 +94,34 @@ class LegacyCups extends React.Component {
                             ?
                               "N/A"
                             :
-                              this.props.system.tub.legacyCups[key].safe
+                              typeof this.props.system.tub.legacyCups[key].safe === "undefined"
                               ?
-                                this.props.system.tub.legacyCups[key].art.eq(0) || this.props.system.tub.legacyCups[key].ratio.gte(2)
+                                "Loading..."
+                              :
+                                this.props.system.tub.legacyCups[key].safe
                                 ?
-                                <React.Fragment>
-                                  <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" fill="#1ABC9C" fillRule="evenodd" r="5"/>
-                                  </svg>
-                                  Safe
-                                </React.Fragment>
+                                  this.props.system.tub.legacyCups[key].art.eq(0) || this.props.system.tub.legacyCups[key].ratio.gte(2)
+                                  ?
+                                  <React.Fragment>
+                                    <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                      <circle cx="5" cy="5" fill="#1ABC9C" fillRule="evenodd" r="5"/>
+                                    </svg>
+                                    Safe
+                                  </React.Fragment>
+                                  :
+                                    <React.Fragment>
+                                      <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5" cy="5" fill="#FBAE17" fillRule="evenodd" r="5"/>
+                                      </svg>
+                                      Risk
+                                    </React.Fragment>
                                 :
                                   <React.Fragment>
                                     <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-                                      <circle cx="5" cy="5" fill="#FBAE17" fillRule="evenodd" r="5"/>
+                                      <circle cx="5" cy="5" fill="#C0392B" fillRule="evenodd" r="5"/>
                                     </svg>
-                                    Risk
+                                    Unsafe
                                   </React.Fragment>
-                              :
-                                <React.Fragment>
-                                  <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="5" cy="5" fill="#C0392B" fillRule="evenodd" r="5"/>
-                                  </svg>
-                                  Unsafe
-                                </React.Fragment>
                         :
                           "-"
                       }
