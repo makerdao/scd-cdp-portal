@@ -55,7 +55,7 @@ class Wallet extends React.Component {
     if (getWebClientProviderName() && (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor")) {
       options.push("web");
     }
-    if (getCurrentProviderName() !== "ledger") {
+    if (getCurrentProviderName() !== "ledger" && navigator.userAgent.toLowerCase().indexOf('firefox') === -1) {
       options.push("ledger");
     }
     if (getCurrentProviderName() !== "trezor") {
