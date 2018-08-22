@@ -26,7 +26,7 @@ class SystemInfo extends React.Component {
                 <span>Loading...</span>
             }
           </div>
-          <h3 className="typo-c">PETH/USD</h3>
+          <h3 className="typo-c">PETH/ETH</h3>
           <div className="value">
             {
               this.props.system.tub.per.gte(0)
