@@ -135,6 +135,7 @@ class Cup extends React.Component {
             </div>
             <div>
               <h3 className="typo-cm inline-headline">Minimum ratio</h3>
+              <TooltipHint tipKey="minimum-ratio" />
               <div className="value typo-cm right">
                 {
                   this.props.system.tub.mat.gte(0)
