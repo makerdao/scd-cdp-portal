@@ -53,6 +53,14 @@
 		}
 	}
 
+	@if $styletype == cm { // copy medium
+		font-size: 15px;
+		line-height: 1.5;
+		@include respond-to(cm) {
+			font-size: 17px;
+		}
+	}
+
 	@if $styletype == c { // copy
 		font-size: 13px;
 		line-height: 1.5;
@@ -114,6 +122,7 @@
 .typo-h3 { @include fontsize(h3); }
 .typo-cxl, .typo-cxl p { @include fontsize(cxl); }
 .typo-cl, .typo-cl p { @include fontsize(cl); }
+.typo-cm, .typo-cm p { @include fontsize(cm); }
 .typo-c, .typo-c p { @include fontsize(c); }
 .typo-cs, .typo-cs p { @include fontsize(cs); }
 
