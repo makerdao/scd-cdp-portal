@@ -149,6 +149,7 @@ class Cup extends React.Component {
             </div>
             <div className="clearfix">
               <h3 className="typo-cm inline-headline">Stability fee</h3>
+              <TooltipHint tipKey="stability-fee" />
               <div className="value typo-cm right">
                 {
                   this.props.system.tub.fee && this.props.system.tub.fee.gt(0)
