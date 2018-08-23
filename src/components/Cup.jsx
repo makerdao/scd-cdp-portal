@@ -8,7 +8,7 @@ import CupHistory from "./CupHistory";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, printNumber, wmul, toWei} from "../utils/helpers";
+import {WAD, printNumber, wmul, fromWei, toWei} from "../utils/helpers";
 
 @inject("profile")
 @inject("system")
@@ -83,9 +83,9 @@ class Cup extends React.Component {
               </div>
             </div>
             <div>
-              <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
+              <h3 className="typo-cm inline-headline">Current price information (ETH/USD)</h3>
               <TooltipHint tipKey="current-price-information" />
-              <div className="value typo-c right">
+              <div className="value typo-cm right">
                 {
                   this.props.system.pip.val.gte(0)
                   ?
@@ -95,10 +95,10 @@ class Cup extends React.Component {
                 }
               </div>
             </div>
-            <div>
-              <h3 className="typo-c inline-headline">Liquidation penalty</h3>
+            <div className="clearfix">
+              <h3 className="typo-cm inline-headline">Liquidation penalty</h3>
               <TooltipHint tipKey="liquidation-penalty" />
-              <div className="value typo-c right">
+              <div className="value typo-cm right">
                 {
                   this.props.system.tub.axe.gte(0)
                   ?
@@ -119,7 +119,7 @@ class Cup extends React.Component {
                   ?
                     cup.ratio.lt(0)
                     ?
-                      'Loading...'
+                      "Loading..."
                     :
                       cup.ratio.gt(0)
                       ?
@@ -134,12 +134,28 @@ class Cup extends React.Component {
               </div>
             </div>
             <div>
-              <h3 className="typo-c inline-headline">Minimum ratio</h3>
-              <div className="value typo-cl right">
+              <h3 className="typo-cm inline-headline">Minimum ratio</h3>
+              <div className="value typo-cm right">
                 {
                   this.props.system.tub.mat.gte(0)
                   ?
-                    printNumber(this.props.system.tub.mat.times(100))
+                    <span>
+                      { printNumber(this.props.system.tub.mat.times(100)) }<span className="unit">%</span>
+                    </span>
+                  :
+                    "Loading..."
+                }
+              </div>
+            </div>
+            <div className="clearfix">
+              <h3 className="typo-cm inline-headline">Stability fee</h3>
+              <div className="value typo-cm right">
+                {
+                  this.props.system.tub.fee && this.props.system.tub.fee.gt(0)
+                  ?
+                    <span>
+                      { printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }<span className="unit">%</span>
+                    </span>
                   :
                     "Loading..."
                 }
