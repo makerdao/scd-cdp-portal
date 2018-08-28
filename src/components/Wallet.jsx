@@ -79,7 +79,7 @@ class Wallet extends React.Component {
     const tokens = {
       "eth": {"balance": this.props.profile.accountBalance, "usdPrice": this.props.system.pip.val, "allowance": false},
       "dai": {"balance": this.props.system.dai.myBalance, "usdPrice": this.props.system.vox.par, "allowance": false},
-      "gov": {"balance": this.props.system.gov.myBalance, "usdPrice": this.props.system.pip.val, "allowance": false}
+      "gov": {"balance": this.props.system.gov.myBalance, "usdPrice": this.props.system.pep.val, "allowance": false}
     };
     return (
       <div>
