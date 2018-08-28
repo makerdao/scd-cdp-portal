@@ -440,10 +440,10 @@ class Dialog extends React.Component {
               this.props.dialog.error = "You don't have enough DAI in your wallet to wipe this amount.";
               this.submitEnabled = false;
             } else if (this.props.system.tab(cup).lt(valueWei)) {
-              this.props.dialog.error = `The amount of DAI generated in your CDP ${dialog.cupId} is lower than this amount of DAI.`;
+              this.props.dialog.error = "You are trying to payback more DAI than the amount of DAI outstanding in your CDP.";
               this.submitEnabled = false;
             } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
-              this.props.dialog.error = `You don't have enough MKR in your wallet to wipe this amount.`;
+              this.props.dialog.error = "You don't have enough MKR in your wallet to wipe this amount.";
               this.submitEnabled = false;
             }
           });
