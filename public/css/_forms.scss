@@ -99,25 +99,24 @@ input[type="radio"] {
 		display: inline-block;
 		position: relative;
 		top: 5px;
-		width: 16px;
-		height: 16px;
+		width: 15px;
+		height: 15px;
 		@include respond-to(xl) {
-			width: 18px;
-			height: 18px;
+			width: 16px;
+			height: 16px;
+			margin-right: 7px;
 		}
-		border: 1px solid #828B94;
-		background: rgba(255, 255, 255, 0.65);
-		box-shadow: inset 1px 1px 1px 0px rgba(0, 0, 0, 0.25);
-		margin-right: 0.5em;
+		border: 2px solid rgba(49, 61, 71, 0.8);
+		margin-right: 6px;
 		border-radius: 50%;
 		transition-property: border-color, background;
 		transition-duration: 0.2s;
 		transition-timing-function: ease-in;
 	}
 	&:checked + label::before {
-		border-color: #0BAD8D;
-		background: #1ABC9C;
-		box-shadow: inset 1px 1px 3px 0px rgba(255, 255, 255, 0.55);
+		border-color: rgba(49, 61, 71, .8);
+		background: #12BB9B;
+		box-shadow: inset 0px 0px 0px 2px #ced0d2;
 	}
 
 	// Layout for labels
