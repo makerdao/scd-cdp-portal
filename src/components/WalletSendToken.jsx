@@ -38,6 +38,7 @@ class WalletSendToken extends React.Component {
       this.props.system.transferToken(token, destination, amount);
       this.amount.value = "";
       this.destination.value = "";
+      this.props.closeSendBox();
     }
   }
 
