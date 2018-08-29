@@ -10,7 +10,9 @@
 		padding: 32px 44px;
 		position: relative;
 		border: 0;
-
+		border-radius: 2px;
+		margin-top: 0.7rem;
+		right: 0.7rem;
 		p {
 			max-width: 30em;
 		}
@@ -19,7 +21,7 @@
 		margin-top: 0px;
 	}
 	.nf-error {
-		background-color: $error-red;
+		background-color: rgba($error-red, 0.85);
 		color: $white;
 		.notification-headline {
 			&:after {
@@ -32,7 +34,7 @@
 		}
 	}
 	.nf-info {
-		background-color: $neutral-blue;
+		background-color: rgba($neutral-blue, 0.85);
 		color: $white;
 		.notification-headline {
 			&:after {
@@ -45,7 +47,7 @@
 		}
 	}
 	.nf-success {
-		background-color: $success-green;
+		background-color: rgba($success-green, 0.85);
 		color: $white;
 		.notification-headline {
 			&:after {
@@ -58,7 +60,7 @@
 		}
 	}
 	.nf-notice {
-	  background-color: #EAEAEA;
+	  background-color: rgba(#EAEAEA, 0.85);
 	  .notification-headline {
 	    color: #C0392B;
 	    &:after {
