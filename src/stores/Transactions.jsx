@@ -129,7 +129,7 @@ export default class TransactionsStore {
   }
 
   logTransactionRejected = (id, title, callbacks = []) => {
-    const msg = "User denied transaction signature.";
+    const msg = "User denied transaction signing request.";
     this.notificator.error(id, title, msg, 5000);
     this.lookForCleanCallBack(callbacks);
   }
