@@ -185,10 +185,14 @@ export default class SystemStore {
                       daisystem.getParameterFromTub("rho"),
                       daisystem.getParameterFromVox("era")
                       ];
-    Promise.all(promises).then(r => {
+    Promise.all(promises)
+    .then(r => {
       if (r[0] === true && r[1] === true && this.tub.tax.gte(0) && this.sin.tubBalance.gte(0)) {
         this.sin.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
       }
+    })
+    .catch(e => {
+      console.log(e);
     });
   }
 
@@ -370,7 +374,7 @@ export default class SystemStore {
   calculateLiquidationPrice = (skr, dai) => {
     return daisystem.calculateLiquidationPrice(this.vox.par, this.tub.per, this.tub.mat, skr, dai);
   }
-  
+
   calculateRatio = (skr, dai) => {
     return daisystem.calculateRatio(this.tub.tag, this.vox.par, skr, dai);
   }
