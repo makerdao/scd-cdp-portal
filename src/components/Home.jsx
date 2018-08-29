@@ -21,6 +21,7 @@ import Footer from "./Footer";
 @inject("network")
 @inject("system")
 @inject("dialog")
+@inject("transactions")
 @observer
 class Home extends React.Component {
   constructor() {
@@ -46,7 +47,7 @@ class Home extends React.Component {
   render() {
     return (
       <DocumentTitle title="Dai Dashboard">
-        <div className={ (this.props.network.isConnected ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") }>
+        <div className={ (this.props.network.isConnected ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + (this.props.transactions.priceModal.open ? " modal-open" : "") }>
           <div className="wrapper">
             {
               this.props.network.isConnected && this.props.network.defaultAccount &&
