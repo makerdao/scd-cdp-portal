@@ -2,7 +2,7 @@
   @include filter(blur, 3px);
 }
 .modal {
-  position: absolute;
+  position: fixed;
   left: 0px;
   right: 0px;
   top: 0px;
