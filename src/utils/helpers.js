@@ -81,13 +81,23 @@ export const copyToClipboard = e => {
   document.body.removeChild(aux);
   const div = document.createElement("div");
   div.innerHTML = "Copied to clipboard";
-  div.style.position = "absolute";
-  div.style.fontSize = "10px";
-  div.style.border = "1px solid #D2D2D2";
-  div.style.color = "#555";
-  div.style.padding = "2px";
-  div.style.background = "#FFF";
-  div.style.marginTop = "5px";
+  Object.assign(div.style, {
+    position: "absolute",
+    fontSize: "0.8rem",
+    border: "1px solid #D2D2D2",
+    color: "#555",
+    padding: "2px",
+    background: "rgba(255, 255, 255, 0.9)",
+    marginTop: "5px",
+    borderRadius: "2px",
+    zIndex: "1000",
+    textAlign: "center",
+    lineHeight: "3",
+    minWidth: "115px",
+    fontWeight: "600",
+    letterSpacing: "0.01rem",
+    cursor: "pointer"
+  });
   e.target.appendChild(div);
   const parent = e.target;
   setTimeout(() => parent.removeChild(div), 1000);
