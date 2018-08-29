@@ -170,7 +170,7 @@ class Wizard extends Component {
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
-                        <p className="typo-cs align-right">Max DAI available to borrow: { printNumber(this.state.maxDaiAvail) } DAI</p>
+                        <p className="typo-cs align-right">Max DAI available to generate: { printNumber(this.state.maxDaiAvail) } DAI</p>
                       }
                     </div>
                   </div>
