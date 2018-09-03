@@ -89,16 +89,14 @@ class Wizard extends Component {
         }
 
         if (state.eth.gt(0) && state.dai.gt(0)) {
-          const pro = wmul(wmul(state.eth, this.props.system.tub.per), this.props.system.tub.tag).round(0);
-          const availDai = wdiv(pro, wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0); // "minus(1)" to avoid rounding issues when dividing by mat (in the contract uses it mulvoxlying on safe function)
-
           if (this.props.system.sin.totalSupply.add(state.dai).gt(this.props.system.tub.cap)) {
             state.error = "The amount of DAI you are trying to generate exceeds the current system debt ceiling.";
-          } else if (state.dai.gt(availDai)) {
+          } else if (state.dai.gt(state.maxDaiAvail)) {
             state.error = "The amount of ETH to be deposited is not enough to draw this amount of DAI.";
           } else {
             state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
             state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
+            console.log(state.skr.valueOf(), state.dai.valueOf(), state.ratio.valueOf(), state.maxDaiAvail.valueOf(), state.dai.gt(state.maxDaiAvail))
             if (state.ratio.lt(WAD.times(2))) {
               state.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
             }
