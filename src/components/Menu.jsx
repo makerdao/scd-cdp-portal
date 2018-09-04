@@ -43,7 +43,7 @@ class Menu extends React.Component {
               )
             }
             {
-              this.props.showLegacyCDPs && Object.keys(this.props.system.tub.legacyCups).length > 0 &&
+              this.props.showLegacyCDPs && (this.props.isMigrateCDPPage || this.props.system.showLegacyAlert) &&
               <li className={ "migrate-cups" + (this.props.isMigrateCDPPage ? " active" : "") } onClick={ () => this.props.setOpenMigrate(true) }>
                 <svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg">
                   <g fill="none" fillRule="evenodd">
