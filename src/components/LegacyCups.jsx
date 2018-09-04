@@ -58,13 +58,17 @@ class LegacyCups extends React.Component {
                       {
                         this.props.system.tub.off === false
                         ?
-                          this.props.system.tub.legacyCups[key].ratio.gte(0)
+                          this.props.system.tub.legacyCups[key].ratio.lt(0)
                           ?
-                            <span>
-                              { printNumber(toWei(this.props.system.tub.legacyCups[key].ratio).times(100)) }%
-                            </span>
-                          :
                             "Loading..."
+                          :
+                            this.props.system.tub.legacyCups[key].ratio.gt(0) && this.props.system.tub.legacyCups[key].ratio.toNumber() !== Infinity
+                            ?
+                              <span>
+                                { printNumber(toWei(this.props.system.tub.legacyCups[key].ratio).times(100)) }<span className="unit">%</span>
+                              </span>
+                            :
+                              "-"
                         :
                           "-"
                       }
