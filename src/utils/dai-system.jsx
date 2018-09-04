@@ -98,9 +98,9 @@ export const getCup = (id, par, tag, tax, mat, per, chi) => {
           pro: toBigNumber(-1),
           ratio: toBigNumber(-1),
           avail_dai: toBigNumber(-1),
-          avail_dai_with_margin: toBigNumber(-1),
+          // avail_dai_with_margin: toBigNumber(-1),
           avail_skr: toBigNumber(-1),
-          avail_skr_with_margin: toBigNumber(-1),
+          // avail_skr_with_margin: toBigNumber(-1),
           liq_price: toBigNumber(-1)
         };
 
@@ -124,13 +124,14 @@ export const addExtraCupData = (cup, par, tag, tax, mat, per, chi) => {
   cup.pro = wmul(cup.ink, tag).round(0);
   cup.ratio = cup.pro.div(wmul(tab(cup, chi), par));
   // This is to give a window margin to get the maximum value (as "chi" is dynamic value per second)
-  const marginTax = fromWei(tax).pow(120);
+  // const marginTax = fromWei(tax).pow(120);
   cup.avail_dai = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi)).round(0);
-  cup.avail_dai_with_margin = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi).times(marginTax)).round(0);
-  cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? toBigNumber(0) : cup.avail_dai_with_margin;
+  // cup.avail_dai_with_margin = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi).times(marginTax)).round(0);
+  // cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? toBigNumber(0) : cup.avail_dai_with_margin;
   cup.avail_skr = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi), mat), par), tag)).round(0);
-  cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi).times(marginTax), mat), par), tag)).round(0);
-  cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
+  cup.avail_eth = wmul(cup.avail_skr, per).round(0);
+  // cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi).times(marginTax), mat), par), tag)).round(0);
+  // cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
   cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(tab(cup, chi), mat), per), cup.ink) : toBigNumber(0);
 
   return new Promise((resolve, reject) => {

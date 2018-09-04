@@ -210,9 +210,9 @@ export default class SystemStore {
             this.tub[type][r[i].id].pro = r[i].pro;
             this.tub[type][r[i].id].ratio = r[i].ratio;
             this.tub[type][r[i].id].avail_dai = r[i].avail_dai;
-            this.tub[type][r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
+            // this.tub[type][r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
             this.tub[type][r[i].id].avail_skr = r[i].avail_skr;
-            this.tub[type][r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
+            // this.tub[type][r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
             this.tub[type][r[i].id].liq_price = r[i].liq_price;
             this.tub[type][r[i].id].safe = r[i].safe;
           }

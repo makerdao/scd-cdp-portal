@@ -335,7 +335,7 @@ class Dialog extends React.Component {
             if (cup.avail_skr.lt(skrValue)) {
               this.props.dialog.error = "This amount of ETH exceeds the maximum available to withdraw.";
               this.submitEnabled = false;
-            } else if (cup.avail_skr.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
+            } else if (cup.ink.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
               this.props.dialog.error = `A CDP cannot be left with a dust amount lower than or equal to 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price). You have to either leave more or withdraw the whole amount.`;
               this.submitEnabled = false;
             } else if (this.props.system.tub.off === false && cup.art.gt(0) && this.state.ratio.lt(WAD.times(2))) {
@@ -357,7 +357,7 @@ class Dialog extends React.Component {
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to withdraw</div>
-                  <div className="info-value">{ printNumber(cup.avail_skr, 3) } ETH</div>
+                  <div className="info-value">{ printNumber(cup.avail_eth, 3) } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>

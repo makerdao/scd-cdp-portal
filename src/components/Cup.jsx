@@ -121,7 +121,7 @@ class Cup extends React.Component {
                     ?
                       "Loading..."
                     :
-                      cup.ratio.gt(0)
+                      cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity
                       ?
                         <span>
                           { printNumber(toWei(cup.ratio).times(100)) }<span className="unit">%</span>
