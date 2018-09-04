@@ -68,8 +68,8 @@ class Wizard extends Component {
     state.warning = "";
 
     if (state.eth.gt(0)) {
-      state.skr = wdiv(state.eth, this.props.system.tub.per);
-      state.maxDaiAvail = wdiv(wmul(state.skr, this.props.system.tub.tag), wmul(this.props.system.tub.mat, this.props.system.vox.par)).round(0).minus(1);
+      state.skr = wdiv(state.eth, this.props.system.tub.per).floor();
+      state.maxDaiAvail = wdiv(wmul(state.skr, this.props.system.tub.tag), wmul(this.props.system.tub.mat, this.props.system.vox.par)).floor();
     }
 
     if (state.dai.gt(0)) {
@@ -96,7 +96,6 @@ class Wizard extends Component {
           } else {
             state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
             state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
-            console.log(state.skr.valueOf(), state.dai.valueOf(), state.ratio.valueOf(), state.maxDaiAvail.valueOf(), state.dai.gt(state.maxDaiAvail))
             if (state.ratio.lt(WAD.times(2))) {
               state.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
             }
@@ -149,7 +148,7 @@ class Wizard extends Component {
                   <div className="col col-2" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
                     <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } />
+                      <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
                       <div className="typo-cs align-right">
                         { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
@@ -164,7 +163,7 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
                     <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.dai = input } style={ {minWidth: "15rem"} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } />
+                      <input ref={ input => this.dai = input } style={ {minWidth: "15rem"} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
