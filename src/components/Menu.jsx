@@ -39,9 +39,11 @@ class Menu extends React.Component {
             {
               this.props.showCDPs &&
               Object.keys(this.props.system.tub.cups).map(key =>
-                <Link to="/" key={ key } className={ this.props.page === "" && cupId === key && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(key); this.props.setOpenMigrate(false) } }>
-                  CDP #{ key }
-                </Link>
+                <li key={ key } className={ this.props.page === "" && cupId === key && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(key); this.props.setOpenMigrate(false) } }>
+                  <Link to="/">
+                    CDP #{ key }
+                  </Link>
+                </li>
               )
             }
             {
