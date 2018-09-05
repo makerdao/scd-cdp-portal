@@ -6,9 +6,8 @@ import {Link} from "react-router-dom";
 @inject("system")
 @observer
 class Menu extends React.Component {
-  changeCup = e => {
-    e.preventDefault();
-    this.props.system.changeCup(e.target.getAttribute("data-cupid"));
+  changeCup = id => {
+    this.props.system.changeCup(id);
   }
 
   render() {
@@ -28,18 +27,21 @@ class Menu extends React.Component {
         </div>
         <nav>
           <ul className="menu">
-            <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ () => this.props.page === "" && this.props.setOpenMigrate(false) }>
-              <Link to="/">
-                <img src="/img/icon-home.svg" draggable="false" alt="" />
-                <span className="menu-label">Dashboard</span>
-              </Link>
-            </li>
+            {
+              !this.props.showCDPs &&
+              <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ () => this.props.page === "" && this.props.setOpenMigrate(false) }>
+                <Link to="/">
+                  <img src="/img/icon-home.svg" draggable="false" alt="" />
+                  <span className="menu-label">Dashboard</span>
+                </Link>
+              </li>
+            }
             {
               this.props.showCDPs &&
               Object.keys(this.props.system.tub.cups).map(key =>
-                <li key={ key } data-cupid={ key } className={ cupId === key ? "active" : "" } onClick={ this.changeCup }>
+                <Link to="/" key={ key } className={ this.props.page === "" && cupId === key && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(key); this.props.setOpenMigrate(false) } }>
                   CDP #{ key }
-                </li>
+                </Link>
               )
             }
             {

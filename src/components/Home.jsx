@@ -51,7 +51,7 @@ class Home extends React.Component {
           <div className="wrapper">
             {
               this.props.network.isConnected && this.props.network.defaultAccount &&
-              <Menu page="" showCDPs={ !this.state.migrateCDP && !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 1 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
+              <Menu page="" showCDPs={ !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 0 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
             }
             <main className="main-column">
               {
