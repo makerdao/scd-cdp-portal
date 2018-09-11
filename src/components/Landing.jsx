@@ -1,6 +1,7 @@
 // Libraries
 import React from "react";
 import Slider from "react-slick";
+import {Link} from "react-router-dom";
 
 class Landing extends React.Component {
   render() {
@@ -83,7 +84,7 @@ class Landing extends React.Component {
           <div className="getting-started">
             <h1>What do I need to get started?</h1>
             <p>Connect one of the four wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
-            <p className="align-center"><a className="faq">See FAQs for additional information on wallets</a></p>
+            <p className="align-center"><Link to="/help" className="faq">See FAQs for additional information on wallets</Link></p>
             <ul>
               <li><a href="https://metamask.io/"><img src="../img/metamask-logo.svg" alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
               <li><a href="https://www.parity.io/"><img src="../img/parity-logo.png" alt="Get Parity" /><div>Get Parity</div></a></li>
