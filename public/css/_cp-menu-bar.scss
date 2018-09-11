@@ -61,6 +61,22 @@
 		height: 100%;
 		width: 100%;
 
+		li.cdp-id-item {
+			a {
+				padding: 1rem;
+				@include respond-to(m) {
+					padding: 0;
+				}
+			}
+			@include respond-to(m) {
+				padding: 10px 0;
+				font-size: 0.8rem;
+			}
+			@include respond-to(s) {
+				padding: 13px 0;
+				font-size: 0.8rem;
+			}
+		}
 		li a {
 			padding: 1.76rem;
 			@include respond-to(m) {
