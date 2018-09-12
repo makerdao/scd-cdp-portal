@@ -1,9 +1,9 @@
 // Libraries
 import React from "react";
-import {inject, observer} from "mobx-react";
+import { inject, observer } from "mobx-react";
 
 // Utils
-import {printNumber, wdiv, wmul} from "../utils/helpers";
+import { printNumber, wdiv, wmul } from "../utils/helpers";
 
 @inject("network")
 @inject("system")
@@ -18,23 +18,36 @@ class SystemInfo extends React.Component {
           </h2>
           <h3 className="typo-c">ETH/USD</h3>
           <div className="value">
-            {
-              this.props.system.pip.val && this.props.system.pip.val.gt(0)
-              ?
-                <span><span>{ printNumber(this.props.system.pip.val) }</span><span className="unit">USD</span></span>
-              :
-                <span>Loading...</span>
-            }
+          {
+            this.props.system.currentEthPrice
+              ? <React.Fragment>
+                  <span>{ printNumber(this.props.system.currentEthPrice, 3, false) }</span>
+                  <span className="unit">USD</span>
+                </React.Fragment>
+              : <React.Fragment>Loading...</React.Fragment>
+          }
+          </div>
+          <h3 className="typo-c">MKR/USD</h3>
+          <div className="value">
+          {
+            this.props.system.currentMkrPrice
+              ? <React.Fragment>
+                  <span>{ printNumber(this.props.system.currentMkrPrice, 3, false) }</span>
+                  <span className="unit">MKR</span>
+                </React.Fragment>
+              : <React.Fragment>Loading...</React.Fragment>
+          }
           </div>
           <h3 className="typo-c">PETH/ETH</h3>
           <div className="value">
-            {
-              this.props.system.tub.per.gte(0)
-              ?
-                <span><span>{ printNumber(this.props.system.tub.per) }</span><span className="unit">ETH</span></span>
-              :
-                <span>Loading...</span>
-            }
+          {
+            this.props.system.currentWethToPethRatio
+              ? <React.Fragment>
+                  <span>{ printNumber(this.props.system.currentWethToPethRatio, 3, false) }</span>
+                  <span className="unit">ETH</span>
+                </React.Fragment>
+              : <React.Fragment>Loading...</React.Fragment>
+          }
           </div>
           <h3 className="typo-c">DAI/USD</h3>
           <div className="value">
@@ -42,16 +55,6 @@ class SystemInfo extends React.Component {
               this.props.system.vox.par.gte(0)
               ?
                 <span><span>{ printNumber(this.props.system.vox.par) }</span><span className="unit">USD</span></span>
-              :
-                <span>Loading...</span>
-            }
-          </div>
-          <h3 className="typo-c">MKR/USD</h3>
-          <div className="value">
-            {
-              this.props.system.pep.val && this.props.system.pep.val.gt(0)
-              ?
-                <span><span>{ printNumber(this.props.system.pep.val) }</span><span className="unit">USD</span></span>
               :
                 <span>Loading...</span>
             }
