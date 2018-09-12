@@ -5,6 +5,7 @@ import Maker from '@makerdao/dai';
 // Utils
 import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
+import * as sdk from "../utils/sdk";
 
 import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
 
@@ -624,14 +625,6 @@ export default class SystemStore {
     this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAllowanceFromChain", token, [["transactions/cleanLoading", "changeAllowance", token]]]]]]);
   }
 
-  transferToken = (token, to, amount) => {
-    const title = `${token.replace("gov", "mkr").toUpperCase()}: transfer ${to} ${amount}`;
-    if (token === "eth") {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpTokenFromChain", token]]);
-    } else {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpTokenFromChain", token]]);
-    }
-  }
 
   migrateCDP = async (cup, callbacks) => {
     // We double check user has a proxy and owns it (transferring a CDP is a very risky action)
@@ -827,4 +820,10 @@ export default class SystemStore {
       this.rootStore.profile.checkProxy(callbacks);
     }
   }
+
+  transferToken = (symbol, to, amount) => {
+    const token = window.maker.service('token').getToken(symbol.toUpperCase().replace("GOV", "MKR"));
+    token.transfer(to, amount)
+  }
+
 }
