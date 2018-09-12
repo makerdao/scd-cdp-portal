@@ -159,3 +159,30 @@ export const getJazziconIcon = (address, size) => {
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;
+export const getTransactionToastTitle = (metadata) => {
+  const contract = metadata.contract || '';
+  const method = metadata.method || '';
+  const args = metadata && metadata.hasOwnProperty('args') ? metadata.args : [];
+  const action = metadata.action || { };
+
+  console.debug('getTransactionToastTitle action:', action)
+  switch(action.name) {
+    case 'lock':
+      return `Deposit ${action.amount.toString()}`;
+    case 'free':
+      return `Withdraw ${action.amount.toString()}`;
+    case 'draw':
+      return `Generate ${action.amount.toString()}`;
+    case 'wipe':
+      return `Payback ${action.amount.toString()}`;
+    case 'transfer':
+      return `Transfer ${action.amount.toString()} to ${truncateAddress(action.recipient)}`;
+    // case 'transferFrom':
+    //   return `Transfer ${action.amount.toString()} from ${truncateAddress(action.sender)} to ${truncateAddress(action.recipient)}`;
+    case 'approve':
+      return `${contract}: ${action.allowing ? 'Unlock' : 'Lock'}`;
+    default:
+      return `Unknown transaction: ${contract}.${method}`;
+  }
+}
+
