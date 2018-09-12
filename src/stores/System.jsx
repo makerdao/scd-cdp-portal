@@ -821,6 +821,15 @@ export default class SystemStore {
     }
   }
 
+  setAllowance = async (token, allow) => {
+    try {
+      this.rootStore.transactions.addLoading("changeAllowance", token.toLowerCase().replace("mkr", "gov"));
+      await sdk.setAllowance(token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase(), allow, this.rootStore.profile.proxy);
+    } finally {
+      this.rootStore.transactions.cleanLoading("changeAllowance", token.toLowerCase().replace("mkr", "gov"));
+    }
+  }
+
   transferToken = (symbol, to, amount) => {
     const token = window.maker.service('token').getToken(symbol.toUpperCase().replace("GOV", "MKR"));
     token.transfer(to, amount)
