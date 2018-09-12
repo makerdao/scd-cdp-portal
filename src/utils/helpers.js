@@ -1,6 +1,7 @@
 // Libraries
 import React from "react";
 import jazzicon from "jazzicon";
+import BigNumber from 'bignumber.js';
 
 // Utils
 import web3 from "./web3";
@@ -37,15 +38,15 @@ export const addressToBytes32 = (x, prefix = true) => {
 }
 
 export const formatNumber = (number, decimals = false, isWei = true) => {
-  web3.BigNumber.config({ ROUNDING_MODE: 4 });
-
-  let object = toBigNumber(number);
+  let object = BigNumber.isBigNumber(number)
+    ? toBigNumber(number.toString())
+    : toBigNumber(number);
 
   if (isWei) object = web3.fromWei(object.round(0));
 
   if (decimals) {
     const d = toBigNumber(10).pow(decimals);
-    object = object.mul(d).trunc().div(d).toFixed(decimals);
+    object = object.mul(d).trunc().div(d).toFixed(decimals, web3.BigNumber.ROUND_HALF_UP);
   } else {
     object = object.valueOf();
   }
@@ -103,8 +104,8 @@ export const copyToClipboard = e => {
   setTimeout(() => parent.removeChild(div), 1000);
 }
 
-export const printNumber = (number, decimalPlaces = 3) => {
-  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, false) }>{ formatNumber(number, decimalPlaces) }</span>
+export const printNumber = (number, decimalPlaces = 3, isWei = true) => {
+  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, false, isWei) }>{ formatNumber(number, decimalPlaces, isWei) }</span>
 }
 
 export const truncateAddress = (address, chars = 8) => {
