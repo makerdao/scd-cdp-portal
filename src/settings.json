@@ -1,5 +1,5 @@
 {
-  "contentUrl": "https://gov-backend.herokuapp.com/content/dai-dashboard",
+  "contentUrl": "https://content.makerfoundation.com/content/dai-dashboard",
   "hwNetwork": "kovan",
   "chain": {
     "kovan": {
