@@ -83,6 +83,7 @@ class Dialog extends React.Component {
         params.govFeeType = this.state.govFeeType;
       }
       this.props.system.executeAction(params);
+      this.props.dialog.reset();
     }
   }
 
