@@ -3,6 +3,7 @@ import Web3 from "web3";
 import * as Web3ProviderEngine from "web3-provider-engine/dist/es5";
 import * as RpcSource from "web3-provider-engine/dist/es5/subproviders/rpc";
 import Transport from "@ledgerhq/hw-transport-u2f";
+import Maker from '@makerdao/dai';
 
 // Utils
 import LedgerSubProvider from "./ledger-subprovider";
@@ -73,19 +74,34 @@ class Web3Extended extends Web3 {
 
   setWebClientProvider = () => {
     this.stop();
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (window.web3 && window.web3.currentProvider) {
-          this.setProvider(window.web3.currentProvider);
-          this.useLogs = true;
-          this.currentProvider.name = getWebClientProviderName();
-          resolve(true);
-        } else {
-          reject(new Error("No client"));
-        }
-      } catch(e) {
-        reject(e);
-      }
+
+    return new Promise((resolve, reject) => {
+      const maker = Maker.create('browser', {
+        log: true
+      });
+      window.maker = maker;
+
+      // TODO: Relocate this somewhere else
+      maker.on('web3/AUTHENTICATED', async (ev) => {
+        // Wait for all services to authenticate
+        await maker.authenticate();
+        console.log("Dai.js web3 service authenticated");
+
+        maker.service('event').on('**', ev => {
+          console.log('SDK event:', ev.type, ev.payload);
+        });
+
+        const account = ev.payload.account;
+        const web3service = maker.service('web3');
+
+        this.setProvider(web3service.web3Provider());
+        // Use filter logs? (polls RPC node using eth_getFilterChanges and eth_getLogs)
+        // for Approval/Transfer/Deposit/Withdrawal/Mint/Burn event logs or the tub's LogNote (DSNote)
+        // events for lock(bytes32,uint256) free(bytes32,uint256) draw(bytes32,uint256) wipe(bytes32,uint256) bite(bytes32) shut(bytes32) give(bytes32,address)
+        this.useLogs = false;
+        this.currentProvider.name = getWebClientProviderName();
+        resolve(true);
+      });
     });
   }
 }
