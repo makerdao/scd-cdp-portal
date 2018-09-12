@@ -3,6 +3,7 @@ import {observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
+import { getTransactionToastTitle } from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -22,6 +23,39 @@ export default class NetworkStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  startTransactionMonitor = () => {
+    // TODO: Remove hooks or prevent this from being called more than once if wallet is changed
+
+    // Transaction hooks to manage UI toasts etc
+    window.maker.service('transactionManager').onNewTransaction(tx => {
+      const metadata = tx.metadata;
+      const contract = metadata && metadata.hasOwnProperty('contract') ? metadata.contract : '';
+      const method = metadata && metadata.hasOwnProperty('method') ? metadata.method : '';
+
+      // TODO: Use a better approach to generating random id
+      const tempId = Math.random();
+      const title = getTransactionToastTitle(tx.metadata);
+      this.rootStore.transactions.logRequestTransaction(tempId, title, false);
+
+      tx.onPending(tx => {
+        console.debug(`Created transaction with hash: ${tx.hash()}`);
+        this.rootStore.transactions.logPendingTransaction(tempId, tx.hash(), title);
+      });
+      tx.onMined(tx => {
+        console.debug(`Mined tx ${tx.hash()}`);
+        this.rootStore.transactions.logTransactionConfirmed(tx.hash());
+        // if (method === 'approve') this.rootStore.transactions.cleanLoading("changeAllowance", contract.toLowerCase().replace("mkr", "gov"));
+        if (method === 'approve') this.rootStore.system.setAllowanceFromChain(contract.toLowerCase().replace("mkr", "gov"));
+      });
+      tx.onError(err => {
+        console.debug("Caught error:",err);
+        this.rootStore.transactions.logTransactionRejected(tempId, title)
+        // if (method === 'approve') this.rootStore.transactions.cleanLoading("changeAllowance", contract.toLowerCase().replace("mkr", "gov"));
+        if (method === 'approve') this.rootStore.system.setAllowanceFromChain(contract.toLowerCase().replace("mkr", "gov"));
+      });
+    });
   }
 
   setNetwork = async () => {
@@ -83,6 +117,7 @@ export default class NetworkStore {
       await blockchain.setWebClientProvider();
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+      this.startTransactionMonitor();
     } catch (e) {
       this.loadingAddress = false;
       this.downloadClient = true;
