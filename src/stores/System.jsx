@@ -1,5 +1,6 @@
 // Libraries
 import {computed, observable} from "mobx";
+import Maker from '@makerdao/dai';
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -23,6 +24,9 @@ export default class SystemStore {
   @observable sin = {};
   @observable pip = {};
   @observable pep = {};
+  @observable currentEthPrice = null;
+  @observable currentMkrPrice = null;
+  @observable currentWethToPethRatio = null;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -127,9 +131,15 @@ export default class SystemStore {
       address: null,
       val: toBigNumber(-1),
     };
+
+    this.currentEthPrice = null;
+    this.currentMkrPrice = null;
+    this.currentWethToPethRatio = null;
   }
 
   init = (top, tub, tap, vox, pit) => {
+    // TODO: Maybe put the transaction manager tx monitor in here?
+
     if (this.rootStore.network.network && !this.rootStore.network.stopIntervals) {
       this.top.address = top;
       this.tub.address = tub;
@@ -146,8 +156,22 @@ export default class SystemStore {
       this.setFiltersTub();
       this.setFiltersTap();
       this.setFiltersVox();
+
+      // Monitor blockchain price of DAI
       this.setFilterFeedValue("pip");
+      // Monitor blockchain price of GOV
       this.setFilterFeedValue("pep");
+
+      const priceService = window.maker.service('price');
+
+      priceService.getMkrPrice().then(price => this.currentMkrPrice = price._amount);
+      priceService.getWethToPethRatio().then(ratio => this.currentWethToPethRatio = toBigNumber(ratio));
+      priceService.getEthPrice().then(price => this.currentEthPrice = price._amount);
+
+      window.maker.on('price/ETH_USD', price => {
+        console.log('Got price/ETH_USD update event:', price);
+      })
+
     }
   }
 
