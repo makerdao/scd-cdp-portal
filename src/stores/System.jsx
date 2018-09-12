@@ -738,38 +738,27 @@ export default class SystemStore {
                       ["system/open"]
                     ];
         break;
+
       case "lock":
-        callbacks = [
-                      ["system/lockAndDraw", this.rootStore.dialog.cupId, value, toBigNumber(0)]
-                    ];
-        break;
+        console.debug(`Depositing ${value} ETH into CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
+        sdk.lockEth(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        return;
+
       case "draw":
-        callbacks = [
-                      ["system/lockAndDraw", this.rootStore.dialog.cupId, toBigNumber(0), value]
-                    ];
-        break;
+        console.debug(`Generating ${value} DAI from CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
+        sdk.drawDai(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        return;
+
       case "wipe":
-        callbacks = [
-                      ["system/checkAllowance", "dai",
-                        [
-                          ["system/wipeAndFree", this.rootStore.dialog.cupId, toBigNumber(0), value, params.govFeeType === "dai"]
-                        ]
-                      ]
-                    ];
-        if (params.govFeeType === "mkr") {
-          // If fee will be paid with MKR it is necessary to check its allowance
-          callbacks = [
-                        ["system/checkAllowance", "gov",
-                          callbacks
-                        ]
-                      ];
-        }
-        break;
+        console.debug(`Paying back ${value} DAI to CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}. Using OTC: ${params.govFeeType === "dai"}`);
+        sdk.wipeDai(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value, params.govFeeType === "dai");
+        return;
+
       case "free":
-        callbacks = [
-                      ["system/wipeAndFree", this.rootStore.dialog.cupId, value, toBigNumber(0)]
-                    ];
-        break;
+        console.debug(`Withdrawing ${value} ETH from CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
+        sdk.freeEth(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        return;
+
       case "shut":
         callbacks = [
           ["system/shut", this.rootStore.dialog.cupId, this.tub.cups[this.rootStore.dialog.cupId].art.gt(0) && params.govFeeType === "dai"]
