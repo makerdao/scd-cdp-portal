@@ -137,7 +137,7 @@ class LegacyCups extends React.Component {
                 {
                   this.props.system.tub.cups[key]
                   ?
-                    "CDP Migrated"
+                    <div style={ {textAlign: 'center', width: '13rem', padding: '1rem 0' } }>CDP Migrated</div>
                   :
                     <button className="text-btn" data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.dialog.handleOpenDialog }>MIGRATE CDP #{ key }</button>
                 }
