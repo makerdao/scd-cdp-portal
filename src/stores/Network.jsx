@@ -92,6 +92,9 @@ export default class NetworkStore {
 
   // Hardwallets
   showHW = option => {
+    if (option === "ledger") {
+      option = `ledger-${localStorage.getItem("loadLedgerLegacy") === "true" ? "legacy" : "live"}`;
+    }
     this.hw.option = option;
     this.hw.showSelector = true;
     this.loadHWAddresses();
@@ -109,9 +112,23 @@ export default class NetworkStore {
     this.hw.loading = true;
     this.hw.active = true;
     this.hw.error = false;
-    this.hw.derivationPath = this.hw.option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0";
+    this.hw.derivationPath = this.hw.option === "ledger-live"
+                              ?
+                                "44'/60'/0'"
+                              :
+                                this.hw.option === "ledger-legacy"
+                                ?
+                                  "44'/60'/0'/0"
+                                :
+                                  "44'/60'/0'/0/0";
     try {
-      await blockchain.setHWProvider(this.hw.option, settings.hwNetwork, `${this.hw.derivationPath.replace("m/", "")}/0`, 0, 50);
+      await blockchain.setHWProvider(
+                                      this.hw.option.replace("-live", "").replace("-legacy", ""),
+                                      settings.hwNetwork,
+                                      this.hw.derivationPath,
+                                      0,
+                                      this.hw.option === "ledger-live" ? 5 : 50
+                                    );
       const accounts = await blockchain.getAccounts();
       this.hw.addresses = accounts;
     } catch(e) {
@@ -127,7 +144,7 @@ export default class NetworkStore {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.hw.showSelector = false;
-      blockchain.setDefaultAccount(account);
+      blockchain.setDefaultAccount(account.toLowerCase());
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 10000);
     } catch(e) {

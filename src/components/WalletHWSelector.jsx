@@ -87,6 +87,10 @@ class WalletHardHWSelector extends React.Component {
   state = {
     selectedOption: null
   }
+  loadLedgerAddresses = type => {
+    localStorage.setItem("loadLedgerLegacy", type === "legacy");
+    this.props.network.showHW("ledger");
+  }
   selectAccount = selectedOption => {
     if (selectedOption) {
       this.setState({ selectedOption: selectedOption.value });
@@ -109,7 +113,7 @@ class WalletHardHWSelector extends React.Component {
           ?
             <React.Fragment>
               {
-                this.props.network.hw.option === "ledger" &&
+                this.props.network.hw.option.substring(0, 6) === "ledger" &&
                 <React.Fragment>
                   <h2>Plug in Ledger &amp; Enter Pin</h2>
                   <p className="typo-c align-center">Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
@@ -135,7 +139,7 @@ class WalletHardHWSelector extends React.Component {
                   <React.Fragment>
                     <h2 className="connect-fail">{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
                     {
-                      this.props.network.hw.option === "ledger" &&
+                      this.props.network.hw.option.substring(0, 6) === "ledger" &&
                       <div className="typo-c">
                         <ol>
                           <li>Unlock your Ledger and open the ETH application.</li>
@@ -170,6 +174,19 @@ class WalletHardHWSelector extends React.Component {
                           searchable={ false }
                           />
                         </div>
+                        {
+                          this.props.network.hw.option.substring(0, 6) === "ledger" &&
+                          <div>
+                            <a
+                              href="#action"
+                              onClick={ e => {
+                                                e.preventDefault();
+                                                this.loadLedgerAddresses(this.props.network.hw.option === "ledger-live" ? "legacy" : "live");
+                                              }}>
+                              View { this.props.network.hw.option === "ledger-live" ? "legacy" : "live" } addresses
+                            </a>
+                          </div>
+                        }
                         <div className="align-center">
                           <button className="sidebar-btn is-primary-green" style={ {width: "100%"} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
                         </div>
