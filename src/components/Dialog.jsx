@@ -9,7 +9,8 @@ import InlineNotification from "./InlineNotification";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber} from "../utils/helpers";
+import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber, isAddress} from "../utils/helpers";
+import * as blockchain from "../utils/blockchain";
 
 class DialogContent extends React.Component {
   render() {
@@ -35,10 +36,13 @@ class Dialog extends React.Component {
   constructor() {
     super();
     this.state = {
+      submitEnabled: false,
       skr: null,
       liqPrice: toBigNumber(0),
       ratio: toBigNumber(0),
       govFeeType: "mkr",
+      giveHasProxy: false,
+      giveToProxy: true
     }
   }
 
@@ -53,13 +57,15 @@ class Dialog extends React.Component {
           this.updateVal.value = "";
           this.updateVal.focus();
         }
-        this.submitEnabled = true;
         this.props.dialog.error = this.props.dialog.warning = "";
         this.setState({
+          submitEnabled: false,
           skr: null,
           liqPrice: toBigNumber(0),
           ratio: toBigNumber(0),
           govFeeType: "mkr",
+          giveHasProxy: false,
+          giveToProxy: true
         });
       }
       return change;
@@ -68,7 +74,7 @@ class Dialog extends React.Component {
 
   submitForm = e => {
     e.preventDefault();
-    if (this.submitEnabled) {
+    if (this.props.dialog.method === "shut" || this.props.dialog.method === "migrate" || this.state.submitEnabled) {
       const value = this.updateVal && typeof this.updateVal.value !== "undefined"
                     ?
                       this.props.dialog.method !== "give"
@@ -79,6 +85,10 @@ class Dialog extends React.Component {
                     :
                       false;
       const params = { value };
+      if (this.props.dialog.method === "give") {
+        params.giveHasProxy = this.state.giveHasProxy;
+        params.giveToProxy = this.state.giveToProxy;
+      }
       if (["wipe", "shut"].indexOf(this.props.dialog.method) !== -1) {
         params.govFeeType = this.state.govFeeType;
       }
@@ -93,6 +103,10 @@ class Dialog extends React.Component {
         this.cond(this.updateVal.value);
       }
     });
+  }
+
+  selectGiveToProxy = e => {
+    this.setState({giveToProxy: e.target.checked});
   }
 
   setMax = e => {
@@ -167,15 +181,6 @@ class Dialog extends React.Component {
     )
   }
 
-  renderAddressInput = () => {
-    return (
-      <React.Fragment>
-        <input autoFocus ref={ input => this.updateVal = input } type="text" id="inputValue" className={ "address-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } } maxLength="42" placeholder="0x01234..." autoComplete="off" />
-        <div className="clearfix"></div>
-      </React.Fragment>
-    )
-  }
-
   renderFeeTypeSelector = () => {
     return (
       this.props.system.pep.val.gte(0) &&
@@ -207,7 +212,7 @@ class Dialog extends React.Component {
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div style={ { marginTop: '4rem'} }>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Migrate</button>
+                  <button className="text-btn text-btn-primary" type="submit">Migrate</button>
                 </div>
               </form>
             }
@@ -215,7 +220,20 @@ class Dialog extends React.Component {
         )
 
       case "give":
-        this.cond = () => { return false };
+        this.cond = value => {
+          this.setState({submitEnabled: false, giveHasProxy: false}, () => {
+            if (isAddress(value)) {
+              console.log('check Proxy ownership');
+              blockchain.getProxy(value).then(r => {
+                if (r) {
+                  this.setState({giveHasProxy: true, submitEnabled: true});
+                } else {
+                  this.setState({giveHasProxy: false, submitEnabled: true});
+                }
+              });
+            }
+          });
+        };
         return (
           <DialogContent
             title={ `Transfer CDP #${dialog.cupId}` }
@@ -225,8 +243,15 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderAddressInput() }
+                  <input autoFocus ref={ input => this.updateVal = input } type="text" id="inputValue" className={ "address-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } } maxLength="42" placeholder="0x01234..." autoComplete="off" />
+                  <div className="clearfix"></div>
                 </div>
+                {
+                  this.state.giveHasProxy &&
+                  <div>
+                    <input type="checkbox" style={ {visibility: "initial"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } onChange={ this.selectGiveToProxy } /><label htmlFor="giveToProxy">Transfer CDP to user's proxy address</label><br />
+                  </div>
+                }
                 <div className="info-section">
                   <div className="transfer-cdp-id">CDP #{ dialog.cupId }</div>
                   <div className="info-heading">Dai generated</div>
@@ -239,7 +264,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Transfer</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Transfer</button>
                 </div>
               </form>
             }
@@ -265,7 +290,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Close</button>
+                  <button className="text-btn text-btn-primary" type="submit">Close</button>
                 </div>
               </form>
             }
@@ -277,18 +302,20 @@ class Dialog extends React.Component {
           const valueWei = toBigNumber(toWei(value));
           const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
           this.setState({
+            submitEnabled: false,
             skr: skrValue,
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.add(skrValue), this.props.system.tab(cup)),
             ratio: this.props.system.calculateRatio(cup.ink.add(skrValue), this.props.system.tab(cup))
           }, () => {
-            this.props.dialog.error = ""
-            this.submitEnabled = true;
-            if (this.props.profile.accountBalance.lt(valueWei)) {
-              this.props.dialog.error = "Not enough balance to deposit this amount of ETH.";
-              this.submitEnabled = false;
-            } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
-              this.props.dialog.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
-              this.submitEnabled = false;
+            this.props.dialog.error = "";
+            if (valueWei.gt(0)) {
+              if (this.props.profile.accountBalance.lt(valueWei)) {
+                this.props.dialog.error = "Not enough balance to deposit this amount of ETH.";
+              } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
+                this.props.dialog.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
+              } else {
+                this.setState({submitEnabled: true});
+              }
             }
           });
         }
@@ -309,7 +336,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Deposit</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Deposit</button>
                 </div>
               </form>
             }
@@ -320,26 +347,29 @@ class Dialog extends React.Component {
         // if (this.props.system.tub.off) {
         //   // Need to add support for this
         //   // 'Are you sure you want to withdraw your available ETH?'
-        //   this.submitEnabled = false;
+        //   this.setState({submitEnabled: false});
         // } else {
         this.cond = value => {
           const valueWei = toBigNumber(toWei(value));
           const skrValue = wdiv(valueWei, this.props.system.tub.per).round(0);
           this.setState({
+            submitEnabled: false,
             skr: skrValue,
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink.minus(skrValue), this.props.system.tab(cup)),
             ratio: this.props.system.calculateRatio(cup.ink.minus(skrValue), this.props.system.tab(cup))
           }, () => {
             this.props.dialog.error = this.props.dialog.warning = "";
-            this.submitEnabled = true;
-            if (cup.avail_skr.lt(skrValue)) {
-              this.props.dialog.error = "This amount of ETH exceeds the maximum available to withdraw.";
-              this.submitEnabled = false;
-            } else if (cup.ink.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
-              this.props.dialog.error = `A CDP cannot be left with a dust amount lower than or equal to 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price). You have to either leave more or withdraw the whole amount.`;
-              this.submitEnabled = false;
-            } else if (this.props.system.tub.off === false && cup.art.gt(0) && this.state.ratio.lt(WAD.times(2))) {
-              this.props.dialog.warning = "The amount of ETH you are trying to withdraw is putting your CDP at risk.";
+            if (valueWei.gt(0)) {
+              if (cup.avail_skr.lt(skrValue)) {
+                this.props.dialog.error = "This amount of ETH exceeds the maximum available to withdraw.";
+              } else if (cup.ink.minus(skrValue).lte(toWei(0.005)) && !cup.avail_skr.round(0).eq(skrValue)) {
+                this.props.dialog.error = `A CDP cannot be left with a dust amount lower than or equal to 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price). You have to either leave more or withdraw the whole amount.`;
+              } else if (valueWei.gt(0) && this.props.system.tub.off === false && cup.art.gt(0) && this.state.ratio.lt(WAD.times(2))) {
+                this.props.dialog.warning = "The amount of ETH you are trying to withdraw is putting your CDP at risk.";
+                this.setState({submitEnabled: true});
+              } else {
+                this.setState({submitEnabled: true});
+              }
             }
           });
         }
@@ -363,7 +393,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Withdraw</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Withdraw</button>
                 </div>
               </form>
             }
@@ -374,19 +404,23 @@ class Dialog extends React.Component {
         this.cond = value => {
           const valueWei = toBigNumber(toWei(value));
           this.setState({
+            submitEnabled: false,
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).add(valueWei)),
             ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).add(valueWei))
           }, () => {
-            this.submitEnabled = true;
-            this.props.dialog.error = this.props.dialog.warning = ""
-            if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
-              this.props.dialog.error = "This amount of DAI exceeds the system debt ceiling.";
-              this.submitEnabled = false;
-            } else if (cup.avail_dai.lt(valueWei)) {
-              this.props.dialog.error = "You have insufficient collateral deposited to generate this amount of DAI. Deposit more collateral first.";
-              this.submitEnabled = false;
-            } else if (this.state.ratio.lt(WAD.times(2))) {
-              this.props.dialog.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
+            this.setState({submitEnabled: true});
+            this.props.dialog.error = this.props.dialog.warning = "";
+            if (valueWei.gt(0)) {
+              if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
+                this.props.dialog.error = "This amount of DAI exceeds the system debt ceiling.";
+              } else if (cup.avail_dai.lt(valueWei)) {
+                this.props.dialog.error = "You have insufficient collateral deposited to generate this amount of DAI. Deposit more collateral first.";
+              } else if (this.state.ratio.lt(WAD.times(2))) {
+                this.props.dialog.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
+                this.setState({submitEnabled: true});
+              } else {
+                this.setState({submitEnabled: true});
+              }
             }
           });
         }
@@ -408,7 +442,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Generate</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Generate</button>
                 </div>
               </form>
             }
@@ -419,32 +453,33 @@ class Dialog extends React.Component {
         this.cond = value => {
           const valueWei = toBigNumber(toWei(value));
           this.setState({
+            submitEnabled: false,
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).minus(valueWei)),
             ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).minus(valueWei))
           }, () => {
             this.props.dialog.error = "";
-            this.submitEnabled = true;
-            const futureGovDebtSai =  wmul(
-                                        valueWei,
-                                        wdiv(
-                                          this.props.system.futureRap(this.props.system.tub.cups[dialog.cupId], 1200),
-                                          this.props.system.tab(this.props.system.tub.cups[dialog.cupId])
-                                        )
-                                      ).round(0);
-            const futureGovDebtMKR =  wdiv(
-                                        futureGovDebtSai,
-                                        this.props.system.pep.val
-                                      ).round(0);
-            const valuePlusGovFee = this.state.govFeeType === "dai" ? valueWei.add(futureGovDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
-            if (this.props.system.dai.myBalance.lt(valuePlusGovFee)) {
-              this.props.dialog.error = "You don't have enough DAI in your wallet to wipe this amount.";
-              this.submitEnabled = false;
-            } else if (this.props.system.tab(cup).lt(valueWei)) {
-              this.props.dialog.error = "You are trying to payback more DAI than the amount of DAI outstanding in your CDP.";
-              this.submitEnabled = false;
-            } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
-              this.props.dialog.error = "You don't have enough MKR in your wallet to wipe this amount.";
-              this.submitEnabled = false;
+            if (valueWei.gt(0)) {
+              const futureGovDebtSai =  wmul(
+                                          valueWei,
+                                          wdiv(
+                                            this.props.system.futureRap(this.props.system.tub.cups[dialog.cupId], 1200),
+                                            this.props.system.tab(this.props.system.tub.cups[dialog.cupId])
+                                          )
+                                        ).round(0);
+              const futureGovDebtMKR =  wdiv(
+                                          futureGovDebtSai,
+                                          this.props.system.pep.val
+                                        ).round(0);
+              const valuePlusGovFee = this.state.govFeeType === "dai" ? valueWei.add(futureGovDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
+              if (this.props.system.dai.myBalance.lt(valuePlusGovFee)) {
+                this.props.dialog.error = "You don't have enough DAI in your wallet to wipe this amount.";
+              } else if (this.props.system.tab(cup).lt(valueWei)) {
+                this.props.dialog.error = "You are trying to payback more DAI than the amount of DAI outstanding in your CDP.";
+              } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
+                this.props.dialog.error = "You don't have enough MKR in your wallet to wipe this amount.";
+              } else {
+                this.setState({submitEnabled: true});
+              }
             }
           });
         }
@@ -469,7 +504,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.submitEnabled }>Payback</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Payback</button>
                 </div>
               </form>
             }

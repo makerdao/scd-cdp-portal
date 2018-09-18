@@ -711,8 +711,8 @@ export default class SystemStore {
     }
   }
 
-  executeAction = params => {
-    const value = params.value;
+  executeAction = async params => {
+    let value = params.value;
     let callbacks = [];
     let error = false;
     switch (this.rootStore.dialog.method) {
@@ -781,7 +781,15 @@ export default class SystemStore {
         }
         break;
       case "give":
-        callbacks = [["system/give", this.rootStore.dialog.cupId, params.value]];
+        if (params.giveHasProxy && params.giveToProxy) {
+          const proxy = await blockchain.getProxy(value);
+          if (proxy && await blockchain.getProxyOwner(proxy) === value) {
+            value = proxy;
+          } else {
+            error = "Invalid proxy address";
+          }
+        }
+        callbacks = [["system/give", this.rootStore.dialog.cupId, value]];
         if (!isAddress(params.value) || params.value.slice(0, 2) !== "0x") {
           error = "Invalid address";
         }
