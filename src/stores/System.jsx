@@ -4,6 +4,7 @@ import {computed, observable} from "mobx";
 // Utils
 import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
+import {truncateAddress} from "../utils/helpers";
 
 import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
 
@@ -601,7 +602,7 @@ export default class SystemStore {
   }
 
   transferToken = (token, to, amount) => {
-    const title = `${token.replace("gov", "mkr").toUpperCase()}: transfer ${to} ${amount}`;
+    const title = `Transfer ${amount} ${token.replace("gov", "mkr").toUpperCase()} to ${truncateAddress(to)}`;
     if (token === "eth") {
       this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpTokenFromChain", token]]);
     } else {
@@ -635,7 +636,7 @@ export default class SystemStore {
   }
 
   give = (cupId, newOwner) => {
-    const title = `Transfer CDP ${cupId} to ${newOwner}`;
+    const title = `Transfer CDP ${cupId} to ${truncateAddress(newOwner)}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
     this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
