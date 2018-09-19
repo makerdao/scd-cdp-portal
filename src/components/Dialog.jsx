@@ -9,7 +9,7 @@ import InlineNotification from "./InlineNotification";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber, isAddress} from "../utils/helpers";
+import {BIGGESTUINT256, WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber, isAddress} from "../utils/helpers";
 import * as blockchain from "../utils/blockchain";
 
 class DialogContent extends React.Component {
@@ -489,11 +489,14 @@ class Dialog extends React.Component {
             }
           });
         }
+        const indentedText = (!this.props.system['dai'].allowance.eq(BIGGESTUINT256) || !this.props.system['gov'].allowance.eq(BIGGESTUINT256))
+          ? "You might be requested to sign up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction."
+          : "";
         return (
           <DialogContent
             title="Payback DAI"
             text="How much DAI would you like to pay back?"
-            indentedText="You might be requested for signing up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction."
+            indentedText={ indentedText }
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
