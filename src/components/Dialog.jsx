@@ -161,10 +161,10 @@ class Dialog extends React.Component {
   renderDetails = () => {
     return (
       <React.Fragment>
-        <div className="info-heading">Projected liquidation price (ETH/USD)</div>
-        <div className="info-value">{ this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice, 2) : "--" } USD</div>
         <div className="info-heading">Current price information (ETH/USD)</div>
         <div className="info-value">{ printNumber(this.props.system.pip.val, 2) } USD</div>
+        <div className="info-heading">Projected liquidation price (ETH/USD)</div>
+        <div className="info-value">{ this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice, 2) : "--" } USD</div>
         <div className="info-heading">Projected collateralization ratio</div>
         <div className={ "info-value" + (this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") + (this.props.dialog.error ? " text-red" : "") }>{ this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100), 2) : "--" } %</div>
       </React.Fragment>
