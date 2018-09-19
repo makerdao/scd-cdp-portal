@@ -156,7 +156,7 @@ class Cup extends React.Component {
                   this.props.system.tub.fee && this.props.system.tub.fee.gt(0)
                   ?
                     <span>
-                      { printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }<span className="unit">%</span>
+                      { printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 3, true, true) }<span className="unit">%</span>
                     </span>
                   :
                     "Loading..."
