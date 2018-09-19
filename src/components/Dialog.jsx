@@ -248,8 +248,12 @@ class Dialog extends React.Component {
                 </div>
                 {
                   this.state.giveHasProxy &&
-                  <div>
-                    <input type="checkbox" style={ {visibility: "initial"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } onChange={ this.selectGiveToProxy } /><label htmlFor="giveToProxy">Transfer CDP to user's proxy address</label><br />
+                  <div style={ {marginTop: "0.75rem"} }>
+                    <label className="checkbox-container">
+                      <input type="checkbox" style={ {visibility: "initial"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } value="1" onChange={ this.selectGiveToProxy } />
+                      <span className="checkmark"></span>
+                      Transfer to user's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will transfer the CDP to their proxy instead of their address directly, allowing them to manage it in the Dai Dashboard." />
+                    </label>
                   </div>
                 }
                 <div className="info-section">
