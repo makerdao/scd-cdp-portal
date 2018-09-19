@@ -335,6 +335,8 @@ class Dialog extends React.Component {
                   <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
+                  <div className="info-heading">Current account balance</div>
+                  <div className="info-value">{ printNumber(this.props.profile.accountBalance, 2) } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
