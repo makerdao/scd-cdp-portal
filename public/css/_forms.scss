@@ -113,6 +113,11 @@ input[type="radio"] {
 		transition-duration: 0.2s;
 		transition-timing-function: ease-in;
 	}
+	& + label:hover::before {
+		border-color: rgba(49, 61, 71, .8);
+		background: rgba(18, 187, 155, 0.3);
+		box-shadow: inset 0px 0px 0px 2px #ced0d2;
+	}
 	&:checked + label::before {
 		border-color: rgba(49, 61, 71, .8);
 		background: #12BB9B;
