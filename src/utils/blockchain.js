@@ -123,11 +123,11 @@ export const tokenApprove = (token, dst, gasPrice) => {
 }
 
 export const getProxy = account => {
-  return promisify(objects.proxyRegistry.proxies)(account).then(r => r === "0x0000000000000000000000000000000000000000" ? null : getProxyOwner(r).then(r2 => r2 === account ? r : null));
+  return promisify(objects.proxyRegistry.proxies)(account.toLowerCase()).then(r => r === "0x0000000000000000000000000000000000000000" ? null : getProxyOwner(r).then(r2 => r2 === account.toLowerCase() ? r : null));
 }
 
 export const getProxyOwner = proxy => {
-  return promisify(loadObject("dsproxy", proxy).owner)();
+  return promisify(loadObject("dsproxy", proxy.toLowerCase()).owner)();
 }
 
 export const proxyExecute = (proxyAddr, targetAddr, calldata, gasPrice, value = 0) => {
