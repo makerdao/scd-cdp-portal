@@ -639,7 +639,7 @@ export default class SystemStore {
   }
 
   shut = (cupId, useOTC = false) => {
-    const title = `Shut CDP ${cupId}`;
+    const title = `Close CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
     this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]]});
   }
