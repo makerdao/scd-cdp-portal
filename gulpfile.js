@@ -18,6 +18,6 @@ gulp.task('deploy-surge', function () {
   require('fs').createReadStream('./build/index.html').pipe(fs.createWriteStream('./build/200.html'));
   return surge({
     project: './build',                           // Path to your static build directory
-    domain: 'https://simple-dai-portal.surge.sh'  // Your domain or Surge subdomain
+    domain: 'https://cdp-portal.surge.sh'  // Your domain or Surge subdomain
   })
 });
