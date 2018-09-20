@@ -15,8 +15,8 @@ class Menu extends React.Component {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
       <div className="menu-bar">
-        <div className="logo">
-          <svg width="33" height="23" viewBox="0 0 33 23" xmlns="http://www.w3.org/2000/svg" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>
+        <div className="logo" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>
+          <svg width="33" height="23" viewBox="0 0 33 23" xmlns="http://www.w3.org/2000/svg">
             <g fill="none" fillRule="evenodd">
               <path d="m14.242 22.89v-11.492l-13.24-10.033v21.525" stroke="#1abc9c"/>
               <path d="m18.316 22.89v-11.492l13.24-10.033v21.525" stroke="#546979"/>
