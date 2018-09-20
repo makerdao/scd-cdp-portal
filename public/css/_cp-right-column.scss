@@ -216,6 +216,22 @@
 }
 
 .right-column {
+
+	.switch-ledger-type {
+		text-decoration: none;
+		svg {
+			margin-right: 5px;
+			position: relative;
+			top: 2px;
+			g {
+				transition: stroke .2s ease-in;
+			}
+		}
+		&:hover svg g {
+			stroke: #ffffff;
+		}
+	}
+
 	h2 {
 		&.connect-success {
 			border-bottom-color: #1ABC9C;
