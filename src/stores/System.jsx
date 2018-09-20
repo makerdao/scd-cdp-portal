@@ -591,7 +591,7 @@ export default class SystemStore {
 
   // Blockchain actions
   changeAllowance = (token, value, callbacks = []) => {
-    const title = `${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}: ${value ? "unlock" : "lock"}`;
+    const title = `${value ? "Unlock" : "Lock"}: ${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}`;
     this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
   }
 
@@ -662,10 +662,10 @@ export default class SystemStore {
         ];
 
         if (this.rootStore.profile.proxy) {
-          title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          title = `Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
         } else {
-          title = `Create Proxy + Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          title = `Create Proxy + Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           this.rootStore.transactions.askPriceAndSend(
                                             title,
                                             blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
@@ -680,13 +680,13 @@ export default class SystemStore {
           ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
         ];
         if (dai.equals(0)) {
-          title = `Lock ${eth.valueOf()} ETH`;
+          title = `Deposit ${eth.valueOf()} ETH`;
           action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
         } else if (eth.equals(0)) {
-          title = `Draw ${dai.valueOf()} DAI`;
+          title = `Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
         } else {
-          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
+          title = `Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
         }
       }
@@ -706,10 +706,10 @@ export default class SystemStore {
         title = `Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
       } else if (eth.equals(0)) {
-        title = `Wipe ${dai.valueOf()} DAI`;
+        title = `Payback ${dai.valueOf()} DAI`;
         action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
       } else {
-        title = `Wipe ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
+        title = `Payback ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
       }
         this.executeProxyTx(action, 0, {
