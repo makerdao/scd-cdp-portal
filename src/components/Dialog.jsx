@@ -185,7 +185,7 @@ class Dialog extends React.Component {
     return (
       this.props.system.pep.val.gte(0) &&
       <React.Fragment>
-        <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR <TooltipHint tipKey="stability-fee" /></div>
+        <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR <TooltipHint tipKey="stability-fee" /></div>
         <div className="info-value" style={ { marginBottom: '0'} }>{ printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR</div>
         <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr" style={ {marginLeft: '5px'} }>Get MKR</Link></div>
         <div className="fee-type-selector">
@@ -221,16 +221,24 @@ class Dialog extends React.Component {
 
       case "give":
         this.cond = value => {
-          this.setState({submitEnabled: false, giveHasProxy: false}, () => {
+          this.setState({
+            submitEnabled: false,
+            giveHasProxy: false
+          }, () => {
+            this.props.dialog.error = "";
             if (isAddress(value)) {
-              console.log('check Proxy ownership');
-              blockchain.getProxy(value).then(r => {
-                if (r) {
-                  this.setState({giveHasProxy: true, submitEnabled: true});
+              console.debug(`Checking proxy ownership of ${value}...`);
+              blockchain.getProxy(value).then(proxyAddress => {
+                if (proxyAddress) {
+                  console.debug(`Proxy found: ${proxyAddress}`);
+                  this.setState({ giveHasProxy: true, submitEnabled: true });
                 } else {
-                  this.setState({giveHasProxy: false, submitEnabled: true});
+                  console.debug(`No proxy found`);
+                  this.setState({ giveHasProxy: false, submitEnabled: true });
                 }
               });
+            } else {
+              this.props.dialog.error = "Invalid address entered.";
             }
           });
         };
@@ -263,7 +271,7 @@ class Dialog extends React.Component {
                   <div className="info-heading">Liquidation price (ETH/USD)</div>
                   <div className="info-value">{ this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0) ? printNumber(cup.liq_price) : "--" } USD</div>
                   <div className="info-heading">Collateralization ratio</div>
-                  <div className={ "info-value" + (cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") + (this.props.dialog.error ? " text-red" : "") }>{ cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? printNumber(toWei(cup.ratio).times(100), 2) : "--" } %</div>
+                  <div className={ "info-value" + (cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") }>{ cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? printNumber(toWei(cup.ratio).times(100), 2) : "--" } %</div>
                   { this.renderErrors() }
                 </div>
                 <div>

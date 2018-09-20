@@ -210,7 +210,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   <p className="no-select">
-                    Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
+                    Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR
                     <TooltipHint tipKey="stability-fee" />
                   </p>
                 </div>
