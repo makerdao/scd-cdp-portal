@@ -190,7 +190,7 @@ class Dialog extends React.Component {
         <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr" style={ {marginLeft: '5px'} }>Get MKR</Link></div>
         <div className="fee-type-selector">
           <input type="radio" id="govFeeMkr" name="govFeeMkr" value="mkr" checked={ this.state.govFeeType === "mkr" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeMkr">Pay stability fee with MKR</label><br />
-          <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay stability fee with DAI <span>(via Oasisdex best offer)</span></label>
+          <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay stability fee with DAI <span>(via OasisDEX best offer)</span></label>
         </div>
       </React.Fragment>
     )
@@ -252,7 +252,7 @@ class Dialog extends React.Component {
                     <label className="checkbox-container">
                       <input type="checkbox" style={ {visibility: "initial"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } value="1" onChange={ this.selectGiveToProxy } />
                       <span className="checkmark"></span>
-                      Transfer to user's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will transfer the CDP to their proxy instead of their address directly, allowing them to manage it in the Dai Dashboard." />
+                      Transfer to user's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will transfer the CDP to their proxy instead of their address directly, allowing them to manage it in the CDP Portal." />
                     </label>
                   </div>
                 }

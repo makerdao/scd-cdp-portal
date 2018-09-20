@@ -139,6 +139,9 @@
 
 	.fee-type-selector {
 	  margin: 1rem 0 1.5rem;
+	  label {
+	  	  white-space: nowrap;
+	  }
 	}
 
 	.text-green {
