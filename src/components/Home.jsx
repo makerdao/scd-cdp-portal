@@ -107,7 +107,10 @@ class Home extends React.Component {
                       </React.Fragment>
                   }
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
-                    <Link to="/terms">Terms of Service</Link>
+                    {
+                      !this.props.network.loadingAddress &&
+                      <Link to="/terms">Terms of Service</Link>
+                    }
                   </div>
                 </div>
               }
