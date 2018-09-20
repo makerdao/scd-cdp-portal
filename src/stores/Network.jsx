@@ -17,7 +17,6 @@ export default class NetworkStore {
   @observable network = "";
   @observable outOfSync = true;
   @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
-  @observable isHw = false;
   @observable downloadClient = false;
 
   constructor(rootStore) {
@@ -51,7 +50,6 @@ export default class NetworkStore {
     this.isConnected = false;
     this.latestBlock = null;
     this.outOfSync = true;
-    this.isHw = false;
   }
 
   setAccount = () => {

@@ -42,7 +42,11 @@ export default class ProfileStore {
       this.rootStore.transactions.executeCallbacks(callbacks);
     } else {
       const title = "Create Proxy";
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/setProxyFromChain", callbacks]]);
+      const params = {value: 0};
+      if (this.rootStore.network.hw.active) {
+        params.gas = 1000000;
+      }
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], params, [["profile/setProxyFromChain", callbacks]]);
     }
   }
 }

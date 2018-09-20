@@ -592,7 +592,11 @@ export default class SystemStore {
   // Blockchain actions
   changeAllowance = (token, value, callbacks = []) => {
     const title = `${value ? "Unlock" : "Lock"}: ${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}`;
-    this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], {value: 0}, callbacks);
+    const params = {value: 0};
+    if (this.rootStore.network.hw.active) {
+      params.gas = 100000;
+    }
+    this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], params, callbacks);
   }
 
   checkAllowance = (token, callbacks) => {
@@ -613,9 +617,17 @@ export default class SystemStore {
   transferToken = (token, to, amount) => {
     const title = `Transfer ${amount} ${token.replace("gov", "mkr").toUpperCase()} to ${truncateAddress(to)}`;
     if (token === "eth") {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], {to, value: toWei(amount)}, [["system/setUpTokenFromChain", token]]);
+      const params = {to, value: toWei(amount)};
+      if (this.rootStore.network.hw.active) {
+        params.gas = 21000;
+      }
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["profile/setEthBalanceFromChain"]]);
     } else {
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], {value: 0}, [["system/setUpTokenFromChain", token]]);
+      const params = {value: 0};
+      if (this.rootStore.network.hw.active) {
+        params.gas = 100000;
+      }
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], params, [["system/setUpTokenFromChain", token]]);
     }
   }
 
@@ -624,36 +636,45 @@ export default class SystemStore {
     const proxy = this.rootStore.profile.proxy;
     if (proxy && isAddress(proxy) && await blockchain.getProxyOwner(proxy) === this.rootStore.network.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.tub.give, [toBytes32(cup), proxy], {value: 0}, callbacks);
+      const params = {value: 0};
+      if (this.rootStore.network.hw.active) {
+        params.gas = 100000;
+      }
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.tub.give, [toBytes32(cup), proxy], params, callbacks);
     }
   }
 
-  executeProxyTx = (action, value, notificator) => {
-    this.rootStore.transactions.askPriceAndSend(notificator.title, blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].proxyContracts.sai, action], {value}, notificator.callbacks);
+  executeProxyTx = (action, value, gasLimit, notificator) => {
+    const params = {value};
+    if (gasLimit) {
+      params.gas = gasLimit;
+    }
+    this.rootStore.transactions.askPriceAndSend(notificator.title, blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].proxyContracts.sai, action], params, notificator.callbacks);
   }
 
   open = () => {
     const title = "Open CDP";
     const action = `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
+    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 120000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   shut = (cupId, useOTC = false) => {
     const title = `Close CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]]});
+    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]]});
   }
 
   give = (cupId, newOwner) => {
     const title = `Transfer CDP ${cupId} to ${truncateAddress(newOwner)}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
-    this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
+    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 100000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   lockAndDraw = (cupId, eth, dai) => {
     let action = false;
     let title = "";
     let callbacks = [];
+    let gasLimit = null;
 
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
@@ -664,13 +685,18 @@ export default class SystemStore {
         if (this.rootStore.profile.proxy) {
           title = `Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
+          gasLimit = 800000;
         } else {
           title = `Create Proxy + Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
+          const params = {value: toWei(eth)};
+          if (this.rootStore.network.hw.active) {
+            params.gas = 1500000;
+          }
           this.rootStore.transactions.askPriceAndSend(
                                             title,
                                             blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
                                             [settings.chain[this.rootStore.network.network].proxyRegistry, this.tub.address, toWei(dai)],
-                                            {value: toWei(eth)},
+                                            params,
                                             [["profile/setProxyFromChain", callbacks]]
                                             );
           return;
@@ -682,42 +708,56 @@ export default class SystemStore {
         if (dai.equals(0)) {
           title = `Deposit ${eth.valueOf()} ETH`;
           action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
+          gasLimit = 300000;
         } else if (eth.equals(0)) {
           title = `Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+          gasLimit = 300000;
         } else {
           title = `Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
+          gasLimit = 600000; // This was not checked, not being used in the UI for now
         }
       }
 
-      this.executeProxyTx(action, toWei(eth), {
-                                                title,
-                                                callbacks
-                                              });
+      this.executeProxyTx(action,
+                          toWei(eth),
+                          this.rootStore.network.hw.active ? gasLimit : null,
+                          {
+                            title,
+                            callbacks
+                          });
     }
   }
 
   wipeAndFree = (cupId, eth, dai, useOTC = false) => {
     let action = false;
     let title = "";
+    let gasLimit = null;
     if (eth.gt(0) || dai.gt(0)) {
       if (dai.equals(0)) {
         title = `Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
+        gasLimit = 400000;
       } else if (eth.equals(0)) {
         title = `Payback ${dai.valueOf()} DAI`;
         action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
+        gasLimit = 300000;
       } else {
         title = `Payback ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
+        gasLimit = 700000; // This was not checked, not being used in the UI for now
       }
-        this.executeProxyTx(action, 0, {
-                                        title,
-                                        callbacks:  [
-                                                      ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
-                                                    ]
-                                      });
+
+      this.executeProxyTx(action,
+                          0,
+                          this.rootStore.network.hw.active ? gasLimit : null,
+                          {
+                            title,
+                            callbacks:  [
+                                          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
+                                        ]
+                          });
     }
   }
 
@@ -793,7 +833,7 @@ export default class SystemStore {
       case "give":
         if (params.giveHasProxy && params.giveToProxy) {
           const proxy = await blockchain.getProxy(value);
-          if (proxy && await blockchain.getProxyOwner(proxy) === value) {
+          if (proxy && await blockchain.getProxyOwner(proxy) === value.toLowerCase()) {
             value = proxy;
           } else {
             error = "Invalid proxy address";
