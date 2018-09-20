@@ -12,7 +12,7 @@ import Menu from "./Menu";
 class Terms extends React.Component {
   render() {
     return (
-      <DocumentTitle title="Dai Dashboard: Terms of Service">
+      <DocumentTitle title="CDP Portal: Terms of Service">
         <div className="full-width-page">
           <div className="wrapper">
             <Menu page="terms" />

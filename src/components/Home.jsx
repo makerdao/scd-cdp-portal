@@ -46,7 +46,7 @@ class Home extends React.Component {
 
   render() {
     return (
-      <DocumentTitle title="Dai Dashboard">
+      <DocumentTitle title="CDP Portal">
         <div className={ (this.props.network.isConnected && this.props.network.defaultAccount ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + (this.props.transactions.priceModal.open ? " modal-open" : "") }>
           <div className="wrapper">
             {

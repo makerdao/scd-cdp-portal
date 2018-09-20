@@ -41,7 +41,7 @@ class Landing extends React.Component {
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
                 </p>
-                <img className="preview" src="../img/welcome-hero.svg" alt="Dai Dashboard" />
+                <img className="preview" src="../img/welcome-hero.svg" alt="CDP Portal" />
               </div>
             </div>
             <div>

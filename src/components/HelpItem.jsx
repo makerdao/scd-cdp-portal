@@ -18,7 +18,7 @@ class HelpItem extends React.Component {
     if (!helpId || (this.props.content.contentLoaded && !helpItem)) return <NotFound />;
 
     return (
-      <DocumentTitle title={ "Dai Dashboard: " + (helpItem ? helpItem.title : "Loading...") }>
+      <DocumentTitle title={ "CDP Portal: " + (helpItem ? helpItem.title : "Loading...") }>
           <div className="full-width-page">
             <div className="wrapper">
               <Menu page="help" />
