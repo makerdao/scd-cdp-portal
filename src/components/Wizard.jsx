@@ -15,21 +15,6 @@ import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../util
 import "rc-steps/assets/index.css";
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
-const steps = [
-  { text: "Creation of your proxy" },
-  { text: "Creation of your CDP" },
-  {
-    text: "Wrap your ETH to WETH - ERC20 tokenization",
-    tip: <TooltipHint tipKey="wizard-wrap-eth-to-weth" />
-  },
-  {
-    text: "Convert your WETH to PETH",
-    tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
-  },
-  { text: "CDP collateralized with PETH - Your converted ETH is locked" },
-  { text: "DAI generated -  Your requested DAI is generated" },
-  { text: "DAI transferred - Your requested DAI is transferred to your wallet" }
-];
 
 @inject("profile")
 @inject("system")
@@ -54,6 +39,29 @@ class Wizard extends Component {
       checkTerms: false,
       stepsExpanded: false
     }
+  }
+
+  steps = () => {
+    const steps= [
+                    { text: "Creation of your proxy" },
+                    { text: "Creation of your CDP" },
+                    {
+                      text: "Wrap your ETH to WETH - ERC20 tokenization",
+                      tip: <TooltipHint tipKey="wizard-wrap-eth-to-weth" />
+                    },
+                    {
+                      text: "Convert your WETH to PETH",
+                      tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
+                    },
+                    { text: "CDP collateralized with PETH - Your converted ETH is locked" },
+                    { text: "DAI generated -  Your requested DAI is generated" },
+                    { text: "DAI transferred - Your requested DAI is transferred to your wallet" }
+                  ];
+    if (this.props.profile.proxy && this.props.profile.proxy !== -1) {
+      steps.shift();
+    }
+
+    return steps;
   }
 
   checkValues = (token, amount) => {
@@ -272,12 +280,12 @@ class Wizard extends Component {
                         <path d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" transform="translate(-1062 -464)"/>
                       </svg>
                     }
-                    There are { steps.length } steps needed to complete the creation of your CDP.&nbsp;&nbsp;These will be automated for your convenience.
+                    There are { this.steps().length } steps needed to complete the creation of your CDP.&nbsp;&nbsp;These will be automated for your convenience.
                   </div>
 
                   <div className={"typo-c wizard-automated-transactions" + (this.state.stepsExpanded ? " expanded" : "") }>
                   {
-                    steps.map((s, key) => (
+                    this.steps().map((s, key) => (
                       <div className="step-cointainer" key={ key }>
                         <div className="step-icon">
                           <div className="steps-item"><div className="steps-item-inner">{ key + 1 }</div></div>
