@@ -401,7 +401,7 @@ class Dialog extends React.Component {
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to withdraw</div>
-                  <div className="info-value">{ printNumber(cup.avail_eth, 3) } ETH</div>
+                  <div className="info-value">{ cup ? printNumber(cup.avail_eth, 3) : '--' } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
