@@ -38,7 +38,16 @@ class Menu extends React.Component {
               </li>
             }
             {
-              this.props.showCDPs &&
+              this.props.showCDPs && Object.keys(this.props.system.tub.cups).length === 1 &&
+              <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(this.props.system.tub.cups[0]); this.props.setOpenMigrate(false) } }>
+                <Link to="/">
+                  <img src="/img/icon-home.svg" draggable="false" alt="" />
+                  <span className="menu-label">Dashboard</span>
+                </Link>
+              </li>
+            }
+            {
+              this.props.showCDPs && Object.keys(this.props.system.tub.cups).length > 1 &&
               Object.keys(this.props.system.tub.cups).map(key =>
                 <li key={ key } className={ "cdp-id-item" + (this.props.page === "" && cupId === key && !this.props.isMigrateCDPPage ? " active" : "") } onClick={ e => { e.preventDefault(); this.changeCup(key); this.props.setOpenMigrate(false) } }>
                   <Link to="/">
