@@ -164,13 +164,17 @@ label.checkbox-container {
     border-radius: 2px;
     background-color: #eee;
   }
-  // On mouse-over, add a grey background color
+  // On mouse-over, darken bg
   &:hover input ~ .checkmark {
-    background-color: #ccc;
+    background-color: darken(#eee, 3%);
   }
   // When the checkbox is checked
   input:checked ~ .checkmark {
     background-color: #1BC4A6;
+  }
+	// On mouse-over, lighten bg
+  &:hover input:checked ~ .checkmark {
+		background-color: lighten(#1BC4A6, 3%);
   }
   // Create the checkmark/indicator (hidden when not checked)
   .checkmark:after {
@@ -188,7 +192,7 @@ label.checkbox-container {
     top: 2px;
     width: 3px;
     height: 9px;
-    border: solid #202930;
+    border: solid #0b5447;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
