@@ -10,7 +10,7 @@ import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../utils/helpers";
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
 
@@ -94,6 +94,9 @@ class Wizard extends Component {
 
         if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
           state.error = "The amount of ETH to be deposited exceeds your current balance.";
+          return state;
+        } else if (state.skr.gt(0) && state.skr.round(0).lte(toWei(0.005))) {
+          state.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
           return state;
         }
 
