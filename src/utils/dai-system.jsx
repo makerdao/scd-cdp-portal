@@ -126,9 +126,11 @@ export const addExtraCupData = (cup, par, tag, tax, mat, per, chi) => {
   // This is to give a window margin to get the maximum value (as "chi" is dynamic value per second)
   // const marginTax = fromWei(tax).pow(120);
   cup.avail_dai = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi)).round(0);
+  cup.avail_dai = cup.avail_dai.lt(0) ? toBigNumber(0) : cup.avail_dai;
   // cup.avail_dai_with_margin = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi).times(marginTax)).round(0);
   // cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? toBigNumber(0) : cup.avail_dai_with_margin;
   cup.avail_skr = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi), mat), par), tag)).round(0);
+  cup.avail_skr = cup.avail_skr.lt(0) ? toBigNumber(0) : cup.avail_skr;
   cup.avail_eth = wmul(cup.avail_skr, per).round(0);
   // cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi).times(marginTax), mat), par), tag)).round(0);
   // cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
