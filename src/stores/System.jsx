@@ -649,7 +649,7 @@ export default class SystemStore {
     if (gasLimit) {
       params.gas = gasLimit;
     }
-    this.rootStore.transactions.askPriceAndSend(notificator.title, blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].proxyContracts.sai, action], params, notificator.callbacks);
+    this.rootStore.transactions.askPriceAndSend(notificator.title, blockchain.objects.proxy.execute["address,bytes"], [settings.chain[this.rootStore.network.network].saiProxyCreateAndExecute, action], params, notificator.callbacks);
   }
 
   open = () => {
@@ -694,7 +694,7 @@ export default class SystemStore {
           }
           this.rootStore.transactions.askPriceAndSend(
                                             title,
-                                            blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
+                                            blockchain.loadObject("saiProxyCreateAndExecute", settings.chain[this.rootStore.network.network].saiProxyCreateAndExecute).createOpenLockAndDraw,
                                             [settings.chain[this.rootStore.network.network].proxyRegistry, this.tub.address, toWei(dai)],
                                             params,
                                             [["profile/setProxyFromChain", callbacks]]

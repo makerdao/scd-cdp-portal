@@ -16,7 +16,7 @@ schema.dsproxy = require("../abi/dsproxy");
 schema.dsethtoken = require("../abi/dsethtoken");
 schema.dstoken = require("../abi/dstoken");
 schema.dsvalue = require("../abi/dsvalue");
-schema.proxycreationandexecute = require("../abi/proxycreationandexecute");
+schema.saiProxyCreateAndExecute = require("../abi/saiProxyCreateAndExecute");
 
 export const objects = {
 }

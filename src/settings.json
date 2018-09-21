@@ -11,11 +11,7 @@
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
       "chart": true,
       "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
-      "proxyFactory": "0xe11e3b391f7e8bc47247866af32af67dd58dc800",
-      "proxyContracts": {
-        "sai": "0xe6c58c4341a6bc5a6451a26fe5f832f7d9a7514e"
-      },
-      "proxyCreationAndExecute": "0x8cc4bfa51cf92d1bd0cb019668a38e4f87727bcc"
+      "saiProxyCreateAndExecute": "0xadb7c74bce932fc6c27dda3ac2344707d2fbb0e6"
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
@@ -26,11 +22,7 @@
       "service": "https://graphql.makerdao.com/v1",
       "chart": false,
       "proxyRegistry": "0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4",
-      "proxyFactory": "0xa26e15c895efc0616177b7c1e7270a4c7d51c997",
-      "proxyContracts": {
-        "sai": ""
-      },
-      "proxyCreationAndExecute": ""
+      "saiProxyCreateAndExecute": ""
     }
   }
 }
