@@ -1,8 +1,8 @@
 {
-  "name": "simple-dai-portal",
+  "name": "scd-cdp-portal",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dai.makerdao.com",
+  "homepage": "https://cdp.makerdao.com",
   "dependencies": {
     "@ledgerhq/hw-app-eth": "^4.7.3",
     "@ledgerhq/hw-transport-u2f": "^4.7.3",
