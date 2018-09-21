@@ -204,16 +204,16 @@ class Cup extends React.Component {
               {
                 this.props.system.tub.off === false
                 ?
-                  cup.avail_skr && this.props.system.tub.per && this.props.system.pip.val
+                  cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
                   ?
                     <div className="right align-right" style={ {marginRight: "1rem"} }>
                       <div className="value block typo-cl">
-                        { cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0) ? printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) : 0 }<span className="unit">ETH</span>
+                        { printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span>
                       </div>
                       <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                        { cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0) ? printNumber(cup.avail_skr) : 0 }<span className="unit">PETH</span>
+                        { printNumber(cup.avail_skr) }<span className="unit">PETH</span>
                         <span className="separator">&nbsp;|&nbsp;</span>
-                        { cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0) ? printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) : 0 }<span className="unit">USD</span>
+                        { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
                       </div>
                     </div>
                   :
@@ -260,14 +260,14 @@ class Cup extends React.Component {
                 ?
                   <div className="right align-right" style={ {marginRight: "1rem"} }>
                     {
-                      cup.avail_dai && this.props.system.vox.par
+                      cup.avail_dai.gte(0) && this.props.system.vox.par.gte(0)
                       ?
                         <React.Fragment>
                           <div className="value block typo-cl">
-                            { cup.avail_dai.gte(0) && this.props.system.vox.par.gte(0) ? printNumber(cup.avail_dai) : 0 }<span className="unit">DAI</span>
+                            { printNumber(cup.avail_dai) }<span className="unit">DAI</span>
                           </div>
                           <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                            { cup.avail_dai.gte(0) && this.props.system.vox.par.gte(0) ? printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) : 0 }<span className="unit">USD</span>
+                            { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span>
                           </div>
                         </React.Fragment>
                       :
