@@ -206,7 +206,7 @@ class Dialog extends React.Component {
         return (
           <DialogContent
             title={ `Migrate CDP #${dialog.cupId}` }
-            text={ `Please confirm that you want to migrate CDP #${dialog.cupId} to be used in this dashboard. Once migrated, your CDP will no longer be accessible in the old dashboard.` }
+            text={ `Please confirm that you want to migrate CDP #${dialog.cupId} to be used in this CDP Portal. Once migrated, your CDP will no longer be accessible in the old dashboard.` }
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>

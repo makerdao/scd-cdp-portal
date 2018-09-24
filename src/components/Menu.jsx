@@ -33,7 +33,7 @@ class Menu extends React.Component {
               <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ () => this.props.page === "" && this.props.setOpenMigrate(false) }>
                 <Link to="/">
                   <img src="/img/icon-home.svg" draggable="false" alt="" />
-                  <span className="menu-label">Dashboard</span>
+                  <span className="menu-label">CDP Portal</span>
                 </Link>
               </li>
             }
@@ -42,7 +42,7 @@ class Menu extends React.Component {
               <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(this.props.system.tub.cups[0]); this.props.setOpenMigrate(false) } }>
                 <Link to="/">
                   <img src="/img/icon-home.svg" draggable="false" alt="" />
-                  <span className="menu-label">Dashboard</span>
+                  <span className="menu-label">CDP Portal</span>
                 </Link>
               </li>
             }

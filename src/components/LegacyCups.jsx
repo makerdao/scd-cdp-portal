@@ -147,7 +147,7 @@ class LegacyCups extends React.Component {
           )
         }
         <div className="clearfix"></div>
-        <button className="bright-style text-btn" style={ {display: "block", margin: "4rem auto 0"} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO DASHBOARD</button>
+        <button className="bright-style text-btn" style={ {display: "block", margin: "4rem auto 0"} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO CDP PORTAL</button>
       </div>
     )
   }
