@@ -108,7 +108,7 @@ export default class NetworkStore {
     this.hw.loading = true;
     this.hw.active = true;
     this.hw.error = false;
-    this.hw.network = window.location.hostname === "cdp-portal-mainnet.surge.sh"
+    this.hw.network = (window.location.hostname === "cdp.makerdao.com" || window.location.hostname === "cdp-portal-mainnet.surge.sh")
       ? "main"
       : "kovan";
     this.hw.derivationPath = this.hw.option === "ledger-live"
