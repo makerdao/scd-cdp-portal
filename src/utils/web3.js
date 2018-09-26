@@ -75,11 +75,22 @@ class Web3Extended extends Web3 {
     this.stop();
     return new Promise(async (resolve, reject) => {
       try {
-        if (window.web3 && window.web3.currentProvider) {
-          this.setProvider(window.web3.currentProvider);
-          this.useLogs = true;
-          this.currentProvider.name = getWebClientProviderName();
-          resolve(true);
+        if (window.web3 || window.ethereum) {
+          try {
+            let provider;
+            if (window.ethereum) {
+              await window.ethereum.enable();
+              provider = window.ethereum;
+            } else {
+              provider = window.web3.currentProvider;
+            }
+            this.setProvider(provider);
+            this.useLogs = true;
+            this.currentProvider.name = getWebClientProviderName();
+            resolve(true);
+          } catch (error) {
+            reject(new Error("User denied account access"));
+          }
         } else {
           reject(new Error("No client"));
         }

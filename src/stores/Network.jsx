@@ -80,7 +80,9 @@ export default class NetworkStore {
       this.setNetworkInterval = setInterval(this.setNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
-      this.downloadClient = true;
+      if (e.message === "No client") {
+        this.downloadClient = true;
+      }
       console.log(e);
     }
   }
