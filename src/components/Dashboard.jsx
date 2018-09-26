@@ -15,7 +15,7 @@ class Dashboard extends React.Component {
       <div>
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col">
-          <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal <span className="typo-c typo-mid-grey">My collateralized debt position #{ cupId }</span></h1>
+          <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal <span className="typo-c">My collateralized debt position #{ cupId }</span></h1>
         </header>
         <Cup cupId={ cupId } />
       </div>
