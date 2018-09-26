@@ -1,25 +1,23 @@
-var exec     = require('child_process').exec
-var fs       = require('fs');
-
-var gulp     = require('gulp');
-var gulpsync = require('gulp-sync')(gulp)
-var gutil    = require('gulp-util');
-var ghPages  = require('gulp-gh-pages')
-var surge    = require('gulp-surge')
+const exec     = require('child_process').exec,
+      fs       = require('fs'),
+      gulp     = require('gulp'),
+      gulpsync = require('gulp-sync')(gulp),
+      gutil    = require('gulp-util'),
+      ghPages  = require('gulp-gh-pages'),
+      surge    = require('gulp-surge');
 
 // gh-pages
-gulp.task('deploy-gh-pages', function () {
-  require('fs').writeFileSync('./build/CNAME', 'simple-dai-portal.makerdao.com');
-  return gulp.src('./build/**/*')
-    .pipe(ghPages())
+gulp.task('deploy-gh-pages', () => {
+  require('fs').writeFileSync('./build/CNAME', 'cdp.makerdao.com');
+  return gulp.src('./build/**/*').pipe(ghPages());
 });
 
-gulp.task('deploy-surge-kovan', function () {
+gulp.task('deploy-surge-kovan', () => {
   require('fs').createReadStream('./build/index.html').pipe(fs.createWriteStream('./build/200.html'));
-  return surge({ project: './build', domain: 'https://cdp-portal-kovan.surge.sh' })
+  return surge({ project: './build', domain: 'https://cdp-portal.surge.sh' });
 });
 
-gulp.task('deploy-surge-main', function () {
+gulp.task('deploy-surge-main', () => {
   require('fs').createReadStream('./build/index.html').pipe(fs.createWriteStream('./build/200.html'));
-  return surge({ project: './build', domain: 'https://cdp-portal-mainnet.surge.sh' })
+  return surge({ project: './build', domain: 'https://cdp-portal-mainnet.surge.sh' });
 });

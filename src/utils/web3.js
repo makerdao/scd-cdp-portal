@@ -22,7 +22,7 @@ export const getWebClientProviderName = () => {
     return "trust";
 
   if (typeof window.SOFA !== "undefined")
-    return "toshi";
+    return "coinbase";
 
   if (typeof window.__CIPHER__ !== "undefined")
     return "cipher";

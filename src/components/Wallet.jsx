@@ -42,6 +42,8 @@ class Wallet extends React.Component {
         return "Ledger Nano S";
       case "metamask":
         return "MetaMask";
+      case "coinbase":
+        return "Coinbase Wallet";
       case "web":
         let webClientName = getWebClientProviderName();
         return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
