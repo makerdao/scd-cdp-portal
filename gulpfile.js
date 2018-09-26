@@ -14,10 +14,12 @@ gulp.task('deploy-gh-pages', function () {
     .pipe(ghPages())
 });
 
-gulp.task('deploy-surge', function () {
+gulp.task('deploy-surge-kovan', function () {
   require('fs').createReadStream('./build/index.html').pipe(fs.createWriteStream('./build/200.html'));
-  return surge({
-    project: './build',                           // Path to your static build directory
-    domain: 'https://cdp-portal.surge.sh'  // Your domain or Surge subdomain
-  })
+  return surge({ project: './build', domain: 'https://cdp-portal-kovan.surge.sh' })
+});
+
+gulp.task('deploy-surge-main', function () {
+  require('fs').createReadStream('./build/index.html').pipe(fs.createWriteStream('./build/200.html'));
+  return surge({ project: './build', domain: 'https://cdp-portal-mainnet.surge.sh' })
 });
