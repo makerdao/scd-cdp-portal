@@ -4,9 +4,6 @@ import {observable} from "mobx";
 // Utils
 import * as blockchain from "../utils/blockchain";
 
-// Settings
-import * as settings from "../settings";
-
 export default class NetworkStore {
   @observable stopIntervals = false;
   @observable loadingAddress = false;
@@ -16,7 +13,7 @@ export default class NetworkStore {
   @observable latestBlock = null;
   @observable network = "";
   @observable outOfSync = true;
-  @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
+  @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ''};
   @observable downloadClient = false;
 
   constructor(rootStore) {
@@ -44,7 +41,7 @@ export default class NetworkStore {
     clearInterval(this.setAccountInterval);
     clearInterval(this.setNetworkInterval);
     this.network = "";
-    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
+    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ''};
     this.accounts = [];
     this.defaultAccount = null;
     this.isConnected = false;
@@ -104,25 +101,25 @@ export default class NetworkStore {
     this.hw.showSelector = false;
     this.hw.option = "";
     this.hw.derivationPath = false;
+    this.hw.network = "";
   }
 
   loadHWAddresses = async () => {
     this.hw.loading = true;
     this.hw.active = true;
     this.hw.error = false;
+    this.hw.network = window.location.hostname === "cdp-portal-mainnet.surge.sh"
+      ? "main"
+      : "kovan";
     this.hw.derivationPath = this.hw.option === "ledger-live"
-                              ?
-                                "44'/60'/0'"
-                              :
-                                this.hw.option === "ledger-legacy"
-                                ?
-                                  "44'/60'/0'/0"
-                                :
-                                  "44'/60'/0'/0/0";
+      ? "44'/60'/0'"
+      : this.hw.option === "ledger-legacy"
+        ? "44'/60'/0'/0"
+        : "44'/60'/0'/0/0";
     try {
       await blockchain.setHWProvider(
                                       this.hw.option.replace("-live", "").replace("-legacy", ""),
-                                      settings.hwNetwork,
+                                      this.hw.network,
                                       this.hw.derivationPath,
                                       0,
                                       this.hw.option === "ledger-live" ? 5 : 50

@@ -1,6 +1,5 @@
 {
   "contentUrl": "https://gov-backend.herokuapp.com/content/dai-dashboard",
-  "hwNetwork": "kovan",
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
