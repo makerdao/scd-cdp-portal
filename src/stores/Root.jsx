@@ -28,6 +28,7 @@ class RootStore {
       this.system.setVariables(true);
       this.profile.setEthBalanceFromChain();
       this.transactions.setStandardGasPrice();
+      this.transactions.checkLatestBlock();
     }, 5000);
   }
 

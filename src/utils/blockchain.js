@@ -85,6 +85,10 @@ export const getBlock = block => {
   return promisify(web3.eth.getBlock)(block);
 }
 
+export const getBlockNumber = () => {
+  return promisify(web3.eth.getBlockNumber)();
+}
+
 export const setFilter = (fromBlock, address) => {
   return promisify(web3.eth.filter)({fromBlock, address});
 }

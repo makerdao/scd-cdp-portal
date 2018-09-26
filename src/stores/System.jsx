@@ -312,7 +312,7 @@ export default class SystemStore {
               this.tub.cupsLoading = keepTrying && keys.length === 0;
               if (this.tub.cupsLoading) {
                 // If we know there is a new CDP and it still not available, keep trying & loading
-                setTimeout(() => this.setMyCupsFromChain(true), 3000)
+                setTimeout(() => this.setMyCupsFromChain(true, callbacks), 3000)
               } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
                 keys.forEach(key => {
                   this.loadCupHistory(key);
@@ -356,12 +356,14 @@ export default class SystemStore {
     this.tub.cups[id] = cup;
     if (settings.chain[this.rootStore.network.network].service) {
       Promise.resolve(daisystem.getCupHistoryFromService(this.rootStore.network.network, id)).then(history => {
-        let cup = {...this.tub.cups[id]};
-        cup.history = history;
-        this.tub.cups[id] = cup;
-        const notification = daisystem.getBiteNotification(id, history, localStorage.getItem(`CDPLiquidated${history[0].time}Closed`));
-        if (notification) {
-          this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", notification, 0, () => localStorage.setItem(`CDPLiquidated${history[0].time}Closed`, true));
+        if (history) {
+          let cup = {...this.tub.cups[id]};
+          cup.history = history;
+          this.tub.cups[id] = cup;
+          const notification = daisystem.getBiteNotification(id, history, localStorage.getItem(`CDPLiquidated${history[0].time}Closed`));
+          if (notification) {
+            this.rootStore.transactions.notificator.notice(Math.random(), "CDP Liquidated", notification, 0, () => localStorage.setItem(`CDPLiquidated${history[0].time}Closed`, true));
+          }
         }
       }, () => {
         let cup = {...this.tub.cups[id]};
@@ -485,7 +487,7 @@ export default class SystemStore {
 
     blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
+        this.rootStore.transactions.logTransactionConfirmed(r);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
           this.reloadCupData(parseInt(r.args.foo, 16));
         } else if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
@@ -518,7 +520,7 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.tap.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
+        this.rootStore.transactions.logTransactionConfirmed(r);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
           this.setParameterFromTap("gap", false);
         }
@@ -530,7 +532,7 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.vox.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
+        this.rootStore.transactions.logTransactionConfirmed(r);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
           this.setParameterFromVox("way", true);
         }
@@ -581,7 +583,7 @@ export default class SystemStore {
       if (blockchain.objects[token][filters[i]]) {
         blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
-            this.rootStore.transactions.logTransactionConfirmed(r.transactionHash);
+            this.rootStore.transactions.logTransactionConfirmed(r);
             this.setTokenDataFromChain(token);
           }
         });
