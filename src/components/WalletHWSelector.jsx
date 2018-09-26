@@ -158,7 +158,7 @@ class WalletHardHWSelector extends React.Component {
                   <React.Fragment>
                     <h2 className="connect-success">{ capitalize(this.props.network.hw.option.replace('-', ' ')) } Connected</h2>
                     <section style={ { width: "75%", margin: "0 auto" } }>
-                      <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ this.props.network.hw.network === "main" ? "Etherem" : "Test" } { capitalize(this.props.network.hw.network) } Network</p>
+                      <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ this.props.network.hw.network === "main" ? "Ethereum" : "Test" } { capitalize(this.props.network.hw.network) } Network</p>
                       <div style={ {margin: "2.5rem 0 0"} }>
                         <Select
                           name="wallet-address"
