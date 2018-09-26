@@ -257,7 +257,7 @@
 	table {
 		width: 100%;
 		border-spacing: 0;
-		border-bottom: 1px solid #595f62;
+		border-bottom: 1px solid rgba(89, 95, 98, 0.7);
 		thead {
 			th {
 				text-align: left;
@@ -301,6 +301,14 @@
 		}
 	}
 
+	.active-network-section {
+		color: white;
+		border-bottom: 1px solid rgba(89, 95, 98, 0.7);
+		padding: 0;
+		p {
+			max-width: unset;
+		}
+	}
 	.info-section {
 		padding: 1rem 3rem;
 		border-bottom: 0;
