@@ -1,6 +1,11 @@
 {
   "name": "scd-cdp-portal",
   "version": "0.1.0",
+  "contributors": [
+    "Gonzalo Balabasquer <gbalabasquer@makerdao.com>",
+    "Michael Elliot <mike@makerdao.com>"
+  ],
+  "description": "Collateralized Debt Position Portal for creating and managing Single-Collateral Dai CDPs in the Dai Stablecoin System.",
   "private": true,
   "homepage": "https://cdp.makerdao.com",
   "dependencies": {
