@@ -71,7 +71,7 @@ class Web3Extended extends Web3 {
     });
   }
 
-  setWebClientProvider = () => {
+  setWebClientWeb3 = () => {
     this.stop();
     return new Promise(async (resolve, reject) => {
       try {
@@ -84,10 +84,7 @@ class Web3Extended extends Web3 {
             } else {
               provider = window.web3.currentProvider;
             }
-            this.setProvider(provider);
-            this.useLogs = true;
-            this.currentProvider.name = getWebClientProviderName();
-            resolve(true);
+            resolve(provider);
           } catch (error) {
             reject(new Error("User denied account access"));
           }
@@ -96,6 +93,19 @@ class Web3Extended extends Web3 {
         }
       } catch(e) {
         reject(e);
+      }
+    });
+  }
+
+  setWebClientProvider = provider => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.setProvider(provider);
+        this.useLogs = true;
+        this.currentProvider.name = getWebClientProviderName();
+        resolve(true);
+      } catch (error) {
+        reject(new Error("Error setting provider"));
       }
     });
   }

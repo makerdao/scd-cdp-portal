@@ -196,8 +196,12 @@ export const setHWProvider = (device, network, path, accountsOffset = 0, account
   return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength);
 }
 
-export const setWebClientProvider = () => {
-  return web3.setWebClientProvider();
+export const setWebClientWeb3 = () => {
+  return web3.setWebClientWeb3();
+}
+
+export const setWebClientProvider = provider => {
+  return web3.setWebClientProvider(provider);
 }
 
 export const {getWebClientProviderName} = require("./web3");

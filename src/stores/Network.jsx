@@ -7,6 +7,7 @@ import * as blockchain from "../utils/blockchain";
 export default class NetworkStore {
   @observable stopIntervals = false;
   @observable loadingAddress = false;
+  @observable waitingForAccessApproval = false;
   @observable accounts = [];
   @observable defaultAccount = null;
   @observable isConnected = false;
@@ -75,11 +76,15 @@ export default class NetworkStore {
     try {
       this.stopIntervals = false;
       this.loadingAddress = true;
-      await blockchain.setWebClientProvider();
+      this.waitingForAccessApproval = typeof window.ethereum !== "undefined";
+      const provider = await blockchain.setWebClientWeb3();
+      this.waitingForAccessApproval = false;
+      await blockchain.setWebClientProvider(provider);
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
+      this.waitingForAccessApproval = false;
       if (e.message === "No client") {
         this.downloadClient = true;
       }
