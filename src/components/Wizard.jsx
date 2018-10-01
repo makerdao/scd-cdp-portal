@@ -142,7 +142,7 @@ class Wizard extends Component {
 
   render() {
     return (
-      <div>
+      <div className="wizard-section">
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
@@ -155,14 +155,14 @@ class Wizard extends Component {
           ?
             <React.Fragment>
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
-                <div className="row">
 
+                <div className="row">
                   <div className="col col-2" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
-                    <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                    <div className="input-values-container">
+                      <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
-                      <div className="typo-cs align-right">
+                      <div className="typo-cs align-right clearfix">
                         { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
                       </div>
                       {
@@ -174,8 +174,8 @@ class Wizard extends Component {
 
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
-                    <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.dai = input } style={ {minWidth: "15rem"} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                    <div className="input-values-container">
+                      <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
@@ -183,11 +183,9 @@ class Wizard extends Component {
                       }
                     </div>
                   </div>
-
                 </div>
 
                 <div className="row">
-
                   <div className="col col-2">
                     <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
@@ -217,7 +215,6 @@ class Wizard extends Component {
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
                     </div>
                   </div>
-
                 </div>
 
                 <div className="row" style={ {borderBottom: "none"} }>
