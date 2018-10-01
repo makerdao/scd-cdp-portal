@@ -8,6 +8,11 @@
 			@content;
 		}
 	}
+	@if $breakpoint == "s+" { // small size screens 768px and under
+		@media only screen and (max-width: 768px) {
+			@content;
+		}
+	}
 	@if $breakpoint == "m" { // medium size screens
 		@media only screen and (max-width: 1024px) {
 			@content;
