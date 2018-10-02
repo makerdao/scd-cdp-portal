@@ -35,9 +35,11 @@ export const rap = (cup, rhi) => {
 }
 
 export const getParameterFromTub = (field, ray = false) => {
+  console.log(`getParameterFromTub for ${field}(): ${methodSig(field + '()')}`)
   return new Promise((resolve, reject) => {
     blockchain.objects.tub[field].call((e, value) => {
       if (!e) {
+        console.log(`* Got tub value ${field}: ${toBytes32(value)}`);
         resolve(ray ? fromRaytoWad(value) : value);
       } else {
         reject(e);
@@ -47,9 +49,11 @@ export const getParameterFromTub = (field, ray = false) => {
 }
 
 export const getParameterFromTap = (field, ray = false) => {
+  console.log(`getParameterFromTap for ${field}(): ${methodSig(field + '()')}`)
   const p = new Promise((resolve, reject) => {
     blockchain.objects.tap[field].call((e, value) => {
       if (!e) {
+        console.log(`* Got tap value ${field}: ${toBytes32(value)}`);
         resolve(ray ? fromRaytoWad(value) : value);
       } else {
         reject(e);
@@ -60,9 +64,11 @@ export const getParameterFromTap = (field, ray = false) => {
 }
 
 export const getParameterFromVox = (field, ray = false) => {
+  console.debug(`getParameterFromVox for ${field}(): ${methodSig(field + '()')}`)
   const p = new Promise((resolve, reject) => {
     blockchain.objects.vox[field].call((e, value) => {
       if (!e) {
+        console.debug(`* Got vox value ${field}: ${toBytes32(value)}`);
         resolve(ray ? fromRaytoWad(value) : value);
       } else {
         reject(e);
@@ -73,9 +79,11 @@ export const getParameterFromVox = (field, ray = false) => {
 }
 
 export const getValFromFeed = obj => {
+  console.debug(`getValFromFeed for ${obj}`)
   const p = new Promise((resolve, reject) => {
     blockchain.objects[obj].peek.call((e, r) => {
       if (!e) {
+        console.debug(`* Got feed value ${obj}: ${toBytes32(r[0])}`);
         resolve(toBigNumber(r[1] ? parseInt(r[0], 16) : -1));
       } else {
         reject(e);
@@ -86,6 +94,7 @@ export const getValFromFeed = obj => {
 }
 
 export const getCup = (id, par, tag, tax, mat, per, chi) => {
+  console.debug(`getCup: ${id}`)
   return new Promise((resolve, reject) => {
     blockchain.objects.tub.cups.call(toBytes32(id), (e, cupData) => {
       if (!e) {
@@ -138,6 +147,7 @@ export const addExtraCupData = (cup, par, tag, tax, mat, per, chi) => {
   cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(tab(cup, chi), mat), per), cup.ink) : toBigNumber(0);
 
   return new Promise((resolve, reject) => {
+    console.debug(`*** Checking if cup ${cup.id} is safe...`);
     blockchain.objects.tub.safe["bytes32"].call(toBytes32(cup.id), (e, safe) => {
       if (!e) {
         cup.safe = safe;

@@ -17,6 +17,7 @@ schema.dsethtoken = require("../abi/dsethtoken");
 schema.dstoken = require("../abi/dstoken");
 schema.dsvalue = require("../abi/dsvalue");
 schema.saiProxyCreateAndExecute = require("../abi/saiProxyCreateAndExecute");
+schema.saivaluesaggregator = require("../abi/saivaluesaggregator");
 
 export const objects = {
 }

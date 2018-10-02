@@ -6,7 +6,7 @@ import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 import {truncateAddress} from "../utils/helpers";
 
-import {BIGGESTUINT256, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
+import {BIGGESTUINT256, fromRaytoWad, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -153,48 +153,19 @@ export default class SystemStore {
   }
 
   setVariables = (onlySecondDependent = false) => {
-    if (!onlySecondDependent) {
-      this.setUpTokenFromChain("gem");
-      this.setUpTokenFromChain("gov");
-      this.setUpTokenFromChain("skr");
-      this.setUpTokenFromChain("dai");
-      this.setUpTokenFromChain("sin");
-      this.setParameterFromTub("authority");
-      this.setParameterFromTub("off");
-      this.setParameterFromTub("out");
-      this.setParameterFromTub("axe", true);
-      this.setParameterFromTub("mat", true, this.calculateSafetyAndDeficit);
-      this.setParameterFromTub("cap");
-      this.setParameterFromTub("fit");
-      this.setParameterFromTub("tax", true);
-      this.setParameterFromTub("fee", true);
-      this.setParameterFromTub("per", true);
-      this.setParameterFromTub("gap");
-      this.setParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
-      this.setParameterFromTap("fix", true);
-      this.setParameterFromTap("gap", false);
-      this.setParameterFromVox("way", true);
-    }
-    this.setParameterFromTub("chi", true);
-    this.setParameterFromTub("rhi", true);
-    this.setParameterFromVox("par", true);
-    this.setEraRho();
-  }
-
-  setEraRho = () => {
-    const promises = [
-                      daisystem.getParameterFromTub("rho"),
-                      daisystem.getParameterFromVox("era")
-                      ];
-    Promise.all(promises)
-    .then(r => {
-      if (r[0] === true && r[1] === true && this.tub.tax.gte(0) && this.sin.tubBalance.gte(0)) {
-        this.sin.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
+    try {
+      if (!onlySecondDependent) {
+        this.setUpTokenFromChain("gem");
+        this.setUpTokenFromChain("gov");
+        this.setUpTokenFromChain("skr");
+        this.setUpTokenFromChain("dai");
+        this.setUpTokenFromChain("sin");
       }
-    })
-    .catch(e => {
-      console.error('Error in setEraRho():', e);
-    });
+      this.setAggregatedValues();
+    }
+    catch(e) {
+      console.error('Error in setVariables():', e);
+    }
   }
 
   loadExtraCupData = type => {
@@ -227,6 +198,83 @@ export default class SystemStore {
     }
   }
 
+  setAggregatedValues = () => {
+    console.debug('Getting aggregated values...');
+    const values = [
+      ["tub", "axe", true],
+      ["tub", "mat", true],
+      ["tub", "cap"],
+      ["tub", "fit"],
+      ["tub", "tax", true],
+      ["tub", "fee", true],
+      ["tub", "chi", true],
+      ["tub", "rhi", true],
+      ["tub", "rho"],
+      ["tub", "gap"],
+      ["tub", "tag", true],
+      ["tub", "per", true],
+      ["vox", "par", true],
+      ["vox", "way", true],
+      ["vox", "era"],
+      ["tap", "fix", true],
+      ["tap", "gap"]
+    ];
+    // aggregateValues() returns (bytes32 pip, bool pipSet, bytes32 pep, bool pepSet, bool off, bool out, uint[] r)
+    blockchain.objects.saiValuesAggregator.aggregateValues.call((e, r) => {
+      if (!e) {
+        console.log('Got setAggregatedValues() result:', r);
+        const originalValues = {
+          "tub.tag": this.tub.tag,
+          "tub.mat": this.tub.mat,
+          "tub.rho": this.tub.rho,
+          "vox.era": this.vox.era
+        };
+        // Set pip and pep
+        this["pip"].val = toBigNumber(r[1] ? parseInt(r[0], 16) : -1);
+        this["pep"].val = toBigNumber(r[3] ? parseInt(r[2], 16) : -1);
+        // Set off and out
+        this.setParameter("tub", "off", r[4]);
+        this.setParameter("tub", "out", r[5]);
+        // Set remaining values in result array
+        for (const [index, val] of values.entries()) {
+          const type = val[0];
+          const param = val[1];
+          const ray = val[2] || false;
+          // console.log('param:', index, type, param, ray)
+          console.log(`Got value for ${type}.${param}: ${toBytes32(r[6][index])}`);
+          this.setParameter(type, param, r[6][index], ray);
+        }
+
+        this.loadExtraCupData('cups');
+        this.loadExtraCupData('legacyCups');
+
+        // Recalculate for mat and tag changes
+        if (this.tub.mat.gte(0) &&
+            this.tub.tag.gte(0) &&
+            (
+              !originalValues["tub.mat"].eq(this.tub.mat) ||
+              !originalValues["tub.tag"].eq(this.tub.tag))
+            ) {
+          console.debug('*** Calculating safety and deficit...');
+          this.calculateSafetyAndDeficit();
+        }
+
+        // Recalculate issuerFee for rho and era changes
+        if (this.tub.rho.gte(0) &&
+            this.vox.era.gte(0) &&
+            this.tub.tax.gte(0) &&
+            this.sin.tubBalance.gte(0) &&
+            (
+              !originalValues["tub.rho"].eq(this.tub.rho) ||
+              !originalValues["vox.era"].eq(this.vox.era))
+            ) {
+          console.debug('*** Calculating issuer fee...');
+          this.tub.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
+        }
+      }
+    });
+  }
+
   setParameterFromTub = async (field, ray = false, callback = false) => {
     try {
       const value = await daisystem.getParameterFromTub(field, ray);
@@ -239,6 +287,11 @@ export default class SystemStore {
     } catch(e) {
       console.error('Error in setParameterFromTub():', e);
     }
+  }
+
+  setParameter = (type, field, value, ray = false, callback = false) => {
+    this[type][field] = ray ? fromRaytoWad(value) : value;
+    if (callback) callback(value);
   }
 
   setParameterFromTap = async (field, ray = false) => {
@@ -409,6 +462,7 @@ export default class SystemStore {
 
   // Token Data
   setUpTokenFromChain = token => {
+    console.debug(`setUpTokenFromChain: ${token}`);
     blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
       if (!e) {
         this[token].address = r;
@@ -420,6 +474,7 @@ export default class SystemStore {
   }
 
   setTokenDataFromChain = token => {
+    console.debug(`setTokenDataFromChain: ${token}`);
     this.setTotalSupplyFromChain(token);
     if (token !== "sin" && isAddress(this.rootStore.network.defaultAccount)) {
       this.setBalanceOfFromChain(token, this.rootStore.network.defaultAccount, "myBalance");
@@ -490,27 +545,8 @@ export default class SystemStore {
         this.rootStore.transactions.logTransactionConfirmed(r);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
           this.reloadCupData(parseInt(r.args.foo, 16));
-        } else if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          const ray = ["axe", "mat", "tax", "fee"].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1;
-          const callback = ["mat"].indexOf(toAscii(r.args.foo).substring(0,3)) !== -1 ? this.calculateSafetyAndDeficit: () => {};
-          this.setParameterFromTub(toAscii(r.args.foo).substring(0,3), ray, callback);
-        } else if (r.args.sig === methodSig("cage(uint256,uint256)")) {
-          this.setParameterFromTub("off");
-          this.setParameterFromTub("fit");
-          this.setParameterFromTap("fix", true);
-        } else if (r.args.sig === methodSig("flow()")) {
-          this.setParameterFromTub("out");
-        }
-        if (r.args.sig === methodSig("drip()") ||
-            r.args.sig === methodSig("chi()") ||
-            r.args.sig === methodSig("rhi()") ||
-            r.args.sig === methodSig("draw(bytes32,uint256)") ||
-            r.args.sig === methodSig("wipe(bytes32,uint256)") ||
-            r.args.sig === methodSig("shut(bytes32)") ||
-            (r.args.sig === methodSig("mold(bytes32,uint256)") && toAscii(r.args.foo).substring(0,3) === "tax")) {
-          this.setParameterFromTub("chi", true);
-          this.setParameterFromTub("rhi", true);
-          this.setEraRho();
+        } else {
+          this.setAggregatedValues();
         }
       }
     });
