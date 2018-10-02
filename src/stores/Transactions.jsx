@@ -140,9 +140,8 @@ export default class TransactionsStore {
     }
   }
 
-  logTransactionRejected = (id, title, callbacks = []) => {
-    const msg = "User denied transaction signing request.";
-    this.notificator.error(id, title, msg, 5000);
+  logTransactionRejected = (id, title, error, callbacks = []) => {
+    this.notificator.error(id, title, error.message, 5000);
     this.lookForCleanCallBack(callbacks);
   }
 
@@ -150,7 +149,7 @@ export default class TransactionsStore {
     if (!e) {
       this.logPendingTransaction(id, tx, title, callbacks);
     } else {
-      this.logTransactionRejected(id, title, callbacks);
+      this.logTransactionRejected(id, title, e, callbacks);
     }
   }
 
