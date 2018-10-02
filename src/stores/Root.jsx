@@ -55,9 +55,11 @@ class RootStore {
 
       const topAddress = settings.chain[this.network.network].top;
       const proxyRegistryAddr = settings.chain[this.network.network].proxyRegistry;
+      const saiValuesAggregatorAddr = settings.chain[this.network.network].saiValuesAggregator;
 
       blockchain.loadObject("top", topAddress, "top");
       blockchain.loadObject("proxyregistry", proxyRegistryAddr, "proxyRegistry");
+      blockchain.loadObject("saivaluesaggregator", saiValuesAggregatorAddr, "saiValuesAggregator");
 
       const setUpPromises = [blockchain.getContractAddr("top", "tub"), blockchain.getContractAddr("top", "tap"), blockchain.getProxy(this.network.defaultAccount)];
 
