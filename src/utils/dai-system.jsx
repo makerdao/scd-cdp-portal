@@ -132,7 +132,7 @@ export const addExtraCupData = (cup, par, tag, tax, mat, per, chi) => {
   const minSKRNeeded = wdiv(wmul(wmul(tab(cup, chi), mat), par), tag);
   cup.avail_skr = cup.ink.minus(minSKRNeeded.gt(toWei(0.005)) ? minSKRNeeded : toWei(0.005)).round(0);
   cup.avail_skr = cup.avail_skr.lt(0) ? toBigNumber(0) : cup.avail_skr;
-  cup.avail_eth = wmul(cup.avail_skr, per).round(0);
+  cup.avail_eth = wmul(cup.avail_skr, per).floor();
   // cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi).times(marginTax), mat), par), tag)).round(0);
   // cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
   cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(tab(cup, chi), mat), per), cup.ink) : toBigNumber(0);
