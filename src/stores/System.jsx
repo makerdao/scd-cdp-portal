@@ -6,7 +6,7 @@ import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 import {truncateAddress} from "../utils/helpers";
 
-import {BIGGESTUINT256, fromRaytoWad, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress, toAscii} from "../utils/helpers";
+import {BIGGESTUINT256, fromRaytoWad, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -161,7 +161,7 @@ export default class SystemStore {
         this.setUpTokenFromChain("dai");
         this.setUpTokenFromChain("sin");
       }
-      this.getAggregatedValues();
+      this.setAggregatedValues();
     }
     catch(e) {
       console.error('Error in setVariables():', e);
@@ -198,7 +198,7 @@ export default class SystemStore {
     }
   }
 
-  getAggregatedValues = () => {
+  setAggregatedValues = () => {
     console.debug('Getting aggregated values...');
     const values = [
       ["tub", "axe", true],
@@ -222,7 +222,7 @@ export default class SystemStore {
     // aggregateValues() returns (bytes32 pip, bool pipSet, bytes32 pep, bool pepSet, bool off, bool out, uint[] r)
     blockchain.objects.saiValuesAggregator.aggregateValues.call((e, r) => {
       if (!e) {
-        console.log('Got getAggregatedValues() result:', r);
+        console.log('Got setAggregatedValues() result:', r);
         const originalValues = {
           "tub.tag": this.tub.tag,
           "tub.mat": this.tub.mat,
@@ -248,16 +248,26 @@ export default class SystemStore {
         this.loadExtraCupData('cups');
         this.loadExtraCupData('legacyCups');
 
-        // QA: Check if this is correct
         // Recalculate for mat and tag changes
-        if (this.tub.mat.gte(0) && this.tub.tag.gte(0) && (!originalValues["tub.mat"].eq(this.tub.mat) || !originalValues["tub.tag"].eq(this.tub.tag))) {
+        if (this.tub.mat.gte(0) &&
+            this.tub.tag.gte(0) &&
+            (
+              !originalValues["tub.mat"].eq(this.tub.mat) ||
+              !originalValues["tub.tag"].eq(this.tub.tag))
+            ) {
           console.debug('*** Calculating safety and deficit...');
           this.calculateSafetyAndDeficit();
         }
 
-        // QA: Check if this is correct
         // Recalculate issuerFee for rho and era changes
-        if (this.tub.rho.gte(0) && this.vox.era.gte(0) && this.tub.tax.gte(0) && this.sin.tubBalance.gte(0) && (!originalValues["tub.rho"].eq(this.tub.rho) || !originalValues["vox.era"].eq(this.vox.era))) {
+        if (this.tub.rho.gte(0) &&
+            this.vox.era.gte(0) &&
+            this.tub.tax.gte(0) &&
+            this.sin.tubBalance.gte(0) &&
+            (
+              !originalValues["tub.rho"].eq(this.tub.rho) ||
+              !originalValues["vox.era"].eq(this.vox.era))
+            ) {
           console.debug('*** Calculating issuer fee...');
           this.tub.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
         }
@@ -532,27 +542,12 @@ export default class SystemStore {
 
     blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        let requestAggregateValues = false;
         this.rootStore.transactions.logTransactionConfirmed(r);
         if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
           this.reloadCupData(parseInt(r.args.foo, 16));
-        } else if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          requestAggregateValues = true;
-        } else if (r.args.sig === methodSig("cage(uint256,uint256)")) {
-          requestAggregateValues = true;
-        } else if (r.args.sig === methodSig("flow()")) {
-          requestAggregateValues = true;
+        } else {
+          this.setAggregatedValues();
         }
-        if (r.args.sig === methodSig("drip()") ||
-            r.args.sig === methodSig("chi()") ||
-            r.args.sig === methodSig("rhi()") ||
-            r.args.sig === methodSig("draw(bytes32,uint256)") ||
-            r.args.sig === methodSig("wipe(bytes32,uint256)") ||
-            r.args.sig === methodSig("shut(bytes32)") ||
-            (r.args.sig === methodSig("mold(bytes32,uint256)") && toAscii(r.args.foo).substring(0,3) === "tax")) {
-              requestAggregateValues = true;
-        }
-        if (requestAggregateValues) this.getAggregatedValues();
       }
     });
   }
