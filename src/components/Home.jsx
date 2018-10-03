@@ -96,7 +96,19 @@ class Home extends React.Component {
                   {
                     this.props.network.loadingAddress
                     ?
-                      <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
+                      <div style={ {padding: "1.7em 3.38em"} }>
+                        {
+                          this.props.network.waitingForAccessApproval
+                          ?
+                            <React.Fragment>
+                              Waiting for approval to access to your account...
+                            </React.Fragment>
+                          :
+                            <React.Fragment>
+                              Loading...
+                            </React.Fragment>
+                        }
+                      </div>
                     :
                       <React.Fragment>
                         <Wallet />
