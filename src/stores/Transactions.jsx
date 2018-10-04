@@ -1,5 +1,5 @@
 // Libraries
-import {observable, computed} from "mobx";
+import {observable, computed, action} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -25,12 +25,13 @@ export default class TransactionsStore {
     return txs.length > 0;
   }
 
-  checkLatestBlock = () => {
-    blockchain.getBlockNumber().then(r => {
-      if (r > this.latestBlock) {
-        this.latestBlock = r;
-      }
-    });
+  @action setLatestBlock = block => {
+    if (block >= this.latestBlock) {
+      console.log(`Latest Block: ${block}`);
+      this.latestBlock = block;
+      return true;
+    }
+    return false;
   }
 
   setStandardGasPrice = async () => {

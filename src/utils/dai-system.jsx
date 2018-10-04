@@ -4,7 +4,7 @@ import Promise from "bluebird";
 
 // Utils
 import * as blockchain from "./blockchain";
-import {toBigNumber, fromWei, fromRaytoWad, wmul, wdiv, toChecksumAddress, toBytes32, methodSig, formatDate, printNumber, toWei} from "./helpers";
+import {toBigNumber, fromWei, wmul, wdiv, toChecksumAddress, toBytes32, methodSig, formatDate, printNumber, toWei} from "./helpers";
 
 import * as settings from "../settings";
 
@@ -32,65 +32,6 @@ export const tab = (cup, chi) => {
 
 export const rap = (cup, rhi) => {
   return wmul(cup.ire, rhi).minus(tab(cup)).round(0);
-}
-
-export const getParameterFromTub = (field, ray = false) => {
-  console.log(`getParameterFromTub for ${field}(): ${methodSig(field + '()')}`)
-  return new Promise((resolve, reject) => {
-    blockchain.objects.tub[field].call((e, value) => {
-      if (!e) {
-        console.log(`* Got tub value ${field}: ${toBytes32(value)}`);
-        resolve(ray ? fromRaytoWad(value) : value);
-      } else {
-        reject(e);
-      }
-    });
-  });
-}
-
-export const getParameterFromTap = (field, ray = false) => {
-  console.log(`getParameterFromTap for ${field}(): ${methodSig(field + '()')}`)
-  const p = new Promise((resolve, reject) => {
-    blockchain.objects.tap[field].call((e, value) => {
-      if (!e) {
-        console.log(`* Got tap value ${field}: ${toBytes32(value)}`);
-        resolve(ray ? fromRaytoWad(value) : value);
-      } else {
-        reject(e);
-      }
-    });
-  });
-  return p;
-}
-
-export const getParameterFromVox = (field, ray = false) => {
-  console.debug(`getParameterFromVox for ${field}(): ${methodSig(field + '()')}`)
-  const p = new Promise((resolve, reject) => {
-    blockchain.objects.vox[field].call((e, value) => {
-      if (!e) {
-        console.debug(`* Got vox value ${field}: ${toBytes32(value)}`);
-        resolve(ray ? fromRaytoWad(value) : value);
-      } else {
-        reject(e);
-      }
-    });
-  });
-  return p;
-}
-
-export const getValFromFeed = obj => {
-  console.debug(`getValFromFeed for ${obj}`)
-  const p = new Promise((resolve, reject) => {
-    blockchain.objects[obj].peek.call((e, r) => {
-      if (!e) {
-        console.debug(`* Got feed value ${obj}: ${toBytes32(r[0])}`);
-        resolve(toBigNumber(r[1] ? parseInt(r[0], 16) : -1));
-      } else {
-        reject(e);
-      }
-    });
-  });
-  return p;
 }
 
 export const getCup = (id, par, tag, tax, mat, per, chi) => {
@@ -301,4 +242,28 @@ export const futureRap = (cup, age, chi, rhi, tax, fee) => {
               )
             )
           ).round(0);
+}
+
+export const getContracts = () => {
+  return new Promise((resolve, reject) => {
+    blockchain.objects.saiValuesAggregator.getContractsAddrs((e, r) => {
+      if (!e) {
+        resolve(r);
+      } else {
+        reject(e);
+      }
+    });
+  });
+}
+
+export const getAggregatedValues = (account, proxy) => {
+  return new Promise((resolve, reject) => {
+    blockchain.objects.saiValuesAggregator.aggregateValues.call(account, proxy, (e, r) => {
+      if (!e) {
+        resolve(r);
+      } else {
+        reject(e);
+      }
+    });
+  });
 }

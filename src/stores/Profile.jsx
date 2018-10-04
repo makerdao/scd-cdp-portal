@@ -29,7 +29,7 @@ export default class ProfileStore {
           resolve(proxy);
         } else {
           // We force to check again until we get the result
-          console.log("Proxy still not found, trying again in 3 seconds...")
+          console.log("Proxy still not found, trying again in 3 seconds...");
           setTimeout(() => this.setProxyFromChain(callbacks), 3000);
           reject(false);
         }
