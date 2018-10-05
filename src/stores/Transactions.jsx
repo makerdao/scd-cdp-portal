@@ -109,7 +109,7 @@ export default class TransactionsStore {
   }
 
   logTransactionConfirmed = object => {
-    if (object.blockNumber >= this.latestBlock) {
+    if (this.setLatestBlock(object.blockNumber)) {
       const tx = object.transactionHash;
       const msgTemp = "Transaction TX was confirmed.";
       if (this.registry[tx] && this.registry[tx].pending) {

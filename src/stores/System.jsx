@@ -83,6 +83,9 @@ export default class SystemStore {
     this.pit = {
       address: null,
     };
+    this.eth = {
+      myBalance: toBigNumber(-1),
+    }
     this.gem = {
       address: null,
       totalSupply: toBigNumber(-1),
@@ -237,6 +240,7 @@ export default class SystemStore {
     ];
 
     const tValues = [
+      ["eth", "myBalance"],
       ["gem", "totalSupply"],
       ["gem", "myBalance"],
       ["gem", "tubBalance"],
@@ -255,7 +259,7 @@ export default class SystemStore {
       ["dai", "allowance"],
       ["sin", "totalSupply"],
       ["sin", "tubBalance"],
-      ["sin", "tapBalance"]
+      ["sin", "tapBalance"],
     ];
 
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
@@ -592,7 +596,7 @@ export default class SystemStore {
       if (this.rootStore.network.hw.active) {
         params.gas = 21000;
       }
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["profile/setEthBalanceFromChain"]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["system/setAggregatedValues"]]);
     } else {
       const params = {value: 0};
       if (this.rootStore.network.hw.active) {
@@ -632,7 +636,7 @@ export default class SystemStore {
   shut = (cupId, useOTC = false) => {
     const title = `Close CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setAggregatedValues"]]});
+    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["system/setAggregatedValues"]]});
   }
 
   give = (cupId, newOwner) => {
@@ -650,7 +654,7 @@ export default class SystemStore {
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
         callbacks = [
-          ["system/setMyCupsFromChain", true], ["profile/setEthBalanceFromChain"], ["system/setAggregatedValues"]
+          ["system/setMyCupsFromChain", true], ["system/setAggregatedValues"]
         ];
 
         if (this.rootStore.profile.proxy) {
@@ -674,7 +678,7 @@ export default class SystemStore {
         }
       } else {
         callbacks = [
-          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setAggregatedValues"]
+          ["system/reloadCupData", cupId], ["system/setAggregatedValues"]
         ];
         if (dai.equals(0)) {
           title = `Deposit ${eth.valueOf()} ETH`;
@@ -726,7 +730,7 @@ export default class SystemStore {
                           {
                             title,
                             callbacks:  [
-                                          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setAggregatedValues"]
+                                          ["system/reloadCupData", cupId], ["system/setAggregatedValues"]
                                         ]
                           });
     }

@@ -26,36 +26,25 @@ class RootStore {
 
   setInterval = () => {
     this.timeVariablesInterval = setInterval(() => {
+      console.log("Interval");
       this.system.setAggregatedValues();
-      this.profile.setEthBalanceFromChain();
       this.transactions.setStandardGasPrice();
-    }, 5000);
-  }
-
-  setPendingTxInterval = () => {
-    this.pendingTxInterval = setInterval(() => {
       this.transactions.checkPendingTransactions();
     }, 10000);
   }
 
   _loadContracts = () => {
-    const setUpPromises = [daisystem.getContracts(), blockchain.getProxy(this.network.defaultAccount)];
-    Promise.all(setUpPromises).then(r => {
-      if (this.transactions.setLatestBlock(r[0][0].toNumber()) && r[0] && r[1] && isAddress(r[0][1]) && isAddress(r[0][2]) && isAddress(r[1])) {
-        this.profile.setEthBalanceFromChain();
-
+    daisystem.getContracts(settings.chain[this.network.network].proxyRegistry, this.network.defaultAccount).then(r => {
+      if (r && this.transactions.setLatestBlock(r[0].toNumber()) && r[1] && isAddress(r[1][0]) && isAddress(r[1][1])) {
         // Set profile proxy and system contracts
-        this.profile.setProxy(r[1]);
-        this.system.init(r[0][1], r[0][2], r[0][3], r[0][4], r[0][5], r[0][6], r[0][7], r[0][8], r[0][9], r[0][10], r[0][11], r[0][12]);
+        this.profile.setProxy(r[2]);
+        this.system.init(r[1][0], r[1][1], r[1][2], r[1][3], r[1][4], r[1][5], r[1][6], r[1][7], r[1][8], r[1][9], r[1][10], r[1][11]);
         this.network.stopLoadingAddress();
-
         this.transactions.setStandardGasPrice();
 
-        // Intervals
         this.setInterval();
-        this.setPendingTxInterval();
       } else {
-        console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${r[0][0].toNumber()}, trying again...`);
+        console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
         setTimeout(this._loadContracts, 2000);
       }
     }, () => {

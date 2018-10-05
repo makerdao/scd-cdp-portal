@@ -121,7 +121,7 @@ class Dialog extends React.Component {
       //   break;
       // case "exit":
       // case "lock":
-      //   value = this.props.profile.accountBalance;
+      //   value = this.props.system.eth.myBalance;
       //   break;
       // case "free":
       //  value = this.props.system.tub.cups[this.props.dialog.cupId].avail_skr_with_margin;
@@ -321,7 +321,7 @@ class Dialog extends React.Component {
           }, () => {
             this.props.dialog.error = "";
             if (valueWei.gt(0)) {
-              if (this.props.profile.accountBalance.lt(valueWei)) {
+              if (this.props.system.eth.myBalance.lt(valueWei)) {
                 this.props.dialog.error = "Not enough balance to deposit this amount of ETH.";
               } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
                 this.props.dialog.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
@@ -344,7 +344,7 @@ class Dialog extends React.Component {
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Current account balance</div>
-                  <div className="info-value">{ printNumber(this.props.profile.accountBalance, 2) } ETH</div>
+                  <div className="info-value">{ printNumber(this.props.system.eth.myBalance, 2) } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>

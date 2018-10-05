@@ -3,25 +3,23 @@
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
-      "top": "0x5f00393547561da3030ebf30e52f5dc0d5d3362c",
+      "saiValuesAggregator": "0x8dd8d75a590ad91d195357a74a6ce2d692aea94b",
       "otc": "0x8cf1cab422a0b6b554077a361f8419cdf122a9f9",
       "fromBlock": 5216602,
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
       "chart": false,
       "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
-      "saiProxyCreateAndExecute": "0xadb7c74bce932fc6c27dda3ac2344707d2fbb0e6",
-      "saiValuesAggregator": "0x94902554271efe55a958a542be756f70fbf45137"
+      "saiProxyCreateAndExecute": "0xadb7c74bce932fc6c27dda3ac2344707d2fbb0e6"
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
-      "top": "0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3",
+      "saiValuesAggregator": "",
       "otc": "0x14fbca95be7e99c15cc2996c6c9d841e54b79425",
       "fromBlock": 4752013,
       "service": "https://graphql.makerdao.com/v1",
       "chart": false,
       "proxyRegistry": "0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4",
-      "saiProxyCreateAndExecute": "0xd64979357160e8146f6e1d805cf20437397bf1ba",
-      "saiValuesAggregator": ""
+      "saiProxyCreateAndExecute": "0xd64979357160e8146f6e1d805cf20437397bf1ba"
     }
   }
 }

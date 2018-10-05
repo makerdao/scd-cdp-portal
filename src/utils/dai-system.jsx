@@ -244,9 +244,9 @@ export const futureRap = (cup, age, chi, rhi, tax, fee) => {
           ).round(0);
 }
 
-export const getContracts = () => {
+export const getContracts = (proxyRegistry, address) => {
   return new Promise((resolve, reject) => {
-    blockchain.objects.saiValuesAggregator.getContractsAddrs((e, r) => {
+    blockchain.objects.saiValuesAggregator.getContractsAddrs(proxyRegistry, address, (e, r) => {
       if (!e) {
         resolve(r);
       } else {

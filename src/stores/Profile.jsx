@@ -3,42 +3,42 @@ import {observable} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
-import {toBigNumber} from "../utils/helpers";
+import * as daisystem from "../utils/dai-system";
+
+// Settings
+import * as settings from "../settings";
 
 export default class ProfileStore {
-  @observable accountBalance = toBigNumber(-1);
   @observable proxy = -1;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
-  setEthBalanceFromChain = () => {
-    blockchain.getEthBalanceOf(this.rootStore.network.defaultAccount).then(r => {
-      this.accountBalance = r;
-    }, () => {});
-  }
-
   setProxyFromChain = (callbacks = null) => {
     return new Promise((resolve, reject) => {
       console.log("Checking proxy...")
-      blockchain.getProxy(this.rootStore.network.defaultAccount).then(proxy => {
-        if (proxy) {
-          this.setProxy(proxy);
+      daisystem.getContracts(settings.chain[this.rootStore.network.network].proxyRegistry, this.rootStore.network.defaultAccount).then(r => {
+        if (r && r[2] && this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
+          this.setProxy(r[2]);
           callbacks && this.rootStore.transactions.executeCallbacks(callbacks);
-          resolve(proxy);
+          resolve(r[2]);
         } else {
           // We force to check again until we get the result
           console.log("Proxy still not found, trying again in 3 seconds...");
           setTimeout(() => this.setProxyFromChain(callbacks), 3000);
           reject(false);
         }
-      }, () => reject(false));
+      }, () => {
+        console.log("Error occurred, trying again in 3 seconds...");
+        setTimeout(() => this.setProxyFromChain(callbacks), 3000);
+        reject(false);
+      });
     });
   }
 
   setProxy = proxy => {
-    this.proxy = proxy;
+    this.proxy = proxy !== "0x0000000000000000000000000000000000000000" ? proxy : null;
     blockchain.loadObject("dsproxy", this.proxy, "proxy");
     console.log("proxy", this.proxy);
   }
