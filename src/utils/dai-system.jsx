@@ -4,7 +4,7 @@ import Promise from "bluebird";
 
 // Utils
 import * as blockchain from "./blockchain";
-import {toBigNumber, fromWei, wmul, wdiv, toChecksumAddress, toBytes32, methodSig, formatDate, printNumber, toWei} from "./helpers";
+import {fromWei, wmul, wdiv, toChecksumAddress, toBytes32, formatDate, printNumber, toWei} from "./helpers";
 
 import * as settings from "../settings";
 
@@ -34,105 +34,29 @@ export const rap = (cup, rhi) => {
   return wmul(cup.ire, rhi).minus(tab(cup)).round(0);
 }
 
-export const getCup = (id, par, tag, tax, mat, per, chi) => {
+export const getCup = id => {
   console.debug(`getCup: ${id}`)
   return new Promise((resolve, reject) => {
-    blockchain.objects.tub.cups.call(toBytes32(id), (e, cupData) => {
+    blockchain.objects.saiValuesAggregator.aggregateCDPValues(toBytes32(id), (e, cup) => {
       if (!e) {
-        const cupBaseData = {
+        const cupData = {
           id: parseInt(id, 10),
-          lad: cupData[0],
-          ink: cupData[1],
-          art: cupData[2],
-          ire: cupData[3],
-          pro: toBigNumber(-1),
-          ratio: toBigNumber(-1),
-          avail_dai: toBigNumber(-1),
-          // avail_dai_with_margin: toBigNumber(-1),
-          avail_skr: toBigNumber(-1),
-          // avail_skr_with_margin: toBigNumber(-1),
-          liq_price: toBigNumber(-1)
+          lad: cup[1],
+          safe: cup[2],
+          ink: cup[3][0],
+          art: cup[3][1],
+          ire: cup[3][2],
+          ratio: fromWei(cup[3][3]),
+          avail_dai: cup[3][4],
+          avail_skr: cup[3][5],
+          avail_eth: cup[3][6],
+          liq_price: cup[3][7]
         };
-
-        if (par.gte(0) && tag.gte(0) && tax.gte(0) && mat.gte(0) && per.gte(0) && chi.gte(0)) {
-          Promise.resolve(addExtraCupData(cupBaseData, par, tag, tax, mat, per, chi)).then(cup => {
-            resolve(cup);
-          }, e => {
-            reject(e);
-          });
-        } else {
-          resolve(cupBaseData);
-        }
+        resolve({block: cup[0].toNumber(), cupData});
       } else {
         reject(e);
       }
     });
-  });
-}
-
-export const addExtraCupData = (cup, par, tag, tax, mat, per, chi) => {
-  cup.pro = wmul(cup.ink, tag).round(0);
-  cup.ratio = cup.pro.div(wmul(tab(cup, chi), par));
-  // This is to give a window margin to get the maximum value (as "chi" is dynamic value per second)
-  // const marginTax = fromWei(tax).pow(120);
-  cup.avail_dai = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi)).round(0);
-  cup.avail_dai = cup.avail_dai.lt(0) ? toBigNumber(0) : cup.avail_dai;
-  // cup.avail_dai_with_margin = wdiv(cup.pro, wmul(mat, par)).minus(tab(cup, chi).times(marginTax)).round(0);
-  // cup.avail_dai_with_margin = cup.avail_dai_with_margin.lt(0) ? toBigNumber(0) : cup.avail_dai_with_margin;
-  const minSKRNeeded = wdiv(wmul(wmul(tab(cup, chi), mat), par), tag);
-  cup.avail_skr = cup.ink.minus(minSKRNeeded.gt(toWei(0.005)) ? minSKRNeeded : toWei(0.005)).round(0);
-  cup.avail_skr = cup.avail_skr.lt(0) ? toBigNumber(0) : cup.avail_skr;
-  cup.avail_eth = wmul(cup.avail_skr, per).floor();
-  // cup.avail_skr_with_margin = cup.ink.minus(wdiv(wmul(wmul(tab(cup, chi).times(marginTax), mat), par), tag)).round(0);
-  // cup.avail_skr_with_margin = cup.avail_skr_with_margin.lt(0) ? toBigNumber(0) : cup.avail_skr_with_margin;
-  cup.liq_price = cup.ink.gt(0) && cup.art.gt(0) ? wdiv(wdiv(wmul(tab(cup, chi), mat), per), cup.ink) : toBigNumber(0);
-
-  return new Promise((resolve, reject) => {
-    console.debug(`*** Checking if cup ${cup.id} is safe...`);
-    blockchain.objects.tub.safe["bytes32"].call(toBytes32(cup.id), (e, safe) => {
-      if (!e) {
-        cup.safe = safe;
-        resolve(cup);
-      } else {
-        reject(e);
-      }
-    });
-  });
-}
-
-export const getCupsFromChain = (lad, fromBlock, par, tag, tax, mat, per, chi, promisesCups = []) => {
-  if (!blockchain.getProviderUseLogs()) return promisesCups;
-  return new Promise((resolve, reject) => {
-    const promisesLogs = [];
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promisesCups.push(getCup(parseInt(r[i].args.cup, 16), par, tag, tax, mat, per, chi));
-            }
-            resolve(true);
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    promisesLogs.push(
-      new Promise((resolve, reject) => {
-        blockchain.objects.tub.LogNote({sig: methodSig("give(bytes32,address)"), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
-          if (!e) {
-            for (let i = 0; i < r.length; i++) {
-              promisesCups.push(getCup(parseInt(r[i].args.foo, 16), par, tag, tax, mat, per, chi));
-            }
-            resolve(true);
-          } else {
-            reject(e);
-          }
-        });
-      })
-    );
-    Promise.all(promisesLogs).then(() => resolve(promisesCups), e => reject(e));
   });
 }
 

@@ -134,7 +134,7 @@ class WalletHardHWSelector extends React.Component {
                 this.props.network.hw.error
                 ?
                   <React.Fragment>
-                    <h2 className="connect-fail">{ capitalize(this.props.network.hw.option.replace('-', ' ')) } Connection Failed</h2>
+                    <h2 className="connect-fail">{ capitalize(this.props.network.hw.option.replace("-", " ")) } Connection Failed</h2>
                     {
                       this.props.network.hw.option.substring(0, 6) === "ledger" &&
                       <div className="typo-c">
@@ -156,7 +156,7 @@ class WalletHardHWSelector extends React.Component {
                 :
                   this.props.network.hw.addresses.length > 0 &&
                   <React.Fragment>
-                    <h2 className="connect-success">{ capitalize(this.props.network.hw.option.replace('-', ' ')) } Connected</h2>
+                    <h2 className="connect-success">{ capitalize(this.props.network.hw.option.replace("-", " ")) } Connected</h2>
                     <section style={ { width: "75%", margin: "0 auto" } }>
                       <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ this.props.network.hw.network === "main" ? "Main Ethereum" : capitalize(this.props.network.hw.network) + " Test" } Network</p>
                       <div style={ {margin: "2.5rem 0 0"} }>
@@ -174,7 +174,7 @@ class WalletHardHWSelector extends React.Component {
                         {
                           this.props.network.hw.option.substring(0, 6) === "ledger" &&
                           <div>
-                            <div style={ {margin: '0.5rem auto 2.4rem', textAlign: 'center'} }>
+                            <div style={ {margin: "0.5rem auto 2.4rem", textAlign: "center"} }>
                               <a
                                 className="switch-ledger-type"
                                 href="#action"

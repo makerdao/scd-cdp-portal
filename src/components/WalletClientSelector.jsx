@@ -87,25 +87,25 @@ class WalletClientSelector extends React.Component {
           {
             providerName ?
               <React.Fragment>
-                <div className="provider-icon">{ walletIcons.hasOwnProperty(providerName) ? walletIcons[providerName] : walletIcons['web'] }</div>
+                <div className="provider-icon">{ walletIcons.hasOwnProperty(providerName) ? walletIcons[providerName] : walletIcons["web"] }</div>
                 { this.props.formatClientName(providerName) }
               </React.Fragment>
             :
               <React.Fragment>
-                <div className="provider-icon">{ walletIcons['web'] }</div>
+                <div className="provider-icon">{ walletIcons["web"] }</div>
                 Web Wallet
               </React.Fragment>
           }
           </a>
           {
-          navigator.userAgent.toLowerCase().indexOf('firefox') === -1 &&
+          navigator.userAgent.toLowerCase().indexOf("firefox") === -1 &&
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW("ledger") } }>
-            <div className="provider-icon">{ walletIcons['ledger'] }</div>
+            <div className="provider-icon">{ walletIcons["ledger"] }</div>
             Ledger Nano S
           </a>
           }
           <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.showHW("trezor") } }>
-            <div className="provider-icon">{ walletIcons['trezor'] }</div>
+            <div className="provider-icon">{ walletIcons["trezor"] }</div>
             Trezor
           </a>
         </section>

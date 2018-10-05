@@ -55,15 +55,15 @@ class WalletClientSelector extends React.Component {
         <section className="content">
         <div className="helper-text no-wrap">Select a web wallet to see more information</div>
           <a className="web-wallet" href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
-            <div className="provider-icon">{ walletIcons['metamask'] }</div>
+            <div className="provider-icon">{ walletIcons["metamask"] }</div>
             MetaMask
           </a>
           <a className="web-wallet" href="https://www.parity.io/" target="_blank" rel="noopener noreferrer">
-            <div className="provider-icon">{ walletIcons['parity'] }</div>
+            <div className="provider-icon">{ walletIcons["parity"] }</div>
             Parity
           </a>
           <a className="web-wallet" href="https://github.com/ethereum/mist/releases" target="_blank" rel="noopener noreferrer">
-            <div className="provider-icon">{ walletIcons['mist'] }</div>
+            <div className="provider-icon">{ walletIcons["mist"] }</div>
             Mist
           </a>
         </section>

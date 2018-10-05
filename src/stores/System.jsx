@@ -187,38 +187,8 @@ export default class SystemStore {
     }
   }
 
-  loadExtraCupData = type => {
-    try {
-      const promises = [];
-      Object.keys(this.tub[type]).forEach(key => {
-        if (this.vox.par.gte(0) && this.tub.tag.gte(0) && this.tub.tax.gte(0) && this.tub.mat.gte(0) && this.tub.per.gte(0) && this.tub.chi.gte(0)) {
-          promises.push(daisystem.addExtraCupData(this.tub[type][key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi));
-        }
-      });
-      Promise.all(promises).then(r => {
-        if (r.length > 0) {
-          for (let i = 0; i < r.length; i++) {
-            if (typeof this.tub[type][r[i].id] !== "undefined") {
-              this.tub[type][r[i].id].pro = r[i].pro;
-              this.tub[type][r[i].id].ratio = r[i].ratio;
-              this.tub[type][r[i].id].avail_dai = r[i].avail_dai;
-              // this.tub[type][r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
-              this.tub[type][r[i].id].avail_skr = r[i].avail_skr;
-              // this.tub[type][r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
-              this.tub[type][r[i].id].liq_price = r[i].liq_price;
-              this.tub[type][r[i].id].safe = r[i].safe;
-            }
-          }
-        }
-      });
-    }
-    catch(e) {
-      console.error('Error in loadExtraCupData():', e);
-    }
-  }
-
   setAggregatedValues = (callbacks = []) => {
-    console.debug('Getting aggregated values...');
+    console.debug("Getting aggregated values...");
     const sValues = [
       ["tub", "axe", true],
       ["tub", "mat", true],
@@ -263,7 +233,7 @@ export default class SystemStore {
     ];
 
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
-      console.log('Got aggregateValues() result:', r);
+      console.log("Got aggregateValues() result:", r);
       if (this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
         const originalValues = {
           "tub.tag": this.tub.tag,
@@ -282,8 +252,6 @@ export default class SystemStore {
           const type = val[0];
           const param = val[1];
           const ray = val[2] || false;
-          // console.log('param:', index, type, param, ray)
-          // console.log(`Got value for ${type}.${param}: ${toBytes32(r[7][index])}`);
           this.setParameter(type, param, r[7][index], ray);
         }
 
@@ -294,9 +262,6 @@ export default class SystemStore {
           this[type][param] = r[8][index];
         }
 
-        this.loadExtraCupData('cups');
-        this.loadExtraCupData('legacyCups');
-
         // Recalculate for mat and tag changes
         if (this.tub.mat.gte(0) &&
             this.tub.tag.gte(0) &&
@@ -304,7 +269,7 @@ export default class SystemStore {
               !originalValues["tub.mat"].eq(this.tub.mat) ||
               !originalValues["tub.tag"].eq(this.tub.tag))
             ) {
-          console.debug('*** Calculating safety and deficit...');
+          console.debug("*** Calculating safety and deficit...");
           this.calculateSafetyAndDeficit();
         }
 
@@ -317,7 +282,7 @@ export default class SystemStore {
               !originalValues["tub.rho"].eq(this.tub.rho) ||
               !originalValues["vox.era"].eq(this.vox.era))
             ) {
-          console.debug('*** Calculating issuer fee...');
+          console.debug("*** Calculating issuer fee...");
           this.tub.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
         }
 
@@ -342,34 +307,81 @@ export default class SystemStore {
   }
 
   getCup = id => {
-    return daisystem.getCup(id, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi);
+    return new Promise((resolve, reject) => {
+      daisystem.getCup(id).then(cup => {
+        console.log("Got cup:", cup);
+        if (this.rootStore.transactions.setLatestBlock(cup.block)) {
+          resolve(cup);
+        } else {
+          console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}}, trying again...`);
+          setTimeout(() => {
+            resolve(this.getCup(id));
+          }, 1000);
+        }
+      }, e => reject(e));
+    });
+  }
+
+  getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
+    if (!blockchain.getProviderUseLogs()) return promisesCups;
+    return new Promise((resolve, reject) => {
+      const promisesLogs = [];
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16)));
+              }
+              resolve(true);
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          blockchain.objects.tub.LogNote({sig: methodSig("give(bytes32,address)"), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16)));
+              }
+              resolve(true);
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      Promise.all(promisesLogs).then(() => resolve(promisesCups), e => reject(e));
+    });
   }
 
   setCups = async (type, keepTrying = false, callbacks = []) => {
     const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
-    const me = this;
     let promisesCups = [];
     let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
 
     try {
       const serviceData = settings.chain[this.rootStore.network.network].service ? await daisystem.getCupsFromService(this.rootStore.network.network, lad) : [];
       serviceData.forEach(v => {
-        promisesCups.push(me.getCup(v.id));
+        promisesCups.push(this.getCup(v.id));
         fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
       });
     }
     catch(e) {
-      console.error('Error in setCups():', e);
+      console.error("Error in setCups():", e);
     }
     finally {
-      promisesCups = await daisystem.getCupsFromChain(lad, fromBlock, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi, promisesCups);
+      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
 
       if (type === "legacy" || this.tub.cupsLoading) {
         Promise.all(promisesCups).then(cups => {
           const cupsFiltered = {};
           for (let i = 0; i < cups.length; i++) {
-            if (lad === cups[i].lad) {
-                cupsFiltered[cups[i].id] = cups[i];
+            if (lad === cups[i].cupData.lad) {
+                cupsFiltered[cups[i].cupData.id] = cups[i].cupData;
             }
           }
           const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
@@ -446,9 +458,14 @@ export default class SystemStore {
   }
 
   reloadCupData = id => {
-    this.getCup(id).then(cup => {
-      this.tub.cups[id] = {...cup};
-      this.loadCupHistory(id);
+    daisystem.getCup(id).then(cup => {
+      if (this.rootStore.transactions.setLatestBlock(cup.block)) {
+        this.tub.cups[id] = {...cup.cupData};
+        this.loadCupHistory(id);
+      } else {
+        console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}, trying again...`);
+        setTimeout(() => this.reloadCupData(id), 2000);
+      }
     });
   }
 
