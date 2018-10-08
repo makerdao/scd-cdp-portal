@@ -1,5 +1,5 @@
 export const wipeDai = async (cdp, amount, useOtc) => {
-  const result = await cdp.wipeDai(amount, useOtc);
+  const result = await cdp.wipeDai(amount, { useOtc });
   console.debug('SDK: wipeDai() result:', result);
 }
 
