@@ -245,32 +245,23 @@ export default class SystemStore {
         this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
         this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
         // Set off and out
-        this.setParameter("tub", "off", r[5]);
-        this.setParameter("tub", "out", r[6]);
+        this.setParameter("tub", "off", r[5][0]);
+        this.setParameter("tub", "out", r[5][1]);
+        this.setParameter("tub", "eek", r[5][2]);
+        this.setParameter("tub", "safe", r[5][3]);
         // Set remaining values in result array
         for (const [index, val] of sValues.entries()) {
           const type = val[0];
           const param = val[1];
           const ray = val[2] || false;
-          this.setParameter(type, param, r[7][index], ray);
+          this.setParameter(type, param, r[6][index], ray);
         }
 
         for (const [index, val] of tValues.entries()) {
           const type = val[0];
           const param = val[1];
           // console.log(`Got value for ${type}.${param}: ${toBytes32(r[8][index])}`);
-          this[type][param] = r[8][index];
-        }
-
-        // Recalculate for mat and tag changes
-        if (this.tub.mat.gte(0) &&
-            this.tub.tag.gte(0) &&
-            (
-              !originalValues["tub.mat"].eq(this.tub.mat) ||
-              !originalValues["tub.tag"].eq(this.tub.tag))
-            ) {
-          console.debug("*** Calculating safety and deficit...");
-          this.calculateSafetyAndDeficit();
+          this[type][param] = r[7][index];
         }
 
         // Recalculate issuerFee for rho and era changes
@@ -297,13 +288,6 @@ export default class SystemStore {
   setParameter = (type, field, value, ray = false, callback = false) => {
     this[type][field] = ray ? fromRaytoWad(value) : value;
     if (callback) callback(value);
-  }
-
-  calculateSafetyAndDeficit = () => {
-    const values = daisystem.calculateSafetyAndDeficit(this.tub.mat, this.skr.tubBalance, this.tub.tag, this.sin.totalSupply);
-    Object.keys(values).forEach(key => {
-      this[key] = {...this[key], ...values[key]};
-    });
   }
 
   getCup = id => {

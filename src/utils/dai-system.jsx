@@ -8,16 +8,6 @@ import {fromWei, wmul, wdiv, toChecksumAddress, toBytes32, formatDate, printNumb
 
 import * as settings from "../settings";
 
-export const calculateSafetyAndDeficit = (mat, skrTubBalance, tag, sinTotalSupply) => {
-  if (mat.gte(0) && skrTubBalance.gte(0) && tag.gte(0) && sinTotalSupply.gte(0)) {
-    const pro = wmul(skrTubBalance, tag);
-    const con = sinTotalSupply;
-    const min = wmul(con, mat);
-    return {tub: {eek: pro.lt(con), safe: pro.gte(min)}};
-  }
-  return {tub: {eek: null, safe: null}};
-}
-
 export const calculateLiquidationPrice = (par, per, mat, skr, dai) => {
   return wdiv(wmul(wmul(dai, par), mat), wmul(skr, per));
 }

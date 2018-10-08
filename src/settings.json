@@ -3,7 +3,7 @@
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
-      "saiValuesAggregator": "0x68651e168747955cbf677d1a6479eaae46243f14",
+      "saiValuesAggregator": "0x7d8a2cb7f730740108b959e8ace6e631b7ccfaef",
       "otc": "0x8cf1cab422a0b6b554077a361f8419cdf122a9f9",
       "fromBlock": 5216602,
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
