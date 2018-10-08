@@ -125,7 +125,6 @@ export default class TransactionsStore {
         this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
       }
     }
-    }
   }
 
   logTransactionFailed = tx => {
