@@ -235,37 +235,26 @@ export default class SystemStore {
         // Set pip and pep
         this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
         this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
-        // Set off and out
-        this.setParameter("tub", "off", r[5][0]);
-        this.setParameter("tub", "out", r[5][1]);
-        this.setParameter("tub", "eek", r[5][2]);
-        this.setParameter("tub", "safe", r[5][3]);
-        // Set remaining values in result array
+        // Set off, out, eek and safe
+        this.tub.off = r[5][0];
+        this.tub.out = r[5][1];
+        this.tub.eek = r[5][2];
+        this.tub.safe = r[5][3];
+        // Set system values
         for (const [index, val] of sValues.entries()) {
-          const type = val[0];
-          const param = val[1];
-          const ray = val[2] || false;
-          this.setParameter(type, param, r[6][index], ray);
+          this[val[0]][val[1]] = (val[2] || false) ? fromRaytoWad(r[6][index]) : r[6][index];
         }
-
+        // Set token values
         for (const [index, val] of tValues.entries()) {
-          const type = val[0];
-          const param = val[1];
-          // console.log(`Got value for ${type}.${param}: ${toBytes32(r[8][index])}`);
-          this[type][param] = r[7][index];
+          this[val[0]][val[1]] = r[7][index];
         }
-
+        // Execute possible callbacks
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
         console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
         setTimeout(() => this.setAggregatedValues(callbacks), 2000);
       }
     });
-  }
-
-  setParameter = (type, field, value, ray = false, callback = false) => {
-    this[type][field] = ray ? fromRaytoWad(value) : value;
-    if (callback) callback(value);
   }
 
   getCup = id => {

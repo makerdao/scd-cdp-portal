@@ -1,5 +1,5 @@
 // Libraries
-import {observable, computed, action} from "mobx";
+import {observable, computed} from "mobx";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -25,7 +25,7 @@ export default class TransactionsStore {
     return txs.length > 0;
   }
 
-  @action setLatestBlock = block => {
+  setLatestBlock = block => {
     if (block >= this.latestBlock) {
       console.log(`Latest Block: ${block}`);
       this.latestBlock = block;

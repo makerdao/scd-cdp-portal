@@ -25,7 +25,7 @@ class RootStore {
   }
 
   setInterval = () => {
-    this.timeVariablesInterval = setInterval(() => {
+    this.interval = setInterval(() => {
       console.log("Interval");
       this.system.setAggregatedValues();
       this.transactions.setStandardGasPrice();
@@ -56,19 +56,17 @@ class RootStore {
   loadContracts = () => {
     if (this.network.network && !this.network.stopIntervals) {
       blockchain.resetFilters(true);
-      if (typeof this.timeVariablesInterval !== "undefined") clearInterval(this.timeVariablesInterval);
-      if (typeof this.nonTimeVariablesInterval !== "undefined") clearInterval(this.nonTimeVariablesInterval);
-      if (typeof this.pendingTxInterval !== "undefined") clearInterval(this.pendingTxInterval);
+      if (typeof this.interval !== "undefined") clearInterval(this.interval);
       this.system.reset();
 
-      // Check actual block number from 3 different requests
+      // Check actual block number from 3 different requests (workaround to try to avoid outdated nodes behind load balancer)
       const blockPromises = [];
       for (let i = 0; i < 3; i++) {
         blockPromises.push(blockchain.getBlockNumber());
       }
 
       Promise.all(blockPromises).then(r => {
-        r.forEach(block => this.transactions.setLatestBlock(block));
+        r.forEach(block => this.transactions.setLatestBlock(block)); // Will set the maximum value
 
         blockchain.loadObject("proxyregistry", settings.chain[this.network.network].proxyRegistry, "proxyRegistry");
         blockchain.loadObject("saivaluesaggregator", settings.chain[this.network.network].saiValuesAggregator, "saiValuesAggregator");
