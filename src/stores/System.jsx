@@ -6,7 +6,7 @@ import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 import {truncateAddress} from "../utils/helpers";
 
-import {BIGGESTUINT256, fromRaytoWad, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
+import {BIGGESTUINT256, fromRaytoWad, toBigNumber, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -119,9 +119,6 @@ export default class SystemStore {
       totalSupply: toBigNumber(-1),
       tubBalance: toBigNumber(-1),
       tapBalance: toBigNumber(-1),
-      // This field will keep an estimated value of new sin which is being generated due the "stability/issuer fee".
-      // It will return to zero each time "drip" is called
-      issuerFee: toBigNumber(0),
     };
     this.pip = {
       address: null,
@@ -235,12 +232,6 @@ export default class SystemStore {
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
       console.log("Got aggregateValues() result:", r);
       if (this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
-        const originalValues = {
-          "tub.tag": this.tub.tag,
-          "tub.mat": this.tub.mat,
-          "tub.rho": this.tub.rho,
-          "vox.era": this.vox.era
-        };
         // Set pip and pep
         this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
         this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
@@ -262,19 +253,6 @@ export default class SystemStore {
           const param = val[1];
           // console.log(`Got value for ${type}.${param}: ${toBytes32(r[8][index])}`);
           this[type][param] = r[7][index];
-        }
-
-        // Recalculate issuerFee for rho and era changes
-        if (this.tub.rho.gte(0) &&
-            this.vox.era.gte(0) &&
-            this.tub.tax.gte(0) &&
-            this.sin.tubBalance.gte(0) &&
-            (
-              !originalValues["tub.rho"].eq(this.tub.rho) ||
-              !originalValues["vox.era"].eq(this.vox.era))
-            ) {
-          console.debug("*** Calculating issuer fee...");
-          this.tub.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
         }
 
         this.rootStore.transactions.executeCallbacks(callbacks);
