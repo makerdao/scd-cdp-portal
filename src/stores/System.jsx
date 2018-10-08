@@ -63,6 +63,7 @@ export default class SystemStore {
       avail_bust_skr: toBigNumber(-1),
       avail_bust_dai: toBigNumber(-1),
       cups: {},
+      cupsSdk: {},
       cupId: null,
       cupsLoading: true,
       cupsCount: 0,
@@ -331,6 +332,7 @@ export default class SystemStore {
               } else if (!this.rootStore.network.stopIntervals && keys.length > 0 && settings.chain[this.rootStore.network.network].service) {
                 keys.forEach(key => {
                   this.loadCupHistory(key);
+                  window.maker.getCdp(parseInt(key), this.rootStore.profile.proxy).then(r => this.tub.cupsSdk[key] = r);
                 });
                 this.rootStore.transactions.executeCallbacks(callbacks);
               }
@@ -361,6 +363,7 @@ export default class SystemStore {
     const cups = {...this.tub.cups};
     cups[cupId] = {...this.tub.legacyCups[cupId]};
     this.tub.cups = cups;
+    if (this.tub.cupId === null) this.tub.cupId = cupId;
     this.loadCupHistory(cupId);
     this.rootStore.transactions.executeCallbacks(callbacks);
   }
@@ -369,6 +372,7 @@ export default class SystemStore {
     let cup = {...this.tub.cups[id]};
     cup.history = "loading";
     this.tub.cups[id] = cup;
+    if (this.tub.cupId === null) this.tub.cupId = id;
     if (settings.chain[this.rootStore.network.network].service) {
       Promise.resolve(daisystem.getCupHistoryFromService(this.rootStore.network.network, id)).then(history => {
         let cup = {...this.tub.cups[id]};
@@ -741,22 +745,22 @@ export default class SystemStore {
 
       case "lock":
         console.debug(`Depositing ${value} ETH into CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
-        sdk.lockEth(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        sdk.lockEth(this.tub.cupsSdk[this.tub.cupId], value);
         return;
 
       case "draw":
         console.debug(`Generating ${value} DAI from CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
-        sdk.drawDai(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        sdk.drawDai(this.tub.cupsSdk[this.tub.cupId], value);
         return;
 
       case "wipe":
         console.debug(`Paying back ${value} DAI to CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}. Using OTC: ${params.govFeeType === "dai"}`);
-        sdk.wipeDai(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value, params.govFeeType === "dai");
+        sdk.wipeDai(this.tub.cupsSdk[this.tub.cupId], value, params.govFeeType === "dai");
         return;
 
       case "free":
         console.debug(`Withdrawing ${value} ETH from CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
-        sdk.freeEth(this.rootStore.profile.proxy, parseInt(this.rootStore.dialog.cupId), value);
+        sdk.freeEth(this.tub.cupsSdk[this.tub.cupId], value);
         return;
 
       case "shut":

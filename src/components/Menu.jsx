@@ -12,7 +12,7 @@ class Menu extends React.Component {
   }
 
   render() {
-    const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
+    const cupId = this.props.system.tub.cupId;
     return (
       <div className="menu-bar">
         <div className="logo">

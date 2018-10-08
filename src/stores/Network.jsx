@@ -40,12 +40,12 @@ export default class NetworkStore {
       this.rootStore.transactions.logRequestTransaction(tempId, title, false);
 
       tx.onPending(tx => {
-        console.debug(`Created transaction with hash: ${tx.hash()}`);
-        this.rootStore.transactions.logPendingTransaction(tempId, tx.hash(), title);
+        console.debug(`Created transaction with hash: ${tx.hash}`);
+        this.rootStore.transactions.logPendingTransaction(tempId, tx.hash, title);
       });
       tx.onMined(tx => {
-        console.debug(`Mined tx ${tx.hash()}`);
-        this.rootStore.transactions.logTransactionConfirmed(tx.hash());
+        console.debug(`Mined tx ${tx.hash}`);
+        this.rootStore.transactions.logTransactionConfirmed(tx.hash);
         // if (method === 'approve') this.rootStore.transactions.cleanLoading("changeAllowance", contract.toLowerCase().replace("mkr", "gov"));
         if (method === 'approve') this.rootStore.system.setAllowanceFromChain(contract.toLowerCase().replace("mkr", "gov"));
       });
