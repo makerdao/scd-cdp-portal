@@ -183,7 +183,7 @@ module.exports = {
             loader: require.resolve('babel-loader'),
             options: {
               presets: ['env', 'stage-2'],
-              plugins: ['transform-runtime'],
+              plugins: ['transform-decorators-legacy', 'transform-runtime'],
 
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
