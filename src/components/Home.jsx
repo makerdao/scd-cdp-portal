@@ -46,8 +46,8 @@ class Home extends React.Component {
 
   render() {
     return (
-      <DocumentTitle title="Dai Dashboard">
-        <div className={ (this.props.network.isConnected && this.props.network.defaultAccount ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + (this.props.transactions.priceModal.open ? " modal-open" : "") }>
+      <DocumentTitle title="CDP Portal">
+        <div className={ (this.props.network.isConnected && this.props.network.defaultAccount ? "is-connected" : "is-not-connected") + (this.props.dialog.show ? " dialog-open" : "") + ((this.props.transactions.priceModal.open || this.props.transactions.showCreatingCdpModal) ? " modal-open" : "") }>
           <div className="wrapper">
             {
               this.props.network.isConnected && this.props.network.defaultAccount &&
@@ -96,7 +96,19 @@ class Home extends React.Component {
                   {
                     this.props.network.loadingAddress
                     ?
-                      <div style={ {padding: "1.7em 3.38em"} }>Loading...</div>
+                      <div style={ {padding: "1.7em 3.38em"} }>
+                        {
+                          this.props.network.waitingForAccessApproval
+                          ?
+                            <React.Fragment>
+                              Waiting for approval to access to your account...
+                            </React.Fragment>
+                          :
+                            <React.Fragment>
+                              Loading...
+                            </React.Fragment>
+                        }
+                      </div>
                     :
                       <React.Fragment>
                         <Wallet />
@@ -107,7 +119,10 @@ class Home extends React.Component {
                       </React.Fragment>
                   }
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
-                    <Link to="/terms">Terms of Service</Link>
+                    {
+                      !this.props.network.loadingAddress &&
+                      <Link to="/terms">Terms of Service</Link>
+                    }
                   </div>
                 </div>
               }

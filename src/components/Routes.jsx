@@ -24,10 +24,10 @@ class App extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/help" title="Dai Dashboard: Help" component={ Help } />
-        <Route path="/help/:helpId" title="Dai Dashboard: Help" component={ HelpItem } />
-        <Route exact path="/terms" title="Dai Dashboard: Terms of Service" render={() => <Terms />} />
-        <Route exact path="/" title="Dai Dashboard" component={ Home } />
+        <Route exact path="/help" title="CDP Portal: Help" component={ Help } />
+        <Route path="/help/:helpId" title="CDP Portal: Help" component={ HelpItem } />
+        <Route exact path="/terms" title="CDP Portal: Terms of Service" render={() => <Terms />} />
+        <Route exact path="/" title="CDP Portal" component={ Home } />
         <Route component={ NotFound } />
       </Switch>
     )

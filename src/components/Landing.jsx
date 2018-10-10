@@ -41,7 +41,7 @@ class Landing extends React.Component {
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
                 </p>
-                <img className="preview" src="../img/welcome-hero.svg" alt="Dai Dashboard" />
+                <img className="preview" src="../img/welcome-hero.svg" alt="CDP Portal" />
               </div>
             </div>
             <div>
@@ -76,7 +76,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>05.<span className="line"></span>THE COST</h1>
                 <h2>Does it cost anything?</h2>
-                <p>There is a stability fee on the Dai stablecoins of 0.5% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
+                <p>There is a stability fee on the Dai stablecoins of 2.5% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
               </div>
             </div>
           </Slider>

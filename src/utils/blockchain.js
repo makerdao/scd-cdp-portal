@@ -16,7 +16,8 @@ schema.dsproxy = require("../abi/dsproxy");
 schema.dsethtoken = require("../abi/dsethtoken");
 schema.dstoken = require("../abi/dstoken");
 schema.dsvalue = require("../abi/dsvalue");
-schema.proxycreationandexecute = require("../abi/proxycreationandexecute");
+schema.saiProxyCreateAndExecute = require("../abi/saiProxyCreateAndExecute");
+schema.saivaluesaggregator = require("../abi/saivaluesaggregator");
 
 export const objects = {
 }
@@ -85,6 +86,10 @@ export const getBlock = block => {
   return promisify(web3.eth.getBlock)(block);
 }
 
+export const getBlockNumber = () => {
+  return promisify(web3.eth.getBlockNumber)();
+}
+
 export const setFilter = (fromBlock, address) => {
   return promisify(web3.eth.filter)({fromBlock, address});
 }
@@ -123,11 +128,11 @@ export const tokenApprove = (token, dst, gasPrice) => {
 }
 
 export const getProxy = account => {
-  return promisify(objects.proxyRegistry.proxies)(account).then(r => r === "0x0000000000000000000000000000000000000000" ? null : getProxyOwner(r).then(r2 => r2 === account ? r : null));
+  return promisify(objects.proxyRegistry.proxies)(account.toLowerCase()).then(r => r === "0x0000000000000000000000000000000000000000" ? null : getProxyOwner(r).then(r2 => r2 === account.toLowerCase() ? r : null));
 }
 
 export const getProxyOwner = proxy => {
-  return promisify(loadObject("dsproxy", proxy).owner)();
+  return promisify(loadObject("dsproxy", proxy.toLowerCase()).owner)();
 }
 
 export const proxyExecute = (proxyAddr, targetAddr, calldata, gasPrice, value = 0) => {
@@ -196,8 +201,12 @@ export const setHWProvider = (device, network, path, accountsOffset = 0, account
   return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength);
 }
 
-export const setWebClientProvider = () => {
-  return web3.setWebClientProvider();
+export const setWebClientWeb3 = () => {
+  return web3.setWebClientWeb3();
+}
+
+export const setWebClientProvider = provider => {
+  return web3.setWebClientProvider(provider);
 }
 
 export const {getWebClientProviderName} = require("./web3");

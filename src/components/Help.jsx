@@ -9,7 +9,7 @@ import Menu from "./Menu";
 class Help extends React.Component {
   render() {
     return (
-      <DocumentTitle title="Dai Dashboard: Help">
+      <DocumentTitle title="CDP Portal: Help">
         <div className="full-width-page">
           <div className="wrapper">
             {

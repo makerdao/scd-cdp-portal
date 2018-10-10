@@ -10,7 +10,7 @@ class Welcome extends React.Component {
       <div>
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col">
-          <h1 className="typo-h1 inline-headline">Dashboard</h1>
+          <h1 className="typo-h1 inline-headline">CDP Portal</h1>
         </header>
         <div className="row" style={ {borderBottom: "0"} }>
           <div className="align-center typo-cxl" style={ {margin: "3rem 0"} }>

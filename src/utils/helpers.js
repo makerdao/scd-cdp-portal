@@ -36,12 +36,22 @@ export const addressToBytes32 = (x, prefix = true) => {
   return y;
 }
 
-export const formatNumber = (number, decimals = false, isWei = true) => {
-  web3.BigNumber.config({ ROUNDING_MODE: 4 });
+export const formatNumber = (number, decimals = false, isWei = true, round = false) => {
+  web3.BigNumber.config({
+    ROUNDING_MODE: web3.BigNumber.ROUND_HALF_UP,
+    FORMAT: {
+      decimalSeparator: '.',
+      groupSeparator: ',',
+      groupSize: 3
+    }
+  });
 
   let object = toBigNumber(number);
 
   if (isWei) object = web3.fromWei(object.round(0));
+
+  // If rounding, use BigNumber's .toFormat() method
+  if (round) return decimals ? object.toFormat(decimals) : object.toFormat();
 
   if (decimals) {
     const d = toBigNumber(10).pow(decimals);
@@ -103,8 +113,8 @@ export const copyToClipboard = e => {
   setTimeout(() => parent.removeChild(div), 1000);
 }
 
-export const printNumber = (number, decimalPlaces = 3) => {
-  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, false) }>{ formatNumber(number, decimalPlaces) }</span>
+export const printNumber = (number, decimalPlaces = 3, round = false) => {
+  return <span className="printedNumber" onClick={ copyToClipboard } title={ formatNumber(number, false) }>{ formatNumber(number, decimalPlaces, true, round) }</span>
 }
 
 export const truncateAddress = (address, chars = 8) => {

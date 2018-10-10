@@ -1,7 +1,11 @@
-@include respond-to(s) {
-  h1.dashboard-headline span {
+
+h1.dashboard-headline span {
+  color: rgba(154, 163, 173, 0.75);
+  padding-left: 0.5rem;
+  @include respond-to(s) {
     display: block;
     margin-top: 5px;
+    padding-left: 0;
   }
 }
 

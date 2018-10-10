@@ -10,25 +10,11 @@ import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber} from "../utils/helpers";
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
 
 const StepIcon = ({ step }) => <div className="rc-steps-item-icon-inner">{ step }</div>;
-const steps = [
-  { text: "Creating your new CDP" },
-  {
-    text: "Wrap ETH to WETH - ERC 20 tokenization",
-    tip: <TooltipHint tipKey="wizard-wrap-eth-to-weth" />
-  },
-  {
-    text: "Converting WETH to PETH",
-    tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
-  },
-  { text: "CDP is collateralized with PETH - Your converted ETH is locked" },
-  { text: "DAI generated -  Your requested DAI are generated" },
-  { text: "DAI transferred - Your requested DAI are transferred to your wallet" }
-];
 
 @inject("profile")
 @inject("system")
@@ -53,6 +39,29 @@ class Wizard extends Component {
       checkTerms: false,
       stepsExpanded: false
     }
+  }
+
+  steps = () => {
+    const steps= [
+                    { text: "Creation of your proxy" },
+                    { text: "Creation of your CDP" },
+                    {
+                      text: "Wrap your ETH to WETH - ERC20 tokenization",
+                      tip: <TooltipHint tipKey="wizard-wrap-eth-to-weth" />
+                    },
+                    {
+                      text: "Convert your WETH to PETH",
+                      tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
+                    },
+                    { text: "CDP collateralized with PETH - Your converted ETH is locked" },
+                    { text: "DAI generated -  Your requested DAI is generated" },
+                    { text: "DAI transferred - Your requested DAI is transferred to your wallet" }
+                  ];
+    if (this.props.profile.proxy && this.props.profile.proxy !== -1) {
+      steps.shift();
+    }
+
+    return steps;
   }
 
   checkValues = (token, amount) => {
@@ -85,6 +94,9 @@ class Wizard extends Component {
 
         if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
           state.error = "The amount of ETH to be deposited exceeds your current balance.";
+          return state;
+        } else if (state.skr.gt(0) && state.skr.round(0).lte(toWei(0.005))) {
+          state.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
           return state;
         }
 
@@ -130,7 +142,7 @@ class Wizard extends Component {
 
   render() {
     return (
-      <div>
+      <div className="wizard-section">
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
@@ -143,14 +155,14 @@ class Wizard extends Component {
           ?
             <React.Fragment>
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
-                <div className="row">
 
+                <div className="row">
                   <div className="col col-2" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
-                    <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.eth = input } style={ {minWidth: "15rem"} } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                    <div className="input-values-container">
+                      <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
-                      <div className="typo-cs align-right">
+                      <div className="typo-cs align-right clearfix">
                         { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
                       </div>
                       {
@@ -162,8 +174,8 @@ class Wizard extends Component {
 
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
-                    <div style={ {display: "inline-block"} }>
-                      <input ref={ input => this.dai = input } style={ {minWidth: "15rem"} } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                    <div className="input-values-container">
+                      <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
@@ -171,11 +183,9 @@ class Wizard extends Component {
                       }
                     </div>
                   </div>
-
                 </div>
 
                 <div className="row">
-
                   <div className="col col-2">
                     <div style={ {marginBottom: "1rem"}}>
                       <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
@@ -205,12 +215,11 @@ class Wizard extends Component {
                       <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
                     </div>
                   </div>
-
                 </div>
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   <p className="no-select">
-                    Stability fee @${ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100))) }%/year in MKR
+                    Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR
                     <TooltipHint tipKey="stability-fee" />
                   </p>
                 </div>
@@ -271,12 +280,12 @@ class Wizard extends Component {
                         <path d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" transform="translate(-1062 -464)"/>
                       </svg>
                     }
-                    There are 6 steps to complete the CDP.&nbsp;&nbsp;These will be automated for your convenience.
+                    There are { this.steps().length } steps needed to complete the creation of your CDP.&nbsp;&nbsp;These will be automated for your convenience.
                   </div>
 
                   <div className={"typo-c wizard-automated-transactions" + (this.state.stepsExpanded ? " expanded" : "") }>
                   {
-                    steps.map((s, key) => (
+                    this.steps().map((s, key) => (
                       <div className="step-cointainer" key={ key }>
                         <div className="step-icon">
                           <div className="steps-item"><div className="steps-item-inner">{ key + 1 }</div></div>

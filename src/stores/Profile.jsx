@@ -21,12 +21,18 @@ export default class ProfileStore {
 
   setProxyFromChain = (callbacks = null) => {
     return new Promise((resolve, reject) => {
+      console.log("Checking proxy...")
       blockchain.getProxy(this.rootStore.network.defaultAccount).then(proxy => {
         if (proxy) {
           this.setProxy(proxy);
           callbacks && this.rootStore.transactions.executeCallbacks(callbacks);
+          resolve(proxy);
+        } else {
+          // We force to check again until we get the result
+          console.log("Proxy still not found, trying again in 3 seconds...")
+          setTimeout(() => this.setProxyFromChain(callbacks), 3000);
+          reject(false);
         }
-        resolve(proxy);
       }, () => reject(false));
     });
   }
@@ -42,7 +48,11 @@ export default class ProfileStore {
       this.rootStore.transactions.executeCallbacks(callbacks);
     } else {
       const title = "Create Proxy";
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], {value: 0}, [["profile/setProxyFromChain", callbacks]]);
+      const params = {value: 0};
+      if (this.rootStore.network.hw.active) {
+        params.gas = 1000000;
+      }
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.proxyRegistry.build, [], params, [["profile/setProxyFromChain", callbacks]]);
     }
   }
 }

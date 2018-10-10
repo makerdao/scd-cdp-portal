@@ -4,20 +4,17 @@ import {observable} from "mobx";
 // Utils
 import * as blockchain from "../utils/blockchain";
 
-// Settings
-import * as settings from "../settings";
-
 export default class NetworkStore {
   @observable stopIntervals = false;
   @observable loadingAddress = false;
+  @observable waitingForAccessApproval = false;
   @observable accounts = [];
   @observable defaultAccount = null;
   @observable isConnected = false;
   @observable latestBlock = null;
   @observable network = "";
   @observable outOfSync = true;
-  @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
-  @observable isHw = false;
+  @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ''};
   @observable downloadClient = false;
 
   constructor(rootStore) {
@@ -45,13 +42,12 @@ export default class NetworkStore {
     clearInterval(this.setAccountInterval);
     clearInterval(this.setNetworkInterval);
     this.network = "";
-    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null};
+    this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ''};
     this.accounts = [];
     this.defaultAccount = null;
     this.isConnected = false;
     this.latestBlock = null;
     this.outOfSync = true;
-    this.isHw = false;
   }
 
   setAccount = () => {
@@ -80,18 +76,27 @@ export default class NetworkStore {
     try {
       this.stopIntervals = false;
       this.loadingAddress = true;
-      await blockchain.setWebClientProvider();
+      this.waitingForAccessApproval = typeof window.ethereum !== "undefined";
+      const provider = await blockchain.setWebClientWeb3();
+      this.waitingForAccessApproval = false;
+      await blockchain.setWebClientProvider(provider);
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
-      this.downloadClient = true;
+      this.waitingForAccessApproval = false;
+      if (e.message === "No client") {
+        this.downloadClient = true;
+      }
       console.log(e);
     }
   }
 
   // Hardwallets
   showHW = option => {
+    if (option === "ledger") {
+      option = `ledger-${localStorage.getItem("loadLedgerLegacy") === "true" ? "legacy" : "live"}`;
+    }
     this.hw.option = option;
     this.hw.showSelector = true;
     this.loadHWAddresses();
@@ -103,15 +108,29 @@ export default class NetworkStore {
     this.hw.showSelector = false;
     this.hw.option = "";
     this.hw.derivationPath = false;
+    this.hw.network = "";
   }
 
   loadHWAddresses = async () => {
     this.hw.loading = true;
     this.hw.active = true;
     this.hw.error = false;
-    this.hw.derivationPath = this.hw.option === "ledger" ? "m/44'/60'/0'" : "m/44'/60'/0'/0";
+    this.hw.network = (window.location.hostname === "cdp.makerdao.com" || window.location.hostname === "cdp-portal-mainnet.surge.sh")
+      ? "main"
+      : "kovan";
+    this.hw.derivationPath = this.hw.option === "ledger-live"
+      ? "44'/60'/0'"
+      : this.hw.option === "ledger-legacy"
+        ? "44'/60'/0'/0"
+        : "44'/60'/0'/0/0";
     try {
-      await blockchain.setHWProvider(this.hw.option, settings.hwNetwork, `${this.hw.derivationPath.replace("m/", "")}/0`, 0, 50);
+      await blockchain.setHWProvider(
+                                      this.hw.option.replace("-live", "").replace("-legacy", ""),
+                                      this.hw.network,
+                                      this.hw.derivationPath,
+                                      0,
+                                      this.hw.option === "ledger-live" ? 5 : 50
+                                    );
       const accounts = await blockchain.getAccounts();
       this.hw.addresses = accounts;
     } catch(e) {
@@ -127,7 +146,7 @@ export default class NetworkStore {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.hw.showSelector = false;
-      blockchain.setDefaultAccount(account);
+      blockchain.setDefaultAccount(account.toLowerCase());
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 10000);
     } catch(e) {

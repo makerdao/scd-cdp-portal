@@ -4,6 +4,10 @@
   opacity: 1 !important;
   z-index: 10000;
   pointer-events: all;
+  max-width: 410px !important;
+  @include respond-to(s) {
+    max-width: 200px !important;
+  }
   a:hover {
     color: $maker-green;
   }

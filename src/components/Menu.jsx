@@ -4,6 +4,7 @@ import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
 @inject("system")
+@inject("network")
 @observer
 class Menu extends React.Component {
   changeCup = id => {
@@ -14,7 +15,7 @@ class Menu extends React.Component {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
       <div className="menu-bar">
-        <div className="logo">
+        <div className="logo" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>
           <svg width="33" height="23" viewBox="0 0 33 23" xmlns="http://www.w3.org/2000/svg">
             <g fill="none" fillRule="evenodd">
               <path d="m14.242 22.89v-11.492l-13.24-10.033v21.525" stroke="#1abc9c"/>
@@ -32,12 +33,21 @@ class Menu extends React.Component {
               <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ () => this.props.page === "" && this.props.setOpenMigrate(false) }>
                 <Link to="/">
                   <img src="/img/icon-home.svg" draggable="false" alt="" />
-                  <span className="menu-label">Dashboard</span>
+                  <span className="menu-label">CDP Portal</span>
                 </Link>
               </li>
             }
             {
-              this.props.showCDPs &&
+              this.props.showCDPs && Object.keys(this.props.system.tub.cups).length === 1 &&
+              <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(this.props.system.tub.cups[0]); this.props.setOpenMigrate(false) } }>
+                <Link to="/">
+                  <img src="/img/icon-home.svg" draggable="false" alt="" />
+                  <span className="menu-label">CDP Portal</span>
+                </Link>
+              </li>
+            }
+            {
+              this.props.showCDPs && Object.keys(this.props.system.tub.cups).length > 1 &&
               Object.keys(this.props.system.tub.cups).map(key =>
                 <li key={ key } className={ "cdp-id-item" + (this.props.page === "" && cupId === key && !this.props.isMigrateCDPPage ? " active" : "") } onClick={ e => { e.preventDefault(); this.changeCup(key); this.props.setOpenMigrate(false) } }>
                   <Link to="/">

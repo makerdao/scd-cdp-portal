@@ -11,9 +11,6 @@ import LoadingSpinner from "./LoadingSpinner";
 // Utils
 import {getJazziconIcon, capitalize, truncateAddress} from "../utils/helpers";
 
-// Settings
-import * as settings from "../settings";
-
 const SHOW_ADDRESSES_MAX = 10;
 const IDENTICON_SIZE = 18;
 const identiconStyle = {
@@ -87,6 +84,10 @@ class WalletHardHWSelector extends React.Component {
   state = {
     selectedOption: null
   }
+  loadLedgerAddresses = type => {
+    localStorage.setItem("loadLedgerLegacy", type === "legacy");
+    this.props.network.showHW("ledger");
+  }
   selectAccount = selectedOption => {
     if (selectedOption) {
       this.setState({ selectedOption: selectedOption.value });
@@ -109,7 +110,7 @@ class WalletHardHWSelector extends React.Component {
           ?
             <React.Fragment>
               {
-                this.props.network.hw.option === "ledger" &&
+                this.props.network.hw.option.substring(0, 6) === "ledger" &&
                 <React.Fragment>
                   <h2>Plug in Ledger &amp; Enter Pin</h2>
                   <p className="typo-c align-center">Open ETH application and make sure Contract Data and Browser Support are enabled.</p>
@@ -133,9 +134,9 @@ class WalletHardHWSelector extends React.Component {
                 this.props.network.hw.error
                 ?
                   <React.Fragment>
-                    <h2 className="connect-fail">{ capitalize(this.props.network.hw.option) } Connection Failed</h2>
+                    <h2 className="connect-fail">{ capitalize(this.props.network.hw.option.replace('-', ' ')) } Connection Failed</h2>
                     {
-                      this.props.network.hw.option === "ledger" &&
+                      this.props.network.hw.option.substring(0, 6) === "ledger" &&
                       <div className="typo-c">
                         <ol>
                           <li>Unlock your Ledger and open the ETH application.</li>
@@ -155,10 +156,10 @@ class WalletHardHWSelector extends React.Component {
                 :
                   this.props.network.hw.addresses.length > 0 &&
                   <React.Fragment>
-                    <h2 className="connect-success">{ capitalize(this.props.network.hw.option) } Connected</h2>
+                    <h2 className="connect-success">{ capitalize(this.props.network.hw.option.replace('-', ' ')) } Connected</h2>
                     <section style={ { width: "75%", margin: "0 auto" } }>
-                      <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ settings.hwNetwork === "main" ? "Etherem" : "Test" } { settings.hwNetwork } Network</p>
-                      <div style={ {margin: "2.5rem 0 2.4rem"} }>
+                      <p className="typo-c align-center" style={ {color: "#fff"} }><span className="green-dot"></span>{ this.props.network.hw.network === "main" ? "Main Ethereum" : capitalize(this.props.network.hw.network) + " Test" } Network</p>
+                      <div style={ {margin: "2.5rem 0 0"} }>
                         <Select
                           name="wallet-address"
                           value={ value }
@@ -170,6 +171,22 @@ class WalletHardHWSelector extends React.Component {
                           searchable={ false }
                           />
                         </div>
+                        {
+                          this.props.network.hw.option.substring(0, 6) === "ledger" &&
+                          <div>
+                            <div style={ {margin: '0.5rem auto 2.4rem', textAlign: 'center'} }>
+                              <a
+                                className="switch-ledger-type"
+                                href="#action"
+                                onClick={ e => {
+                                                  e.preventDefault();
+                                                  this.loadLedgerAddresses(this.props.network.hw.option === "ledger-live" ? "legacy" : "live");
+                                                }}>
+                                View { this.props.network.hw.option === "ledger-live" ? "legacy" : "live" } addresses
+                              </a>
+                            </div>
+                          </div>
+                        }
                         <div className="align-center">
                           <button className="sidebar-btn is-primary-green" style={ {width: "100%"} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
                         </div>

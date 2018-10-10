@@ -53,7 +53,7 @@ class NotifySetUp extends React.Component {
                 <h2>Congratulations on your new CDP</h2>
                 <img className="main" src="../img/cdp-created.svg" alt="CDP created" />
                 <p>
-                  Welcome to your CDP dashboard where you can view and manage<br />your collateral and debt position on a decentralized system.
+                  Welcome to the CDP Portal where you can view and manage<br />your collateral and debt position on a decentralized system.
                 </p>
                 <ul>
                   <li>

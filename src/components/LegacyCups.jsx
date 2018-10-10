@@ -137,7 +137,7 @@ class LegacyCups extends React.Component {
                 {
                   this.props.system.tub.cups[key]
                   ?
-                    "CDP Migrated"
+                    <div className="migrate-success">CDP MIGRATED</div>
                   :
                     <button className="text-btn" data-method="migrate" data-cup={ key } disabled={ this.props.transactions.loading.migrate && this.props.transactions.loading.migrate[key] } onClick={ this.props.dialog.handleOpenDialog }>MIGRATE CDP #{ key }</button>
                 }
@@ -147,7 +147,7 @@ class LegacyCups extends React.Component {
           )
         }
         <div className="clearfix"></div>
-        <button className="bright-style text-btn" style={ {display: "block", margin: "4rem auto 0"} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO DASHBOARD</button>
+        <button className="bright-style text-btn" style={ {display: "block", margin: "4rem auto 0"} } onClick={ () => this.props.setOpenMigrate(false) }>RETURN TO CDP PORTAL</button>
       </div>
     )
   }

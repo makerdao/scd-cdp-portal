@@ -22,7 +22,7 @@ export const getWebClientProviderName = () => {
     return "trust";
 
   if (typeof window.SOFA !== "undefined")
-    return "toshi";
+    return "coinbase";
 
   if (typeof window.__CIPHER__ !== "undefined")
     return "cipher";
@@ -71,20 +71,41 @@ class Web3Extended extends Web3 {
     });
   }
 
-  setWebClientProvider = () => {
+  setWebClientWeb3 = () => {
     this.stop();
     return new Promise(async (resolve, reject) => {
       try {
-        if (window.web3 && window.web3.currentProvider) {
-          this.setProvider(window.web3.currentProvider);
-          this.useLogs = true;
-          this.currentProvider.name = getWebClientProviderName();
-          resolve(true);
+        if (window.web3 || window.ethereum) {
+          try {
+            let provider;
+            if (window.ethereum) {
+              await window.ethereum.enable();
+              provider = window.ethereum;
+            } else {
+              provider = window.web3.currentProvider;
+            }
+            resolve(provider);
+          } catch (error) {
+            reject(new Error("User denied account access"));
+          }
         } else {
           reject(new Error("No client"));
         }
       } catch(e) {
         reject(e);
+      }
+    });
+  }
+
+  setWebClientProvider = provider => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.setProvider(provider);
+        this.useLogs = true;
+        this.currentProvider.name = getWebClientProviderName();
+        resolve(true);
+      } catch (error) {
+        reject(new Error("Error setting provider"));
       }
     });
   }
