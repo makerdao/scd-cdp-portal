@@ -3,7 +3,7 @@
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
-      "saiValuesAggregator": "0x7d8a2cb7f730740108b959e8ace6e631b7ccfaef",
+      "saiValuesAggregator": "0xb1ba68b07081ad96e96054c1bfeb6f88c014710a",
       "otc": "0x8cf1cab422a0b6b554077a361f8419cdf122a9f9",
       "fromBlock": 5216602,
       "service": "https://sai-graphql-kovan.herokuapp.com/v1",
@@ -13,7 +13,7 @@
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
-      "saiValuesAggregator": "",
+      "saiValuesAggregator": "0x98bdd66e1ef3e147c19a18ec292206b609a82f89",
       "otc": "0x14fbca95be7e99c15cc2996c6c9d841e54b79425",
       "fromBlock": 4752013,
       "service": "https://graphql.makerdao.com/v1",
