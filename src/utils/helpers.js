@@ -179,6 +179,16 @@ export const getTransactionToastTitle = (metadata) => {
       return `Transfer ${action.amount.toString()} to ${truncateAddress(action.to)}`;
     case 'approve':
       return `${contract}: ${action.allowing ? 'Unlock' : 'Lock'}`;
+    case 'open':
+      return `Open CDP`;
+    case 'close':
+      return `Close CDP #${action.id}`;
+    case 'lockAndDraw':
+      return `Deposit ${action.amountEth.toString()} + Generate ${action.amountDai.toString()}`;
+    case 'openLockAndDraw':
+      return `Open CDP + Deposit ${action.amountEth.toString()} + Generate ${action.amountDai.toString()}`;
+    case 'createOpenLockAndDraw':
+      return `Create Proxy + Open CDP + Deposit ${action.amountEth.toString()} + Generate ${action.amountDai.toString()}`;
     default:
       return `Unknown transaction: ${contract}.${method}`;
   }
