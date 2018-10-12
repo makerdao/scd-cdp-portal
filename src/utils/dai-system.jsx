@@ -172,7 +172,7 @@ export const getContracts = (proxyRegistry, address) => {
 
 export const getAggregatedValues = (account, proxy) => {
   return new Promise((resolve, reject) => {
-    blockchain.objects.saiValuesAggregator.aggregateValues.call(account, proxy, (e, r) => {
+    blockchain.objects.saiValuesAggregator.aggregateValues.call(account, proxy, { from: "0x0000000000000000000000000000000000000000" }, (e, r) => {
       if (!e) {
         resolve(r);
       } else {
