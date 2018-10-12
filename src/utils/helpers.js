@@ -176,13 +176,10 @@ export const getTransactionToastTitle = (metadata) => {
     case 'wipe':
       return `Payback ${action.amount.toString()}`;
     case 'transfer':
-      return `Transfer ${action.amount.toString()} to ${truncateAddress(action.recipient)}`;
-    // case 'transferFrom':
-    //   return `Transfer ${action.amount.toString()} from ${truncateAddress(action.sender)} to ${truncateAddress(action.recipient)}`;
+      return `Transfer ${action.amount.toString()} to ${truncateAddress(action.to)}`;
     case 'approve':
       return `${contract}: ${action.allowing ? 'Unlock' : 'Lock'}`;
     default:
       return `Unknown transaction: ${contract}.${method}`;
   }
 }
-
