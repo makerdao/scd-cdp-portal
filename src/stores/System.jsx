@@ -661,51 +661,16 @@ export default class SystemStore {
     this.executeProxyTx(action, 0, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
-  lockAndDraw = (cupId, eth, dai) => {
-    let action = false;
-    let title = "";
-    let callbacks = [];
-
+  openLockAndDraw = async (eth, dai) => {
     if (eth.gt(0) || dai.gt(0)) {
-      if (!cupId) {
-        callbacks = [
-          ["system/setMyCupsFromChain", true], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
-        ];
-
-        if (this.rootStore.profile.proxy) {
-          title = `Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
-        } else {
-          title = `Create Proxy + Create CDP + Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          this.rootStore.transactions.askPriceAndSend(
-                                            title,
-                                            blockchain.loadObject("proxycreationandexecute", settings.chain[this.rootStore.network.network].proxyCreationAndExecute).createLockAndDraw,
-                                            [settings.chain[this.rootStore.network.network].proxyRegistry, this.tub.address, toWei(dai)],
-                                            {value: toWei(eth)},
-                                            [["profile/setProxyFromChain", callbacks]]
-                                            );
-          return;
-        }
-      } else {
-        callbacks = [
-          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
-        ];
-        if (dai.equals(0)) {
-          title = `Lock ${eth.valueOf()} ETH`;
-          action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
-        } else if (eth.equals(0)) {
-          title = `Draw ${dai.valueOf()} DAI`;
-          action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
-        } else {
-          title = `Lock ${eth.valueOf()} ETH + Draw ${dai.valueOf()} DAI`;
-          action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
-        }
-      }
-
-      this.executeProxyTx(action, toWei(eth), {
-                                                title,
-                                                callbacks
-                                              });
+      const cdp = this.rootStore.profile.proxy
+        ? await sdk.openLockAndDraw(eth, dai, this.rootStore.profile.proxy)
+        : await sdk.createOpenLockAndDraw(eth, dai);
+      console.debug('openLockAndDraw cdp object:', cdp);
+      this.setMyCupsFromChain();
+      this.rootStore.profile.setEthBalanceFromChain();
+      this.setUpTokenFromChain('dai');
+      this.setUpTokenFromChain('sin');
     }
   }
 
@@ -737,12 +702,6 @@ export default class SystemStore {
     let callbacks = [];
     let error = false;
     switch (this.rootStore.dialog.method) {
-      case "open":
-        callbacks = [
-                      ["system/open"]
-                    ];
-        break;
-
       case "lock":
         console.debug(`Depositing ${value} ETH into CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
         sdk.lockEth(this.tub.cupsSdk[this.tub.cupId], value);
@@ -764,6 +723,10 @@ export default class SystemStore {
         return;
 
       case "shut":
+        console.debug(`Closing CDP #${this.rootStore.dialog.cupId} using DSProxy ${this.rootStore.profile.proxy}`);
+        sdk.shut(this.tub.cupsSdk[this.tub.cupId], params.govFeeType === "dai");
+        return;
+
         callbacks = [
           ["system/shut", this.rootStore.dialog.cupId, this.tub.cups[this.rootStore.dialog.cupId].art.gt(0) && params.govFeeType === "dai"]
         ];

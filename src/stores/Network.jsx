@@ -39,7 +39,8 @@ export default class NetworkStore {
       // TODO: Use a better approach to generating random id
       const tempId = Math.random();
       const title = getTransactionToastTitle(tx.metadata);
-      this.rootStore.transactions.logRequestTransaction(tempId, title, false);
+      const cdpCreationTx = tx.metadata.action && (tx.metadata.action.name === 'open' || tx.metadata.action.name === 'openLockAndDraw' || tx.metadata.action.name === 'createOpenLockAndDraw');
+      this.rootStore.transactions.logRequestTransaction(tempId, title, cdpCreationTx);
 
       tx.onPending(tx => {
         console.debug(`Created transaction with hash: ${tx.hash}`);

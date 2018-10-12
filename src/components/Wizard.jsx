@@ -122,7 +122,7 @@ class Wizard extends Component {
 
   execute = e => {
     e.preventDefault();
-    this.props.system.lockAndDraw(false, fromWei(this.state.eth), fromWei(this.state.dai));
+    this.props.system.openLockAndDraw(fromWei(this.state.eth), fromWei(this.state.dai));
   }
 
   check = (checked, type) => {
