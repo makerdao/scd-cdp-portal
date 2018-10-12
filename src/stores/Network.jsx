@@ -30,6 +30,8 @@ export default class NetworkStore {
 
     // Transaction hooks to manage UI toasts etc
     window.maker.service('transactionManager').onNewTransaction(tx => {
+      console.debug('New tx:', tx);
+
       const metadata = tx.metadata;
       const contract = metadata && metadata.hasOwnProperty('contract') ? metadata.contract : '';
       const method = metadata && metadata.hasOwnProperty('method') ? metadata.method : '';
