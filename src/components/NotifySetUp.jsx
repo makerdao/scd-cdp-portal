@@ -2,6 +2,9 @@
 import React from "react";
 import {inject, observer} from "mobx-react";
 
+// Utils
+import {etherscanTx} from "../utils/helpers";
+
 class CreatingCDPAnimation extends React.Component {
   constructor(props){
     super(props);
@@ -29,10 +32,12 @@ class CreatingCDPAnimation extends React.Component {
 
 @inject("transactions")
 @inject("system")
+@inject("network")
 @observer
 class NotifySetUp extends React.Component {
   render() {
     const txs = Object.keys(this.props.transactions.registry).filter(tx => this.props.transactions.registry[tx].cdpCreationTx);
+    const txHash = txs[0] || null;
 
     return (
       this.props.transactions.showCreatingCdpModal &&
@@ -45,7 +50,13 @@ class NotifySetUp extends React.Component {
                 <h2>Creating your CDP</h2>
                 <CreatingCDPAnimation />
                 <p style={ {margin: "margin: 0 auto", padding: "2rem 0 2.5rem"} }>
-                  Creating your new CDP...
+                {
+                  txHash
+                  ?
+                    etherscanTx(this.props.network.network, "View transaction", txHash)
+                  :
+                    "Creating your new CDP..."
+                }
                 </p>
               </React.Fragment>
             :
