@@ -121,7 +121,7 @@ class Dialog extends React.Component {
       //   break;
       // case "exit":
       // case "lock":
-      //   value = this.props.profile.accountBalance;
+      //   value = this.props.system.eth.myBalance;
       //   break;
       // case "free":
       //  value = this.props.system.tub.cups[this.props.dialog.cupId].avail_skr_with_margin;
@@ -186,8 +186,8 @@ class Dialog extends React.Component {
       this.props.system.pep.val.gte(0) &&
       <React.Fragment>
         <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR <TooltipHint tipKey="stability-fee" /></div>
-        <div className="info-value" style={ { marginBottom: '0'} }>{ printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR</div>
-        <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr-tokens" style={ {marginLeft: '5px'} }>Get MKR</Link></div>
+        <div className="info-value" style={ { marginBottom: "0"} }>{ printNumber(wdiv(this.props.system.rap(this.props.system.tub.cups[this.props.dialog.cupId]), this.props.system.pep.val)) } MKR</div>
+        <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr-tokens" style={ {marginLeft: "5px"} }>Get MKR</Link></div>
         <div className="fee-type-selector">
           <input type="radio" id="govFeeMkr" name="govFeeMkr" value="mkr" checked={ this.state.govFeeType === "mkr" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeMkr">Pay stability fee with MKR</label><br />
           <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay stability fee with DAI <span>(via OasisDEX best offer)</span></label>
@@ -210,7 +210,7 @@ class Dialog extends React.Component {
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
-                <div style={ { marginTop: '4rem'} }>
+                <div style={ { marginTop: "4rem"} }>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
                   <button className="text-btn text-btn-primary" type="submit">Migrate</button>
                 </div>
@@ -321,7 +321,7 @@ class Dialog extends React.Component {
           }, () => {
             this.props.dialog.error = "";
             if (valueWei.gt(0)) {
-              if (this.props.profile.accountBalance.lt(valueWei)) {
+              if (this.props.system.eth.myBalance.lt(valueWei)) {
                 this.props.dialog.error = "Not enough balance to deposit this amount of ETH.";
               } else if (cup.avail_skr.round(0).add(skrValue).gt(0) && cup.avail_skr.add(skrValue).round(0).lte(toWei(0.005))) {
                 this.props.dialog.error = `You are not allowed to deposit a low amount of ETH in a CDP. It needs to be higher than 0.005 PETH (${formatNumber(wmul(toBigNumber(toWei(0.005)), this.props.system.tub.per), 18)} ETH at actual price).`;
@@ -339,12 +339,12 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderNumberInput('ETH') }
+                  { this.renderNumberInput("ETH") }
                   <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Current account balance</div>
-                  <div className="info-value">{ printNumber(this.props.profile.accountBalance, 2) } ETH</div>
+                  <div className="info-value">{ printNumber(this.props.system.eth.myBalance, 2) } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
@@ -360,7 +360,7 @@ class Dialog extends React.Component {
       case "free":
         // if (this.props.system.tub.off) {
         //   // Need to add support for this
-        //   // 'Are you sure you want to withdraw your available ETH?'
+        //   // "Are you sure you want to withdraw your available ETH?"
         //   this.setState({submitEnabled: false});
         // } else {
         this.cond = value => {
@@ -396,12 +396,12 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderNumberInput('ETH') }
+                  { this.renderNumberInput("ETH") }
                   <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to withdraw</div>
-                  <div className="info-value">{ cup ? printNumber(cup.avail_eth, 3) : '--' } ETH</div>
+                  <div className="info-value">{ cup ? printNumber(cup.avail_eth, 3) : "--" } ETH</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
@@ -446,7 +446,7 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderNumberInput('DAI') }
+                  { this.renderNumberInput("DAI") }
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to generate</div>
@@ -497,7 +497,7 @@ class Dialog extends React.Component {
             }
           });
         }
-        const indentedText = (!this.props.system['dai'].allowance.eq(BIGGESTUINT256) || !this.props.system['gov'].allowance.eq(BIGGESTUINT256))
+        const indentedText = (!this.props.system.dai.allowance.eq(BIGGESTUINT256) || !this.props.system.gov.allowance.eq(BIGGESTUINT256))
           ? "You might be requested to sign up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction."
           : "";
         return (
@@ -509,10 +509,10 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderNumberInput('DAI') }
+                  { this.renderNumberInput("DAI") }
                   <div className="set-max"><a href="#action" onClick={ this.setMax }>Set max</a></div>
                 </div>
-                <div className="info-section" style={ { marginTop: '2rem'} }>
+                <div className="info-section" style={ { marginTop: "2rem"} }>
                   <div className="info-heading">Outstanding Dai generated</div>
                   <div className="info-value">{ printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } DAI</div>
                   { this.renderFeeTypeSelector() }

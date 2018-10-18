@@ -6,7 +6,7 @@ import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 import {truncateAddress} from "../utils/helpers";
 
-import {BIGGESTUINT256, fromRaytoWad, toBigNumber, fromWei, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
+import {BIGGESTUINT256, fromRaytoWad, toBigNumber, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
 
 // Settings
 import * as settings from "../settings";
@@ -83,6 +83,9 @@ export default class SystemStore {
     this.pit = {
       address: null,
     };
+    this.eth = {
+      myBalance: toBigNumber(-1),
+    }
     this.gem = {
       address: null,
       totalSupply: toBigNumber(-1),
@@ -116,9 +119,6 @@ export default class SystemStore {
       totalSupply: toBigNumber(-1),
       tubBalance: toBigNumber(-1),
       tapBalance: toBigNumber(-1),
-      // This field will keep an estimated value of new sin which is being generated due the "stability/issuer fee".
-      // It will return to zero each time "drip" is called
-      issuerFee: toBigNumber(0),
     };
     this.pip = {
       address: null,
@@ -130,77 +130,63 @@ export default class SystemStore {
     };
   }
 
-  init = (top, tub, tap, vox, pit) => {
+  init = (top, tub, tap, vox, pit, pip, pep, gem, gov, skr, dai, sin) => {
     if (this.rootStore.network.network && !this.rootStore.network.stopIntervals) {
       this.top.address = top;
+      blockchain.loadObject("top", top, "top");
+
       this.tub.address = tub;
+      blockchain.loadObject("tub", tub, "tub");
+      this.setFiltersTub();
+
       this.tap.address = tap;
+      blockchain.loadObject("tap", tap, "tap");
+      this.setFiltersTap();
 
       this.vox.address = vox;
+      blockchain.loadObject("vox", vox, "vox");
+      this.setFiltersVox();
+
       this.pit.address = pit;
 
-      this.setVariables();
+      this.pip.address = pip;
+      blockchain.loadObject("dsvalue", pip, "pip");
+      this.setFiltersFeedValue("pip");
+
+      this.pep.address = pep;
+      blockchain.loadObject("dsvalue", pep, "pep");
+      this.setFiltersFeedValue("pep");
+
+      this.gem.address = gem;
+      blockchain.loadObject("dsethtoken", gem, "gem");
+      this.setFiltersToken("gem");
+
+      this.gov.address = gov;
+      blockchain.loadObject("dstoken", gov, "gov");
+      this.setFiltersToken("gov");
+
+      this.skr.address = skr;
+      blockchain.loadObject("dstoken", skr, "skr");
+      this.setFiltersToken("skr");
+
+      this.dai.address = dai;
+      blockchain.loadObject("dstoken", dai, "dai");
+      this.setFiltersToken("dai");
+
+      this.sin.address = sin;
+      blockchain.loadObject("dstoken", sin, "sin");
+      this.setFiltersToken("sin");
+
+      this.setAggregatedValues();
 
       this.setMyCupsFromChain();
       this.setMyLegacyCupsFromChain();
-
-      this.setFiltersTub();
-      this.setFiltersTap();
-      this.setFiltersVox();
-      this.setFilterFeedValue("pip");
-      this.setFilterFeedValue("pep");
     }
   }
 
-  setVariables = (onlySecondDependent = false) => {
-    try {
-      if (!onlySecondDependent) {
-        this.setUpTokenFromChain("gem");
-        this.setUpTokenFromChain("gov");
-        this.setUpTokenFromChain("skr");
-        this.setUpTokenFromChain("dai");
-        this.setUpTokenFromChain("sin");
-      }
-      this.setAggregatedValues();
-    }
-    catch(e) {
-      console.error('Error in setVariables():', e);
-    }
-  }
-
-  loadExtraCupData = type => {
-    try {
-      const promises = [];
-      Object.keys(this.tub[type]).forEach(key => {
-        if (this.vox.par.gte(0) && this.tub.tag.gte(0) && this.tub.tax.gte(0) && this.tub.mat.gte(0) && this.tub.per.gte(0) && this.tub.chi.gte(0)) {
-          promises.push(daisystem.addExtraCupData(this.tub[type][key], this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi));
-        }
-      });
-      Promise.all(promises).then(r => {
-        if (r.length > 0) {
-          for (let i = 0; i < r.length; i++) {
-            if (typeof this.tub[type][r[i].id] !== "undefined") {
-              this.tub[type][r[i].id].pro = r[i].pro;
-              this.tub[type][r[i].id].ratio = r[i].ratio;
-              this.tub[type][r[i].id].avail_dai = r[i].avail_dai;
-              // this.tub[type][r[i].id].avail_dai_with_margin = r[i].avail_dai_with_margin;
-              this.tub[type][r[i].id].avail_skr = r[i].avail_skr;
-              // this.tub[type][r[i].id].avail_skr_with_margin = r[i].avail_skr_with_margin;
-              this.tub[type][r[i].id].liq_price = r[i].liq_price;
-              this.tub[type][r[i].id].safe = r[i].safe;
-            }
-          }
-        }
-      });
-    }
-    catch(e) {
-      console.error('Error in loadExtraCupData():', e);
-    }
-  }
-
-  setAggregatedValues = () => {
-    console.debug('Getting aggregated values...');
-    const values = [
+  setAggregatedValues = (callbacks = []) => {
+    console.debug("Getting aggregated values...");
+    const sValues = [
       ["tub", "axe", true],
       ["tub", "mat", true],
       ["tub", "cap"],
@@ -219,141 +205,134 @@ export default class SystemStore {
       ["tap", "fix", true],
       ["tap", "gap"]
     ];
-    // aggregateValues() returns (bytes32 pip, bool pipSet, bytes32 pep, bool pepSet, bool off, bool out, uint[] r)
-    blockchain.objects.saiValuesAggregator.aggregateValues.call((e, r) => {
-      if (!e) {
-        console.log('Got setAggregatedValues() result:', r);
-        const originalValues = {
-          "tub.tag": this.tub.tag,
-          "tub.mat": this.tub.mat,
-          "tub.rho": this.tub.rho,
-          "vox.era": this.vox.era
-        };
+
+    const tValues = [
+      ["eth", "myBalance"],
+      ["gem", "totalSupply"],
+      ["gem", "myBalance"],
+      ["gem", "tubBalance"],
+      ["gem", "tapBalance"],
+      ["gov", "totalSupply"],
+      ["gov", "myBalance"],
+      ["gov", "pitBalance"],
+      ["gov", "allowance"],
+      ["skr", "totalSupply"],
+      ["skr", "myBalance"],
+      ["skr", "tubBalance"],
+      ["skr", "tapBalance"],
+      ["dai", "totalSupply"],
+      ["dai", "myBalance"],
+      ["dai", "tapBalance"],
+      ["dai", "allowance"],
+      ["sin", "totalSupply"],
+      ["sin", "tubBalance"],
+      ["sin", "tapBalance"],
+    ];
+
+    daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
+      console.log("Got aggregateValues() result:", r);
+      if (this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
         // Set pip and pep
-        this["pip"].val = toBigNumber(r[1] ? parseInt(r[0], 16) : -1);
-        this["pep"].val = toBigNumber(r[3] ? parseInt(r[2], 16) : -1);
-        // Set off and out
-        this.setParameter("tub", "off", r[4]);
-        this.setParameter("tub", "out", r[5]);
-        // Set remaining values in result array
-        for (const [index, val] of values.entries()) {
-          const type = val[0];
-          const param = val[1];
-          const ray = val[2] || false;
-          // console.log('param:', index, type, param, ray)
-          console.log(`Got value for ${type}.${param}: ${toBytes32(r[6][index])}`);
-          this.setParameter(type, param, r[6][index], ray);
+        this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
+        this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
+        // Set off, out, eek and safe
+        this.tub.off = r[5][0];
+        this.tub.out = r[5][1];
+        this.tub.eek = r[5][2];
+        this.tub.safe = r[5][3];
+        // Set system values
+        for (const [index, val] of sValues.entries()) {
+          this[val[0]][val[1]] = (val[2] || false) ? fromRaytoWad(r[6][index]) : r[6][index];
         }
-
-        this.loadExtraCupData('cups');
-        this.loadExtraCupData('legacyCups');
-
-        // Recalculate for mat and tag changes
-        if (this.tub.mat.gte(0) &&
-            this.tub.tag.gte(0) &&
-            (
-              !originalValues["tub.mat"].eq(this.tub.mat) ||
-              !originalValues["tub.tag"].eq(this.tub.tag))
-            ) {
-          console.debug('*** Calculating safety and deficit...');
-          this.calculateSafetyAndDeficit();
+        // Set token values
+        for (const [index, val] of tValues.entries()) {
+          this[val[0]][val[1]] = r[7][index];
         }
-
-        // Recalculate issuerFee for rho and era changes
-        if (this.tub.rho.gte(0) &&
-            this.vox.era.gte(0) &&
-            this.tub.tax.gte(0) &&
-            this.sin.tubBalance.gte(0) &&
-            (
-              !originalValues["tub.rho"].eq(this.tub.rho) ||
-              !originalValues["vox.era"].eq(this.vox.era))
-            ) {
-          console.debug('*** Calculating issuer fee...');
-          this.tub.issuerFee = this.sin.tubBalance.times(fromWei(this.tub.tax).pow(this.vox.era.minus(this.tub.rho))).minus(this.sin.tubBalance).round(0);
-        }
+        // Execute possible callbacks
+        this.rootStore.transactions.executeCallbacks(callbacks);
+      } else {
+        console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
+        setTimeout(() => this.setAggregatedValues(callbacks), 2000);
       }
-    });
-  }
-
-  setParameterFromTub = async (field, ray = false, callback = false) => {
-    try {
-      const value = await daisystem.getParameterFromTub(field, ray);
-      this.tub[field] = value;
-      this.loadExtraCupData('cups');
-      this.loadExtraCupData('legacyCups');
-      if (callback) {
-        callback(value);
-      }
-    } catch(e) {
-      console.error('Error in setParameterFromTub():', e);
-    }
-  }
-
-  setParameter = (type, field, value, ray = false, callback = false) => {
-    this[type][field] = ray ? fromRaytoWad(value) : value;
-    if (callback) callback(value);
-  }
-
-  setParameterFromTap = async (field, ray = false) => {
-    try {
-      this.tap[field] = await daisystem.getParameterFromTap(field, ray);
-    } catch(e) {
-      console.log(e);
-    }
-  }
-
-  setParameterFromVox = async (field, ray = false) => {
-    try {
-      this.vox[field] = await daisystem.getParameterFromVox(field, ray);
-    } catch(e) {
-      console.log(e);
-    }
-  }
-
-  setValFromFeed = async obj => {
-    try {
-      this[obj].val = await daisystem.getValFromFeed(obj);
-    } catch(e) {
-      console.log(e);
-    }
-  }
-
-  calculateSafetyAndDeficit = () => {
-    const values = daisystem.calculateSafetyAndDeficit(this.tub.mat, this.skr.tubBalance, this.tub.tag, this.sin.totalSupply);
-    Object.keys(values).forEach(key => {
-      this[key] = {...this[key], ...values[key]};
     });
   }
 
   getCup = id => {
-    return daisystem.getCup(id, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi);
+    return new Promise((resolve, reject) => {
+      daisystem.getCup(id).then(cup => {
+        console.log("Got cup:", cup);
+        if (this.rootStore.transactions.setLatestBlock(cup.block)) {
+          resolve(cup);
+        } else {
+          console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}}, trying again...`);
+          setTimeout(() => {
+            resolve(this.getCup(id));
+          }, 1000);
+        }
+      }, e => reject(e));
+    });
+  }
+
+  getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
+    if (!blockchain.getProviderUseLogs()) return promisesCups;
+    return new Promise((resolve, reject) => {
+      const promisesLogs = [];
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16)));
+              }
+              resolve(true);
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      promisesLogs.push(
+        new Promise((resolve, reject) => {
+          blockchain.objects.tub.LogNote({sig: methodSig("give(bytes32,address)"), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
+            if (!e) {
+              for (let i = 0; i < r.length; i++) {
+                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16)));
+              }
+              resolve(true);
+            } else {
+              reject(e);
+            }
+          });
+        })
+      );
+      Promise.all(promisesLogs).then(() => resolve(promisesCups), e => reject(e));
+    });
   }
 
   setCups = async (type, keepTrying = false, callbacks = []) => {
     const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
-    const me = this;
     let promisesCups = [];
     let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
 
     try {
       const serviceData = settings.chain[this.rootStore.network.network].service ? await daisystem.getCupsFromService(this.rootStore.network.network, lad) : [];
       serviceData.forEach(v => {
-        promisesCups.push(me.getCup(v.id));
+        promisesCups.push(this.getCup(v.id));
         fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
       });
     }
     catch(e) {
-      console.error('Error in setCups():', e);
+      console.error("Error in setCups():", e);
     }
     finally {
-      promisesCups = await daisystem.getCupsFromChain(lad, fromBlock, this.vox.par, this.tub.tag, this.tub.tax, this.tub.mat, this.tub.per, this.tub.chi, promisesCups);
+      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
 
       if (type === "legacy" || this.tub.cupsLoading) {
         Promise.all(promisesCups).then(cups => {
           const cupsFiltered = {};
           for (let i = 0; i < cups.length; i++) {
-            if (lad === cups[i].lad) {
-                cupsFiltered[cups[i].id] = cups[i];
+            if (lad === cups[i].cupData.lad) {
+                cupsFiltered[cups[i].cupData.id] = cups[i].cupData;
             }
           }
           const keys = Object.keys(cupsFiltered).sort((a, b) => a - b);
@@ -430,9 +409,14 @@ export default class SystemStore {
   }
 
   reloadCupData = id => {
-    this.getCup(id).then(cup => {
-      this.tub.cups[id] = {...cup};
-      this.loadCupHistory(id);
+    daisystem.getCup(id).then(cup => {
+      if (this.rootStore.transactions.setLatestBlock(cup.block)) {
+        this.tub.cups[id] = {...cup.cupData};
+        this.loadCupHistory(id);
+      } else {
+        console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}, trying again...`);
+        setTimeout(() => this.reloadCupData(id), 2000);
+      }
     });
   }
 
@@ -458,73 +442,6 @@ export default class SystemStore {
 
   changeCup = cupId => {
     this.tub.cupId = cupId;
-  }
-
-  // Token Data
-  setUpTokenFromChain = token => {
-    console.debug(`setUpTokenFromChain: ${token}`);
-    blockchain.objects.tub[token.replace("dai", "sai")].call((e, r) => {
-      if (!e) {
-        this[token].address = r;
-        blockchain.loadObject(token === "gem" ? "dsethtoken" : "dstoken", r, token);
-        this.setTokenDataFromChain(token);
-        this.setFilterToken(token);
-      }
-    })
-  }
-
-  setTokenDataFromChain = token => {
-    console.debug(`setTokenDataFromChain: ${token}`);
-    this.setTotalSupplyFromChain(token);
-    if (token !== "sin" && isAddress(this.rootStore.network.defaultAccount)) {
-      this.setBalanceOfFromChain(token, this.rootStore.network.defaultAccount, "myBalance");
-    }
-    if (token === "gem" || token === "skr" || token === "sin") {
-      this.setBalanceOfFromChain(token, this.tub.address, "tubBalance");
-    }
-    if (token === "gem" || token === "skr" || token === "dai" || token === "sin") {
-      this.setBalanceOfFromChain(token, this.tap.address, "tapBalance");
-    }
-    if (token === "gem" || token === "skr") {
-      this.setParameterFromTub("per", true);
-    }
-    if (token === "gov") {
-      this.setBalanceOfFromChain(token, this.pit.address, "pitBalance");
-    }
-    if (token === "gov" || token === "dai") {
-      this.setAllowanceFromChain(token);
-    }
-  }
-
-  setTotalSupplyFromChain = async token => {
-    try {
-      this[token].totalSupply = await blockchain.totalSupply(token);
-      if (token === "sin") {
-        this.calculateSafetyAndDeficit();
-      }
-    } catch(e) {
-      console.log(e);
-    }
-  }
-
-  setBalanceOfFromChain = async (token, address, field) => {
-    try {
-      this[token][field] = await blockchain.balanceOf(token, address);
-      if ((token === "skr" || token === "dai") && field === "tubBalance") {
-        this.calculateSafetyAndDeficit();
-      }
-    } catch(e) {
-      console.log(e);
-    }
-  }
-
-  setAllowanceFromChain = async (token, callbacks = []) => {
-    try {
-      this[token].allowance = await blockchain.allowance(token, this.rootStore.network.defaultAccount, this.rootStore.profile.proxy);
-      this.rootStore.transactions.executeCallbacks(callbacks);
-    } catch(e) {
-      console.log(e);
-    }
   }
 
   // Blockchain filters
@@ -558,7 +475,7 @@ export default class SystemStore {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.setParameterFromTap("gap", false);
+          this.setAggregatedValues();
         }
       }
     });
@@ -570,39 +487,27 @@ export default class SystemStore {
       if (!e) {
         this.rootStore.transactions.logTransactionConfirmed(r);
         if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.setParameterFromVox("way", true);
+          this.setAggregatedValues();
         }
       }
     });
   }
 
-  setFilterFeedValue = obj => {
-    blockchain.objects.tub[obj].call((e, r) => {
+  setFiltersFeedValue = obj => {
+    if (!blockchain.getProviderUseLogs()) return;
+    blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this[obj].address = r;
-        blockchain.loadObject("dsvalue", r, obj);
-        this.setValFromFeed(obj);
-
-        if (blockchain.getProviderUseLogs()){
-          blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
-            if (!e) {
-              if (
-                r.args.sig === methodSig("poke(bytes32)") ||
-                r.args.sig === methodSig("poke()")
-              ) {
-                this.setValFromFeed(obj);
-                if (obj === "pip") {
-                  this.setParameterFromTub("tag", true, this.calculateSafetyAndDeficit);
-                }
-              }
-            }
-          });
+        if (
+          r.args.sig === methodSig("poke(bytes32)") ||
+          r.args.sig === methodSig("poke()")
+        ) {
+          this.setAggregatedValues();
         }
       }
-    })
+    });
   }
 
-  setFilterToken = token => {
+  setFiltersToken = token => {
     if (!blockchain.getProviderUseLogs()) return;
     const filters = ["Transfer", "Approval"];
 
@@ -620,7 +525,7 @@ export default class SystemStore {
         blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
             this.rootStore.transactions.logTransactionConfirmed(r);
-            this.setTokenDataFromChain(token);
+            this.setAggregatedValues();
           }
         });
       }
@@ -649,7 +554,7 @@ export default class SystemStore {
 
   checkProxyAndSetAllowance = (token, value) => {
     this.rootStore.transactions.addLoading("changeAllowance", token);
-    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAllowanceFromChain", token, [["transactions/cleanLoading", "changeAllowance", token]]]]]]);
+    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAggregatedValues", [["transactions/cleanLoading", "changeAllowance", token]]]]]]);
   }
 
   transferToken = (token, to, amount) => {
@@ -659,13 +564,13 @@ export default class SystemStore {
       if (this.rootStore.network.hw.active) {
         params.gas = 21000;
       }
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["profile/setEthBalanceFromChain"]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["system/setAggregatedValues"]]);
     } else {
       const params = {value: 0};
       if (this.rootStore.network.hw.active) {
         params.gas = 100000;
       }
-      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], params, [["system/setUpTokenFromChain", token]]);
+      this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], params, [["system/setAggregatedValues"]]);
     }
   }
 
@@ -699,7 +604,7 @@ export default class SystemStore {
   shut = (cupId, useOTC = false) => {
     const title = `Close CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]]});
+    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["system/setAggregatedValues"]]});
   }
 
   give = (cupId, newOwner) => {
@@ -717,7 +622,7 @@ export default class SystemStore {
     if (eth.gt(0) || dai.gt(0)) {
       if (!cupId) {
         callbacks = [
-          ["system/setMyCupsFromChain", true], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
+          ["system/setMyCupsFromChain", true], ["system/setAggregatedValues"]
         ];
 
         if (this.rootStore.profile.proxy) {
@@ -741,7 +646,7 @@ export default class SystemStore {
         }
       } else {
         callbacks = [
-          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
+          ["system/reloadCupData", cupId], ["system/setAggregatedValues"]
         ];
         if (dai.equals(0)) {
           title = `Deposit ${eth.valueOf()} ETH`;
@@ -793,7 +698,7 @@ export default class SystemStore {
                           {
                             title,
                             callbacks:  [
-                                          ["system/reloadCupData", cupId], ["profile/setEthBalanceFromChain"], ["system/setUpTokenFromChain", "dai"], ["system/setUpTokenFromChain", "sin"]
+                                          ["system/reloadCupData", cupId], ["system/setAggregatedValues"]
                                         ]
                           });
     }

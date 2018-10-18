@@ -17,7 +17,7 @@ class WalletSendToken extends React.Component {
   }
 
   setAmount = () => {
-    this.amount.value = formatNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance, false);
+    this.amount.value = formatNumber(this.props.system[this.props.sendToken].myBalance, false);
   }
 
   transfer = e => {
@@ -25,14 +25,13 @@ class WalletSendToken extends React.Component {
     const token = this.props.sendToken;
     const amount = this.amount.value;
     const destination = this.destination.value;
-    const myBalance = token === "eth" ? this.props.profile.accountBalance : this.props.system[token].myBalance;
     this.setState({ fieldErrors: {} });
 
     if (!destination || !isAddress(destination)) {
       this.setState({ fieldErrors: { address: "Please enter a valid address" } });
     } else if (!amount) {
       this.setState({ fieldErrors: { amount: "Please enter a valid amount" } });
-    } else if (myBalance.lt(toWei(amount))) {
+    } else if (this.props.system[token].myBalance.lt(toWei(amount))) {
       this.setState({ fieldErrors: { amount: `Not enough balance to transfer ${amount} ${this.props.tokenName(token)}` } });
     } else {
       this.props.system.transferToken(token, destination, amount);
@@ -61,7 +60,7 @@ class WalletSendToken extends React.Component {
                   Amount<br/>
                   <input className={ this.state.fieldErrors.amount ? "has-error" : "" } type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
                 </label>
-                <div className="below-input-info" style={ {cursor: "pointer"} } onClick={ this.setAmount }>{ printNumber(this.props.sendToken === "eth" ? this.props.profile.accountBalance : this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
+                <div className="below-input-info" style={ {cursor: "pointer"} } onClick={ this.setAmount }>{ printNumber(this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
               </div>
               { this.state.fieldErrors.amount && <p className="error">{ this.state.fieldErrors.amount }</p> }
 

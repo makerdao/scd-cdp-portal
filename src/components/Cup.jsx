@@ -23,7 +23,7 @@ class Cup extends React.Component {
 
     const actions = {
       lock: {
-              active: this.props.system.tub.off === false && this.props.profile.accountBalance && this.props.profile.accountBalance.gt(0),
+              active: this.props.system.tub.off === false && this.props.system.eth.myBalance && this.props.system.eth.myBalance.gt(0),
               helper: "Add collateral to a CDP"
             },
       free: {

@@ -25,12 +25,13 @@ export default class TransactionsStore {
     return txs.length > 0;
   }
 
-  checkLatestBlock = () => {
-    blockchain.getBlockNumber().then(r => {
-      if (r > this.latestBlock) {
-        this.latestBlock = r;
-      }
-    });
+  setLatestBlock = block => {
+    if (block >= this.latestBlock) {
+      console.log(`Latest Block: ${block}`);
+      this.latestBlock = block;
+      return true;
+    }
+    return false;
   }
 
   setStandardGasPrice = async () => {
@@ -108,21 +109,20 @@ export default class TransactionsStore {
   }
 
   logTransactionConfirmed = object => {
-    if (object.blockNumber >= this.latestBlock) {
-      const tx = object.transactionHash;
-      const msgTemp = "Transaction TX was confirmed.";
-      if (this.registry[tx] && this.registry[tx].pending) {
-        const registry = {...this.registry};
-        registry[tx].pending = false;
-        this.registry = registry;
-        console.log(msgTemp.replace("TX", tx));
-        this.notificator.hideNotification(tx);
-        if (!this.registry[tx].cdpCreationTx) {
-          this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
-        }
-        if (typeof this.registry[tx].callbacks !== "undefined" && this.registry[tx].callbacks.length > 0) {
-          this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
-        }
+    this.setLatestBlock(object.blockNumber);
+    const tx = object.transactionHash;
+    const msgTemp = "Transaction TX was confirmed.";
+    if (this.registry[tx] && this.registry[tx].pending) {
+      const registry = {...this.registry};
+      registry[tx].pending = false;
+      this.registry = registry;
+      console.log(msgTemp.replace("TX", tx));
+      this.notificator.hideNotification(tx);
+      if (!this.registry[tx].cdpCreationTx) {
+        this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
+      }
+      if (typeof this.registry[tx].callbacks !== "undefined" && this.registry[tx].callbacks.length > 0) {
+        this.registry[tx].callbacks.forEach(callback => this.executeCallback(callback));
       }
     }
   }

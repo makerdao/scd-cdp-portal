@@ -40,8 +40,8 @@ export const formatNumber = (number, decimals = false, isWei = true, round = fal
   web3.BigNumber.config({
     ROUNDING_MODE: web3.BigNumber.ROUND_HALF_UP,
     FORMAT: {
-      decimalSeparator: '.',
-      groupSeparator: ',',
+      decimalSeparator: ".",
+      groupSeparator: ",",
       groupSize: 3
     }
   });
@@ -82,7 +82,7 @@ export const fromRaytoWad = x => {
 }
 
 export const copyToClipboard = e => {
-  const value = e.target.title.replace(/,/g, '');
+  const value = e.target.title.replace(/,/g, "");
   var aux = document.createElement("input");
   aux.setAttribute("value", web3.toBigNumber(value).valueOf());
   document.body.appendChild(aux);

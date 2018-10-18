@@ -92,7 +92,7 @@ class Wizard extends Component {
         state.submitEnabled = false;
         state.error = false;
 
-        if (state.eth.gt(0) && this.props.profile.accountBalance.lt(state.eth)) {
+        if (state.eth.gt(0) && this.props.system.eth.myBalance.lt(state.eth)) {
           state.error = "The amount of ETH to be deposited exceeds your current balance.";
           return state;
         } else if (state.skr.gt(0) && state.skr.round(0).lte(toWei(0.005))) {

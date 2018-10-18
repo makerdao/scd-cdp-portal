@@ -133,7 +133,7 @@ class Home extends React.Component {
             <Footer />
           }
           <Dialog />
-          <ReactTooltip id='tooltip-root' place="top" type="light" effect="solid" html={true} scrollHide={true} delayHide={300} delayShow={200} />
+          <ReactTooltip id="tooltip-root" place="top" type="light" effect="solid" html={true} scrollHide={true} delayHide={300} delayShow={200} />
         </div>
       </DocumentTitle>
     )

@@ -33,7 +33,7 @@ class Help extends React.Component {
                       <li><Link to="/help/how-do-i-get-mkr-tokens">How do I get MKR tokens?</Link></li>
                     </ul>
                   </div>
-                  <div className="col col-2 col-extra-padding" style={ {paddingLeft: '2.5em'} }>
+                  <div className="col col-2 col-extra-padding" style={ {paddingLeft: "2.5em"} }>
                     <h2 className="typo-h2">&nbsp;</h2>
                     <h3 className="typo-h3 typo-white">Most asked questions</h3>
                     <ul className="typo-cl bullets">
