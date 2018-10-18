@@ -24,7 +24,7 @@ class RootStore {
     this.content = new ContentStore(this);
   }
 
-  setInterval = () => {
+  setVariablesInterval = () => {
     this.interval = setInterval(() => {
       console.log("Interval");
       this.system.setAggregatedValues();
@@ -42,7 +42,7 @@ class RootStore {
         this.network.stopLoadingAddress();
         this.transactions.setStandardGasPrice();
 
-        this.setInterval();
+        this.setVariablesInterval();
       } else {
         console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
         setTimeout(this._loadContracts, 2000);
