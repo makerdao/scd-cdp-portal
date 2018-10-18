@@ -117,7 +117,7 @@ class Home extends React.Component {
                                   {
                                     !this.props.network.hw.active
                                     ?
-                                      `If it takes longer, please try resetting ${getCurrentProviderName() !== "other" ? capitalize(getCurrentProviderName()) : "your client"}, then refresh the page.`
+                                      `If it takes longer, please try restarting ${getCurrentProviderName() !== "other" ? capitalize(getCurrentProviderName()) : "your client"}, then refresh the page.`
                                     :
                                       "If it takes longer, please try refreshing the page."
                                   }
