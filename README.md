@@ -11,13 +11,13 @@ Have installed:
 
 1) `git clone git@github.com:makerdao/scd-cdp-portal.git`
 
-2) `cd scd-cdp-portal && npm install`
+2) `cd scd-cdp-portal && yarn`
 
 ### Run project
 
-- `npm start`
+- `yarn start`
 - go to http://localhost:3000 (default port)
 
 For HW support:
-- `HTTPS=true npm start`
+- `HTTPS=true yarn start`
 - go to https://localhost:3000 (default port)
