@@ -17,6 +17,10 @@ import Welcome from "./Welcome";
 import Wizard from "./Wizard";
 import Footer from "./Footer";
 
+// Utils
+import {getCurrentProviderName} from "../utils/blockchain";
+import {capitalize} from "../utils/helpers";
+
 @inject("content")
 @inject("network")
 @inject("system")
@@ -106,6 +110,19 @@ class Home extends React.Component {
                           :
                             <React.Fragment>
                               Loading...
+                              {
+                                this.props.transactions.amountCheck > 4 &&
+                                <React.Fragment>
+                                  &nbsp;Node is momentarily out of sync.<br />
+                                  {
+                                    !this.props.network.hw.active
+                                    ?
+                                      `If it takes longer, please try resetting ${getCurrentProviderName() !== "other" ? capitalize(getCurrentProviderName()) : "your client"}, then refresh the page.`
+                                    :
+                                      "If it takes longer, please try refreshing the page."
+                                  }
+                                </React.Fragment>
+                              }
                             </React.Fragment>
                         }
                       </div>

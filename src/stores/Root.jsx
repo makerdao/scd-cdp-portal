@@ -45,6 +45,7 @@ class RootStore {
         this.setVariablesInterval();
       } else {
         console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
+        this.transactions.addAmountCheck();
         setTimeout(this._loadContracts, 2000);
       }
     }, () => {

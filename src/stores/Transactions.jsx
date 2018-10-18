@@ -10,6 +10,7 @@ import * as settings from "../settings";
 
 export default class TransactionsStore {
   @observable latestBlock = 0;
+  @observable amountCheck = 0;
   @observable registry = {};
   @observable loading = {};
   cdpCreationTx = false;
@@ -27,6 +28,7 @@ export default class TransactionsStore {
 
   reset = () => {
     this.latestBlock = 0;
+    this.amountCheck = 0;
     this.registry = {};
     this.loading = {};
     this.cdpCreationTx = false;
@@ -36,11 +38,16 @@ export default class TransactionsStore {
 
   setLatestBlock = block => {
     if (block >= this.latestBlock) {
+      this.amountCheck = 0;
       console.log(`Latest Block: ${block}`);
       this.latestBlock = block;
       return true;
     }
     return false;
+  }
+
+  addAmountCheck = () => {
+    this.amountCheck++;
   }
 
   setStandardGasPrice = async () => {
