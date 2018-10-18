@@ -58,6 +58,7 @@ class RootStore {
       blockchain.resetFilters(true);
       if (typeof this.interval !== "undefined") clearInterval(this.interval);
       this.system.reset();
+      this.transactions.reset();
 
       // Check actual block number from 3 different requests (workaround to try to avoid outdated nodes behind load balancer)
       const blockPromises = [];

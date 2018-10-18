@@ -25,6 +25,15 @@ export default class TransactionsStore {
     return txs.length > 0;
   }
 
+  reset = () => {
+    this.latestBlock = 0;
+    this.registry = {};
+    this.loading = {};
+    this.cdpCreationTx = false;
+    this.standardGasPrice = -1;
+    this.priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
+  }
+
   setLatestBlock = block => {
     if (block >= this.latestBlock) {
       console.log(`Latest Block: ${block}`);
