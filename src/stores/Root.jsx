@@ -35,21 +35,30 @@ class RootStore {
 
   _loadContracts = () => {
     daisystem.getContracts(settings.chain[this.network.network].proxyRegistry, this.network.defaultAccount).then(r => {
-      if (r && this.transactions.setLatestBlock(r[0].toNumber()) && r[1] && isAddress(r[1][0]) && isAddress(r[1][1])) {
-        // Set profile proxy and system contracts
-        this.profile.setProxy(r[2]);
-        this.system.init(r[1][0], r[1][1], r[1][2], r[1][3], r[1][4], r[1][5], r[1][6], r[1][7], r[1][8], r[1][9], r[1][10], r[1][11]);
-        this.network.stopLoadingAddress();
-        this.transactions.setStandardGasPrice();
+      if (r && r[0] && r[1] && isAddress(r[1][0]) && isAddress(r[1][1])) {
+        const block = r[0].toNumber();
+        // Make the contracts addresses load a bit more flexible, just checking the node request is bringing data no older than 5 blocks
+        if (block > this.transactions.latestBlock - 5) {
+          this.transactions.setLatestBlock(block);
+          // Set profile proxy and system contracts
+          this.profile.setProxy(r[2]);
+          this.system.init(r[1][0], r[1][1], r[1][2], r[1][3], r[1][4], r[1][5], r[1][6], r[1][7], r[1][8], r[1][9], r[1][10], r[1][11]);
+          this.network.stopLoadingAddress();
+          this.transactions.setStandardGasPrice();
 
-        this.setVariablesInterval();
+          this.setVariablesInterval();
+        } else {
+          console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${block}, trying again...`);
+          this.transactions.addAmountCheck();
+          setTimeout(this._loadContracts, 2000);
+        }
       } else {
-        console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
+        console.log("Error loading contracts, trying again...");
         this.transactions.addAmountCheck();
         setTimeout(this._loadContracts, 2000);
       }
     }, () => {
-      console.log(`Error loading contracts, trying again...`);
+      console.log("Error loading contracts, trying again...");
       setTimeout(this._loadContracts, 2000);
     });
   }

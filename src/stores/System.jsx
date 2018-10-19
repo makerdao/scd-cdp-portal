@@ -177,14 +177,14 @@ export default class SystemStore {
       blockchain.loadObject("dstoken", sin, "sin");
       this.setFiltersToken("sin");
 
-      this.setAggregatedValues();
+      this.setAggregatedValues([], true);
 
       this.setMyCupsFromChain();
       this.setMyLegacyCupsFromChain();
     }
   }
 
-  setAggregatedValues = (callbacks = []) => {
+  setAggregatedValues = (callbacks = [], firstLoad = false) => {
     console.debug("Getting aggregated values...");
     const sValues = [
       ["tub", "axe", true],
@@ -231,7 +231,8 @@ export default class SystemStore {
 
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
       console.log("Got aggregateValues() result:", r);
-      if (this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
+      const block = r[0].toNumber();
+      if (this.rootStore.transactions.setLatestBlock(block) || (firstLoad && block > this.rootStore.transactions.latestBlock - 5)) {
         // Set pip and pep
         this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
         this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
@@ -251,7 +252,7 @@ export default class SystemStore {
         // Execute possible callbacks
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
-        console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${r[0].toNumber()}, trying again...`);
+        console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${block}, trying again...`);
         setTimeout(() => this.setAggregatedValues(callbacks), 2000);
       }
     });
