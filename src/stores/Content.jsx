@@ -10,7 +10,7 @@ import {WAD, formatNumber, fromWei, toWei} from "../utils/helpers";
 import * as settings from "../settings";
 
 // JSON Content
-import contentTerms from "../json/terms.json";
+import contentTerms from "../assets/json/terms.json";
 
 export default class ContentStore {
   @observable content = { faq: {}, tooltips: {} }
