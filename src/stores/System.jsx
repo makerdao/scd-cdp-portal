@@ -433,7 +433,7 @@ export default class SystemStore {
   }
 
   rap = cup => {
-    return daisystem.tab(cup, this.tub.rhi);
+    return daisystem.rap(cup, this.tub.rhi, this.tub.chi);
   }
 
   futureRap = (cup, age) => {

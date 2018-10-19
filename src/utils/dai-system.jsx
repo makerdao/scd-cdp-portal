@@ -20,8 +20,8 @@ export const tab = (cup, chi) => {
   return wmul(cup.art, chi).round(0);
 }
 
-export const rap = (cup, rhi) => {
-  return wmul(cup.ire, rhi).minus(tab(cup)).round(0);
+export const rap = (cup, rhi, chi) => {
+  return wmul(cup.ire, rhi).minus(tab(cup, chi)).round(0);
 }
 
 export const getCup = id => {
