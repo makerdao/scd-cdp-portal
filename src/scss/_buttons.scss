@@ -151,7 +151,7 @@ button, .btn {
 		text-align: center;
 
 		&:after {
-			content: url('../img/icon-close.svg');
+			content: url('"~images/icon-close.svg');
 			display: inline-block;
 			margin: 0;
 			padding: 0;
@@ -162,7 +162,7 @@ button, .btn {
 		.bright-style &, &.bright-style {
 			color: $bg-grey;
 			&:after {
-				content: url('../img/icon-close-dark.svg');
+				content: url('"~images/icon-close-dark.svg');
 			}
 		}
 	}

@@ -25,7 +25,7 @@
 		color: $white;
 		.notification-headline {
 			&:after {
-				content: url('../img/icon-stop.svg');
+				content: url('"~images/icon-stop.svg');
 				position: absolute;
 				left: -1.5em;
 				top: auto;
@@ -38,7 +38,7 @@
 		color: $white;
 		.notification-headline {
 			&:after {
-				content: url('../img/icon-clock.svg');
+				content: url('"~images/icon-clock.svg');
 				position: absolute;
 				left: -1.5em;
 				top: auto;
@@ -51,7 +51,7 @@
 		color: $white;
 		.notification-headline {
 			&:after {
-				content: url('../img/icon-check.svg');
+				content: url('"~images/icon-check.svg');
 				position: absolute;
 				left: -1.5em;
 				top: auto;
@@ -64,7 +64,7 @@
 	  .notification-headline {
 	    color: #C0392B;
 	    &:after {
-	      content: url("../img/icon-warning.svg");
+	      content: url("~images/icon-warning.svg");
 	      position: absolute;
 	      left: -30px;
 	      top: auto;
