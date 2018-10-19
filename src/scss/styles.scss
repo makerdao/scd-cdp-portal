@@ -1,7 +1,7 @@
-// load CSS presets
+// Load CSS presets
 @import '_normalize';
 
-// libraries
+// Libraries
 @import '_colors';
 @import '_interactive';
 @import '_breakpoints';
@@ -12,7 +12,7 @@
 @import '_layout';
 @import '_mixins';
 @import '_helpers';
-
+@import '_general';
 
 // Components
 @import '_cp-menu-bar';
@@ -38,7 +38,6 @@
 @import '_cp-migrate-legacy-cups';
 @import '_cp-not-found';
 @import '_cp-help';
-
 
 // States
 @import '_forecast-mode';

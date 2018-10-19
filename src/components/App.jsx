@@ -16,7 +16,8 @@ import rootStore from "../stores/Root";
 // Utils
 import * as blockchain from "../utils/blockchain";
 
-import "./App.css";
+// Styles
+import "../scss/styles.css";
 
 // Convenient console access
 window.blockchain = blockchain;
