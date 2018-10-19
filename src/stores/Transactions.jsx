@@ -36,11 +36,13 @@ export default class TransactionsStore {
     this.priceModal = { open: false, title: null, func: null, params: null, options: {}, callbacks: null };
   }
 
-  setLatestBlock = block => {
+  setLatestBlock = (block, flexible = false) => {
     if (block >= this.latestBlock) {
       this.amountCheck = 0;
       console.log(`Latest Block: ${block}`);
       this.latestBlock = block;
+      return true;
+    } else if (flexible && block + 5 >= this.latestBlock) {
       return true;
     }
     return false;

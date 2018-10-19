@@ -179,8 +179,8 @@ export default class SystemStore {
 
       this.setAggregatedValues([], true);
 
-      this.setMyCupsFromChain();
-      this.setMyLegacyCupsFromChain();
+      this.setMyCupsFromChain(false, [], true);
+      this.setMyLegacyCupsFromChain([], true);
     }
   }
 
@@ -232,7 +232,7 @@ export default class SystemStore {
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
       console.log("Got aggregateValues() result:", r);
       const block = r[0].toNumber();
-      if (this.rootStore.transactions.setLatestBlock(block) || (firstLoad && block > this.rootStore.transactions.latestBlock - 5)) {
+      if (this.rootStore.transactions.setLatestBlock(block, firstLoad)) {
         // Set pip and pep
         this.pip.val = toBigNumber(r[2] ? parseInt(r[1], 16) : -1);
         this.pep.val = toBigNumber(r[4] ? parseInt(r[3], 16) : -1);
@@ -253,28 +253,28 @@ export default class SystemStore {
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
         console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${block}, trying again...`);
-        setTimeout(() => this.setAggregatedValues(callbacks), 2000);
+        setTimeout(() => this.setAggregatedValues(callbacks, firstLoad), 2000);
       }
     });
   }
 
-  getCup = id => {
+  getCup = (id, firstLoad = false) => {
     return new Promise((resolve, reject) => {
       daisystem.getCup(id).then(cup => {
         console.log("Got cup:", cup);
-        if (this.rootStore.transactions.setLatestBlock(cup.block)) {
+        if (this.rootStore.transactions.setLatestBlock(cup.block, firstLoad)) {
           resolve(cup);
         } else {
           console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}}, trying again...`);
           setTimeout(() => {
-            resolve(this.getCup(id));
+            resolve(this.getCup(id, firstLoad));
           }, 1000);
         }
       }, e => reject(e));
     });
   }
 
-  getCupsFromChain = (lad, fromBlock, promisesCups = []) => {
+  getCupsFromChain = (lad, fromBlock, promisesCups = [], firstLoad = false) => {
     if (!blockchain.getProviderUseLogs()) return promisesCups;
     return new Promise((resolve, reject) => {
       const promisesLogs = [];
@@ -283,7 +283,7 @@ export default class SystemStore {
           blockchain.objects.tub.LogNewCup({lad}, {fromBlock}).get((e, r) => {
             if (!e) {
               for (let i = 0; i < r.length; i++) {
-                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16)));
+                promisesCups.push(this.getCup(parseInt(r[i].args.cup, 16), firstLoad));
               }
               resolve(true);
             } else {
@@ -297,7 +297,7 @@ export default class SystemStore {
           blockchain.objects.tub.LogNote({sig: methodSig("give(bytes32,address)"), bar: toBytes32(lad)}, {fromBlock}).get((e, r) => {
             if (!e) {
               for (let i = 0; i < r.length; i++) {
-                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16)));
+                promisesCups.push(this.getCup(parseInt(r[i].args.foo, 16), firstLoad));
               }
               resolve(true);
             } else {
@@ -310,7 +310,7 @@ export default class SystemStore {
     });
   }
 
-  setCups = async (type, keepTrying = false, callbacks = []) => {
+  setCups = async (type, keepTrying = false, callbacks = [], firstLoad = false) => {
     const lad = type === "new" ? this.rootStore.profile.proxy : this.rootStore.network.defaultAccount;
     let promisesCups = [];
     let fromBlock = settings.chain[this.rootStore.network.network].fromBlock;
@@ -318,7 +318,7 @@ export default class SystemStore {
     try {
       const serviceData = settings.chain[this.rootStore.network.network].service ? await daisystem.getCupsFromService(this.rootStore.network.network, lad) : [];
       serviceData.forEach(v => {
-        promisesCups.push(this.getCup(v.id));
+        promisesCups.push(this.getCup(v.id, firstLoad));
         fromBlock = v.block > fromBlock ? v.block + 1 : fromBlock;
       });
     }
@@ -326,7 +326,7 @@ export default class SystemStore {
       console.error("Error in setCups():", e);
     }
     finally {
-      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups);
+      promisesCups = await this.getCupsFromChain(lad, fromBlock, promisesCups, firstLoad);
 
       if (type === "legacy" || this.tub.cupsLoading) {
         Promise.all(promisesCups).then(cups => {
@@ -362,17 +362,17 @@ export default class SystemStore {
     }
   }
 
-  setMyCupsFromChain = (keepTrying = false, callbacks = []) => {
+  setMyCupsFromChain = (keepTrying = false, callbacks = [], firstLoad = false) => {
     if (this.rootStore.profile.proxy) {
       this.tub.cupsLoading = true;
-      this.setCups("new", keepTrying, callbacks);
+      this.setCups("new", keepTrying, callbacks, firstLoad);
     } else {
       this.tub.cupsLoading = false;
     }
   }
 
-  setMyLegacyCupsFromChain = (callbacks = []) => {
-    this.setCups("legacy", false, callbacks);
+  setMyLegacyCupsFromChain = (callbacks = [], firstLoad = false) => {
+    this.setCups("legacy", false, callbacks, firstLoad);
   }
 
   moveLegacyCDP = (cupId, callbacks = []) => {
