@@ -10,8 +10,6 @@ import Home from "./Home";
 import NotFound from "./NotFound";
 import Terms from "./Terms";
 
-import "./App.css";
-
 @withRouter
 @observer
 class App extends React.Component {
