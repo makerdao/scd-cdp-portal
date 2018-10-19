@@ -16,6 +16,18 @@ import WalletSendToken from "./WalletSendToken";
 import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain";
 import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
 
+// Images
+import walletIcon from "images/wallet-icon.png";
+import menuIconLedger from "images/menu-icon-ledger.svg";
+import menuIconTrezor from "images/menu-icon-trezor.svg";
+import menuIconWeb from "images/menu-icon-web.svg";
+
+const menuIcons = {
+  ledger: menuIconLedger,
+  trezor: menuIconTrezor,
+  web: menuIconWeb
+};
+
 @inject("network")
 @inject("profile")
 @inject("transactions")
@@ -110,7 +122,7 @@ class Wallet extends React.Component {
                             <span>
                               { this.formatClientName(getCurrentProviderName()) }
                             </span>
-                            <DropdownMenu icon="../img/wallet-icon.png">
+                            <DropdownMenu icon={ walletIcon }>
                               <MenuItems>
                                 {
                                   (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor") &&
@@ -125,7 +137,7 @@ class Wallet extends React.Component {
                                 }
                                 {
                                   this.renderWalletOptions().map(key =>
-                                    <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ `../img/menu-icon-${key}.svg` } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                                    <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ menuIcons[key] } key={ key } data-client={ key } onClick={ this.switchConnection } />
                                   )
                                 }
                               </MenuItems>

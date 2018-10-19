@@ -5,6 +5,21 @@ import {inject, observer} from "mobx-react";
 // Utils
 import {etherscanTx} from "../utils/helpers";
 
+// Images
+import cdpCreated from "images/cdp-created.svg";
+import cdpCreatedIcon1 from "images/cdp-created-icon-1.svg";
+import cdpCreatedIcon2 from "images/cdp-created-icon-2.svg";
+import cdpCreatedIcon3 from "images/cdp-created-icon-3.svg";
+
+import cdpCreating1 from "images/cdp-creating-1.svg";
+import cdpCreating2 from "images/cdp-creating-2.svg";
+import cdpCreating3 from "images/cdp-creating-3.svg";
+import cdpCreating4 from "images/cdp-creating-4.svg";
+import cdpCreating5 from "images/cdp-creating-5.svg";
+import cdpCreating6 from "images/cdp-creating-6.svg";
+
+const cdpCreatingAnimation = [cdpCreating1, cdpCreating2, cdpCreating3, cdpCreating4, cdpCreating5, cdpCreating6];
+
 class CreatingCDPAnimation extends React.Component {
   constructor(props){
     super(props);
@@ -18,13 +33,13 @@ class CreatingCDPAnimation extends React.Component {
   componentDidMount() {
     this.intervalId = setInterval(this.timer.bind(this), 2000);
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     clearInterval(this.intervalId);
   }
   render() {
     return(
       <React.Fragment>
-        <img className="main" src={ `../img/cdp-creating-${this.state.currentCount}.svg` } alt="Creating CDP" />
+        <img className="main" src={ cdpCreatingAnimation[this.state.currentCount] } alt="Creating CDP" />
       </React.Fragment>
     );
   }
@@ -62,21 +77,21 @@ class NotifySetUp extends React.Component {
             :
               <React.Fragment>
                 <h2>Congratulations on your new CDP</h2>
-                <img className="main" src="../img/cdp-created.svg" alt="CDP created" />
+                <img className="main" src={ cdpCreated } alt="CDP created" />
                 <p>
                   Welcome to the CDP Portal where you can view and manage<br />your collateral and debt position on a decentralized system.
                 </p>
                 <ul>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-1.svg" alt="*" style={ {height: "24px"} } /></div>
+                    <div className="icon"><img src={ cdpCreatedIcon1 } alt="*" style={ {height: "24px"} } /></div>
                     Check current collateral<br />to debt position
                   </li>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-2.svg" alt="*" style={ {height: "25px"} } /></div>
+                    <div className="icon"><img src={ cdpCreatedIcon2 } alt="*" style={ {height: "25px"} } /></div>
                     Deposit or withdraw<br />collateral
                   </li>
                   <li>
-                    <div className="icon"><img src="../img/cdp-created-icon-3.svg" alt="*" style={ {height: "30px"} } /></div>
+                    <div className="icon"><img src={ cdpCreatedIcon3 } alt="*" style={ {height: "30px"} } /></div>
                     Generate or pay<br />back DAI
                   </li>
                 </ul>

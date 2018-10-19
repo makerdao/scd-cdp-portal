@@ -3,6 +3,10 @@ import React from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
+// Images
+import iconHome from 'images/icon-home.svg';
+import iconHelp from 'images/icon-help.svg';
+
 @inject("system")
 @inject("network")
 @observer
@@ -32,7 +36,7 @@ class Menu extends React.Component {
               !this.props.showCDPs &&
               <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ () => this.props.page === "" && this.props.setOpenMigrate(false) }>
                 <Link to="/">
-                  <img src="/img/icon-home.svg" draggable="false" alt="" />
+                  <img src={ iconHome } draggable="false" alt="" />
                   <span className="menu-label">CDP Portal</span>
                 </Link>
               </li>
@@ -41,7 +45,7 @@ class Menu extends React.Component {
               this.props.showCDPs && Object.keys(this.props.system.tub.cups).length === 1 &&
               <li value="home" className={ this.props.page === "" && !this.props.isMigrateCDPPage ? "active" : "" } onClick={ e => { e.preventDefault(); this.changeCup(this.props.system.tub.cups[0]); this.props.setOpenMigrate(false) } }>
                 <Link to="/">
-                  <img src="/img/icon-home.svg" draggable="false" alt="" />
+                  <img src={ iconHome } draggable="false" alt="" />
                   <span className="menu-label">CDP Portal</span>
                 </Link>
               </li>
@@ -69,7 +73,7 @@ class Menu extends React.Component {
             }
             <li value="help" className={ this.props.page === "help" ? "active" : "" }>
               <Link to="/help">
-                <img src="/img/icon-help.svg" draggable="false" alt="" />
+                <img src={ iconHelp } draggable="false" alt="" />
                 <span className="menu-label">Help</span>
               </Link>
             </li>

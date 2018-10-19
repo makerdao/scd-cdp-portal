@@ -2,6 +2,9 @@
 import React from "react";
 import {Link} from "react-router-dom";
 
+// Images
+import makerLogoFooter from "images/maker-logo-footer.svg";
+
 class Footer extends React.Component {
   render() {
     return (
@@ -9,7 +12,7 @@ class Footer extends React.Component {
         <div className="landing-footer">
           <div className="logo-block">
             <div className="line" />
-            <div className="logo-center"><img src="../img/maker-logo-footer.svg" alt="Maker" />Maker</div>
+            <div className="logo-center"><img src={ makerLogoFooter } alt="Maker" />Maker</div>
           </div>
           <p>
             The Dai Credit System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />

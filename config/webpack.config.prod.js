@@ -90,7 +90,9 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-
+      // Path aliases for fonts and images
+      fonts: path.resolve(__dirname, '../src/assets/fonts'),
+      images: path.resolve(__dirname, '../src/assets/images'),
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
@@ -152,18 +154,6 @@ module.exports = {
             options: {
               presets: ['react-app'],
               plugins: ['transform-decorators-legacy'],
-              compact: true,
-            },
-          },
-          // Process (the yarn linked @makerdao/dai library) JS with Babel.
-          {
-            test: /\.(js|jsx|mjs)$/,
-            include: /dai\.js/,
-            exclude: /node_modules/,
-            loader: require.resolve('babel-loader'),
-            options: {
-              presets: ['env', 'stage-2'],
-              plugins: ['transform-runtime'],
               compact: true,
             },
           },

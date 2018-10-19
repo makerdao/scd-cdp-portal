@@ -3,6 +3,13 @@ import React from "react";
 import Slider from "react-slick";
 import {Link} from "react-router-dom";
 
+// Images
+import welcomeHero from 'images/welcome-hero.svg';
+import metamaskLogo from 'images/metamask-logo.svg';
+import parityLogo from 'images/parity-logo.png';
+import ledgerNanoLogo from 'images/ledger-nano-logo.png';
+import trezorLogo from 'images/trezor-logo.png';
+
 class Landing extends React.Component {
   render() {
     function PrevButton(props) {
@@ -41,7 +48,7 @@ class Landing extends React.Component {
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
                 </p>
-                <img className="preview" src="../img/welcome-hero.svg" alt="CDP Portal" />
+                <img className="preview" src={ welcomeHero } alt="CDP Portal" />
               </div>
             </div>
             <div>
@@ -86,10 +93,10 @@ class Landing extends React.Component {
             <p>Connect one of the four wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
             <p className="align-center"><Link to="/help" className="faq">See FAQs for additional information on wallets</Link></p>
             <ul>
-              <li><a href="https://metamask.io/"><img src="../img/metamask-logo.svg" alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
-              <li><a href="https://www.parity.io/"><img src="../img/parity-logo.png" alt="Get Parity" /><div>Get Parity</div></a></li>
-              <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src="../img/ledger-nano-logo.png" alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
-              <li><a href="https://trezor.io/"><img src="../img/trezor-logo.png" alt="Get Trezor" /><div>Get Trezor</div></a></li>
+              <li><a href="https://metamask.io/"><img src={ metamaskLogo } alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
+              <li><a href="https://www.parity.io/"><img src={ parityLogo } alt="Get Parity" /><div>Get Parity</div></a></li>
+              <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src={ ledgerNanoLogo } alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
+              <li><a href="https://trezor.io/"><img src={ trezorLogo } alt="Get Trezor" /><div>Get Trezor</div></a></li>
             </ul>
           </div>
         </div>

@@ -1,9 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # auto-generated
-public/css/styles.css
-public/css/styles.min.css
-public/css/styles.css.map
+src/scss/styles.css
+src/scss/styles.css.map
 
 # dependencies
 /node_modules
