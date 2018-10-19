@@ -2,6 +2,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// Images
+import image404 from "images/404.svg";
+
 class NotFound extends React.Component {
   static contextTypes = {
     router: PropTypes.object
@@ -23,7 +26,7 @@ class NotFound extends React.Component {
               <h2>You spotted a black hole.</h2>
               <p>Don’t go too close – it sucks up<br />pages and contents.</p>
             </div>
-            <img src="../img/404.svg" draggable="false" alt="You spotted a black hole" />
+            <img src={ image404 } draggable="false" alt="You spotted a black hole" />
           </div>
         </div>
         <div className="not-found-2">

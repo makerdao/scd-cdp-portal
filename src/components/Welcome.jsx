@@ -4,6 +4,9 @@ import React from "react";
 // Components
 import LegacyCupsAlert from "./LegacyCupsAlert";
 
+// Images
+import welcomeSatellite from "images/welcome-satellite.svg";
+
 class Welcome extends React.Component {
   render() {
     return (
@@ -20,7 +23,7 @@ class Welcome extends React.Component {
             <button className="sidebar-btn is-primary-green" onClick={ e => { e.preventDefault(); this.props.setOpenCDPWizard() } }>Open CDP</button>
           </div>
           <div className="align-center">
-            <img src="../img/welcome-satellite.svg" alt="Welcome" style={ {width: "690px", height: "auto", maxWidth: "70%" } } />
+            <img src={ welcomeSatellite } alt="Welcome" style={ {width: "690px", height: "auto", maxWidth: "70%" } } />
           </div>
         </div>
       </div>

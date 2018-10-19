@@ -8,6 +8,17 @@ import LoadingSpinner from "./LoadingSpinner";
 // Utils
 import {etherscanAddress, etherscanTx, printNumber, formatDate, toWei} from "../utils/helpers";
 
+// Images
+import historyIconOpen from "images/history-icon-open.svg";
+import historyIconGive from "images/history-icon-give.svg";
+import historyIconLocked from "images/history-icon-locked.svg";
+import historyIconPayback from "images/history-icon-payback.svg";
+import historyIconBorrow from "images/history-icon-borrow.svg";
+import historyIconTransfer from "images/history-icon-transfer.svg";
+import historyIconUnknown from "images/history-icon-unknown.svg";
+import historyIconLiquidation from "images/history-icon-liquidation.svg";
+
+
 const MAX_HISTORY_ITEMS_BEFORE_COLLAPSE = 4;
 
 @inject("network")
@@ -48,35 +59,35 @@ class CupHistory extends React.Component {
                     {
                       this.props.history && this.props.history.length > 0 &&
                       this.props.history.map((action, key) => {
-                        let message = "", image = "history-icon-unknown.svg";
+                        let message = "", image = historyIconUnknown;
                         switch(action.act) {
                           case "OPEN":
                             message = <React.Fragment>Opened your CDP</React.Fragment>;
-                            image = "history-icon-open.svg";
+                            image = historyIconOpen;
                             break;
                           case "GIVE":
                             message = <React.Fragment>Transferred CDP from {etherscanAddress(this.props.network.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy)}</React.Fragment>;
-                            image = "history-icon-give.svg";
+                            image = historyIconGive;
                             break;
                           case "LOCK":
                             message = <React.Fragment>Deposited {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) to your CDP</React.Fragment>;
-                            image = "history-icon-locked.svg";
+                            image = historyIconLocked;
                             break;
                           case "FREE":
                             message = <React.Fragment>Withdrew {printNumber(toWei(action.arg * action.per))} ETH ({printNumber(toWei(action.arg))} PETH) from your CDP</React.Fragment>;
-                            image = "history-icon-payback.svg";
+                            image = historyIconPayback;
                             break;
                           case "DRAW":
                             message = <React.Fragment>Generated {printNumber(toWei(action.arg))} DAI from your CDP</React.Fragment>;
-                            image = "history-icon-borrow.svg";
+                            image = historyIconBorrow;
                             break;
                           case "WIPE":
                             message = <React.Fragment>Paidback {printNumber(toWei(action.arg))} DAI to your CDP</React.Fragment>;
-                            image = "history-icon-transfer.svg"; // Should this be "history-icon-payback.svg" instead?
+                            image = historyIconTransfer; // Should this be "history-icon-payback.svg" instead?
                             break;
                           case "SHUT":
                             message = <React.Fragment>Closed your CDP</React.Fragment>;
-                            image = "history-icon-unknown.svg";
+                            image = historyIconUnknown;
                             break;
                           case "BITE":
                             const art = toWei(this.props.history[key + 1].art);
@@ -87,7 +98,7 @@ class CupHistory extends React.Component {
                                         Your CDP has been liquidated to pay back { printNumber(art, 2) } DAI.
                                         Total {printNumber(liqETH)} ETH ({ printNumber(liqInk) } PETH) has been liquidated at { printNumber(pip, 2) } USD.
                                       </React.Fragment>;
-                            image = "history-icon-liquidation.svg";
+                            image = historyIconLiquidation;
                             break;
                           default:
                             break;
@@ -95,7 +106,7 @@ class CupHistory extends React.Component {
                         return (
                           <div className="history-cointainer" key={ key }>
                             <div className="history-icon">
-                              <img src={ `img/${image}` } draggable="false" alt="" />
+                              <img src={ image } draggable="false" alt="" />
                               <div className="vertical-line"></div>
                             </div>
                             <div className="history-details">
