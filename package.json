@@ -16,8 +16,6 @@
     "build-js": "node scripts/build.js",
     "build": "npm-run-all build-css build-js",
     "test": "node scripts/test.js --env=jsdom",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "build-deploy-surge": "npm run build && gulp deploy-surge-kovan && gulp deploy-surge-main",
     "build-deploy-prod": "GENERATE_SOURCEMAP=false npm run build && gulp deploy-aws"
   },
