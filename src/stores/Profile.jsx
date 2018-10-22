@@ -40,7 +40,7 @@ export default class ProfileStore {
   setProxy = proxy => {
     this.proxy = proxy !== "0x0000000000000000000000000000000000000000" ? proxy : null;
     blockchain.loadObject("dsproxy", this.proxy, "proxy");
-    console.log("proxy", this.proxy);
+    console.log("Found proxy:", this.proxy);
   }
 
   checkProxy = callbacks => {

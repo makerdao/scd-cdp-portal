@@ -230,7 +230,7 @@ export default class SystemStore {
     ];
 
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
-      console.log("Got aggregateValues() result:", r);
+      console.debug("Got aggregateValues() result:", r);
       const block = r[0].toNumber();
       if (this.rootStore.transactions.setLatestBlock(block, firstLoad)) {
         // Set pip and pep
@@ -252,7 +252,7 @@ export default class SystemStore {
         // Execute possible callbacks
         this.rootStore.transactions.executeCallbacks(callbacks);
       } else {
-        console.log(`Error loading values (latest block ${this.rootStore.transactions.latestBlock}, request one: ${block}, trying again...`);
+        console.debug(`Error loading values (latest block #${this.rootStore.transactions.latestBlock}, request one: #${block}). Trying again...`);
         setTimeout(() => this.setAggregatedValues(callbacks, firstLoad), 2000);
       }
     });
@@ -261,7 +261,7 @@ export default class SystemStore {
   getCup = (id, firstLoad = false) => {
     return new Promise((resolve, reject) => {
       daisystem.getCup(id).then(cup => {
-        console.log("Got cup:", cup);
+        console.debug("Got cup:", cup);
         if (this.rootStore.transactions.setLatestBlock(cup.block, firstLoad)) {
           resolve(cup);
         } else {

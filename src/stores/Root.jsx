@@ -26,7 +26,7 @@ class RootStore {
 
   setVariablesInterval = () => {
     this.interval = setInterval(() => {
-      console.log("Interval");
+      console.debug("Running variables interval");
       this.system.setAggregatedValues();
       this.transactions.setStandardGasPrice();
       this.transactions.checkPendingTransactions();
