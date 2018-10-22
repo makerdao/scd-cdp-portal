@@ -177,6 +177,7 @@ export default class SystemStore {
       blockchain.loadObject("dstoken", sin, "sin");
       this.setFiltersToken("sin");
 
+      this.setAggregatedValuesTimer = null;
       this.setAggregatedValues([], true);
 
       this.setMyCupsFromChain(false, [], true);
@@ -184,7 +185,7 @@ export default class SystemStore {
     }
   }
 
-  setAggregatedValues = (callbacks = [], firstLoad = false) => {
+  _setAggregatedValues = (callbacks = [], firstLoad = false) => {
     console.debug("Getting aggregated values...");
     const sValues = [
       ["tub", "axe", true],
@@ -272,6 +273,15 @@ export default class SystemStore {
         }
       }, e => reject(e));
     });
+  }
+
+  setAggregatedValues = (callbacks = [], firstLoad = false) => {
+    if (callbacks.length !== 0 || firstLoad === true) {
+      this._setAggregatedValues(callbacks, firstLoad);
+    } else {
+      if (this.setAggregatedValuesTimer) clearTimeout(this.setAggregatedValuesTimer);
+      this.setAggregatedValuesTimer = setTimeout(() => this._setAggregatedValues(), 500);
+    }
   }
 
   getCupsFromChain = (lad, fromBlock, promisesCups = [], firstLoad = false) => {
