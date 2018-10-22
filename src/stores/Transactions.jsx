@@ -39,7 +39,7 @@ export default class TransactionsStore {
   setLatestBlock = (block, flexible = false) => {
     if (block >= this.latestBlock) {
       this.amountCheck = 0;
-      console.log(`Latest Block: ${block}`);
+      console.debug(`Latest Block: ${block}`);
       this.latestBlock = block;
       return true;
     } else if (flexible && block + 5 >= this.latestBlock) {
@@ -119,7 +119,7 @@ export default class TransactionsStore {
     registry[tx] = {pending: true, title, callbacks, cdpCreationTx: this.cdpCreationTx};
     this.registry = registry;
     this.cdpCreationTx = false;
-    console.log(msgTemp.replace("TX", tx));
+    console.debug(msgTemp.replace("TX", tx));
     this.notificator.hideNotification(id);
     if (!this.registry[tx].cdpCreationTx) {
       this.notificator.info(tx, title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), false);
@@ -134,7 +134,7 @@ export default class TransactionsStore {
       const registry = {...this.registry};
       registry[tx].pending = false;
       this.registry = registry;
-      console.log(msgTemp.replace("TX", tx));
+      console.debug(msgTemp.replace("TX", tx));
       this.notificator.hideNotification(tx);
       if (!this.registry[tx].cdpCreationTx) {
         this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);
@@ -152,7 +152,7 @@ export default class TransactionsStore {
       registry[tx].pending = false;
       registry[tx].cdpCreationTx = false;
       this.registry = registry;
-      console.log(msgTemp.replace("TX", tx));
+      console.debug(msgTemp.replace("TX", tx));
       this.notificator.error(tx, this.registry[tx].title, msgTemp.replace("TX", `${tx.substring(0,10)}...`), 5000);
       this.lookForCleanCallBack(this.registry[tx].callbacks);
     }
@@ -206,7 +206,7 @@ export default class TransactionsStore {
     const timeout = ["transactions/cleanLoading", "system/changeAllowance", "system/checkAllowance", "system/lockAndDraw", "system/wipeAndFree", "system/lock", "system/draw", "system/wipe", "system/free", "system/shut", "system/give", "system/migrateCDP", "system/moveLegacyCDP"].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
       method = method.split("/");
-      console.log("executeCallback", `${method[0]}.${method[1]}`, args);
+      console.debug("executeCallback", `${method[0]}.${method[1]}`, args);
       if (method[0] === "transactions") {
         this[method[1]](...args);
       } else {

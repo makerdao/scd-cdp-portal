@@ -36,7 +36,7 @@ export const loadObject = (type, address, label = null) => {
 
 export const setDefaultAccount = account => {
   web3.eth.defaultAccount = account;
-  console.log(`Address ${account} loaded`);
+  console.debug(`Address ${account} loaded`);
 }
 
 export const getDefaultAccount = () => {
@@ -245,8 +245,8 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
                 network = "main";
                 break;
               default:
-                console.log("setting network to private");
-                console.log("res.hash:", res.hash);
+                console.debug("setting network to private");
+                console.debug("res.hash:", res.hash);
                 network = "private";
             }
             if (actualNetwork !== network) {

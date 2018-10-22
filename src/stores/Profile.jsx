@@ -17,7 +17,7 @@ export default class ProfileStore {
 
   setProxyFromChain = (callbacks = null) => {
     return new Promise((resolve, reject) => {
-      console.log("Checking proxy...")
+      console.debug("Checking proxy...")
       daisystem.getContracts(settings.chain[this.rootStore.network.network].proxyRegistry, this.rootStore.network.defaultAccount).then(r => {
         if (r && r[2] && this.rootStore.transactions.setLatestBlock(r[0].toNumber())) {
           this.setProxy(r[2]);
@@ -25,12 +25,12 @@ export default class ProfileStore {
           resolve(r[2]);
         } else {
           // We force to check again until we get the result
-          console.log("Proxy still not found, trying again in 3 seconds...");
+          console.debug("Proxy still not found, trying again in 3 seconds...");
           setTimeout(() => this.setProxyFromChain(callbacks), 3000);
           reject(false);
         }
       }, () => {
-        console.log("Error occurred, trying again in 3 seconds...");
+        console.debug("Error occurred, trying again in 3 seconds...");
         setTimeout(() => this.setProxyFromChain(callbacks), 3000);
         reject(false);
       });
@@ -40,7 +40,7 @@ export default class ProfileStore {
   setProxy = proxy => {
     this.proxy = proxy !== "0x0000000000000000000000000000000000000000" ? proxy : null;
     blockchain.loadObject("dsproxy", this.proxy, "proxy");
-    console.log("Found proxy:", this.proxy);
+    console.debug("Found proxy:", this.proxy);
   }
 
   checkProxy = callbacks => {

@@ -48,17 +48,17 @@ class RootStore {
 
           this.setVariablesInterval();
         } else {
-          console.log(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${block}, trying again...`);
+          console.debug(`Error loading contracts (latest block ${this.transactions.latestBlock}, request one: ${block}, trying again...`);
           this.transactions.addAmountCheck();
           setTimeout(this._loadContracts, 2000);
         }
       } else {
-        console.log("Error loading contracts, trying again...");
+        console.debug("Error loading contracts, trying again...");
         this.transactions.addAmountCheck();
         setTimeout(this._loadContracts, 2000);
       }
     }, () => {
-      console.log("Error loading contracts, trying again...");
+      console.debug("Error loading contracts, trying again...");
       setTimeout(this._loadContracts, 2000);
     });
   }

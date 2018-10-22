@@ -266,7 +266,7 @@ export default class SystemStore {
         if (this.rootStore.transactions.setLatestBlock(cup.block, firstLoad)) {
           resolve(cup);
         } else {
-          console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}}, trying again...`);
+          console.debug(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}}, trying again...`);
           setTimeout(() => {
             resolve(this.getCup(id, firstLoad));
           }, 1000);
@@ -425,7 +425,7 @@ export default class SystemStore {
         this.tub.cups[id] = {...cup.cupData};
         this.loadCupHistory(id);
       } else {
-        console.log(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}, trying again...`);
+        console.debug(`Error loading cup (latest block ${this.rootStore.transactions.latestBlock}, request one: ${cup.block}, trying again...`);
         setTimeout(() => this.reloadCupData(id), 2000);
       }
     });

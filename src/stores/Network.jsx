@@ -32,7 +32,7 @@ export default class NetworkStore {
         }
       }
     } catch(e) {
-      console.log(e);
+      console.debug(e);
     }
   }
 
@@ -88,7 +88,7 @@ export default class NetworkStore {
       if (e.message === "No client") {
         this.downloadClient = true;
       }
-      console.log(e);
+      console.debug(e);
     }
   }
 
