@@ -44,3 +44,11 @@ h1.dashboard-headline span {
     }
   }
 }
+
+.row.cup-price-information {
+  .strong-text {
+    &, * {
+      font-weight: 500;
+    }
+  }
+}

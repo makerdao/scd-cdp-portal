@@ -62,12 +62,12 @@ class Cup extends React.Component {
             <span>CLOSE CDP</span>
           </a>
         </div>
-        <div className="row">
+        <div className="row cup-price-information">
           <div className="col col-2">
             <div style={ {marginBottom: "1rem"}}>
-              <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
+              <h3 className="typo-cxl inline-headline">Liquidation price (ETH/USD)</h3>
               <TooltipHint tipKey="liquidation-price" />
-              <div className="value typo-cl right">
+              <div className="value typo-cxl right strong-text">
                 {
                   this.props.system.tub.off === true || (cup.liq_price && cup.liq_price.eq(0))
                   ?
@@ -110,9 +110,9 @@ class Cup extends React.Component {
           </div>
           <div className="col col-2">
             <div style={ {marginBottom: "1rem"}}>
-              <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
+              <h3 className="typo-cxl inline-headline">Collateralization ratio</h3>
               <TooltipHint tipKey="collateralization-ratio" />
-              <div className="value typo-cl right">
+              <div className="value typo-cxl right strong-text">
                 {
                   this.props.system.tub.off === false
                   ?
