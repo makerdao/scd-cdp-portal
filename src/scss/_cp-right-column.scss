@@ -415,12 +415,18 @@
 		}
 	}
 
-	.green-dot {
+	.green-dot, .purple-dot {
 		display: inline-block;
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: #1ABC9C;
 		margin-right: 5px;
 	}
+	.green-dot {
+		background: #1ABC9C;
+	}
+	.purple-dot {
+		background: #690496;
+	}
+
 }

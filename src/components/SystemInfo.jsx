@@ -13,7 +13,7 @@ class SystemInfo extends React.Component {
     return (
       <React.Fragment>
         <div className="col col-2-m active-network-section">
-          <p className="typo-c align-center"><span className="green-dot"></span>{ this.props.network.network === "main" ? "Main Ethereum" : capitalize(this.props.network.network) + " Test" } Network</p>
+          <p className="typo-c align-center"><span className={ this.props.network.network === "main" ? "green-dot" : "purple-dot" }></span>{ this.props.network.network === "main" ? "Main Ethereum" : capitalize(this.props.network.network) + " Test" } Network</p>
         </div>
         <div className="col col-2-m info-section">
           <div className="price-info">
