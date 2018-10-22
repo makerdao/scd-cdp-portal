@@ -134,7 +134,7 @@ export default class TransactionsStore {
       const registry = {...this.registry};
       registry[tx].pending = false;
       this.registry = registry;
-      console.debug(msgTemp.replace("TX", tx));
+      console.debug(msgTemp.replace("TX", tx), object.blockNumber);
       this.notificator.hideNotification(tx);
       if (!this.registry[tx].cdpCreationTx) {
         this.notificator.success(tx, this.registry[tx].title, etherscanTx(this.rootStore.network.network, msgTemp.replace("TX", `${tx.substring(0,10)}...`), tx), 6000);

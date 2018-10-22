@@ -24,6 +24,7 @@ export default class SystemStore {
   @observable sin = {};
   @observable pip = {};
   @observable pep = {};
+  filtersReceived = [];
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -177,7 +178,6 @@ export default class SystemStore {
       blockchain.loadObject("dstoken", sin, "sin");
       this.setFiltersToken("sin");
 
-      this.setAggregatedValuesTimer = null;
       this.setAggregatedValues([], true);
 
       this.setMyCupsFromChain(false, [], true);
@@ -185,7 +185,7 @@ export default class SystemStore {
     }
   }
 
-  _setAggregatedValues = (callbacks = [], firstLoad = false) => {
+  setAggregatedValues = (callbacks = [], firstLoad = false) => {
     console.debug("Getting aggregated values...");
     const sValues = [
       ["tub", "axe", true],
@@ -273,15 +273,6 @@ export default class SystemStore {
         }
       }, e => reject(e));
     });
-  }
-
-  setAggregatedValues = (callbacks = [], firstLoad = false) => {
-    if (callbacks.length !== 0 || firstLoad === true) {
-      this._setAggregatedValues(callbacks, firstLoad);
-    } else {
-      if (this.setAggregatedValuesTimer) clearTimeout(this.setAggregatedValuesTimer);
-      this.setAggregatedValuesTimer = setTimeout(() => this._setAggregatedValues(), 500);
-    }
   }
 
   getCupsFromChain = (lad, fromBlock, promisesCups = [], firstLoad = false) => {
@@ -421,6 +412,7 @@ export default class SystemStore {
 
   reloadCupData = id => {
     daisystem.getCup(id).then(cup => {
+      console.debug("Got cup", cup);
       if (this.rootStore.transactions.setLatestBlock(cup.block)) {
         this.tub.cups[id] = {...cup.cupData};
         this.loadCupHistory(id);
@@ -470,11 +462,14 @@ export default class SystemStore {
 
     blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r);
-        if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
-          this.reloadCupData(parseInt(r.args.foo, 16));
-        } else {
-          this.setAggregatedValues();
+        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
+          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+          this.rootStore.transactions.logTransactionConfirmed(r);
+          if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
+            this.reloadCupData(parseInt(r.args.foo, 16));
+          } else {
+            this.setAggregatedValues();
+          }
         }
       }
     });
@@ -484,9 +479,12 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.tap.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r);
-        if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.setAggregatedValues();
+        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
+          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+          this.rootStore.transactions.logTransactionConfirmed(r);
+          if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
+            this.setAggregatedValues();
+          }
         }
       }
     });
@@ -496,9 +494,12 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.vox.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        this.rootStore.transactions.logTransactionConfirmed(r);
-        if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
-          this.setAggregatedValues();
+        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
+          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+          this.rootStore.transactions.logTransactionConfirmed(r);
+          if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
+            this.setAggregatedValues();
+          }
         }
       }
     });
@@ -508,11 +509,14 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        if (
-          r.args.sig === methodSig("poke(bytes32)") ||
-          r.args.sig === methodSig("poke()")
-        ) {
-          this.setAggregatedValues();
+        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
+          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+          if (
+            r.args.sig === methodSig("poke(bytes32)") ||
+            r.args.sig === methodSig("poke()")
+          ) {
+            this.setAggregatedValues();
+          }
         }
       }
     });
@@ -535,8 +539,11 @@ export default class SystemStore {
       if (blockchain.objects[token][filters[i]]) {
         blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
-            this.rootStore.transactions.logTransactionConfirmed(r);
-            this.setAggregatedValues();
+            if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
+              this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+              this.rootStore.transactions.logTransactionConfirmed(r);
+              this.setAggregatedValues();
+            }
           }
         });
       }
