@@ -2,6 +2,7 @@
 import React from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
+import PropTypes from "prop-types";
 
 // Images
 import iconHome from 'images/icon-home.svg';
@@ -11,6 +12,10 @@ import iconHelp from 'images/icon-help.svg';
 @inject("network")
 @observer
 class Menu extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object
+  }
+
   changeCup = id => {
     this.props.system.changeCup(id);
   }
@@ -19,7 +24,7 @@ class Menu extends React.Component {
     const cupId = this.props.system.tub.cupId ? this.props.system.tub.cupId : Object.keys(this.props.system.tub.cups)[0];
     return (
       <div className="menu-bar">
-        <div className="logo" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); } }>
+        <div className="logo" onClick={ e => { e.preventDefault(); this.props.network.stopNetwork(); this.context.router.history.push("/"); } }>
           <svg width="33" height="23" viewBox="0 0 33 23" xmlns="http://www.w3.org/2000/svg">
             <g fill="none" fillRule="evenodd">
               <path d="m14.242 22.89v-11.492l-13.24-10.033v21.525" stroke="#1abc9c"/>
