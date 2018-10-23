@@ -24,7 +24,7 @@ export default class SystemStore {
   @observable sin = {};
   @observable pip = {};
   @observable pep = {};
-  filtersReceived = [];
+  filtersReceived = {};
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -462,8 +462,8 @@ export default class SystemStore {
 
     blockchain.objects.tub.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
-          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+        if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
+          this.filtersReceived[r.transactionHash] = true;
           this.rootStore.transactions.logTransactionConfirmed(r);
           if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
             this.reloadCupData(parseInt(r.args.foo, 16));
@@ -479,8 +479,8 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.tap.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
-          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+        if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
+          this.filtersReceived[r.transactionHash] = true;
           this.rootStore.transactions.logTransactionConfirmed(r);
           if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
             this.setAggregatedValues();
@@ -494,8 +494,8 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects.vox.LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
-          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+        if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
+          this.filtersReceived[r.transactionHash] = true;
           this.rootStore.transactions.logTransactionConfirmed(r);
           if (r.args.sig === methodSig("mold(bytes32,uint256)")) {
             this.setAggregatedValues();
@@ -509,8 +509,8 @@ export default class SystemStore {
     if (!blockchain.getProviderUseLogs()) return;
     blockchain.objects[obj].LogNote({}, {fromBlock: "latest"}, (e, r) => {
       if (!e) {
-        if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
-          this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+        if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
+          this.filtersReceived[r.transactionHash] = true;
           if (
             r.args.sig === methodSig("poke(bytes32)") ||
             r.args.sig === methodSig("poke()")
@@ -539,8 +539,8 @@ export default class SystemStore {
       if (blockchain.objects[token][filters[i]]) {
         blockchain.objects[token][filters[i]](conditions, {fromBlock: "latest"}, (e, r) => {
           if (!e) {
-            if (!this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`]) {
-              this.filtersReceived[`${r.transactionHash}-${r.transactionIndex}`] = true;
+            if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
+              this.filtersReceived[r.transactionHash] = true;
               this.rootStore.transactions.logTransactionConfirmed(r);
               this.setAggregatedValues();
             }
