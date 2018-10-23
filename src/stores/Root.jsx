@@ -22,19 +22,26 @@ class RootStore {
     this.system = new SystemStore(this);
     this.transactions = new TransactionsStore(this);
     this.content = new ContentStore(this);
+
+    this.interval = null;
+    this.intervalAggregatedValues = null;
   }
 
   setVariablesInterval = () => {
-    this.interval = setInterval(() => {
-      console.debug("Running variables interval");
-      this.transactions.setStandardGasPrice();
-      this.transactions.checkPendingTransactions();
-    }, 10000);
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        console.debug("Running variables interval");
+        this.transactions.setStandardGasPrice();
+        this.transactions.checkPendingTransactions();
+      }, 10000);
+    }
 
-    this.intervalAggregatedValues = setInterval(() => {
-      console.debug("Running setAggregatedValues interval");
-      this.system.setAggregatedValues();
-    }, 5000);
+    if (!this.intervalAggregatedValues) {
+      this.intervalAggregatedValues = setInterval(() => {
+        console.debug("Running setAggregatedValues interval");
+        this.system.setAggregatedValues();
+      }, 5000);
+    }
   }
 
   _loadContracts = () => {
