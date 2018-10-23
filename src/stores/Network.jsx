@@ -39,8 +39,14 @@ export default class NetworkStore {
   stopNetwork = () => {
     this.stopIntervals = true;
     blockchain.stopProvider();
+    clearInterval(this.rootStore.interval);
+    this.rootStore.interval = null;
+    clearInterval(this.rootStore.intervalAggregatedValues);
+    this.rootStore.intervalAggregatedValues = null;
     clearInterval(this.setAccountInterval);
+    this.setAccountInterval = null;
     clearInterval(this.setNetworkInterval);
+    this.setNetworkInterval = null;
     this.network = "";
     this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
     this.accounts = [];
