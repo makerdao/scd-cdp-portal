@@ -129,6 +129,7 @@ export default class SystemStore {
       address: null,
       val: toBigNumber(-1),
     };
+    this.setAggregatedValuesMutexLocked = false;
   }
 
   init = (top, tub, tap, vox, pit, pip, pep, gem, gov, skr, dai, sin) => {
@@ -185,7 +186,15 @@ export default class SystemStore {
     }
   }
 
-  setAggregatedValues = (callbacks = [], firstLoad = false) => {
+  setAggregatedValues = (callbacks = [], firstLoad = false, ignoreMutex = false) => {
+    if (callbacks.length === 0 && ignoreMutex === false) {
+      if (this.setAggregatedValuesMutexLocked) {
+        console.debug('Skipping aggregated values lookup (mutex locked)');
+        return;
+      }
+      this.setAggregatedValuesMutexLocked = true;
+    }
+
     console.debug("Getting aggregated values...");
     const sValues = [
       ["tub", "axe", true],
@@ -231,7 +240,7 @@ export default class SystemStore {
     ];
 
     daisystem.getAggregatedValues(this.rootStore.network.defaultAccount, this.rootStore.profile.proxy).then(r => {
-      console.debug("Got aggregateValues() result:", r);
+      // console.debug("Got aggregateValues() result:", r);
       const block = r[0].toNumber();
       if (this.rootStore.transactions.setLatestBlock(block, firstLoad)) {
         // Set pip and pep
@@ -250,11 +259,15 @@ export default class SystemStore {
         for (const [index, val] of tValues.entries()) {
           this[val[0]][val[1]] = r[7][index];
         }
+
+        // Unlock mutex
+        if (callbacks.length === 0) this.setAggregatedValuesMutexLocked = false;
         // Execute possible callbacks
-        this.rootStore.transactions.executeCallbacks(callbacks);
+        else this.rootStore.transactions.executeCallbacks(callbacks);
+
       } else {
-        console.debug(`Error loading values (latest block #${this.rootStore.transactions.latestBlock}, request one: #${block}). Trying again...`);
-        setTimeout(() => this.setAggregatedValues(callbacks, firstLoad), 2000);
+        console.debug(`Ignoring returned values (latest block #${this.rootStore.transactions.latestBlock}, response block #${block}). Trying again...`);
+        setTimeout(() => this.setAggregatedValues(callbacks, firstLoad, true), 1000);
       }
     });
   }
