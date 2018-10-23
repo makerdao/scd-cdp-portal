@@ -39,7 +39,7 @@ class CreatingCDPAnimation extends React.Component {
   render() {
     return(
       <React.Fragment>
-        <img className="main" src={ cdpCreatingAnimation[this.state.currentCount] } alt="Creating CDP" />
+        <img className="main" src={ cdpCreatingAnimation[this.state.currentCount - 1] } alt="Creating CDP" />
       </React.Fragment>
     );
   }
