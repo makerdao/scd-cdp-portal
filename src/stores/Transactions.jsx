@@ -179,6 +179,7 @@ export default class TransactionsStore {
   }
 
   cleanLoading = (method, param) => {
+    if (!this.loading.hasOwnProperty(method)) return;
     const loading = {...this.loading};
     loading[method][param] = false;
     this.loading = loading;

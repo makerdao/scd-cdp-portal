@@ -257,6 +257,11 @@ export default class SystemStore {
         }
         // Set token values
         for (const [index, val] of tValues.entries()) {
+          // Immediately detect updated allowance change
+          if (val[1] === 'allowance' && this.rootStore.transactions.loading.hasOwnProperty("changeAllowance") && !this[val[0]][val[1]].eq(r[7][index])) {
+            console.debug('Detected allowance change for:', val[0]);
+            setTimeout(() => this.rootStore.transactions.cleanLoading("changeAllowance", val[0]), 100);
+          }
           this[val[0]][val[1]] = r[7][index];
         }
 
@@ -585,7 +590,7 @@ export default class SystemStore {
 
   checkProxyAndSetAllowance = (token, value) => {
     this.rootStore.transactions.addLoading("changeAllowance", token);
-    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAggregatedValues", [["transactions/cleanLoading", "changeAllowance", token]]]]]]);
+    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAggregatedValues"]]]]);
   }
 
   transferToken = (token, to, amount) => {
