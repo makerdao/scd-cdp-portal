@@ -49,12 +49,14 @@ class Cup extends React.Component {
     return (
       <React.Fragment>
         <div className="cup-top-right-buttons">
+          { /*
           <a href="#action" data-method="give" data-cup={ this.props.cupId } disabled={ !actions.free.give } onClick={ this.props.dialog.handleOpenDialog }>
             <svg height="18" viewBox="0 0 18 18" width="18" xmlns="http://www.w3.org/2000/svg">
               <path d="m2.01604172 15.3504964 1.18250996-5.1208637c.04667802-.2179091.23339012-.3891234.46678025-.42025327l6.61272017-.68485714c.1867121-.01556494.1867121-.29573377 0-.32686364l-6.61272017-.63816235c-.23339013-.01556493-.42010223-.18677922-.46678025-.40468831l-1.18250996-5.10530497c-.10891539-.43581819.35786485-.79381092.76240774-.59146692l12.92981284 6.47501865c.3889836.20234416.3889836.76268182 0 .96502598l-12.92981284 6.44388317c-.40454289.2023442-.87132313-.1556493-.76240774-.5914675z" fill="none" stroke="#9aa3ad"/>
             </svg>
             <span>TRANSFER CDP</span>
           </a>
+          */ }
           <a href="#action" data-method="shut" data-cup={ this.props.cupId } disabled={ !actions.free.shut } onClick={ this.props.dialog.handleOpenDialog }>
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
               <g fill="none" fillRule="evenodd" stroke="#9aa3ad" strokeLinecap="round" strokeLinejoin="round" transform="translate(2 1)"><path d="m0 3.5h1.55555556 12.44444444"/><path d="m12.25 3.15v11.025c0 .8698485-.6715729 1.575-1.5 1.575h-7.5c-.82842712 0-1.5-.7051515-1.5-1.575v-11.025m2.25 0v-1.575c0-.86984848.67157288-1.575 1.5-1.575h3c.82842712 0 1.5.70515152 1.5 1.575v1.575"/><path d="m5.25 7v4.375"/><path d="m8.75 7v4.375"/></g>
