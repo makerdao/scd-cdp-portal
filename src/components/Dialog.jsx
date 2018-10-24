@@ -422,7 +422,6 @@ class Dialog extends React.Component {
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).add(valueWei)),
             ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).add(valueWei))
           }, () => {
-            this.setState({submitEnabled: true});
             this.props.dialog.error = this.props.dialog.warning = "";
             if (valueWei.gt(0)) {
               if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
@@ -471,7 +470,7 @@ class Dialog extends React.Component {
             liqPrice: this.props.system.calculateLiquidationPrice(cup.ink, this.props.system.tab(cup).minus(valueWei)),
             ratio: this.props.system.calculateRatio(cup.ink, this.props.system.tab(cup).minus(valueWei))
           }, () => {
-            this.props.dialog.error = "";
+            this.props.dialog.error = this.props.dialog.warning = "";
             if (valueWei.gt(0)) {
               const futureGovDebtSai =  wmul(
                                           valueWei,
@@ -491,6 +490,12 @@ class Dialog extends React.Component {
                 this.props.dialog.error = "You are trying to payback more DAI than the amount of DAI outstanding in your CDP.";
               } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
                 this.props.dialog.error = "You don't have enough MKR in your wallet to wipe this amount.";
+              } else if (this.state.ratio.lt(WAD.times(1.5))) {
+                this.props.dialog.warning = "Your CDP is below the minimum collateralization ratio and currently at risk. You should payback DAI or deposit more collateral immediately.";
+                this.setState({submitEnabled: true});
+              } else if (this.state.ratio.lt(WAD.times(2))) {
+                this.props.dialog.warning = "Even if you payback this amount of DAI, your CDP will still be at risk.";
+                this.setState({submitEnabled: true});
               } else {
                 this.setState({submitEnabled: true});
               }
