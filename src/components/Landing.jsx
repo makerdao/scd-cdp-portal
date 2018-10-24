@@ -76,7 +76,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>04.<span className="line"></span>THE RISKS</h1>
                 <h2>Is there any risk involved in creating a CDP?</h2>
-                <p>As long as you monitor your CDP and make sure that the value of the locked up ETH is always more than 150% of the DAI stablecoins that you have generated, there is no risk. If the value of the collateral comes close to 150% you can add more collateral, or pay back some of the debt. If the value of the locked up collateral falls below 150% then your CDP will be liquidated. This means that your collateral is being sold by the system in order to cover the value of the Dai stablecoins that you generated. Any leftover collateral is returned to your CDP so you can withdraw it.</p>
+                <p>As long as you monitor your CDP and make sure that the value of the locked up ETH is always more than 150% of the DAI stablecoins that you have generated, your CDP will not be liquidated. If the value of the collateral comes close to 150% you can add more collateral, or pay back some of the debt. If the value of the locked up collateral falls below 150% then your CDP will be liquidated. This means that your collateral is being sold by the system in order to cover the value of the Dai stablecoins that you generated. Any leftover collateral is returned to your CDP so you can withdraw it. See the <Link to="/terms">Terms of Service</Link> for risks involved.</p>
               </div>
             </div>
             <div>
