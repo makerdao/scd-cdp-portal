@@ -78,6 +78,7 @@ class RootStore {
     if (this.network.network && !this.network.stopIntervals) {
       blockchain.resetFilters(true);
       if (typeof this.interval !== "undefined") clearInterval(this.interval);
+      this.dialog.reset();
       this.system.reset();
       this.transactions.reset();
 
