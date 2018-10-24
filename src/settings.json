@@ -16,7 +16,7 @@
       "saiValuesAggregator": "0x98bdd66e1ef3e147c19a18ec292206b609a82f89",
       "otc": "0x14fbca95be7e99c15cc2996c6c9d841e54b79425",
       "fromBlock": 4752013,
-      "service": "https://graphql.makerdao.com/v1",
+      "service": "https://sai-mainnet.makerfoundation.com/v1",
       "chart": false,
       "proxyRegistry": "0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4",
       "saiProxyCreateAndExecute": "0xd64979357160e8146f6e1d805cf20437397bf1ba"
