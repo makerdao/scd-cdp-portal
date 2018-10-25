@@ -46,6 +46,16 @@ h1.dashboard-headline span {
 }
 
 .row.cup-price-information {
+  .text-yellow {
+    &, & * {
+      color: #FBAE17;
+    }
+  }
+  .text-red {
+    &, & * {
+      color: #C0392B;
+    }
+  }
   .strong-text {
     &, * {
       font-weight: 500;

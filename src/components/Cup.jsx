@@ -124,7 +124,7 @@ class Cup extends React.Component {
                     :
                       cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity
                       ?
-                        <span>
+                        <span className={ cup.ratio.lt(2) ? (cup.ratio.lt(1.5) ? "text-red" : "text-yellow") : "" }>
                           { printNumber(toWei(cup.ratio).times(100)) }<span className="unit">%</span>
                         </span>
                       :
