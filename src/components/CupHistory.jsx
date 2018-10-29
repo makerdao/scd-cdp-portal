@@ -66,7 +66,7 @@ class CupHistory extends React.Component {
                             image = historyIconOpen;
                             break;
                           case "GIVE":
-                            message = <React.Fragment>Transferred CDP from {etherscanAddress(this.props.network.network, `${this.props.history[key + 1].guy.substring(0,20)}...`, this.props.history[key + 1].guy)}</React.Fragment>;
+                            message = <React.Fragment>Transferred CDP from {etherscanAddress(this.props.network.network, `${action.guy.substring(0,20)}...`, action.guy)}</React.Fragment>;
                             image = historyIconGive;
                             break;
                           case "LOCK":
