@@ -91,6 +91,10 @@ class SystemInfo extends React.Component {
                   <span>Loading...</span>
               }
             </div>
+            {
+              this.props.network.network === "main" &&
+              <h3 className="typo-c"><a href="https://mkr.tools/cdps/funded" target="_blank" rel="noopener noreferrer">See all CDPs</a></h3>
+            }
           <div className="line"></div>
           </div>
         </div>
