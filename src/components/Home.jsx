@@ -114,12 +114,17 @@ class Home extends React.Component {
                                 this.props.transactions.amountCheck > 4 &&
                                 <React.Fragment>
                                   &nbsp;Node is momentarily out of sync.<br />
+                                  If it takes longer,&nbsp;
                                   {
                                     !this.props.network.hw.active
                                     ?
-                                      `If it takes longer, please try restarting ${getCurrentProviderName() !== "other" ? capitalize(getCurrentProviderName()) : "your client"}, then refresh the page.`
+                                      getCurrentProviderName() === "metamask"
+                                      ?
+                                        "you can try switching to another network and back again to help fix this issue, or turning Metamask off and on again."
+                                      :
+                                        `please try restarting ${getCurrentProviderName() !== "other" ? capitalize(getCurrentProviderName()) : "your client"}, then refresh the page.`
                                     :
-                                      "If it takes longer, please try refreshing the page."
+                                      "please try refreshing the page."
                                   }
                                 </React.Fragment>
                               }
