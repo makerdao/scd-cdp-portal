@@ -23,7 +23,7 @@ import "../scss/styles.css";
 window.blockchain = blockchain;
 window.dialog = rootStore.dialog;
 window.network = rootStore.network;
-window.profile = rootStore.profileS
+window.profile = rootStore.profile;
 window.system = rootStore.system;
 window.transactions = rootStore.transactions;
 window.content = rootStore.content;
