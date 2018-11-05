@@ -721,7 +721,7 @@ export default class SystemStore {
       } else if (eth.equals(0)) {
         title = `Payback ${dai.valueOf()} DAI`;
         action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-        gasLimit = 300000;
+        gasLimit = 500000;
       } else {
         title = `Payback ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
