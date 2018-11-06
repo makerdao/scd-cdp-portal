@@ -251,8 +251,8 @@ class Dialog extends React.Component {
         return (
           <DialogContent
             title={ `Move CDP #${dialog.cupId}` }
-            text="Enter the address where you would like to move your CDP."
-            indentedText="By clicking the box below, you ('You') affirmatively represent that you alone own and control (i) the CDP that You will transfer, and (ii) the public Ethereum address to which it will be transferred. You may only move your CDP to a wallet address you own. Please enter the address of the wallet you would like to move your CDP to, and click 'I own this wallet' to move your CDP."
+            text="Enter Ethereum address where you would like to move your CDP."
+            indentedText="You may only move your CDP to an Ethereum address that you own. By clicking the box below, you (“You“) affirmatively represent that you alone own and control (i) the CDP that You will transfer, and (ii) the public Ethereum address to which it will be transferred."
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
@@ -264,7 +264,7 @@ class Dialog extends React.Component {
                   <label className="checkbox-container">
                     <input type="checkbox" style={ {visibility: "initial", width: "0px"} } id="ownThisWallet" name="ownThisWallet" checked={ this.state.ownThisWallet } value="1" onChange={ this.selectOwnThisWallet } />
                     <span className="checkmark"></span>
-                    I own this wallet address and agree to the disclaimer above
+                    I own this Ethereum address and agree to the disclaimer above
                   </label>
                 </div>
                 {
@@ -273,7 +273,7 @@ class Dialog extends React.Component {
                     <label className="checkbox-container">
                       <input type="checkbox" style={ {visibility: "initial", width: "0px"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } value="1" onChange={ this.selectGiveToProxy } />
                       <span className="checkmark"></span>
-                      Move CDP to wallet's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will move the CDP to their proxy instead of their address directly, allowing them to manage it in the CDP Portal." />
+                      Move CDP to Ethereum's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will move the CDP to their proxy instead of their address directly, allowing them to manage it in the CDP Portal." />
                     </label>
                   </div>
                 }
