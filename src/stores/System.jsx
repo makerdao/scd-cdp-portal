@@ -644,7 +644,7 @@ export default class SystemStore {
   }
 
   give = (cupId, newOwner) => {
-    const title = `Transfer CDP ${cupId} to ${truncateAddress(newOwner)}`;
+    const title = `Move CDP ${cupId} to ${truncateAddress(newOwner)}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
     this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 100000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }

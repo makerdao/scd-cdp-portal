@@ -41,6 +41,7 @@ class Dialog extends React.Component {
       liqPrice: toBigNumber(0),
       ratio: toBigNumber(0),
       govFeeType: "mkr",
+      ownThisWallet: false,
       giveHasProxy: false,
       giveToProxy: true
     }
@@ -64,6 +65,7 @@ class Dialog extends React.Component {
           liqPrice: toBigNumber(0),
           ratio: toBigNumber(0),
           govFeeType: "mkr",
+          ownThisWallet: false,
           giveHasProxy: false,
           giveToProxy: true
         });
@@ -107,6 +109,10 @@ class Dialog extends React.Component {
 
   selectGiveToProxy = e => {
     this.setState({giveToProxy: e.target.checked});
+  }
+
+  selectOwnThisWallet = e => {
+    this.setState({ownThisWallet: e.target.checked});
   }
 
   setMax = e => {
@@ -244,9 +250,9 @@ class Dialog extends React.Component {
         };
         return (
           <DialogContent
-            title={ `Transfer CDP #${dialog.cupId}` }
-            text="Enter the address where you would like to transfer your CDP."
-            indentedText="Transferring ownership to an address which you do not control will result in loss of funds."
+            title={ `Move CDP #${dialog.cupId}` }
+            text="Enter Ethereum address where you would like to move your CDP."
+            indentedText="You may only move your CDP to an Ethereum address that you own. By clicking the box below, you (“You“) affirmatively represent that you alone own and control (i) the CDP that You will transfer, and (ii) the public Ethereum address to which it will be transferred."
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
@@ -254,29 +260,36 @@ class Dialog extends React.Component {
                   <input autoFocus ref={ input => this.updateVal = input } type="text" id="inputValue" className={ "address-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } } maxLength="42" placeholder="0x01234..." autoComplete="off" />
                   <div className="clearfix"></div>
                 </div>
+                <div style={ {marginTop: "0.75rem"} }>
+                  <label className="checkbox-container">
+                    <input type="checkbox" style={ {visibility: "initial", width: "0px"} } id="ownThisWallet" name="ownThisWallet" checked={ this.state.ownThisWallet } value="1" onChange={ this.selectOwnThisWallet } />
+                    <span className="checkmark"></span>
+                    I own this Ethereum address and agree to the disclaimer above
+                  </label>
+                </div>
                 {
                   this.state.giveHasProxy &&
                   <div style={ {marginTop: "0.75rem"} }>
                     <label className="checkbox-container">
-                      <input type="checkbox" style={ {visibility: "initial"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } value="1" onChange={ this.selectGiveToProxy } />
+                      <input type="checkbox" style={ {visibility: "initial", width: "0px"} } id="giveToProxy" name="giveToProxy" checked={ this.state.giveToProxy } value="1" onChange={ this.selectGiveToProxy } />
                       <span className="checkmark"></span>
-                      Transfer to user's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will transfer the CDP to their proxy instead of their address directly, allowing them to manage it in the CDP Portal." />
+                      Move CDP to Ethereum's proxy address <TooltipHint tip="This address has a proxy associated with it. Checking this box will move the CDP to their proxy instead of their address directly, allowing them to manage it in the CDP Portal." />
                     </label>
                   </div>
                 }
                 <div className="info-section">
-                  <div className="transfer-cdp-id">CDP #{ dialog.cupId }</div>
+                  {/* <div className="transfer-cdp-id">CDP #{ dialog.cupId }</div>
                   <div className="info-heading">Dai generated</div>
                   <div className="info-value">{ printNumber(this.props.system.tab(cup), 3) } DAI</div>
                   <div className="info-heading">Liquidation price (ETH/USD)</div>
                   <div className="info-value">{ this.props.system.tub.off === false && cup.liq_price && cup.liq_price.gt(0) ? printNumber(cup.liq_price) : "--" } USD</div>
                   <div className="info-heading">Collateralization ratio</div>
-                  <div className={ "info-value" + (cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") }>{ cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? printNumber(toWei(cup.ratio).times(100), 2) : "--" } %</div>
+                  <div className={ "info-value" + (cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") }>{ cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity ? printNumber(toWei(cup.ratio).times(100), 2) : "--" } %</div> */}
                   { this.renderErrors() }
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Transfer</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled || !this.state.ownThisWallet }>Move</button>
                 </div>
               </form>
             }
