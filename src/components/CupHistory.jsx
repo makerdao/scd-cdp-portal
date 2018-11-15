@@ -82,7 +82,7 @@ class CupHistory extends React.Component {
                             image = historyIconBorrow;
                             break;
                           case "WIPE":
-                            message = <React.Fragment>Paidback {printNumber(toWei(action.arg))} DAI to your CDP</React.Fragment>;
+                            message = <React.Fragment>Paid back {printNumber(toWei(action.arg))} DAI to your CDP</React.Fragment>;
                             image = historyIconTransfer; // Should this be "history-icon-payback.svg" instead?
                             break;
                           case "SHUT":
