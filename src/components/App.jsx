@@ -2,6 +2,7 @@
 import React from "react";
 import {observer, Provider} from "mobx-react";
 import {BrowserRouter} from "react-router-dom";
+import ReactGA from 'react-ga';
 
 // Components
 import Modal from "./Modal";
@@ -27,6 +28,10 @@ window.profile = rootStore.profile;
 window.system = rootStore.system;
 window.transactions = rootStore.transactions;
 window.content = rootStore.content;
+
+// Google Analytics
+ReactGA.initialize('UA-128164213-1');
+ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer
 class App extends React.Component {

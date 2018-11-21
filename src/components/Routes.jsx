@@ -2,6 +2,7 @@
 import React from "react";
 import {observer} from "mobx-react";
 import {Route, Switch, withRouter} from "react-router-dom";
+import ReactGA from 'react-ga';
 
 // Components
 import Help from "./Help";
@@ -17,6 +18,7 @@ class App extends React.Component {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       window.scrollTo(0, 0);
     }
+    ReactGA.pageview(this.props.location.pathname);
   }
 
   render() {
