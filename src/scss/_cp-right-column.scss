@@ -10,6 +10,9 @@
 	transition: right 0.3s ease-in;
 	.is-connected & {
 		border-left: 1px solid #414040;
+		@include respond-to(m) {
+			border-left: none;
+		}
 	}
 
 	@include respond-to(m) {
