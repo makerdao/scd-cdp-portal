@@ -590,7 +590,7 @@ export default class SystemStore {
 
   checkProxyAndSetAllowance = (token, value) => {
     this.rootStore.transactions.addLoading("changeAllowance", token);
-    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAggregatedValues"]]]]);
+    this.rootStore.profile.checkProxy([["system/changeAllowance", token, value, [["system/setAggregatedValues", [["transactions/cleanLoadingOnError", "changeAllowance", token]]]]]]);
   }
 
   transferToken = (token, to, amount) => {

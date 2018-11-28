@@ -185,15 +185,14 @@ export default class TransactionsStore {
     this.loading = loading;
   }
 
+  cleanLoadingOnError = (method, param) => this.cleanLoading(method, param);
+
   lookForCleanCallBack = (callbacks = []) => {
     callbacks &&
     callbacks.forEach(callback => {
-      if (callback[0] === "transactions/cleanLoading") {
-        this.executeCallback(callback)
-      }
-      if (typeof callback[callback.length - 1] === "object") {
-        this.lookForCleanCallBack(callback[callback.length - 1]);
-      }
+      if (callback[0] === "transactions/cleanLoadingOnError") callback[0] = "transactions/cleanLoading";
+      if (callback[0] === "transactions/cleanLoading") this.executeCallback(callback);
+      if (typeof callback[callback.length - 1] === "object") this.lookForCleanCallBack(callback[callback.length - 1]);
     });
   }
 
@@ -203,6 +202,8 @@ export default class TransactionsStore {
 
   executeCallback = args => {
     let method = args.shift();
+    // Edge case: Skip executing this here so it's only called after an error (via lookForCleanCallBack)
+    if (method === "transactions/cleanLoadingOnError") return;
     // If the callback is to execute a getter function is better to wait as sometimes the new value is not uopdated instantly when the tx is confirmed
     const timeout = ["transactions/cleanLoading", "system/changeAllowance", "system/checkAllowance", "system/lockAndDraw", "system/wipeAndFree", "system/lock", "system/draw", "system/wipe", "system/free", "system/shut", "system/give", "system/migrateCDP", "system/moveLegacyCDP"].indexOf(method) !== -1 ? 0 : 5000;
     setTimeout(() => {
