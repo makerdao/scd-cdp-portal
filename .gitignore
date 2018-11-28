@@ -19,6 +19,8 @@ public/css/.sass-cache/
 # misc
 .DS_Store
 .env
+.env.staging
+.env.production
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
