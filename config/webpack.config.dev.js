@@ -140,17 +140,6 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
-
-          // {
-          //   test: /\.jsx?$/,
-          //   loader: require.resolve('babel-loader'),
-          //   exclude: /node_modules/,
-          //   query: {
-          //     cacheDirectory: true,
-          //     presets: ['env', 'stage-2', 'react-app']
-          //   }
-          // },
-
           // Process this project's JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
@@ -158,42 +147,14 @@ module.exports = {
             exclude: /node_modules/,
             loader: require.resolve('babel-loader'),
             options: {
-              // presets: ['env', 'stage-2', 'react-app'],
-              // presets: ['env', 'react-app', 'stage-2'],
               presets: ['react-app'],
-              plugins: [
-                // 'babel-plugin-transform-decorators'
-                'transform-decorators-legacy'
-              ],
-              // plugins: [
-              //   "transform-object-rest-spread",
-              //   "transform-runtime",
-              //   "transform-class-properties"
-              // ],
-
+              plugins: ['transform-decorators-legacy'],
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
               // directory for faster rebuilds.
               cacheDirectory: true,
             },
           },
-          // Process (the yarn linked @makerdao/dai library) JS with Babel.
-          {
-            test: /\.(js|jsx|mjs)$/,
-            include: /dai\.js/,
-            exclude: /node_modules/,
-            loader: require.resolve('babel-loader'),
-            options: {
-              presets: ['env', 'stage-2'],
-              plugins: ['transform-runtime'],
-
-              // This is a feature of `babel-loader` for webpack (not Babel itself).
-              // It enables caching results in ./node_modules/.cache/babel-loader/
-              // directory for faster rebuilds.
-              cacheDirectory: true,
-            },
-          },
-
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
           // "style" loader turns CSS into JS modules that inject <style> tags.
