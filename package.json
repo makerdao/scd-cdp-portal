@@ -120,7 +120,6 @@
     "fs-extra": "3.0.1",
     "gulp": "^4.0.0",
     "gulp-cloudfront-invalidate": "^0.1.5",
-    "gulp-env": "^0.4.0",
     "gulp-s3-upload": "^1.7.1",
     "gulp-surge": "^0.1.0",
     "gulp-sync": "^0.1.4",
