@@ -1,20 +1,13 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
 const gulp = require('gulp');
-// const ghPages  = require('gulp-gh-pages');
 const surge = require('gulp-surge');
-const env = require('gulp-env');
 const s3 = require('gulp-s3-upload')({ useIAM: false }, { maxRetries: 5 });
 const cloudfront = require('gulp-cloudfront-invalidate');
 const log = require('fancy-log');
 
-env({ file: ".env", type: "ini" });
-
-// gh-pages
-// gulp.task('deploy-gh-pages', () => {
-//   require('fs').writeFileSync('./build/CNAME', 'cdp.makerdao.com');
-//   return gulp.src('./build/**/*').pipe(ghPages());
-// });
+if (!process.env.DEPLOY_ENV) throw new Error('Env variable DEPLOY_ENV must be set');
+require('dotenv').config({ path: `.env.${process.env.DEPLOY_ENV}` });
 
 let s3FilesChanged = [];
 const logChangedFiles = file => {
