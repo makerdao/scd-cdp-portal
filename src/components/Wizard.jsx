@@ -308,7 +308,7 @@ class Wizard extends Component {
                     <label className="checkbox-container">
                       <input type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, "checkTerms")}/>
                       <span className="checkmark"></span>
-                      I have read and accept the <Link to="/terms">Terms of Service</Link>
+                      I have read and accept the <Link to="/terms" target="_blank">Terms of Service</Link>
                     </label>
                   </div>
                   <div>

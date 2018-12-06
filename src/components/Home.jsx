@@ -143,7 +143,7 @@ class Home extends React.Component {
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
                     {
                       !this.props.network.loadingAddress &&
-                      <Link to="/terms">Terms of Service</Link>
+                      <Link to="/terms" target="_blank">Terms of Service</Link>
                     }
                   </div>
                 </div>
