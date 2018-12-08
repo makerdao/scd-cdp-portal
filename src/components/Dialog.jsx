@@ -122,6 +122,9 @@ class Dialog extends React.Component {
       case "wipe":
         value = min(this.props.system.dai.myBalance, this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId]));
         break;
+      case "free":
+        value = wmul(this.props.system.tub.cups[this.props.dialog.cupId].avail_skr, this.props.system.tub.per).round(0);
+        break;
       // case "join":
       //   value = wdiv(this.props.system.gem.myBalance, wmul(this.props.system.tub.per, this.props.system.tub.gap));
       //   break;
@@ -410,7 +413,11 @@ class Dialog extends React.Component {
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
                   { this.renderNumberInput("ETH") }
-                  <div className="peth-equiv">{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
+                  {
+                    this.props.system.tab(cup).eq(0) &&
+                    <div className="set-max" style={ {float: 'right', marginLeft: '22px'} }><a href="#action" onClick={ this.setMax }>Set max</a></div>
+                  }
+                  <div className="peth-equiv" style={ {float: 'right'} }>{ printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" /></div>
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to withdraw</div>
