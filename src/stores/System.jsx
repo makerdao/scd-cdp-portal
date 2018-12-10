@@ -483,8 +483,9 @@ export default class SystemStore {
         if (this.filtersReceived.hasOwnProperty(r.transactionHash) !== true) {
           this.filtersReceived[r.transactionHash] = true;
           this.rootStore.transactions.logTransactionConfirmed(r);
-          if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof this.tub.cups[r.args.foo] !== "undefined") {
+          if (cupSignatures.indexOf(r.args.sig) !== -1 && typeof r.args.foo !== "undefined" && typeof this.tub.cups[parseInt(r.args.foo, 16)] !== "undefined") {
             this.reloadCupData(parseInt(r.args.foo, 16));
+            this.setAggregatedValues();
           } else {
             this.setAggregatedValues();
           }
