@@ -22,9 +22,9 @@ export default class DialogStore {
 
   handleOpenDialog = e => {
     e.preventDefault();
-    this.show = true;
     this.method = e.currentTarget.getAttribute("data-method");
     this.cupId = e.currentTarget.getAttribute("data-cup") ? e.currentTarget.getAttribute("data-cup") : false;
+    this.show = true;
   }
 
   handleCloseDialog = e => {

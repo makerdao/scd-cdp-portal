@@ -3,6 +3,7 @@ import React from "react";
 import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
+import ReactGA from 'react-ga';
 
 // Components
 import InlineNotification from "./InlineNotification";
@@ -69,6 +70,13 @@ class Dialog extends React.Component {
           giveHasProxy: false,
           giveToProxy: true
         });
+        if (this.props.dialog.method === "wipe" && this.props.system.dai.myBalance.gt(0) && !this.props.system.gov.myBalance.gt(0)) {
+          console.debug('Reporting 0 MKR balance on pay back DAI dialog');
+          ReactGA.event({
+            category: 'UX',
+            action: 'Zero MKR balance on pay back DAI dialog'
+          });
+        }
       }
       return change;
     });
