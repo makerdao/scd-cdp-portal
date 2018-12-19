@@ -107,6 +107,9 @@
 					margin-top: 0;
 					width: 23px;
 				}
+				&.imtoken-icon {
+					margin-top: 3px;
+				}
 				@include respond-to(xl) {
 					margin-top: 4px;
 					&.metamask {
