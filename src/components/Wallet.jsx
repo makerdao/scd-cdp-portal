@@ -50,6 +50,8 @@ class Wallet extends React.Component {
 
   formatClientName = name => {
     switch (name) {
+      case "imtoken":
+        return "imToken";
       case "ledger":
         return "Ledger Nano S";
       case "metamask":
