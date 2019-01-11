@@ -12,8 +12,9 @@ import TrezorSubProvider from "./trezor-subprovider";
 import * as settings from "../settings";
 
 export const getWebClientProviderName = () => {
-  if (window.ethereum && window.imToken)
+  if (window.imToken)
     return 'imtoken';
+  
   if (!window.web3 || typeof window.web3.currentProvider === "undefined")
     return "";
 
