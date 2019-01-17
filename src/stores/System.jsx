@@ -5,6 +5,8 @@ import {computed, observable} from "mobx";
 import * as blockchain from "../utils/blockchain";
 import * as daisystem from "../utils/dai-system";
 import {truncateAddress} from "../utils/helpers";
+import {getWebClientProviderName} from "../utils/blockchain";
+
 
 import {BIGGESTUINT256, fromRaytoWad, toBigNumber, toWei, wdiv, toBytes32, addressToBytes32, methodSig, isAddress} from "../utils/helpers";
 
@@ -573,7 +575,7 @@ export default class SystemStore {
   changeAllowance = (token, value, callbacks = []) => {
     const title = `${value ? "Unlock" : "Lock"}: ${token.replace("gem", "weth").replace("gov", "mkr").replace("skr", "peth").toUpperCase()}`;
     const params = {value: 0};
-    if (this.rootStore.network.hw.active) {
+    if (this.shouldSetGasLimit()) {
       params.gas = 100000;
     }
     this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].approve, [this.rootStore.profile.proxy, value ? -1 : 0], params, callbacks);
@@ -598,13 +600,13 @@ export default class SystemStore {
     const title = `Transfer ${amount} ${token.replace("gov", "mkr").toUpperCase()} to ${truncateAddress(to)}`;
     if (token === "eth") {
       const params = {to, value: toWei(amount)};
-      if (this.rootStore.network.hw.active) {
+      if (this.shouldSetGasLimit()) {
         params.gas = 21000;
       }
       this.rootStore.transactions.askPriceAndSend(title, blockchain.sendTransaction, [], params, [["system/setAggregatedValues"]]);
     } else {
       const params = {value: 0};
-      if (this.rootStore.network.hw.active) {
+      if (this.shouldSetGasLimit()) {
         params.gas = 100000;
       }
       this.rootStore.transactions.askPriceAndSend(title, blockchain.objects[token].transfer, [to, toWei(amount)], params, [["system/setAggregatedValues"]]);
@@ -617,7 +619,7 @@ export default class SystemStore {
     if (proxy && isAddress(proxy) && await blockchain.getProxyOwner(proxy) === this.rootStore.network.defaultAccount) {
       const title = `Migrate CDP ${cup}`;
       const params = {value: 0};
-      if (this.rootStore.network.hw.active) {
+      if (this.shouldSetGasLimit()) {
         params.gas = 100000;
       }
       this.rootStore.transactions.askPriceAndSend(title, blockchain.objects.tub.give, [toBytes32(cup), proxy], params, callbacks);
@@ -635,19 +637,19 @@ export default class SystemStore {
   open = () => {
     const title = "Open CDP";
     const action = `${methodSig(`open(address)`)}${addressToBytes32(this.tub.address, false)}`;
-    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 120000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
+    this.executeProxyTx(action, 0, this.shouldSetGasLimit() ? 120000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   shut = (cupId, useOTC = false) => {
     const title = `Close CDP ${cupId}`;
     const action = `${methodSig(`shut(address,bytes32${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
-    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["system/setAggregatedValues"]]});
+    this.executeProxyTx(action, 0, this.shouldSetGasLimit() ? 1000000 : null, {title, callbacks: [["system/setMyCupsFromChain"], ["system/setMyLegacyCupsFromChain"], ["system/setAggregatedValues"]]});
   }
 
   give = (cupId, newOwner) => {
     const title = `Move CDP ${cupId} to ${truncateAddress(newOwner)}`;
     const action = `${methodSig(`give(address,bytes32,address)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${addressToBytes32(newOwner, false)}`;
-    this.executeProxyTx(action, 0, this.rootStore.network.hw.active ? 100000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
+    this.executeProxyTx(action, 0, this.shouldSetGasLimit() ? 100000 : null, {title, callbacks: [["system/setMyCupsFromChain"]]});
   }
 
   lockAndDraw = (cupId, eth, dai) => {
@@ -669,7 +671,7 @@ export default class SystemStore {
         } else {
           title = `Create Proxy + Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
           const params = {value: toWei(eth)};
-          if (this.rootStore.network.hw.active) {
+          if (this.shouldSetGasLimit()) {
             params.gas = 1500000;
           }
           this.rootStore.transactions.askPriceAndSend(
@@ -702,7 +704,7 @@ export default class SystemStore {
 
       this.executeProxyTx(action,
                           toWei(eth),
-                          this.rootStore.network.hw.active ? gasLimit : null,
+                          this.shouldSetGasLimit() ? gasLimit : null,
                           {
                             title,
                             callbacks
@@ -731,7 +733,7 @@ export default class SystemStore {
 
       this.executeProxyTx(action,
                           0,
-                          this.rootStore.network.hw.active ? gasLimit : null,
+                          this.shouldSetGasLimit() ? gasLimit : null,
                           {
                             title,
                             callbacks:  [
@@ -840,5 +842,8 @@ export default class SystemStore {
       this.rootStore.dialog.reset();
       this.rootStore.profile.checkProxy(callbacks);
     }
+  }
+  shouldSetGasLimit() {
+    return  this.rootStore.network.hw.active || getWebClientProviderName() === 'imtoken'
   }
 }
