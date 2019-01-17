@@ -7,6 +7,7 @@ import {Link} from "react-router-dom";
 import {DropdownMenu, MenuItems, MenuItem, MenuFooter} from "./DropdownMenu";
 import ToggleSwitch from "./ToggleSwitch";
 import WalletClientDownload from "./WalletClientDownload";
+import WalletMobileClientDownload from "./WalletMobileClientDownload";
 import WalletClientSelector from "./WalletClientSelector";
 import WalletHWSelector from "./WalletHWSelector";
 import WalletNoAccount from "./WalletNoAccount";
@@ -102,7 +103,11 @@ class Wallet extends React.Component {
         {
           this.props.network.downloadClient
           ?
-            <WalletClientDownload />
+            this.props.network.isMobile
+            ?
+              <WalletMobileClientDownload />
+            :
+              <WalletClientDownload />
           :
             this.props.network.hw.showSelector
             ?

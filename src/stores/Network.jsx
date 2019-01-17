@@ -1,5 +1,6 @@
 // Libraries
 import {observable} from "mobx";
+import checkIsMobile from 'ismobilejs'
 
 // Utils
 import * as blockchain from "../utils/blockchain";
@@ -16,7 +17,7 @@ export default class NetworkStore {
   @observable outOfSync = true;
   @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
   @observable downloadClient = false;
-
+  isMobile = checkIsMobile.any;
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
