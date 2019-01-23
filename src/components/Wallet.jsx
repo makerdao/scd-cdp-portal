@@ -58,6 +58,8 @@ class Wallet extends React.Component {
         return "MetaMask";
       case "coinbase":
         return "Coinbase Wallet";
+      case "walletconnect":
+        return "walletconnect"
       case "web":
         let webClientName = getWebClientProviderName();
         return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
@@ -77,6 +79,9 @@ class Wallet extends React.Component {
     if (getCurrentProviderName() !== "trezor") {
       options.push("trezor");
     }
+    if (getCurrentProviderName() !== "walletconnect") {
+      options.push("walletconnect");
+    }
     return options;
   }
 
@@ -84,7 +89,7 @@ class Wallet extends React.Component {
     e.preventDefault();
     this.props.network.stopNetwork();
     const client = e.currentTarget.getAttribute("data-client");
-    if (client === "ledger" || client === "trezor") {
+    if (client === "ledger" || client === "trezor" || client === "walletconnect") {
       this.props.network.showHW(client);
     } else {
       this.props.network.setWeb3WebClient();
@@ -127,7 +132,7 @@ class Wallet extends React.Component {
                             <DropdownMenu icon={ walletIcon }>
                               <MenuItems>
                                 {
-                                  (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor") &&
+                                  (getCurrentProviderName() === "ledger" || getCurrentProviderName() === "trezor" || getCurrentProviderName() === "walletconnect") &&
                                   <MenuItem href="#action" text="Switch Address" iconsvg={
                                     <svg className="dropdown-item-icon" width="16" height="14" viewBox="0 0 16 14" xmlns="http://www.w3.org/2000/svg">
                                       <g fill="none" fillRule="evenodd" stroke="#000" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1)">

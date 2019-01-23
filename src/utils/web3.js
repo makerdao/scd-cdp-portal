@@ -3,6 +3,8 @@ import Web3 from "web3";
 import * as Web3ProviderEngine from "web3-provider-engine/dist/es5";
 import * as RpcSource from "web3-provider-engine/dist/es5/subproviders/rpc";
 import Transport from "@ledgerhq/hw-transport-u2f";
+import WalletConnect from "walletconnect";
+import WalletConnectQRCodeModal from "walletconnect-qrcode-modal";
 
 // Utils
 import LedgerSubProvider from "./ledger-subprovider";
@@ -26,6 +28,9 @@ export const getWebClientProviderName = () => {
 
   if (typeof window.SOFA !== "undefined")
     return "coinbase";
+
+  if (window.web3.currentProvider.isWalletConnect)
+  return "walletconnect";
 
   if (typeof window.__CIPHER__ !== "undefined")
     return "cipher";

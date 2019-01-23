@@ -123,6 +123,13 @@ class WalletHardHWSelector extends React.Component {
                   <p className="typo-c align-center">Export account from Trezor Popup.<br />Make sure your browser is not blocking it.</p>
                 </React.Fragment>
               }
+              {
+                this.props.network.hw.option === "walletconnect" &&
+                <React.Fragment>
+                  <h2>Plugin WalletConnect</h2>
+                  <p className="typo-c align-center">Using WalletConnect Mobile App to access account.<br />Make sure your browser is not blocking it.</p>
+                </React.Fragment>
+              }
               <LoadingSpinner />
               <div className="align-center" style={ {margin: "1rem 0"} }>
                 <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>

@@ -9,6 +9,8 @@ import metamaskLogo from 'images/metamask-logo.svg';
 import parityLogo from 'images/parity-logo.png';
 import ledgerNanoLogo from 'images/ledger-nano-logo.png';
 import trezorLogo from 'images/trezor-logo.png';
+import walletConnectLogo from 'images/wallet-connect-logo.png';
+
 
 class Landing extends React.Component {
   render() {
@@ -90,13 +92,14 @@ class Landing extends React.Component {
 
           <div className="getting-started">
             <h1>What do I need to get started?</h1>
-            <p>Connect one of the four wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
+            <p>Connect one of the five wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
             <p className="align-center"><Link to="/help" className="faq">See FAQs for additional information on wallets</Link></p>
             <ul>
               <li><a href="https://metamask.io/"><img src={ metamaskLogo } alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
               <li><a href="https://www.parity.io/"><img src={ parityLogo } alt="Get Parity" /><div>Get Parity</div></a></li>
               <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src={ ledgerNanoLogo } alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
               <li><a href="https://trezor.io/"><img src={ trezorLogo } alt="Get Trezor" /><div>Get Trezor</div></a></li>
+              <li><a href="https://walletconnect.org/"><img src={ walletConnectLogo } alt="Get WalletConnect" /><div>Get WalletConnect</div></a></li>
             </ul>
           </div>
         </div>
