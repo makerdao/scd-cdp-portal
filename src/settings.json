@@ -2,7 +2,7 @@
   "contentUrl": "https://content.makerfoundation.com/content/dai-dashboard",
   "chain": {
     "kovan": {
-      "nodeURL": "https://kovan.infura.io/mtXsTjGvCTFRFFHwzn1f",
+      "nodeURL": "https://kovan.infura.io/v3/078596535bf243c6996d2ac196563d49",
       "saiValuesAggregator": "0x040abcb09a5b46f9a5ebed320abe074e6e626cc5",
       "otc": "0xdb3b642ebc6ff85a3ab335cff9af2954f9215994",
       "fromBlock": 5216602,
@@ -12,7 +12,7 @@
       "saiProxyCreateAndExecute": "0xadb7c74bce932fc6c27dda3ac2344707d2fbb0e6"
     },
     "main": {
-      "nodeURL": "https://mainnet.infura.io/mtXsTjGvCTFRFFHwzn1f",
+      "nodeURL": "https://mainnet.infura.io/v3/078596535bf243c6996d2ac196563d49",
       "saiValuesAggregator": "0x83f6ed3d377674186d8898a89d9032216e07e659",
       "otc": "0xb7ac09c2c0217b07d7c103029b4918a2c401eecb",
       "fromBlock": 4752013,
