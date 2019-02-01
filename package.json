@@ -64,6 +64,10 @@
   "dependencies": {
     "@ledgerhq/hw-app-eth": "^4.7.3",
     "@ledgerhq/hw-transport-u2f": "^4.7.3",
+    "@walletconnect/browser": "^1.0.0-beta.3",
+    "@walletconnect/qrcode-modal": "^1.0.0-beta.3",
+    "@walletconnect/web3-provider": "^1.0.0-beta.3",
+    "@walletconnect/web3-subprovider": "^1.0.0-beta.3",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "create-react-class": "^15.5.3",
@@ -90,8 +94,6 @@
     "react-tooltip": "^3.8.4",
     "resolve": "1.6.0",
     "slick-carousel": "^1.8.1",
-    "walletconnect": "^0.7.28",
-    "walletconnect-qrcode-modal": "^0.7.28",
     "web3": "^0.20.6",
     "web3-provider-engine": "14.0.4"
   },

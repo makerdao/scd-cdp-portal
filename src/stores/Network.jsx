@@ -4,6 +4,14 @@ import {observable} from "mobx";
 // Utils
 import * as blockchain from "../utils/blockchain";
 
+// import Web3 from "web3";
+// import WalletConnect from "@walletconnect/browser";
+import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+// import ProviderEngine from 'web3-provider-engine'
+// import RpcSubprovider from 'web3-provider-engine/subproviders/rpc'
+// import WalletConnectSubprovider from '@walletconnect/web3-subprovider'
+
 export default class NetworkStore {
   @observable stopIntervals = false;
   @observable loadingAddress = false;
@@ -54,6 +62,7 @@ export default class NetworkStore {
     this.isConnected = false;
     this.latestBlock = null;
     this.outOfSync = true;
+    this.walletConnector = null;
   }
 
   setAccount = () => {
@@ -88,6 +97,99 @@ export default class NetworkStore {
       await blockchain.setWebClientProvider(provider);
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+    } catch (e) {
+      this.loadingAddress = false;
+      this.waitingForAccessApproval = false;
+      if (e.message === "No client") {
+        this.downloadClient = true;
+      }
+      console.debug(e);
+    }
+  }
+
+  // TODO: Reliably update network and rpcUrl on chainId change
+  // Web3 web client using WalletConnect
+  startWalletConnect = async () => {
+    try {
+      this.stopIntervals = false;
+      this.loadingAddress = true;
+      this.waitingForAccessApproval = typeof window.ethereum !== "undefined";
+      const provider = new WalletConnectProvider({
+        bridge: "https://bridge.walletconnect.org", // Required
+        rpcUrl: "https://mainnet.infura.io" // Required
+        // rpcUrl: "https://kovan.infura.io" // Required
+      });
+      this.waitingForAccessApproval = false;
+      await blockchain.setWebClientProvider(provider);
+      this.walletConnector = provider._providers[0];
+
+      // Check if connection is already established
+      if (!this.walletConnector.connected) {
+        // Create new session
+        this.walletConnector
+          .createSession()
+          .then(() => {
+            // Get uri for QR Code modal
+            const uri = this.walletConnector.uri;
+            // Display QR code modal
+            WalletConnectQRCodeModal.open(uri, () => {
+              console.log("[WalletConnect] QR Code modal closed");
+              this.loadingAddress = false;
+              this.waitingForAccessApproval = false;
+            });
+          });
+      } else {
+        console.log("[WalletConnect] Using existing session.");
+        // Get provided accounts and chainId
+        const chainId = this.walletConnector._walletConnector.chainId
+        console.log('[WalletConnect] Got accounts:', this.walletConnector.accounts);
+        console.log('[WalletConnect] Using chainId:', chainId);
+        this.network = (chainId === 1 ? "main" : "kovan");
+        this.setNetwork();
+        this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+      }
+
+      // Subscribe to connection events
+      this.walletConnector._walletConnector.on("connect", (error, payload) => {
+        console.log('[WalletConnect] connect', payload);
+        if (error) {
+          throw error;
+        }
+        // close QR Code Modal
+        WalletConnectQRCodeModal.close();
+        // Get provided accounts and chainId
+        const { accounts, chainId } = payload.params[0];
+        console.log('[WalletConnect] Got accounts:', accounts);
+        console.log('[WalletConnect] Using chainId:', chainId);
+        // this.network = (chainId === 1 ? "main" : "kovan");
+        this.setNetwork();
+        this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+      });
+      this.walletConnector._walletConnector.on("session_update", (error, payload) => {
+        console.log('[WalletConnect] session_update', payload);
+        if (error) {
+          throw error;
+        }
+        // Get updated accounts and chainId
+        const { accounts, chainId } = payload.params[0];
+        console.log('[WalletConnect] Got accounts:', accounts);
+        console.log('[WalletConnect] Using chainId:', chainId);
+        this.network = (chainId === 1 ? "main" : "kovan");
+      });
+      this.walletConnector._walletConnector.on("call_request", (error, payload) => {
+        console.log('[WalletConnect] call_request', payload);
+        if (error) {
+          throw error;
+        }
+      });
+      this.walletConnector._walletConnector.on("disconnect", (error, payload) => {
+        console.log('[WalletConnect] disconnect', payload);
+        if (error) {
+          throw error;
+        }
+        this.stopNetwork();
+        this.walletConnector = null;
+      });
     } catch (e) {
       this.loadingAddress = false;
       this.waitingForAccessApproval = false;
