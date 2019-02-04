@@ -58,7 +58,7 @@ class WalletSendToken extends React.Component {
               <div>
                 <label>
                   Amount<br/>
-                  <input className={ this.state.fieldErrors.amount ? "has-error" : "" } type="number" ref={ input => this.amount = input } placeholder="0.00" step="0.000000000000000001" onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
+                  <input className={ this.state.fieldErrors.amount ? "has-error" : "" } type="number" ref={ input => this.amount = input } placeholder="0.00" onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
                 </label>
                 <div className="below-input-info" style={ {cursor: "pointer"} } onClick={ this.setAmount }>{ printNumber(this.props.system[this.props.sendToken].myBalance) } { ` ${ this.props.tokenName(this.props.sendToken) } available` }</div>
               </div>
