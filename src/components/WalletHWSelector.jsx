@@ -188,7 +188,7 @@ class WalletHardHWSelector extends React.Component {
                           </div>
                         }
                         <div className="align-center">
-                          <button className="sidebar-btn is-primary-green" style={ {width: "100%"} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
+                          <button className="sidebar-btn is-primary-green" style={ {width: "100%", marginTop: "1.25rem"} } onClick={ () => this.props.network.importAddress(value ? value : selectOptions[0].value) }>Connect this address</button>
                         </div>
                         <div className="align-center" style={ {margin: "4rem 0 2rem"} }>
                           <button className="sidebar-btn is-secondary" href="#action" onClick={ this.props.network.hideHw }>Cancel</button>
