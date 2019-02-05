@@ -81,6 +81,7 @@ deploy to production:
     url: $DEPLOYMENT_URL_PRODUCTION
   script:
     - echo "Deploying to production at $DEPLOYMENT_URL_PRODUCTION"
+    - DEPLOY_ENV=production node_modules/.bin/gulp deploy-aws
   when: manual
   allow_failure: false
   only:
