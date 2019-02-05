@@ -30,7 +30,7 @@ build development:
     - echo "Building project for development environment at $DEPLOYMENT_URL_DEVELOPMENT"
     - PUBLIC_URL=$DEPLOYMENT_URL_DEVELOPMENT yarn build
   only:
-    - develop-test-ci
+    - develop
   artifacts:
     name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -44,7 +44,7 @@ build:
     - echo "Building project for production environment at $DEPLOYMENT_URL_PRODUCTION"
     - DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false npm run build
   only:
-    - master-test-ci
+    - master
   artifacts:
     name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -61,7 +61,7 @@ deploy to development:
     - node_modules/.bin/now ./build --token $NOW_TOKEN -A ../now.json
     - node_modules/.bin/now alias --token $NOW_TOKEN $DEPLOYMENT_URL_DEVELOPMENT
   only:
-    - develop-test-ci
+    - develop
 
 deploy to staging:
   stage: deploy
@@ -72,7 +72,7 @@ deploy to staging:
     - echo "Deploying to staging at $DEPLOYMENT_URL_STAGING"
     - DEPLOY_ENV=staging node_modules/.bin/gulp deploy-aws
   only:
-    - master-test-ci
+    - master
 
 deploy to production:
   stage: deploy
@@ -85,4 +85,4 @@ deploy to production:
   when: manual
   allow_failure: false
   only:
-    - master-test-ci
+    - master
