@@ -12,6 +12,7 @@ src/scss/styles.css.map
 
 # production
 /build
+/build-*
 /.publish
 
 public/css/.sass-cache/

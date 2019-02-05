@@ -1,0 +1,88 @@
+image: node:8
+
+stages:
+  - prepare
+  # - test
+  - build
+  - deploy
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .yarn/
+
+# unit test:
+#   stage: test
+#   script:
+#     - npm run test
+
+prepare:
+  stage: prepare
+  script:
+    - npm install yarn --no-progress --global
+    - yarn add now --cache-folder .yarn
+    - yarn install --cache-folder .yarn
+
+build development:
+  stage: build
+  script:
+    - echo "Building project for development environment at $DEPLOYMENT_URL_DEVELOPMENT"
+    - PUBLIC_URL=$DEPLOYMENT_URL_DEVELOPMENT yarn build
+  only:
+    - develop
+  artifacts:
+    name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build
+
+build:
+  stage: build
+  script:
+    - echo "Building project for staging environment at $DEPLOYMENT_URL_STAGING"
+    - DEPLOY_ENV=staging PUBLIC_URL=$DEPLOYMENT_URL_STAGING npm run build
+    - echo "Building project for production environment at $DEPLOYMENT_URL_PRODUCTION"
+    - DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false npm run build
+  only:
+    - master
+  artifacts:
+    name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build-staging
+      - build-production
+
+deploy to development:
+  stage: deploy
+  environment:
+    name: development
+    url: $DEPLOYMENT_URL_DEVELOPMENT
+  script:
+    - echo "Deploying to development at $DEPLOYMENT_URL_DEVELOPMENT"
+    - node_modules/.bin/now ./build --token $NOW_TOKEN -A ../now.json
+    - node_modules/.bin/now alias --token $NOW_TOKEN $DEPLOYMENT_URL_DEVELOPMENT
+  only:
+    - develop
+
+deploy to staging:
+  stage: deploy
+  environment:
+    name: staging
+    url: $DEPLOYMENT_URL_STAGING
+  script:
+    - echo "Deploying to staging at $DEPLOYMENT_URL_STAGING"
+    - DEPLOY_ENV=staging node_modules/.bin/gulp deploy-aws
+  only:
+    - master
+
+deploy to production:
+  stage: deploy
+  environment:
+    name: production
+    url: $DEPLOYMENT_URL_PRODUCTION
+  script:
+    - echo "Deploying to production at $DEPLOYMENT_URL_PRODUCTION"
+    - DEPLOY_ENV=production node_modules/.bin/gulp deploy-aws
+  when: manual
+  allow_failure: false
+  only:
+    - master
