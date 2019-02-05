@@ -6,7 +6,7 @@ const s3 = require('gulp-s3-upload')({ useIAM: false }, { maxRetries: 5 });
 const cloudfront = require('gulp-cloudfront-invalidate');
 const log = require('fancy-log');
 
-if (process.env.DEPLOY_ENV) require('dotenv').config({ path: `.env.${process.env.DEPLOY_ENV}` });
+if (process.env.DEPLOY_ENV && !process.env.AWS_ACCESS_KEY_ID) require('dotenv').config({ path: `.env.${process.env.DEPLOY_ENV}` });
 else require('dotenv').config();
 
 const s3FilesChanged = [];
@@ -15,10 +15,11 @@ const logChangedFiles = file => {
 };
 
 gulp.task('aws-s3-upload', () => {
+  if (!process.env.DEPLOY_ENV) throw new Error('Missing DEPLOY_ENV in env variables');
   if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) throw new Error('Missing AWS auth credentials in env variables');
   if (!process.env.AWS_DEPLOY_S3_BUCKET) throw new Error('No S3 bucket specified in env variable');
   log(`Uploading to S3 bucket ${process.env.AWS_DEPLOY_S3_BUCKET}...`);
-  return gulp.src('./build/**', '!**/.DS_Store').pipe(
+  return gulp.src('./build-' + process.env.DEPLOY_ENV + '/**', '!**/.DS_Store').pipe(
     s3(
       {
         Bucket: process.env.AWS_DEPLOY_S3_BUCKET,
