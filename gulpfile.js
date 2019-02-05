@@ -10,9 +10,6 @@ if (process.env.DEPLOY_ENV && !process.env.AWS_ACCESS_KEY_ID) require('dotenv').
 else require('dotenv').config();
 
 const s3FilesChanged = [];
-const logChangedFiles = file => {
-  s3FilesChanged.push(`/${file}`);
-};
 
 gulp.task('aws-s3-upload', () => {
   if (!process.env.DEPLOY_ENV) throw new Error('Missing DEPLOY_ENV in env variables');
@@ -24,7 +21,7 @@ gulp.task('aws-s3-upload', () => {
       {
         Bucket: process.env.AWS_DEPLOY_S3_BUCKET,
         ACL: 'public-read',
-        onChange: keyname => logChangedFiles(keyname)
+        onChange: file => s3FilesChanged.push(`/${file}`)
       },
       {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -46,7 +43,7 @@ gulp.task('aws-cloudfront-invalidate', cb => {
     cloudfront({
       distribution: process.env.AWS_DEPLOY_CLOUDFRONT_DISTRIBUTION_ID,
       paths: s3FilesChanged,
-      wait: true,
+      wait: false,
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     })
