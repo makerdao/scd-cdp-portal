@@ -160,7 +160,7 @@ class Wizard extends Component {
                   <div className="col col-2" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
                     <div className="input-values-container">
-                      <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required placeholder="0.00" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                      <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
                       <div className="typo-cs align-right clearfix">
                         { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
@@ -175,7 +175,7 @@ class Wizard extends Component {
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
                     <div className="input-values-container">
-                      <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required placeholder="0.00" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+                      <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
                         this.state.maxDaiAvail &&
