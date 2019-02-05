@@ -44,7 +44,7 @@ build:
     - echo "Building project for production environment at $DEPLOYMENT_URL_PRODUCTION"
     - DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false npm run build
   only:
-    - master
+    - master-test-ci
   artifacts:
     name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -72,7 +72,7 @@ deploy to staging:
     - echo "Deploying to staging at $DEPLOYMENT_URL_STAGING"
     - DEPLOY_ENV=staging node_modules/.bin/gulp deploy-aws
   only:
-    - master
+    - master-test-ci
 
 deploy to production:
   stage: deploy
@@ -84,4 +84,4 @@ deploy to production:
   when: manual
   allow_failure: false
   only:
-    - master
+    - master-test-ci
