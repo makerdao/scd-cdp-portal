@@ -2,7 +2,7 @@ image: node:8
 
 stages:
   - prepare
-  # - test
+  - test
   - build
   - deploy
 
@@ -12,17 +12,18 @@ cache:
     - node_modules/
     - .yarn/
 
-# unit test:
-#   stage: test
-#   script:
-#     - npm run test
-
 prepare:
   stage: prepare
   script:
     - npm install yarn --no-progress --global
     - yarn add now --cache-folder .yarn
     - yarn install --cache-folder .yarn
+
+test:
+  stage: test
+  script:
+    - echo "Running unit tests"
+    # - npm run test
 
 build development:
   stage: build
