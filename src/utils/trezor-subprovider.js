@@ -76,7 +76,9 @@ export default function createTrezorSubprovider(
         const addressData = await TrezorConnect.ethereumGetAddress({
             bundle: accountsBundle
         });
-        //throw on !addressData.success
+        if (!addressData.success){
+          throw makeError(addressData.payload.error);
+        }
         const addressDataArray = addressData.payload;
         for (let i = 0; i < addressDataArray.length; i++){
           const path = addressDataArray[i].serializedPath;
@@ -145,7 +147,9 @@ export default function createTrezorSubprovider(
     try {
       const tx = new EthereumTx(txData);
       const resultObj = await trezorSignTransaction(path, txData);
-      //if !result.success throw
+      if (!resultObj.success){
+          throw makeError(resultObj.payload.error);
+      }
       const result = resultObj.payload;
       tx.v = result.v;
       tx.r = result.r;
