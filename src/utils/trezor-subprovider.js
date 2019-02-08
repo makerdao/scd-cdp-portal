@@ -100,18 +100,9 @@ export default function createTrezorSubprovider(
   }
 
   function trezorSignMessage(path, data) {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.ethereumSignMessage(
-        path,
-        data,
-        result => {
-          if (result.success) {
-            resolve(result);
-          } else {
-            reject(new Error(result.error));
-          }
-        }
-      )
+    return TrezorConnect.ethereumSignMessage({
+      path: path,
+      message: data
     });
   }
 
@@ -120,7 +111,10 @@ export default function createTrezorSubprovider(
     if (!path) throw new Error(`address unknown '${msgData.from}'`);
     try {
       const result = await trezorSignMessage(path, msgData.data);
-      return `0x${result.signature}`;
+      if (!result.success){
+          throw makeError(result.payload.error);
+      }
+      return `0x${result.payload.signature}`;
     } catch (e) {
       throw makeError(e);
     }
