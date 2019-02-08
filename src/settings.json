@@ -4,7 +4,7 @@
     "kovan": {
       "nodeURL": "https://kovan.infura.io/v3/078596535bf243c6996d2ac196563d49",
       "saiValuesAggregator": "0x040abcb09a5b46f9a5ebed320abe074e6e626cc5",
-      "otc": "0xdb3b642ebc6ff85a3ab335cff9af2954f9215994",
+      "otc": "0x4a6bc4e803c62081ffebcc8d227b5a87a58f1f8f",
       "fromBlock": 5216602,
       "service": "https://sai-kovan.makerfoundation.com/v1",
       "chart": false,
@@ -14,7 +14,7 @@
     "main": {
       "nodeURL": "https://mainnet.infura.io/v3/078596535bf243c6996d2ac196563d49",
       "saiValuesAggregator": "0x83f6ed3d377674186d8898a89d9032216e07e659",
-      "otc": "0xb7ac09c2c0217b07d7c103029b4918a2c401eecb",
+      "otc": "0x39755357759ce0d7f32dc8dc45414cca409ae24e",
       "fromBlock": 4752013,
       "service": "https://sai-mainnet.makerfoundation.com/v1",
       "chart": false,
