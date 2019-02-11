@@ -1,8 +1,7 @@
 //@flow
 import HookedWalletSubprovider from "web3-provider-engine/dist/es5/subproviders/hooked-wallet";
 import EthereumTx from "ethereumjs-tx";
-import AddressGenerator from "./address-generator";
-import TrezorConnect from "./trezor-connect";
+import TrezorConnect from 'trezor-connect';
 
 const allowedHdPaths = ["44'/1'", "44'/60'", "44'/61'"];
 
@@ -61,31 +60,29 @@ export default function createTrezorSubprovider(
 
   const addressToPathMap = {};
 
-  const createAddressGenerator = derivationPath => {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.setCurrency("ETH");
-      TrezorConnect.getXPubKey(derivationPath, result => {
-        if (result.success) {
-          resolve(new AddressGenerator(result));
-        } else {
-          reject(new Error(result.error));
-        }
-      });
-    });
-  }
-
   let alreadyOpenTrezorModal = false;
 
   async function getAccounts() {
     try {
       if (!alreadyOpenTrezorModal) {
         alreadyOpenTrezorModal = true;
-        const addressGenerator = await createAddressGenerator(`m/${pathComponents.basePath.slice(0, pathComponents.basePath.length - 1)}`);
-
         const addresses = {};
+
+        const accountsBundle = [];
         for (let i = accountsOffset; i < accountsOffset + accountsLength; i++){
           const path = pathComponents.basePath + (pathComponents.index + i).toString();
-          const address = addressGenerator.getAddressString(i);
+          accountsBundle.push({ path: 'm/'+path, showOnTrezor: false });
+        }
+        const addressData = await TrezorConnect.ethereumGetAddress({
+            bundle: accountsBundle
+        });
+        if (!addressData.success){
+          throw makeError(addressData.payload.error);
+        }
+        const addressDataArray = addressData.payload;
+        for (let i = 0; i < addressDataArray.length; i++){
+          const path = addressDataArray[i].serializedPath;
+          const address = addressDataArray[i].address;
           addresses[path] = address;
           addressToPathMap[address.toLowerCase()] = path;
         }
@@ -103,18 +100,9 @@ export default function createTrezorSubprovider(
   }
 
   function trezorSignMessage(path, data) {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.ethereumSignMessage(
-        path,
-        data,
-        result => {
-          if (result.success) {
-            resolve(result);
-          } else {
-            reject(new Error(result.error));
-          }
-        }
-      )
+    return TrezorConnect.ethereumSignMessage({
+      path: path,
+      message: data
     });
   }
 
@@ -123,49 +111,43 @@ export default function createTrezorSubprovider(
     if (!path) throw new Error(`address unknown '${msgData.from}'`);
     try {
       const result = await trezorSignMessage(path, msgData.data);
-      return `0x${result.signature}`;
+      if (!result.success){
+          throw makeError(result.payload.error);
+      }
+      return `0x${result.payload.signature}`;
     } catch (e) {
       throw makeError(e);
     }
   }
 
-  function sanitizeParam(val) {
-    const hex = val.slice(2);
-    return hex.length % 2 ? `0${hex}` : hex;
-  }
-
   function trezorSignTransaction(path, txData) {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.ethereumSignTx(
-        path,
-        sanitizeParam(txData.nonce),
-        sanitizeParam(txData.gasPrice),
-        sanitizeParam(txData.gas),
-        txData.to.slice(2),
-        txData.value ? sanitizeParam(txData.value) : "",
-        txData.data ? sanitizeParam(txData.data) : "",
-        parseInt(networkId, 10),
-        result => {
-          if (result.success) {
-            resolve(result);
-          } else {
-            reject(new Error(result.error));
-          }
-      });
+    return TrezorConnect.ethereumSignTransaction({
+      path: path,
+      transaction: {
+        nonce: txData.nonce,
+        gasPrice: txData.gasPrice,
+        gasLimit: txData.gas,
+        to: txData.to,
+        value: txData.value ? txData.value : "",
+        data: txData.data ? txData.data : "",
+        chainId: parseInt(networkId, 10),
+      }
     });
   }
 
   async function signTransaction(txData) {
-    const path = `m/${addressToPathMap[txData.from.toLowerCase()]}`;
+    const path = addressToPathMap[txData.from.toLowerCase()];
     if (!path) throw new Error(`address unknown '${txData.from}'`);
     try {
       const tx = new EthereumTx(txData);
-      const result = await trezorSignTransaction(path, txData);
-
-      tx.v = Buffer.from(result.v.toString(16), "hex");
-      tx.r = Buffer.from(result.r, "hex");
-      tx.s = Buffer.from(result.s, "hex");
-
+      const resultObj = await trezorSignTransaction(path, txData);
+      if (!resultObj.success){
+          throw makeError(resultObj.payload.error);
+      }
+      const result = resultObj.payload;
+      tx.v = result.v;
+      tx.r = result.r;
+      tx.s = result.s;
       // EIP155: v should be chain_id * 2 + {35, 36}
       const signedChainId = Math.floor((tx.v[0] - 35) / 2);
       const validChainId = networkId & 0xff; // FIXME this is to fixed a current workaround that app don't support > 0xff
