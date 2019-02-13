@@ -94,6 +94,12 @@
 				width: 18px;
 				height: auto;
 				margin-top: 1px;
+				&.alphawallet {
+                    margin-top: 2px !important;
+				}
+				&.trezor {
+                    margin-top: 0;
+				}
 				@include respond-to(xl) {
 					margin-top: 3px;
 				}
