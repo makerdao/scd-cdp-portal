@@ -55,6 +55,8 @@ class Wallet extends React.Component {
         return "imToken";
       case "ledger":
         return "Ledger Nano S";
+      case "alphawallet":
+        return "AlphaWallet";
       case "metamask":
         return "MetaMask";
       case "coinbase":

@@ -14,9 +14,12 @@ import * as settings from "../settings";
 export const getWebClientProviderName = () => {
   if (window.imToken)
     return 'imtoken';
-  
+
   if (!window.web3 || typeof window.web3.currentProvider === "undefined")
     return "";
+
+  if (window.web3.currentProvider.isAlphaWallet)
+    return "alphawallet";
 
   if (window.web3.currentProvider.isMetaMask)
     return "metamask";
