@@ -9,7 +9,7 @@
       "service": "https://sai-kovan.makerfoundation.com/v1",
       "chart": false,
       "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
-      "saiProxyCreateAndExecute": "0xadb7c74bce932fc6c27dda3ac2344707d2fbb0e6"
+      "saiProxyCreateAndExecute": "0x96fc005a8ba82b84b11e0ff211a2a1362f107ef0"
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/v3/078596535bf243c6996d2ac196563d49",
@@ -19,7 +19,7 @@
       "service": "https://sai-mainnet.makerfoundation.com/v1",
       "chart": false,
       "proxyRegistry": "0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4",
-      "saiProxyCreateAndExecute": "0xd64979357160e8146f6e1d805cf20437397bf1ba"
+      "saiProxyCreateAndExecute": "0x526af336d614ade5cc252a407062b8861af998f5"
     }
   }
 }
