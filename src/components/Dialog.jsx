@@ -245,7 +245,6 @@ class Dialog extends React.Component {
                     </div>
                   </div>
                 </div>
-
                 <div style={ { marginTop: "4rem"} }>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
                   <button className="text-btn text-btn-primary" disabled={ !this.state.checkTerms } type="submit">Migrate</button>
