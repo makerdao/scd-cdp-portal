@@ -44,7 +44,8 @@ class Dialog extends React.Component {
       govFeeType: "mkr",
       ownThisWallet: false,
       giveHasProxy: false,
-      giveToProxy: true
+      giveToProxy: true,
+      checkTerms: false
     }
   }
 
@@ -213,6 +214,12 @@ class Dialog extends React.Component {
     )
   }
 
+  check = (checked, type) => {
+    const state = {...this.state};
+    state[type] = checked;
+    this.setState(state);
+  }
+
   render() {
     const dialog = this.props.dialog;
     const cup = dialog.cupId ? this.props.system.tub.cups[dialog.cupId] : null;
@@ -227,6 +234,18 @@ class Dialog extends React.Component {
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
+                <div className="row" style={ {marginTop: "50px", border: "none"} }>
+                  <div className="col">
+                    <div style={ {marginBottom: "2rem"} }>
+                      <label className="checkbox-container">
+                        <input type="checkbox" checked={ this.state.checkTerms } value="1" onChange={e => this.check(e.target.checked, "checkTerms")}/>
+                        <span className="checkmark"></span>
+                        I have read and accept the <Link to="/terms" target="_blank">Terms of Service</Link>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
                 <div style={ { marginTop: "4rem"} }>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
                   <button className="text-btn text-btn-primary" type="submit">Migrate</button>
