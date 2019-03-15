@@ -18,6 +18,9 @@ export const getWebClientProviderName = () => {
   if (!window.web3 || typeof window.web3.currentProvider === "undefined")
     return "";
 
+  if (window.web3.ethereum.isStatus)
+    return "status";
+  
   if (window.web3.currentProvider.isAlphaWallet)
     return "alphawallet";
 
