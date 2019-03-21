@@ -62,6 +62,11 @@ export default function createTrezorSubprovider(
 
   let alreadyOpenTrezorModal = false;
 
+  TrezorConnect.manifest({
+    email: 'tyler@makerdao.com',
+    appUrl: 'http://cdp.makerdao.com'
+  });
+
   async function getAccounts() {
     try {
       if (!alreadyOpenTrezorModal) {
