@@ -92,7 +92,7 @@
     "react-tooltip": "^3.8.4",
     "resolve": "1.6.0",
     "slick-carousel": "^1.8.1",
-    "trezor-connect": "^6.0.4",
+    "trezor-connect": "^7.0.2",
     "web3": "^0.20.6",
     "web3-provider-engine": "14.0.4"
   },
