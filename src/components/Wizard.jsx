@@ -302,6 +302,9 @@ class Wizard extends Component {
                 </div>
               </div>
 
+              <div className="inline-notification is-error">When you open a CDP, the stability fee might vary due to changing market conditions. Find out more here. The Stability Fee is currently</div>
+
+
               <div className="row" style={ {marginTop: "50px", border: "none"} }>
                 <div className="col">
                   <div style={ {marginBottom: "2rem"} }>
