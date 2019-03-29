@@ -87,4 +87,10 @@
       color: $white;
     }
   }
+  &.is-stability-fee-warning {
+    border-radius: 5px;
+    padding: unset !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
 }

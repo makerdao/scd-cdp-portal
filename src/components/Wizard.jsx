@@ -141,6 +141,8 @@ class Wizard extends Component {
   }
 
   render() {
+    const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
+
     return (
       <div className="wizard-section">
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
@@ -219,7 +221,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   <p className="no-select">
-                    Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR
+                    Stability fee @{ stabilityFee }%/year in MKR
                     <TooltipHint tipKey="stability-fee" />
                   </p>
                 </div>
@@ -302,7 +304,23 @@ class Wizard extends Component {
                 </div>
               </div>
 
-              <div className="row" style={ {marginTop: "50px", border: "none"} }>
+              <div className="inline-notification is-stability-fee-warning">
+                <p style={ { color: '#B42B00', fontWeight: 500 } }>
+                  When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
+                  <a
+                    href="https://www.reddit.com/r/MakerDAO/comments/93adqj/faq_stability_fee_raise/"
+                    id="stability-fee-link"
+                    rel="noopener noreferrer"
+                    style={ { color: '#447AFB', textDecoration: 'none'} }
+                    target="_blank"
+                  >
+                    Find out more here
+                  </a>.
+                  The Stability Fee is currently <strong>{ stabilityFee }%.</strong>
+                </p>
+              </div>
+
+              <div className="row" style={ {border: "none"} }>
                 <div className="col">
                   <div style={ {marginBottom: "2rem"} }>
                     <label className="checkbox-container">
