@@ -306,8 +306,16 @@ class Wizard extends Component {
 
               <div className="inline-notification is-stability-fee-warning">
                 <p style={ { color: '#B42B00', fontWeight: 500 } }>
-                  When you open a CDP, the Stability Fee might vary due to changing market conditions.
-                  Find out more here.
+                  When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
+                  <a
+                    href="https://www.reddit.com/r/MakerDAO/comments/93adqj/faq_stability_fee_raise/"
+                    id="stability-fee-link"
+                    rel="noopener noreferrer"
+                    style={ { color: '#447AFB', textDecoration: 'none'} }
+                    target="_blank"
+                  >
+                    Find out more here
+                  </a>.
                   The Stability Fee is currently <strong>{ stabilityFee }%.</strong>
                 </p>
               </div>
