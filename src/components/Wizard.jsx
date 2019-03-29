@@ -309,7 +309,6 @@ class Wizard extends Component {
                   When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
                   <a
                     href="https://www.reddit.com/r/MakerDAO/comments/93adqj/faq_stability_fee_raise/"
-                    id="stability-fee-link"
                     rel="noopener noreferrer"
                     style={ { color: '#447AFB', textDecoration: 'none'} }
                     target="_blank"
