@@ -2,6 +2,7 @@
 import {observable} from "mobx";
 import axios from "axios";
 import ReactTooltip from "react-tooltip";
+import { compiler } from 'markdown-to-jsx';
 
 // Utils
 import {WAD, formatNumber, fromWei, toWei} from "../utils/helpers";
@@ -61,6 +62,21 @@ export default class ContentStore {
     //     </React.Fragment>
     //   );
     // }
+  }
+
+  stabilityFeeMarkdown = () => {
+    return (this.getHelpItem('stability-fee-information') || {}).markdown
+  }
+
+  stabilityFeeContent = () => {
+    return this.stabilityFeeMarkdown() && compiler(this.stabilityFeeMarkdown());
+  }
+
+  showStabilityFeeAlert = () => {
+    if (this.stabilityFeeMarkdown() === '') {
+      return false;
+    }
+    return true;
   }
 
   getHelpItem = helpId => {
