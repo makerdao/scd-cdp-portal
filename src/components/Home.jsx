@@ -16,12 +16,11 @@ import Wallet from "./Wallet";
 import Welcome from "./Welcome";
 import Wizard from "./Wizard";
 import Footer from "./Footer";
-
+import StabilityFeeAlert from "./StabilityFeeAlert";
 // Utils
 import {getCurrentProviderName} from "../utils/blockchain";
 import {capitalize} from "../utils/helpers";
 
-@inject("content")
 @inject("network")
 @inject("system")
 @inject("dialog")
@@ -58,6 +57,9 @@ class Home extends React.Component {
               <Menu page="" showCDPs={ !this.props.system.tub.cupsLoading && Object.keys(this.props.system.tub.cups).length > 0 } showLegacyCDPs={ true } setOpenMigrate={ this.setOpenMigrate } isMigrateCDPPage={ this.state.migrateCDP } />
             }
             <main className="main-column">
+              {
+                <StabilityFeeAlert />
+              }
               {
                 !this.props.network.isConnected || !this.props.network.defaultAccount
                 ?
