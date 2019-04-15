@@ -16,6 +16,7 @@ import contentTerms from "../assets/json/terms.json";
 export default class ContentStore {
   @observable content = { faq: {}, tooltips: {} }
   @observable contentLoaded = false
+  @observable showNotification = false
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -23,6 +24,7 @@ export default class ContentStore {
       .then(res => {
         this.content = res.data || null;
         this.contentLoaded = true;
+        this.showNotification = !localStorage.getItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`);
         ReactTooltip.rebuild();
       });
   }
@@ -64,19 +66,17 @@ export default class ContentStore {
     // }
   }
 
-  stabilityFeeMarkdown = () => {
-    return (this.getHelpItem('stability-fee-information') || {}).markdown
+  stabilityFeeMarkdown = () => (this.getHelpItem('stability-fee-information') || {}).markdown
+
+  stabilityFeeContent = () => this.stabilityFeeMarkdown() && compiler(this.stabilityFeeMarkdown());
+
+  shouldShowStabilityFeeAlert = () => {
+    return this.showNotification && !!this.stabilityFeeMarkdown
   }
 
-  stabilityFeeContent = () => {
-    return this.stabilityFeeMarkdown() && compiler(this.stabilityFeeMarkdown());
-  }
-
-  showStabilityFeeAlert = () => {
-    if (this.stabilityFeeMarkdown() === '') {
-      return false;
-    }
-    return true;
+  hideStabilityFeeContent = () => {
+    localStorage.setItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`, true);
+    this.showNotification = false;
   }
 
   getHelpItem = helpId => {
