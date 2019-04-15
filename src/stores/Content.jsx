@@ -2,6 +2,7 @@
 import {observable} from "mobx";
 import axios from "axios";
 import ReactTooltip from "react-tooltip";
+import { compiler } from 'markdown-to-jsx';
 
 // Utils
 import {WAD, formatNumber, fromWei, toWei} from "../utils/helpers";
@@ -15,6 +16,7 @@ import contentTerms from "../assets/json/terms.json";
 export default class ContentStore {
   @observable content = { faq: {}, tooltips: {} }
   @observable contentLoaded = false
+  @observable showNotification = false
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -22,6 +24,7 @@ export default class ContentStore {
       .then(res => {
         this.content = res.data || null;
         this.contentLoaded = true;
+        this.showNotification = !localStorage.getItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`);
         ReactTooltip.rebuild();
       });
   }
@@ -61,6 +64,19 @@ export default class ContentStore {
     //     </React.Fragment>
     //   );
     // }
+  }
+
+  stabilityFeeMarkdown = () => (this.getHelpItem('stability-fee-information') || {}).markdown
+
+  stabilityFeeContent = () => this.stabilityFeeMarkdown() && compiler(this.stabilityFeeMarkdown());
+
+  shouldShowStabilityFeeAlert = () => {
+    return this.showNotification && !!this.stabilityFeeMarkdown
+  }
+
+  hideStabilityFeeContent = () => {
+    localStorage.setItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`, true);
+    this.showNotification = false;
   }
 
   getHelpItem = helpId => {
