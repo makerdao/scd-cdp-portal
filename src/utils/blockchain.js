@@ -3,6 +3,8 @@ import Promise from "bluebird";
 
 // Utils
 import web3 from "./web3";
+import settings from "../settings";
+import BigNumber from 'bignumber.js';
 
 const promisify = Promise.promisify;
 const schema = {};
@@ -18,6 +20,7 @@ schema.dstoken = require("../abi/dstoken");
 schema.dsvalue = require("../abi/dsvalue");
 schema.saiProxyCreateAndExecute = require("../abi/saiProxyCreateAndExecute");
 schema.saivaluesaggregator = require("../abi/saivaluesaggregator");
+
 
 export const objects = {
 }
@@ -63,7 +66,7 @@ export const getGasPrice = () => {
 }
 
 export const estimateGas = (to, data, value, from) => {
-  return promisify(web3.eth.estimateGas)({to, data, value, from});
+  return promisify(web3.eth.estimateGas)({ to, data, value, from });
 }
 
 export const getTransaction = tx => {
@@ -91,7 +94,7 @@ export const getBlockNumber = () => {
 }
 
 export const setFilter = (fromBlock, address) => {
-  return promisify(web3.eth.filter)({fromBlock, address});
+  return promisify(web3.eth.filter)({ fromBlock, address });
 }
 
 export const resetFilters = bool => {
@@ -120,11 +123,11 @@ export const getTokenAllowance = (token, from, to) => {
 
 export const getTokenTrusted = (token, from, to) => {
   return promisify(objects[token].allowance.call)(from, to)
-        .then((result) => result.eq(web3.toBigNumber(2).pow(256).minus(1)));
+    .then((result) => result.eq(web3.toBigNumber(2).pow(256).minus(1)));
 }
 
 export const tokenApprove = (token, dst, gasPrice) => {
-  return promisify(objects[token].approve)(dst, -1, {gasPrice});
+  return promisify(objects[token].approve)(dst, -1, { gasPrice });
 }
 
 export const getProxy = account => {
@@ -137,7 +140,7 @@ export const getProxyOwner = proxy => {
 
 export const proxyExecute = (proxyAddr, targetAddr, calldata, gasPrice, value = 0) => {
   const proxyExecuteCall = loadObject("dsproxy", proxyAddr).execute["address,bytes"];
-  return promisify(proxyExecuteCall)(targetAddr,calldata, {value, gasPrice});
+  return promisify(proxyExecuteCall)(targetAddr, calldata, { value, gasPrice });
 }
 
 export const getContractAddr = (contractFrom, contractName) => {
@@ -209,7 +212,7 @@ export const setWebClientProvider = provider => {
   return web3.setWebClientProvider(provider);
 }
 
-export const {getWebClientProviderName} = require("./web3");
+export const { getWebClientProviderName } = require("./web3");
 
 export const checkNetwork = (actualIsConnected, actualNetwork) => {
   return new Promise((resolve, reject) => {
@@ -284,4 +287,39 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
       }
     }, e => reject(e));
   });
+}
+
+
+// always returns mainet info
+export async function getStabilityFee() {
+  const { nodeURL, tub } = settings.chain.main;
+  const rawResponse = await fetch(nodeURL, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'eth_call',
+      params: [
+        {
+          to: tub,
+          data: "0xddca3f43" // keccak("fee()")
+        },
+        'latest'
+      ],
+      id: 1
+    })
+  });
+
+  const RAY = new BigNumber('1e27');
+  const feeHex = (await rawResponse.json()).result;
+  const baseBigNumber = new BigNumber(feeHex).div(RAY);
+  const secondsPerYear = 60 * 60 * 24 * 365;
+  BigNumber.config({ POW_PRECISION: 100 });
+  return baseBigNumber
+    .pow(secondsPerYear)
+    .minus(1)
+    .multipliedBy(100);
 }

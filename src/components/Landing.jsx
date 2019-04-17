@@ -1,7 +1,7 @@
 // Libraries
 import React from "react";
 import Slider from "react-slick";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // Images
 import welcomeHero from 'images/welcome-hero.svg';
@@ -9,14 +9,23 @@ import metamaskLogo from 'images/metamask-logo.svg';
 import parityLogo from 'images/parity-logo.png';
 import ledgerNanoLogo from 'images/ledger-nano-logo.png';
 import trezorLogo from 'images/trezor-logo.png';
+import { getStabilityFee } from "../utils/blockchain";
 
 class Landing extends React.Component {
+  state = {
+    stabilityFee: null
+  }
+  componentDidMount() {
+    getStabilityFee().then(feeInHexa => {
+      this.setState({ stabilityFee: feeInHexa.toFixed(2) });
+    })
+  }
   render() {
     function PrevButton(props) {
       const { className, style, onClick } = props;
       return (
         <svg className={className} style={{ ...style }} onClick={onClick} enableBackground="new 0 0 240.823 240.823" viewBox="0 0 240.823 240.823" xmlns="http://www.w3.org/2000/svg">
-          <path d="m57.633 129.007 108.297 108.261c4.752 4.74 12.451 4.74 17.215 0 4.752-4.74 4.752-12.439 0-17.179l-99.707-99.671 99.695-99.671c4.752-4.74 4.752-12.439 0-17.191-4.752-4.74-12.463-4.74-17.215 0l-108.297 108.26c-4.679 4.691-4.679 12.511.012 17.191z"/>
+          <path d="m57.633 129.007 108.297 108.261c4.752 4.74 12.451 4.74 17.215 0 4.752-4.74 4.752-12.439 0-17.179l-99.707-99.671 99.695-99.671c4.752-4.74 4.752-12.439 0-17.191-4.752-4.74-12.463-4.74-17.215 0l-108.297 108.26c-4.679 4.691-4.679 12.511.012 17.191z" />
         </svg>
       );
     }
@@ -42,13 +51,13 @@ class Landing extends React.Component {
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
           <Slider {...settings} className="landing-slider">
             <div className="first-slide">
-              <div style={ {textAlign: "center"} }>
+              <div style={{ textAlign: "center" }}>
                 <p className="align-center">
                   This is the place to generate Dai!<br />
                   Use this dapp from the Maker team to manage<br />
                   depositing of collateral and generation of Dai.
                 </p>
-                <img className="preview" src={ welcomeHero } alt="CDP Portal" />
+                <img className="preview" src={welcomeHero} alt="CDP Portal" />
               </div>
             </div>
             <div>
@@ -83,7 +92,7 @@ class Landing extends React.Component {
               <div className="info-slide">
                 <h1>05.<span className="line"></span>THE COST</h1>
                 <h2>Does it cost anything?</h2>
-                <p>There is a stability fee on the Dai stablecoins of 1.5% per year. You pay the fee with MKR when you pay back the Dai. If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
+                <p> {this.state.stabilityFee ? `There is a stability fee on the Dai stablecoins of ${this.state.stabilityFee}% per year. You pay the fee with MKR when you pay back the Dai. ` : ""}If your CDP becomes liquidated, then there is a 13% liquidation penalty that will be subtracted when the locked collateral is sold.</p>
               </div>
             </div>
           </Slider>
@@ -93,10 +102,10 @@ class Landing extends React.Component {
             <p>Connect one of the four wallets below to automatically connect to the CDP Portal. For more information on these wallets, use the links below. If you are an advanced user you can also use the MakerDAO command line interface (CLI) to create CDPs.</p>
             <p className="align-center"><Link to="/help" className="faq">See FAQs for additional information on wallets</Link></p>
             <ul>
-              <li><a href="https://metamask.io/"><img src={ metamaskLogo } alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
-              <li><a href="https://www.parity.io/"><img src={ parityLogo } alt="Get Parity" /><div>Get Parity</div></a></li>
-              <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src={ ledgerNanoLogo } alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
-              <li><a href="https://trezor.io/"><img src={ trezorLogo } alt="Get Trezor" /><div>Get Trezor</div></a></li>
+              <li><a href="https://metamask.io/"><img src={metamaskLogo} alt="Get MetaMask" /><div>Get MetaMask</div></a></li>
+              <li><a href="https://www.parity.io/"><img src={parityLogo} alt="Get Parity" /><div>Get Parity</div></a></li>
+              <li><a href="https://www.ledgerwallet.com/products/ledger-nano-s"><img src={ledgerNanoLogo} alt="Get Ledger Nano S" /><div>Get Ledger Nano S</div></a></li>
+              <li><a href="https://trezor.io/"><img src={trezorLogo} alt="Get Trezor" /><div>Get Trezor</div></a></li>
             </ul>
           </div>
         </div>
