@@ -1,5 +1,6 @@
 // Libraries
 import React from "react";
+import checkIsMobile from 'ismobilejs';
 
 // Components
 import LegacyCupsAlert from "./LegacyCupsAlert";
@@ -8,6 +9,12 @@ import LegacyCupsAlert from "./LegacyCupsAlert";
 import welcomeSatellite from "images/welcome-satellite.svg";
 
 class Welcome extends React.Component {
+  buttonClass() {
+    return checkIsMobile.any
+      ? "sidebar-btn is-primary-green-mobile"
+      : "sidebar-btn is-primary-green"
+  }
+
   render() {
     return (
       <div>
@@ -20,7 +27,7 @@ class Welcome extends React.Component {
             You have no CDPs open at this time.
           </div>
           <div className="align-center" style={ {margin: "3rem 0"} }>
-            <button className="sidebar-btn is-primary-green" onClick={ e => { e.preventDefault(); this.props.setOpenCDPWizard() } }>Open CDP</button>
+            <button className={this.buttonClass()} onClick={ e => { e.preventDefault(); this.props.setOpenCDPWizard() } }>Open CDP</button>
           </div>
           <div className="align-center">
             <img src={ welcomeSatellite } alt="Welcome" style={ {width: "690px", height: "auto", maxWidth: "70%" } } />

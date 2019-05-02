@@ -35,6 +35,15 @@ button, .btn {
 			background-color: #1ABC9C;
 			color: #000;
 		}
+		&.is-primary-green-mobile {
+			background-color: #1ABC9C;
+			color: #000;
+			width: 250px;
+			height: 55px;
+			margin-top: -20px;
+			margin-bottom: -20px;
+			font-weight: 700;
+		}
 		&.is-secondary {
 			background-color: #fff;
 			color: #0A141F;
