@@ -1,6 +1,7 @@
 // Libraries
 import React from "react";
 import jazzicon from "jazzicon";
+import checkIsMobile from "ismobilejs";
 
 // Utils
 import web3 from "./web3";
@@ -79,6 +80,12 @@ const addZero = value => {
 export const fromRaytoWad = x => {
   const y = toBigNumber(x).div(toBigNumber(10).pow(9))
   return y;
+}
+
+export const mobileToggle = className => {
+  return checkIsMobile.any
+    ? className + '-mobile'
+    : className
 }
 
 export const copyToClipboard = e => {

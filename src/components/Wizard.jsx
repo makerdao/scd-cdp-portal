@@ -11,7 +11,7 @@ import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber} from "../utils/helpers";
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber, mobileToggle} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
 
@@ -141,9 +141,14 @@ class Wizard extends Component {
     this.setState(state);
   }
 
-  wizardSection = () => {
-    if (!checkIsMobile.any) {
-      return (
+  header = () => {
+    return checkIsMobile.any
+      ? (
+        <header className="col">
+          <h1 className="typo-h1 inline-headline">Create CDP</h1>
+        </header>
+      )
+      : (
         <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
             <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
@@ -151,7 +156,6 @@ class Wizard extends Component {
           </Steps>
         </header>
       );
-    }
   }
 
   render() {
@@ -160,7 +164,7 @@ class Wizard extends Component {
     return (
       <div className="wizard-section">
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
-        {this.wizardSection()}
+        {this.header()}
         {
           this.state.step === 1
           ?
@@ -168,7 +172,7 @@ class Wizard extends Component {
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
 
                 <div className="row">
-                  <div className="col col-2" style={ {border: "none"} }>
+                  <div className="col" style={ {border: "none"} }>
                     <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
@@ -185,7 +189,7 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row">
-                  <div className="col col-2">
+                  <div className="col">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
@@ -244,7 +248,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   <div className="col">
-                    <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+                    <button className={"bright-style text-btn " + mobileToggle("text-btn-primary")} type="submit" disabled={ !this.state.submitEnabled }><div className="btn-text">CONTINUE</div></button>
                   </div>
                 </div>
               </form>
