@@ -158,6 +158,24 @@ class Wizard extends Component {
       );
   }
 
+  columns = () => {
+    return checkIsMobile.any
+      ? "col"
+      : "col col-2"
+  }
+
+  buttonText = () => {
+    return checkIsMobile.any
+      ? <div className="btn-text">continue</div>
+      : "collateralize & generate dai"
+  }
+
+  fontSize = () => {
+    return checkIsMobile.any
+      ? "typo-cm no-select typo-bolder"
+      : "typo-cl no-select"
+  }
+
   render() {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
@@ -172,8 +190,8 @@ class Wizard extends Component {
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
 
                 <div className="row">
-                  <div className="col" style={ {border: "none"} }>
-                    <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
+                  <div className={this.columns()} style={ {border: "none"} }>
+                    <label className={this.fontSize()}>How much ETH would you like to collateralize?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
@@ -189,8 +207,8 @@ class Wizard extends Component {
                 </div>
 
                 <div className="row">
-                  <div className="col">
-                    <label className="typo-cl no-select">How much DAI would you like to generate?</label>
+                  <div className={this.columns()}>
+                    <label className={this.fontSize()}>How much DAI would you like to generate?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
@@ -248,7 +266,7 @@ class Wizard extends Component {
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   <div className="col">
-                    <button className={"bright-style text-btn " + mobileToggle("text-btn-primary")} type="submit" disabled={ !this.state.submitEnabled }><div className="btn-text">CONTINUE</div></button>
+                    <button className={"bright-style text-btn " + mobileToggle("text-btn-primary")} type="submit" disabled={ !this.state.submitEnabled }>{this.buttonText()}</button>
                   </div>
                 </div>
               </form>
