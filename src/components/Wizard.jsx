@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import Steps, {Step} from "rc-steps";
+import checkIsMobile from "ismobilejs";
 
 // Components
 import InlineNotification from "./InlineNotification";
@@ -140,18 +141,26 @@ class Wizard extends Component {
     this.setState(state);
   }
 
-  render() {
-    const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
-
-    return (
-      <div className="wizard-section">
-        <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
+  wizardSection = () => {
+    if (!checkIsMobile.any) {
+      return (
         <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
             <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
             <Step title="Confirm details" icon={<StepIcon step="2" />} />
           </Steps>
         </header>
+      );
+    }
+  }
+
+  render() {
+    const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
+
+    return (
+      <div className="wizard-section">
+        <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
+        {this.wizardSection()}
         {
           this.state.step === 1
           ?
@@ -173,7 +182,9 @@ class Wizard extends Component {
                       }
                     </div>
                   </div>
+                </div>
 
+                <div className="row">
                   <div className="col col-2">
                     <label className="typo-cl no-select">How much DAI would you like to generate?</label>
                     <div className="input-values-container">
