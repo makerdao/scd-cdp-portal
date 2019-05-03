@@ -176,6 +176,85 @@ class Wizard extends Component {
       : "typo-cl no-select"
   }
 
+  cdpData = () => {
+    const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
+
+    return checkIsMobile.any
+      ? (
+        <div>
+          <div className="row">
+            <div className="col">
+              <div>
+                <h3 className="typo-cm inline-headline">Liquidation price (ETH/USD)</h3>
+                <div className="value typo-cm typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
+              </div>
+              <div>
+                <h3 className="typo-cm inline-headline">Current price (ETH/USD)</h3>
+                <div className="value typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
+              </div>
+              <div>
+                <h3 className="typo-cm inline-headline">Liquidation penalty</h3>
+                <div className="value typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
+              </div>
+              <div>
+                <h3 className="typo-cm inline-headline">Collateralization ratio</h3>
+                <div className="value typo-cm typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
+              </div>
+              <div>
+                <h3 className="typo-cm inline-headline">Minimum ratio</h3>
+                <div className="value typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
+              </div>
+              <div>
+                <h3 className="typo-cm inline-headline">Stability Fee</h3>
+                <div className="value typo-cm typo-bold right">{ stabilityFee }%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="row">
+            <div className="col col-2">
+              <div style={ {marginBottom: "1rem"}}>
+                <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
+                <TooltipHint tipKey="liquidation-price" />
+                <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
+              </div>
+              <div>
+                <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
+                <TooltipHint tipKey="current-price-information" />
+                <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
+              </div>
+              <div>
+                <h3 className="typo-c inline-headline">Liquidation penalty</h3>
+                <TooltipHint tipKey="liquidation-penalty" />
+                <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
+              </div>
+            </div>
+
+            <div className="col col-2">
+              <div style={ {marginBottom: "1rem"}}>
+                <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
+                <TooltipHint tipKey="collateralization-ratio" />
+                <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
+              </div>
+              <div>
+                <h3 className="typo-c inline-headline">Minimum ratio</h3>
+                <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row" style={ {borderBottom: "none"} }>
+            <p className="no-select">
+              Stability fee @{ stabilityFee }%/year in MKR
+              <TooltipHint tipKey="stability-fee" />
+            </p>
+          </div>
+        </div>
+    );
+  }
+
   render() {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
@@ -191,7 +270,7 @@ class Wizard extends Component {
 
                 <div className="row">
                   <div className={this.columns()} style={ {border: "none"} }>
-                    <label className={this.fontSize()}>How much ETH would you like to collateralize?</label>
+                    <label className={this.fontSize()} style={{color: "#ffffff"}}>How much ETH would you like to collateralize?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
@@ -208,7 +287,7 @@ class Wizard extends Component {
 
                 <div className="row">
                   <div className={this.columns()}>
-                    <label className={this.fontSize()}>How much DAI would you like to generate?</label>
+                    <label className={this.fontSize()} style={{color: "#ffffff"}}>How much DAI would you like to generate?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
@@ -220,44 +299,7 @@ class Wizard extends Component {
                   </div>
                 </div>
 
-                <div className="row">
-                  <div className="col col-2">
-                    <div style={ {marginBottom: "1rem"}}>
-                      <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
-                      <TooltipHint tipKey="liquidation-price" />
-                      <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
-                    </div>
-                    <div>
-                      <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
-                      <TooltipHint tipKey="current-price-information" />
-                      <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
-                    </div>
-                    <div>
-                      <h3 className="typo-c inline-headline">Liquidation penalty</h3>
-                      <TooltipHint tipKey="liquidation-penalty" />
-                      <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
-                    </div>
-                  </div>
-
-                  <div className="col col-2">
-                    <div style={ {marginBottom: "1rem"}}>
-                      <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
-                      <TooltipHint tipKey="collateralization-ratio" />
-                      <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
-                    </div>
-                    <div>
-                      <h3 className="typo-c inline-headline">Minimum ratio</h3>
-                      <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row" style={ {borderBottom: "none"} }>
-                  <p className="no-select">
-                    Stability fee @{ stabilityFee }%/year in MKR
-                    <TooltipHint tipKey="stability-fee" />
-                  </p>
-                </div>
+                {this.cdpData()}
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   { this.state.warning && <InlineNotification type="warning" message={ this.state.warning } /> }
