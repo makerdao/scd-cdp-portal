@@ -179,37 +179,36 @@ class Wizard extends Component {
   cdpData = () => {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
+    // TODO: extract both conditions into separate components
     return checkIsMobile.any
       ? (
         <div>
-          <div className="row">
-            <div className="col">
+            <div className="col" style={{marginBottom: "30px"}}>
               <div>
-                <h3 className="typo-cm inline-headline">Liquidation price (ETH/USD)</h3>
-                <div className="value typo-cm typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
+                <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
+                <div className="typo-cm right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
               </div>
               <div>
-                <h3 className="typo-cm inline-headline">Current price (ETH/USD)</h3>
-                <div className="value typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
+                <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
+                <div className="typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
               </div>
               <div>
-                <h3 className="typo-cm inline-headline">Liquidation penalty</h3>
-                <div className="value typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
+                <h3 className="typo-cm typo-bold inline-headline">Liquidation penalty</h3>
+                <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
               </div>
               <div>
-                <h3 className="typo-cm inline-headline">Collateralization ratio</h3>
-                <div className="value typo-cm typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
+                <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
+                <div className="typo-cm right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
               </div>
               <div>
-                <h3 className="typo-cm inline-headline">Minimum ratio</h3>
-                <div className="value typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
+                <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
+                <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
               </div>
               <div>
-                <h3 className="typo-cm inline-headline">Stability Fee</h3>
-                <div className="value typo-cm typo-bold right">{ stabilityFee }%</div>
+                <h3 className="typo-cm  typo-bold inline-headline">Stability Fee</h3>
+                <div className="typo-cm right">{ stabilityFee }%</div>
               </div>
             </div>
-          </div>
         </div>
       ) : (
         <div>
@@ -257,9 +256,10 @@ class Wizard extends Component {
 
   render() {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
+    const padding = checkIsMobile.any ? "10px" : ""
 
     return (
-      <div className="wizard-section">
+      <div className="wizard-section" style={{marginBottom: padding}}>
         <LegacyCupsAlert setOpenMigrate={ this.props.setOpenMigrate } />
         {this.header()}
         {
@@ -270,7 +270,7 @@ class Wizard extends Component {
 
                 <div className="row">
                   <div className={this.columns()} style={ {border: "none"} }>
-                    <label className={this.fontSize()} style={{color: "#ffffff"}}>How much ETH would you like to collateralize?</label>
+                    <label className={this.fontSize()} style={{color: "#ffffff", marginTop: "8px"}}>How much ETH would you like to collateralize?</label>
                     <div className="input-values-container">
                       <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
@@ -288,7 +288,7 @@ class Wizard extends Component {
                 <div className="row">
                   <div className={this.columns()}>
                     <label className={this.fontSize()} style={{color: "#ffffff"}}>How much DAI would you like to generate?</label>
-                    <div className="input-values-container">
+                    <div className="input-values-container" style={{marginBottom: "25px"}}>
                       <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
                       <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
                       {
