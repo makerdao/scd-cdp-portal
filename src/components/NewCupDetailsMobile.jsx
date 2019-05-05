@@ -7,7 +7,7 @@ import {WAD, printNumber} from "../utils/helpers";
 
 @inject("system")
 @observer
-class NewCupDetailsMobile extends Component {
+export default class NewCupDetailsMobile extends Component {
   render() {
     return (
       <div>
@@ -41,5 +41,3 @@ class NewCupDetailsMobile extends Component {
     );
   }
 }
-
-export default NewCupDetailsMobile;

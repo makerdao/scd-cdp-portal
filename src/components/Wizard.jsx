@@ -9,6 +9,7 @@ import checkIsMobile from "ismobilejs";
 import InlineNotification from "./InlineNotification";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
+import NewCupDetails from "./NewCupDetails";
 import NewCupDetailsMobile from "./NewCupDetailsMobile";
 
 // Utils
@@ -180,51 +181,9 @@ class Wizard extends Component {
   cdpData = () => {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
-    // TODO: extract both conditions into separate components
     return checkIsMobile.any
       ? <NewCupDetailsMobile liqPrice={this.state.liqPrice} ratio={this.state.ratio} stabilityFee={stabilityFee} />        
-      : (
-        <div>
-          <div className="row">
-            <div className="col col-2">
-              <div style={ {marginBottom: "1rem"}}>
-                <h3 className="typo-cl inline-headline">Liquidation price (ETH/USD)</h3>
-                <TooltipHint tipKey="liquidation-price" />
-                <div className="value typo-cl typo-bold right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
-              </div>
-              <div>
-                <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
-                <TooltipHint tipKey="current-price-information" />
-                <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
-              </div>
-              <div>
-                <h3 className="typo-c inline-headline">Liquidation penalty</h3>
-                <TooltipHint tipKey="liquidation-penalty" />
-                <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
-              </div>
-            </div>
-
-            <div className="col col-2">
-              <div style={ {marginBottom: "1rem"}}>
-                <h3 className="typo-cl inline-headline">Collateralization ratio</h3>
-                <TooltipHint tipKey="collateralization-ratio" />
-                <div className="value typo-cl typo-bold right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
-              </div>
-              <div>
-                <h3 className="typo-c inline-headline">Minimum ratio</h3>
-                <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="row" style={ {borderBottom: "none"} }>
-            <p className="no-select">
-              Stability fee @{ stabilityFee }%/year in MKR
-              <TooltipHint tipKey="stability-fee" />
-            </p>
-          </div>
-        </div>
-    );
+      : <NewCupDetails liqPrice={this.state.liqPrice} ratio={this.state.ratio} stabilityFee={stabilityFee} />
   }
 
   render() {
