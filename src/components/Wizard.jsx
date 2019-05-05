@@ -9,6 +9,7 @@ import checkIsMobile from "ismobilejs";
 import InlineNotification from "./InlineNotification";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
+import NewCupDetailsMobile from "./NewCupDetailsMobile";
 
 // Utils
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber, mobileToggle} from "../utils/helpers";
@@ -181,36 +182,8 @@ class Wizard extends Component {
 
     // TODO: extract both conditions into separate components
     return checkIsMobile.any
-      ? (
-        <div>
-            <div className="col" style={{marginBottom: "30px"}}>
-              <div>
-                <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
-                <div className="typo-cm right">{ this.state.liqPrice ? printNumber(this.state.liqPrice) : "--" } USD</div>
-              </div>
-              <div>
-                <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
-                <div className="typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
-              </div>
-              <div>
-                <h3 className="typo-cm typo-bold inline-headline">Liquidation penalty</h3>
-                <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
-              </div>
-              <div>
-                <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
-                <div className="typo-cm right">{ this.state.ratio ? printNumber(this.state.ratio.times(100)) : "--" }%</div>
-              </div>
-              <div>
-                <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
-                <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
-              </div>
-              <div>
-                <h3 className="typo-cm  typo-bold inline-headline">Stability Fee</h3>
-                <div className="typo-cm right">{ stabilityFee }%</div>
-              </div>
-            </div>
-        </div>
-      ) : (
+      ? <NewCupDetailsMobile liqPrice={this.state.liqPrice} ratio={this.state.ratio} stabilityFee={stabilityFee} />        
+      : (
         <div>
           <div className="row">
             <div className="col col-2">
