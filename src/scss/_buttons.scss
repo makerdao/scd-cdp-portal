@@ -34,15 +34,6 @@ button, .btn {
 		&.is-primary-green {
 			background-color: #1ABC9C;
 			color: #000;
-			@include respond-to('s+') {
-				background-color: #1ABC9C;
-				color: #000;
-				width: 250px;
-				height: 55px;
-				margin-top: -20px;
-				margin-bottom: -20px;
-				font-weight: 700;
-			}
 		}
 		&.is-primary-green-mobile {
 			background-color: #1ABC9C;
