@@ -143,6 +143,12 @@ class Wizard extends Component {
     this.setState(state);
   }
 
+  handler = (key, value) => {
+    return this.setState({
+      key: value
+    });
+  }
+
   header = () => {
     return checkIsMobile.any
       ? (
@@ -182,8 +188,8 @@ class Wizard extends Component {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
     return checkIsMobile.any
-      ? <NewCupDetailsMobile liqPrice={this.state.liqPrice} ratio={this.state.ratio} stabilityFee={stabilityFee} />        
-      : <NewCupDetails liqPrice={this.state.liqPrice} ratio={this.state.ratio} stabilityFee={stabilityFee} />
+      ? <NewCupDetailsMobile liqPrice={this.state.liqPrice} ratio={this.state.ratio} skr={this.state.skr} stabilityFee={stabilityFee} />        
+      : <NewCupDetails checkValues={this.checkValues} daiText={this.state.daiText} ethText={this.state.ethText} handler={this.handler} liqPrice={this.state.liqPrice} maxDaiAvail={this.state.maxDaiAvail} minETHReq={this.state.minETHReq} ratio={this.state.ratio} stabilityFee={stabilityFee} />
   }
 
   render() {
