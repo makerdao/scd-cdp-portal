@@ -12,7 +12,7 @@ import {WAD, printNumber} from "../utils/helpers";
 @observer
 export default class NewCupDetails extends Component {
   render() {
-    const { checkValues, daiText, ethText, handler, liqPrice, maxDaiAvail, minETHReq, ratio, skr, stabilityFee, system } = this.props;
+    const { checkValues, daiText, ethText, liqPrice, maxDaiAvail, minETHReq, ratio, skr, stabilityFee, system } = this.props;
 
     return (
       <div>
@@ -20,7 +20,7 @@ export default class NewCupDetails extends Component {
           <div className="col col-2" style={ {border: "none"} }>
             <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
             <div className="input-values-container">
-              <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ ethText } onChange={ e => { checkValues("eth", e.target.value); handler('eth', e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+              <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ ethText } onChange={ e => { checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
               <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
               <div className="typo-cs align-right clearfix">
                 { printNumber(skr) } PETH <TooltipHint tipKey="what-is-peth" />
@@ -35,7 +35,7 @@ export default class NewCupDetails extends Component {
           <div className="col col-2">
             <label className="typo-cl no-select">How much DAI would you like to generate?</label>
             <div className="input-values-container">
-              <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ daiText } onChange={ e => { checkValues("dai", e.target.value); handler("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
+              <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ daiText } onChange={ e => { checkValues("dai", e.target.value)} } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
               <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
               {
                 maxDaiAvail &&

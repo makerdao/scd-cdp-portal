@@ -143,12 +143,6 @@ class Wizard extends Component {
     this.setState(state);
   }
 
-  handler = (key, value) => {
-    return this.setState({
-      key: value
-    });
-  }
-
   header = () => {
     return checkIsMobile.any
       ? (
@@ -166,30 +160,37 @@ class Wizard extends Component {
       );
   }
 
-  columns = () => {
-    return checkIsMobile.any
-      ? "col"
-      : "col col-2"
-  }
-
   buttonText = () => {
     return checkIsMobile.any
       ? <div className="btn-text">continue</div>
       : "collateralize & generate dai"
   }
 
-  fontSize = () => {
-    return checkIsMobile.any
-      ? "typo-cm no-select typo-bolder"
-      : "typo-cl no-select"
-  }
-
-  cdpData = () => {
+  newCupDetails = () => {
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
 
     return checkIsMobile.any
-      ? <NewCupDetailsMobile liqPrice={this.state.liqPrice} ratio={this.state.ratio} skr={this.state.skr} stabilityFee={stabilityFee} />        
-      : <NewCupDetails checkValues={this.checkValues} daiText={this.state.daiText} ethText={this.state.ethText} handler={this.handler} liqPrice={this.state.liqPrice} maxDaiAvail={this.state.maxDaiAvail} minETHReq={this.state.minETHReq} ratio={this.state.ratio} stabilityFee={stabilityFee} />
+      ? <NewCupDetailsMobile
+          checkValues={this.checkValues}
+          daiText={this.state.daiText}
+          ethText={this.state.ethText}
+          liqPrice={this.state.liqPrice}
+          maxDaiAvail={this.state.maxDaiAvail}
+          minETHReq={this.state.minETHReq}
+          ratio={this.state.ratio}
+          skr={this.state.skr}
+          stabilityFee={stabilityFee}
+        />        
+      : <NewCupDetails
+          checkValues={this.checkValues}
+          daiText={this.state.daiText}
+          ethText={this.state.ethText}
+          liqPrice={this.state.liqPrice}
+          maxDaiAvail={this.state.maxDaiAvail}
+          minETHReq={this.state.minETHReq}
+          ratio={this.state.ratio}
+          stabilityFee={stabilityFee}
+        />;
   }
 
   render() {
@@ -205,39 +206,8 @@ class Wizard extends Component {
           ?
             <React.Fragment>
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
-
-                <div className="row">
-                  <div className={this.columns()} style={ {border: "none"} }>
-                    <label className={this.fontSize()} style={{color: "#ffffff", marginTop: "8px"}}>How much ETH would you like to collateralize?</label>
-                    <div className="input-values-container">
-                      <input ref={ input => this.eth = input } type="number" id="inputETH" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.ethText } onChange={ e => { this.checkValues("eth", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
-                      <span className="unit" style={ {marginBottom: "0.35rem" } }>ETH</span>
-                      <div className="typo-cs align-right clearfix">
-                        { printNumber(this.state.skr) } PETH <TooltipHint tipKey="what-is-peth" />
-                      </div>
-                      {
-                        this.state.minETHReq &&
-                        <p className="typo-cs align-right">Min. ETH required: { printNumber(this.state.minETHReq) } ETH</p>
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className={this.columns()}>
-                    <label className={this.fontSize()} style={{color: "#ffffff"}}>How much DAI would you like to generate?</label>
-                    <div className="input-values-container" style={{marginBottom: "25px"}}>
-                      <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ this.state.daiText } onChange={ e => { this.checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
-                      <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
-                      {
-                        this.state.maxDaiAvail &&
-                        <p className="typo-cs align-right">Max DAI available to generate: { printNumber(this.state.maxDaiAvail) } DAI</p>
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                {this.cdpData()}
+                
+                {this.newCupDetails()}
 
                 <div className="row" style={ {borderBottom: "none"} }>
                   { this.state.warning && <InlineNotification type="warning" message={ this.state.warning } /> }
