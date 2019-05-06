@@ -6,14 +6,13 @@ import Steps, {Step} from "rc-steps";
 import checkIsMobile from "ismobilejs";
 
 // Components
-import InlineNotification from "./InlineNotification";
 import LegacyCupsAlert from "./LegacyCupsAlert";
 import TooltipHint from "./TooltipHint";
-import NewCupDetails from "./NewCupDetails";
-import NewCupDetailsMobile from "./NewCupDetailsMobile";
+import NewCup from "./NewCup";
+import NewCupMobile from "./NewCupMobile";
 
 // Utils
-import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber, mobileToggle} from "../utils/helpers";
+import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber} from "../utils/helpers";
 
 import "rc-steps/assets/index.css";
 
@@ -160,37 +159,25 @@ class Wizard extends Component {
       );
   }
 
-  buttonText = () => {
-    return checkIsMobile.any
-      ? <div className="btn-text">continue</div>
-      : "collateralize & generate dai"
-  }
+  newCup = stabilityFee => {
+    const newCupProps = {
+      checkValues: this.checkValues,
+      daiText: this.state.daiText,
+      error: this.state.error,
+      ethText: this.state.ethText,
+      liqPrice: this.state.liqPrice,
+      maxDaiAvail: this.state.maxDaiAvail,
+      minETHReq: this.state.minETHReq,
+      ratio: this.state.ratio,
+      skr: this.state.skr,
+      stabilityFee: stabilityFee,
+      submitEnabled: this.state.submitEnabled,
+      warning: this.state.warning
+    }
 
-  newCupDetails = () => {
-    const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
-
     return checkIsMobile.any
-      ? <NewCupDetailsMobile
-          checkValues={this.checkValues}
-          daiText={this.state.daiText}
-          ethText={this.state.ethText}
-          liqPrice={this.state.liqPrice}
-          maxDaiAvail={this.state.maxDaiAvail}
-          minETHReq={this.state.minETHReq}
-          ratio={this.state.ratio}
-          skr={this.state.skr}
-          stabilityFee={stabilityFee}
-        />        
-      : <NewCupDetails
-          checkValues={this.checkValues}
-          daiText={this.state.daiText}
-          ethText={this.state.ethText}
-          liqPrice={this.state.liqPrice}
-          maxDaiAvail={this.state.maxDaiAvail}
-          minETHReq={this.state.minETHReq}
-          ratio={this.state.ratio}
-          stabilityFee={stabilityFee}
-        />;
+      ? <NewCupMobile newCupProps={newCupProps}/>        
+      : <NewCup newCupProps={newCupProps}/>;
   }
 
   render() {
@@ -206,19 +193,7 @@ class Wizard extends Component {
           ?
             <React.Fragment>
               <form ref={ input => this.wizardForm = input } onSubmit={ e => { e.preventDefault(); this.goToStep(2) } }>
-                
-                {this.newCupDetails()}
-
-                <div className="row" style={ {borderBottom: "none"} }>
-                  { this.state.warning && <InlineNotification type="warning" message={ this.state.warning } /> }
-                  { this.state.error && <InlineNotification type="error" message={ this.state.error } /> }
-                </div>
-
-                <div className="row" style={ {borderBottom: "none"} }>
-                  <div className="col">
-                    <button className={"bright-style text-btn " + mobileToggle("text-btn-primary")} type="submit" disabled={ !this.state.submitEnabled }>{this.buttonText()}</button>
-                  </div>
-                </div>
+                {this.newCup(stabilityFee)}
               </form>
             </React.Fragment>
           :

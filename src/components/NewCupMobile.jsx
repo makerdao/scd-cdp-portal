@@ -2,17 +2,33 @@
 import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
 
+// Components
+import InlineNotification from "./InlineNotification";
+
 //Utils
 import {WAD, printNumber} from "../utils/helpers";
 
 @inject("system")
 @observer
-export default class NewCupDetailsMobile extends Component {
+export default class NewCupMobile extends Component {
   render() {
-    const { checkValues, daiText, ethText, liqPrice, maxDaiAvail, minETHReq, ratio, skr, stabilityFee, system } = this.props;
+    const {
+      checkValues,
+      daiText,
+      error,
+      ethText,
+      liqPrice,
+      maxDaiAvail,
+      minETHReq,
+      ratio,
+      skr,
+      stabilityFee,
+      submitEnabled,
+      warning
+    } = this.props.newCupProps;
 
     return (
-      <div>
+      <div id="newCupMobile">
         <div className="row">
           <div className="col" style={ {border: "none"} }>
             <label className="typo-cm no-select typo-bolder" style={{color: "#ffffff", marginTop: "8px"}}>How much ETH would you like to collateralize?</label>
@@ -51,11 +67,11 @@ export default class NewCupDetailsMobile extends Component {
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
-            <div className="typo-cm right">{ printNumber(system.pip.val) } USD</div>
+            <div className="typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation penalty</h3>
-            <div className="typo-cm right">{ printNumber(system.tub.axe.minus(WAD).times(100)) }%</div>
+            <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
@@ -63,11 +79,22 @@ export default class NewCupDetailsMobile extends Component {
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
-            <div className="typo-cm right">{ printNumber(system.tub.mat.times(100)) }%</div>
+            <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
           </div>
           <div>
             <h3 className="typo-cm  typo-bold inline-headline">Stability Fee</h3>
             <div className="typo-cm right">{ stabilityFee }%</div>
+          </div>
+        </div>
+
+        <div className="row" style={ {borderBottom: "none"} }>
+          { warning && <InlineNotification type="warning" message={ warning } /> }
+          { error && <InlineNotification type="error" message={ error } /> }
+        </div>
+
+        <div className="row" style={ {borderBottom: "none", marginBottom: "30px"}}>
+          <div className="col">
+            <button className={"bright-style text-btn text-btn-primary-mobile"} type="submit" disabled={ !submitEnabled }>continue</button>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
 
 // Components
+import InlineNotification from "./InlineNotification";
 import TooltipHint from "./TooltipHint";
 
 //Utils
@@ -10,12 +11,25 @@ import {WAD, printNumber} from "../utils/helpers";
 
 @inject("system")
 @observer
-export default class NewCupDetails extends Component {
+export default class NewCup extends Component {
   render() {
-    const { checkValues, daiText, ethText, liqPrice, maxDaiAvail, minETHReq, ratio, skr, stabilityFee, system } = this.props;
+    const {
+      checkValues,
+      daiText,
+      error,
+      ethText,
+      liqPrice,
+      maxDaiAvail,
+      minETHReq,
+      ratio,
+      skr,
+      stabilityFee,
+      submitEnabled,
+      warning
+    } = this.props.newCupProps;
 
     return (
-      <div>
+      <div id="newCup">
         <div className="row">
           <div className="col col-2" style={ {border: "none"} }>
             <label className="typo-cl no-select">How much ETH would you like to collateralize?</label>
@@ -55,12 +69,12 @@ export default class NewCupDetails extends Component {
             <div>
               <h3 className="typo-c inline-headline">Current price information (ETH/USD)</h3>
               <TooltipHint tipKey="current-price-information" />
-              <div className="value typo-c right">{ printNumber(system.pip.val) } USD</div>
+              <div className="value typo-c right">{ printNumber(this.props.system.pip.val) } USD</div>
             </div>
             <div>
               <h3 className="typo-c inline-headline">Liquidation penalty</h3>
               <TooltipHint tipKey="liquidation-penalty" />
-              <div className="value typo-c right">{ printNumber(system.tub.axe.minus(WAD).times(100)) }%</div>
+              <div className="value typo-c right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
             </div>
           </div>
 
@@ -72,7 +86,7 @@ export default class NewCupDetails extends Component {
             </div>
             <div>
               <h3 className="typo-c inline-headline">Minimum ratio</h3>
-              <div className="value typo-c right">{ printNumber(system.tub.mat.times(100)) }%</div>
+              <div className="value typo-c right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
             </div>
           </div>
         </div>
@@ -82,6 +96,17 @@ export default class NewCupDetails extends Component {
             Stability fee @{ stabilityFee }%/year in MKR
             <TooltipHint tipKey="stability-fee" />
           </p>
+        </div>
+
+        <div className="row" style={ {borderBottom: "none"} }>
+          { warning && <InlineNotification type="warning" message={ warning } /> }
+          { error && <InlineNotification type="error" message={ error } /> }
+        </div>
+
+        <div className="row" style={ {borderBottom: "none"} }>
+          <div className="col">
+            <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+          </div>
         </div>
       </div>
     );
