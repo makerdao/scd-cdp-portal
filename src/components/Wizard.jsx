@@ -10,6 +10,7 @@ import TooltipHint from "./TooltipHint";
 import NewCup from "./NewCup";
 import NewCupMobile from "./NewCupMobile";
 import Confirm from "./Confirm";
+import ConfirmMobile from "./ConfirmMobile";
 
 // Utils
 import {WAD, wmul, wdiv, toBigNumber, fromWei, toWei, printNumber, formatNumber} from "../utils/helpers";
@@ -225,7 +226,7 @@ class Wizard extends Component {
     };
 
     return checkIsMobile.any
-      ? <Confirm confirmProps={confirmProps} />
+      ? <ConfirmMobile confirmProps={confirmProps} />
       : <Confirm confirmProps={confirmProps} />
   }
 
