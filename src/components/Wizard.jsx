@@ -142,11 +142,40 @@ class Wizard extends Component {
     this.setState(state);
   }
 
+  mobileHeaderText = () => {
+    return this.state.step === 1
+      ? 'Create CDP'
+      : 'Confirm';
+  }
+
+  mobileEditButton = () => {
+    if (this.state.step === 2) {
+      return (
+        <button
+          className="text-btn right mobile-edit"
+          onClick={ () => this.goToStep(1) }
+          style={{
+            background: 'transparent',
+            height: '30px',
+            marginBottom: '5px',
+            marginTop: '-2px',
+            minWidth: '60px',
+            padding: '0 0',
+            textTransform: 'none'
+          }}
+        >
+          Edit
+        </button>
+      );
+    }
+  }
+
   header = () => {
     return checkIsMobile.any
       ? (
         <header className="col">
-          <h1 className="typo-h1 inline-headline">Create CDP</h1>
+          <h1 className="typo-h1 inline-headline">{this.mobileHeaderText()}</h1>
+          {this.mobileEditButton()}
         </header>
       )
       : (
