@@ -220,7 +220,6 @@ class Wizard extends Component {
       execute: this.execute,
       goToStep: this.goToStep,
       stabilityFee: stabilityFee,
-      steps: this.steps,
       stepsExpanded: this.state.stepsExpanded,
       toggleExpand: this.toggleExpand
     };
