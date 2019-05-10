@@ -6,7 +6,6 @@ import {inject, observer} from "mobx-react";
 import {getWebClientProviderName} from "../utils/blockchain";
 import walletIcons from './WalletIcons';
 
-
 @inject("network")
 @observer
 class WalletClientSelector extends React.Component {

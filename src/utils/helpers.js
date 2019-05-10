@@ -4,7 +4,7 @@ import jazzicon from "jazzicon";
 import checkIsMobile from "ismobilejs";
 
 // Utils
-import web3 from "./web3";
+import web3, { getWebClientProviderName } from "./web3";
 
 export const WAD = web3.toBigNumber(web3.toWei(1));
 
@@ -175,3 +175,23 @@ export const getJazziconIcon = (address, size) => {
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;
+
+export const formatClientName = name => {
+  switch (name) {
+    case "imtoken":
+      return "imToken";
+    case "ledger":
+      return "Ledger Nano S";
+    case "alphawallet":
+      return "AlphaWallet";
+    case "metamask":
+      return "MetaMask";
+    case "coinbase":
+      return "Coinbase Wallet";
+    case "web":
+      let webClientName = getWebClientProviderName();
+      return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
+    default:
+      return capitalize(name);
+  }
+}

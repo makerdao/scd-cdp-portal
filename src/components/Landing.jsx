@@ -2,6 +2,10 @@
 import React from "react";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
+import {inject} from "mobx-react";
+
+// Components
+import WalletConnectMobile from "./WalletMobileConnect";
 
 // Images
 import welcomeHero from 'images/welcome-hero.svg';
@@ -11,11 +15,32 @@ import ledgerNanoLogo from 'images/ledger-nano-logo.png';
 import trezorLogo from 'images/trezor-logo.png';
 import { getStabilityFee } from "../utils/blockchain";
 
+@inject("network")
 class Landing extends React.Component {
   state = {
-    stabilityFee: null
+    stabilityFee: null,
+    carouselSwipeStartOrig: null,
+    carouselSwipeEndOrig: null
+  }
+  constructor(props) {
+    super(props);
+    this.sliderRef = React.createRef();
   }
   componentDidMount() {
+    this.setState({
+      carouselSwipeStartOrig: this.sliderRef.current.innerSlider.swipeStart,
+      carouselSwipeEndOrig: this.sliderRef.current.innerSlider.swipeEnd
+    });
+    this.sliderRef.current.innerSlider.swipeStart = (e, swipe, draggable) => {
+      document.querySelector('.slick-arrow.slick-prev').style.opacity = 0;
+      document.querySelector('.slick-arrow.slick-next').style.opacity = 0;
+      this.state.carouselSwipeStartOrig(e, swipe, draggable);
+    }
+    this.sliderRef.current.innerSlider.swipeEnd = (e, spec) => {
+      document.querySelector('.slick-arrow.slick-prev').style.opacity = 0.9;
+      document.querySelector('.slick-arrow.slick-next').style.opacity = 0.9;
+      this.state.carouselSwipeEndOrig(e, spec);
+    }
     getStabilityFee().then(feeInHexa => {
       this.setState({ stabilityFee: feeInHexa.toFixed(2) });
     })
@@ -42,14 +67,15 @@ class Landing extends React.Component {
       infinite: false,
       speed: 500,
       prevArrow: <PrevButton />,
-      nextArrow: <NextButton />,
+      nextArrow: <NextButton />
     };
+
     return (
       <div className="landing">
 
         <div className="landing-body">
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
-          <Slider {...settings} className="landing-slider">
+          <Slider ref={this.sliderRef} {...settings} className="landing-slider">
             <div className="first-slide">
               <div style={{ textAlign: "center" }}>
                 <p className="align-center">
@@ -58,6 +84,9 @@ class Landing extends React.Component {
                   depositing of collateral and generation of Dai.
                 </p>
                 <img className="preview" src={welcomeHero} alt="CDP Portal" />
+                {
+                  this.props.network.isMobileWallet && <WalletConnectMobile />
+                }
               </div>
             </div>
             <div>

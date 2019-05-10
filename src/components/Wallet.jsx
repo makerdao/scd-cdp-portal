@@ -15,7 +15,7 @@ import WalletSendToken from "./WalletSendToken";
 
 // Utils
 import {getCurrentProviderName, getWebClientProviderName} from "../utils/blockchain";
-import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, capitalize, wmul} from "../utils/helpers";
+import {BIGGESTUINT256, printNumber, etherscanAddress, getJazziconIcon, wmul, formatClientName} from "../utils/helpers";
 
 // Images
 import walletIcon from "images/wallet-icon.png";
@@ -48,26 +48,6 @@ class Wallet extends React.Component {
   }
 
   tokenName = token => token.replace("gov", "mkr").toUpperCase();
-
-  formatClientName = name => {
-    switch (name) {
-      case "imtoken":
-        return "imToken";
-      case "ledger":
-        return "Ledger Nano S";
-      case "alphawallet":
-        return "AlphaWallet";
-      case "metamask":
-        return "MetaMask";
-      case "coinbase":
-        return "Coinbase Wallet";
-      case "web":
-        let webClientName = getWebClientProviderName();
-        return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
-      default:
-        return capitalize(name);
-    }
-  }
 
   renderWalletOptions = () => {
     const options = [];
@@ -117,7 +97,7 @@ class Wallet extends React.Component {
             :
               !this.props.network.isConnected
               ?
-                <WalletClientSelector formatClientName={ this.formatClientName } />
+                !this.props.network.isMobileWallet && <WalletClientSelector formatClientName={ formatClientName } />
               :
                 <React.Fragment>
                   {
@@ -129,7 +109,7 @@ class Wallet extends React.Component {
                           <h2 className="typo-h2 wallet">
                             { getJazziconIcon(this.props.network.defaultAccount, 25) }
                             <span>
-                              { this.formatClientName(getCurrentProviderName()) }
+                              { formatClientName(getCurrentProviderName()) }
                             </span>
                             <DropdownMenu icon={ walletIcon }>
                               <MenuItems>
@@ -146,7 +126,7 @@ class Wallet extends React.Component {
                                 }
                                 {
                                   this.renderWalletOptions().map(key =>
-                                    <MenuItem href="#action" text={ `Connect ${this.formatClientName(key)}` } icon={ menuIcons[key] } key={ key } data-client={ key } onClick={ this.switchConnection } />
+                                    <MenuItem href="#action" text={ `Connect ${formatClientName(key)}` } icon={ menuIcons[key] } key={ key } data-client={ key } onClick={ this.switchConnection } />
                                   )
                                 }
                               </MenuItems>
@@ -216,7 +196,7 @@ class Wallet extends React.Component {
                         }
                       </React.Fragment>
                     :
-                      <WalletNoAccount formatClientName={ this.formatClientName } />
+                      <WalletNoAccount formatClientName={ formatClientName } />
                     }
                 </React.Fragment>
         }
