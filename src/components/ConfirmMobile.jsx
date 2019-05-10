@@ -127,7 +127,7 @@ export default class ConfirmMobile extends Component {
                   </label>
                 </div>
                 <div>
-                  <button className="bright-style text-btn text-btn-primary-mobile" style={{marginTop: "5px", marginBottom: "15px"}} onClick={ execute } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
+                  <button className="bright-style text-btn text-btn-primary-mobile" style={{marginTop: "5px", marginBottom: "15px"}} onClick={ execute } disabled={ !checkTerms }>CREATE CDP</button>
                 </div>
               </div>
             </div>
