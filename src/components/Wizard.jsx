@@ -195,6 +195,7 @@ class Wizard extends Component {
       checkValues: this.checkValues,
       daiText: this.state.daiText,
       error: this.state.error,
+      eth: this.state.eth,
       ethText: this.state.ethText,
       liqPrice: this.state.liqPrice,
       maxDaiAvail: this.state.maxDaiAvail,
