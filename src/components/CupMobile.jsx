@@ -50,6 +50,10 @@ export default class CupMobile extends React.Component {
 
     return (
       <React.Fragment>
+        <header className="col" style={{marginBottom: "15px"}}>
+          <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal</h1>
+        </header>
+        
         <CupInfoMobile cupId={this.props.cupId} />
 
         <div className="row">

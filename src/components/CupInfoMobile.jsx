@@ -15,7 +15,7 @@ export default class CupInfoMobile extends Component {
         ?
           cup.ratio.lt(0)
           ?
-            "Loading..."
+            "-"
           :
             cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity
             ?
@@ -48,9 +48,17 @@ export default class CupInfoMobile extends Component {
           ?
             cup.liq_price
           :
-            <div>"Loading..."</div>
+            "-"
       );
     }
+  }
+
+  cupHeader = () => {
+    return (
+      <div>
+        <h2 className="inline-headline" style={{color: "#ffffff"}}>CDP #{this.props.cupId}</h2>
+      </div>
+    );
   }
 
   render() {
@@ -69,10 +77,17 @@ export default class CupInfoMobile extends Component {
 
     return (
       <div id="CupInfoMobile">
+        {
+          cup ? this.cupHeader() : <div></div>
+        }
         <div className="col" style={{marginBottom: "30px"}}>
           <div>
-            <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
+            <h3 className="typo-cm typo-bold inline-headline">Collateralization</h3>
             <div className="typo-cm right"><span style={{...ratioColor}}>{ ratio ? printNumber(ratio.times(100)) : "--" }%</span></div>
+          </div>
+          <div>
+            <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
+            <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
@@ -87,11 +102,7 @@ export default class CupInfoMobile extends Component {
             <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
           </div>
           <div>
-            <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
-            <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
-          </div>
-          <div>
-            <h3 className="typo-cm  typo-bold inline-headline">Stability Fee</h3>
+            <h3 className="typo-cm  typo-bold inline-headline">Stability fee</h3>
             <div className="typo-cm right">{ stabilityFee }%</div>
           </div>
         </div>

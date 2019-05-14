@@ -48,6 +48,9 @@ class Cup extends React.Component {
     };
     return (
       <React.Fragment>
+        <header className="col">
+          <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal <span className="typo-c">My collateralized debt position #{ this.props.cupId }</span></h1>
+        </header>
         <div className="cup-top-right-buttons">
           <a href="#action" data-method="give" data-cup={ this.props.cupId } disabled={ !actions.free.give } onClick={ this.props.dialog.handleOpenDialog }>
             <svg height="18" viewBox="0 0 18 18" width="18" xmlns="http://www.w3.org/2000/svg">
