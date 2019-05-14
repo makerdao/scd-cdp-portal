@@ -1,10 +1,12 @@
 // Libraries
 import React from "react";
 import {inject, observer} from "mobx-react";
+import checkIsMobile from "ismobilejs";
 
 // Components
 import Cup from "./Cup";
 import LegacyCupsAlert from "./LegacyCupsAlert";
+import CupMobile from "./CupMobile";
 
 @inject("system")
 @observer
@@ -17,7 +19,11 @@ class Dashboard extends React.Component {
         <header className="col">
           <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal <span className="typo-c">My collateralized debt position #{ cupId }</span></h1>
         </header>
-        <Cup cupId={ cupId } />
+        {
+          checkIsMobile.any
+            ? <CupMobile cupId={ cupId } />
+            : <Cup cupId={ cupId } /> 
+        }
       </div>
     )
   }

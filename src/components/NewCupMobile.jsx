@@ -7,6 +7,7 @@ import InlineNotification from "./InlineNotification";
 
 //Utils
 import {WAD, printNumber} from "../utils/helpers";
+import CupInfoMobile from "./CupInfoMobile";
 
 @inject("system")
 @observer
@@ -59,33 +60,8 @@ export default class NewCupMobile extends Component {
             </div>
           </div>
         </div>
-              
-        <div className="col" style={{marginBottom: "30px"}}>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
-            <div className="typo-cm right">{ liqPrice ? printNumber(liqPrice) : "--" } USD</div>
-          </div>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
-            <div className="typo-cm right">{ printNumber(this.props.system.pip.val) } USD</div>
-          </div>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Liquidation penalty</h3>
-            <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
-          </div>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
-            <div className="typo-cm right">{ ratio ? printNumber(ratio.times(100)) : "--" }%</div>
-          </div>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
-            <div className="typo-cm right">{ printNumber(this.props.system.tub.mat.times(100)) }%</div>
-          </div>
-          <div>
-            <h3 className="typo-cm  typo-bold inline-headline">Stability Fee</h3>
-            <div className="typo-cm right">{ stabilityFee }%</div>
-          </div>
-        </div>
+        
+        <CupInfoMobile liqPrice={liqPrice} ratio={ratio} />
 
         <div className="row" style={ {borderBottom: "none"} }>
           { warning && <div style={{marginTop: "-40px", marginBottom: "10px"}}><InlineNotification type="warning" message={ warning } /></div> }
