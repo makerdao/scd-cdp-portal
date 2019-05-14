@@ -61,7 +61,7 @@ export default class NewCupMobile extends Component {
           </div>
         </div>
         
-        <CupInfoMobile liqPrice={liqPrice} ratio={ratio} />
+        <CupInfoMobile liqPrice={liqPrice} ratio={ratio}/>
 
         <div className="row" style={ {borderBottom: "none"} }>
           { warning && <div style={{marginTop: "-40px", marginBottom: "10px"}}><InlineNotification type="warning" message={ warning } /></div> }

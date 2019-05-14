@@ -19,7 +19,7 @@ export default class CupInfoMobile extends Component {
           :
             cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity
             ?
-              toWei(cup.ratio).times(100)
+              toWei(cup.ratio)
             :
               "-"
         :
@@ -28,10 +28,11 @@ export default class CupInfoMobile extends Component {
     }
   }
 
-  ratioColor = cup => {
-    if (this.ratio(cup)) {
-      return this.ratio(cup).lt(2)
-        ? (this.ratio(cup).lt(1.5) ? "text-red" : "text-yellow")
+  ratioColor = ratio => {
+    const adjustedRatio = parseFloat(ratio) / 10000000000000000;
+    if (adjustedRatio && this.props.cupId) {
+      return adjustedRatio < 200 
+        ? ((adjustedRatio < 150) ? "text-red" : "text-yellow")
         : "" 
     }
   }
@@ -45,24 +46,36 @@ export default class CupInfoMobile extends Component {
         :
           cup.liq_price && cup.liq_price.gte(0)
           ?
-            printNumber(cup.liq_price)
+            cup.liq_price
           :
-            "Loading..."
+            <div>"Loading..."</div>
       );
     }
   }
 
   render() {
+    let cup;
     const stabilityFee = printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true);
-    const cup = this.props.system.tub.cups[this.props.cupId];
-    console.log(this.props);
+    if (this.props.cupId) {
+      cup = this.props.system.tub.cups[this.props.cupId];
+    }
+    const liqPrice = this.props.liqPrice
+      ? this.props.liqPrice
+      : this.liqPrice(cup);
+    const ratio = this.props.ratio
+      ? this.props.ratio
+      : this.ratio(cup);
 
     return (
       <div id="CupInfoMobile">
         <div className="col" style={{marginBottom: "30px"}}>
           <div>
+            <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
+            <div className="typo-cm right"><span className={this.ratioColor(ratio)} style={{color: "#FBAE17"}}>{ ratio ? printNumber(ratio.times(100)) : "--" }%</span></div>
+          </div>
+          <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
-            <div className="typo-cm right">{ this.liqPrice(cup) ? this.liqPrice(cup) : "--" } USD</div>
+            <div className="typo-cm right">{ liqPrice ? printNumber(liqPrice) : "--" } USD</div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
@@ -71,10 +84,6 @@ export default class CupInfoMobile extends Component {
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation penalty</h3>
             <div className="typo-cm right">{ printNumber(this.props.system.tub.axe.minus(WAD).times(100)) }%</div>
-          </div>
-          <div>
-            <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
-            <div className="typo-cm right"><span className={ this.ratioColor(cup) }>{ this.ratio(cup) ? printNumber(this.ratio(cup).times(100)) : "--" }%</span></div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
