@@ -32,7 +32,7 @@ export default class CupInfoMobile extends Component {
     const adjustedRatio = parseFloat(ratio) / 10000000000000000;
     if (adjustedRatio && this.props.cupId) {
       return adjustedRatio < 200 
-        ? ((adjustedRatio < 150) ? "text-red" : "text-yellow")
+        ? ((adjustedRatio < 150) ? {color: "#C0392B"} : {color: "#FBAE17"})
         : "" 
     }
   }
@@ -65,13 +65,14 @@ export default class CupInfoMobile extends Component {
     const ratio = this.props.ratio
       ? this.props.ratio
       : this.ratio(cup);
+    const ratioColor = this.ratioColor(ratio);
 
     return (
       <div id="CupInfoMobile">
         <div className="col" style={{marginBottom: "30px"}}>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Collateralization ratio</h3>
-            <div className="typo-cm right"><span className={this.ratioColor(ratio)} style={{color: "#FBAE17"}}>{ ratio ? printNumber(ratio.times(100)) : "--" }%</span></div>
+            <div className="typo-cm right"><span style={{...ratioColor}}>{ ratio ? printNumber(ratio.times(100)) : "--" }%</span></div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
