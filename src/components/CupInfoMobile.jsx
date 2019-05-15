@@ -57,6 +57,35 @@ export default class CupInfoMobile extends Component {
     return (
       <div>
         <h2 className="inline-headline" style={{color: "#ffffff"}}>CDP #{this.props.cupId}</h2>
+        <a
+          className="text-btn right mobile-a-button"
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginLeft: '7px',
+            marginTop: '2px',
+            width: '70px',
+            textTransform: 'none'
+          }}
+        >
+          Close
+        </a>
+        <a
+          className="text-btn right mobile-a-button"
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginTop: '2px',
+            width: '70px',
+            textTransform: 'none'
+          }}
+        >
+          Move
+        </a>
       </div>
     );
   }

@@ -43,7 +43,6 @@ export default class ConfirmMobile extends Component {
       dai,
       eth,
       execute,
-      goToStep,
       stabilityFee,
       stepsExpanded,
       toggleExpand
