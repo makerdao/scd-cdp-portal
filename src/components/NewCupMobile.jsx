@@ -6,7 +6,7 @@ import {inject, observer} from "mobx-react";
 import InlineNotification from "./InlineNotification";
 
 //Utils
-import {WAD, printNumber} from "../utils/helpers";
+import {printNumber} from "../utils/helpers";
 import CupInfoMobile from "./CupInfoMobile";
 
 @inject("system")
@@ -27,7 +27,6 @@ export default class NewCupMobile extends Component {
       liqPrice,
       maxDaiAvail,
       ratio,
-      stabilityFee,
       submitEnabled,
       warning
     } = this.props.newCupProps;

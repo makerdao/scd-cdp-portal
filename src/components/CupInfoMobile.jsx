@@ -63,7 +63,7 @@ export default class CupInfoMobile extends Component {
           href="#action"
           data-method="shut"
           data-cup={ this.props.cupId }
-          disabled={ !actions.free.shut }
+          disabled={ !actions.shut.active }
           onClick={ this.props.dialog.handleOpenDialog }
           style={{
             background: 'transparent',
@@ -83,7 +83,7 @@ export default class CupInfoMobile extends Component {
           href="#action"
           data-method="give"
           data-cup={ this.props.cupId }
-          disabled={ !actions.free.give }
+          disabled={ !actions.free.active }
           onClick={ this.props.dialog.handleOpenDialog }
           style={{
             background: 'transparent',
