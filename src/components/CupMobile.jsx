@@ -160,7 +160,7 @@ export default class CupMobile extends React.Component {
           <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal</h1>
         </header>
         <div className="row" style={{marginBottom: "-20px"}}>
-          <CupInfoMobile cupId={this.props.cupId} />
+          <CupInfoMobile actions={actions} buttonStyle={buttonStyle} cupId={this.props.cupId} />
           <div className="col">
             {this.ethSection(actions, cup, buttonStyle)}
           </div>
