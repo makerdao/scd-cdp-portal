@@ -44,7 +44,7 @@ class Cup extends React.Component {
       give: {
               active: this.props.system.tub.off === false,
               helper: "Transfer CDP ownership"
-            },
+            }
     };
     return (
       <React.Fragment>

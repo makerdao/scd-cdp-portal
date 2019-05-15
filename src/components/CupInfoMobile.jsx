@@ -6,6 +6,7 @@ import {inject, observer} from "mobx-react";
 import {printNumber, WAD, fromWei, toWei} from "../utils/helpers";
 
 @inject("system")
+@inject("dialog")
 @observer
 export default class CupInfoMobile extends Component {
   ratio = cup => {
@@ -53,12 +54,17 @@ export default class CupInfoMobile extends Component {
     }
   }
 
-  cupHeader = () => {
+  cupHeader = actions => {
     return (
       <div>
         <h2 className="inline-headline" style={{color: "#ffffff"}}>CDP #{this.props.cupId}</h2>
         <a
           className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="shut"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.shut }
+          onClick={ this.props.dialog.handleOpenDialog }
           style={{
             background: 'transparent',
             fontSize: '1.3em',
@@ -74,6 +80,11 @@ export default class CupInfoMobile extends Component {
         </a>
         <a
           className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="give"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.give }
+          onClick={ this.props.dialog.handleOpenDialog }
           style={{
             background: 'transparent',
             fontSize: '1.3em',
@@ -103,11 +114,37 @@ export default class CupInfoMobile extends Component {
       ? this.props.ratio
       : this.ratio(cup);
     const ratioColor = this.ratioColor(ratio);
+    const actions = {
+      lock: {
+              active: this.props.system.tub.off === false && this.props.system.eth.myBalance && this.props.system.eth.myBalance.gt(0),
+              helper: "Add collateral to a CDP"
+            },
+      free: {
+              active: this.props.system.pip.val.gt(0) && cup.ink.gt(0) && cup.safe && (this.props.system.tub.off === false || cup.art.eq(0)),
+              helper: "Remove collateral from a CDP"
+            },
+      draw: {
+              active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup.ink.gt(0) && cup.safe,
+              helper: "Create Dai against a CDP"
+            },
+      wipe: {
+              active: this.props.system.tub.off === false && cup.art.gt(0),
+              helper: "Use Dai to cancel CDP debt"
+            },
+      shut: {
+              active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false,
+              helper: "Close a CDP - Wipe all debt, Free all collateral, and delete the CDP"
+            },
+      give: {
+              active: this.props.system.tub.off === false,
+              helper: "Transfer CDP ownership"
+            }
+    };
 
     return (
       <div id="CupInfoMobile">
         {
-          cup ? this.cupHeader() : <div></div>
+          cup ? this.cupHeader(actions) : <div></div>
         }
         <div className="col" style={{marginBottom: "30px"}}>
           <div>
