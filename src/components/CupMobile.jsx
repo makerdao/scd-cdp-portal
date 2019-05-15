@@ -19,11 +19,6 @@ export default class CupMobile extends React.Component {
     TooltipHint.rebuildTooltips();
   }
 
-  usdValue = eth => {
-    const ethPrice = this.props.system.pip.val / 1000000000000000000;
-    return eth * ethPrice;
-  }
-
   ethSection = (actions, cup, buttonStyle) => {
     return (
       <div style={{marginTop: "-10px"}}>
@@ -130,27 +125,21 @@ export default class CupMobile extends React.Component {
     const actions = {
       lock: {
               active: this.props.system.tub.off === false && this.props.system.eth.myBalance && this.props.system.eth.myBalance.gt(0),
-              helper: "Add collateral to a CDP"
             },
       free: {
               active: this.props.system.pip.val.gt(0) && cup.ink.gt(0) && cup.safe && (this.props.system.tub.off === false || cup.art.eq(0)),
-              helper: "Remove collateral from a CDP"
             },
       draw: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup.ink.gt(0) && cup.safe,
-              helper: "Create Dai against a CDP"
             },
       wipe: {
               active: this.props.system.tub.off === false && cup.art.gt(0),
-              helper: "Use Dai to cancel CDP debt"
             },
       shut: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false,
-              helper: "Close a CDP - Wipe all debt, Free all collateral, and delete the CDP"
             },
       give: {
               active: this.props.system.tub.off === false,
-              helper: "Transfer CDP ownership"
             },
     };
 
