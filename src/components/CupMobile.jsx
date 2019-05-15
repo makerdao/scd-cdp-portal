@@ -8,7 +8,7 @@ import TooltipHint from "./TooltipHint";
 import CupInfoMobile from "./CupInfoMobile";
 
 // Utils
-import {WAD, printNumber, wmul, fromWei, toWei} from "../utils/helpers";
+import {printNumber, wmul} from "../utils/helpers";
 
 @inject("profile")
 @inject("system")
@@ -18,6 +18,121 @@ export default class CupMobile extends React.Component {
   componentDidMount() {
     TooltipHint.rebuildTooltips();
   }
+
+  usdValue = eth => {
+    const ethPrice = this.props.system.pip.val / 1000000000000000000;
+    return eth * ethPrice;
+  }
+
+  ethSection = (actions, cup) => {
+    return (
+      <div style={{marginTop: "-10px"}}>
+        <a
+          className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="free"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.free }
+          onClick={ this.props.dialog.handleOpenDialog }
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginLeft: '7px',
+            marginTop: '2px',
+            width: '75px',
+            textTransform: 'none'
+          }}
+        >
+          Withdraw
+        </a>
+        <a
+          className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="lock"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.lock }
+          onClick={ this.props.dialog.handleOpenDialog }
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginTop: '2px',
+            width: '75px',
+            textTransform: 'none'
+          }}
+        >
+          Deposit
+        </a>
+        <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>ETH Collateral</div>
+        <div>
+          {
+            cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
+            ?
+              <React.Fragment>
+                <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
+                  { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit" style={{color: "#ffffff"}}>ETH</span>
+                </div>
+                <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
+                  ${ printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }
+                </div>
+              </React.Fragment>
+            :
+              "Loading..."
+          }
+        </div>
+      </div>
+    );
+  }
+
+  daiSection = actions => {
+    return (
+      <div>
+        <a
+          className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="draw"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.draw }
+          onClick={ this.props.dialog.handleOpenDialog }
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginLeft: '7px',
+            marginTop: '2px',
+            width: '75px',
+            textTransform: 'none'
+          }}
+        >
+          Generate
+        </a>
+        <a
+          className="text-btn right mobile-a-button"
+          href="#action"
+          data-method="wipe"
+          data-cup={ this.props.cupId }
+          disabled={ !actions.free.wipe }
+          onClick={ this.props.dialog.handleOpenDialog }
+          style={{
+            background: 'transparent',
+            fontSize: '1.3em',
+            height: '30px',
+            marginBottom: '5px',
+            marginTop: '2px',
+            width: '75px',
+            textTransform: 'none'
+          }}
+        >
+          Pay Back
+        </a>
+      </div>
+    );
+  }
+
   render() {
     const cup = this.props.system.tub.cups[this.props.cupId];
 
@@ -53,66 +168,12 @@ export default class CupMobile extends React.Component {
         <header className="col" style={{marginBottom: "20px"}}>
           <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal</h1>
         </header>
-        
-        <CupInfoMobile cupId={this.props.cupId} />
-
         <div className="row">
-          <div className="col">
-            <h3 className="typo-cl inline-headline">ETH collateral</h3>
+          
+          <CupInfoMobile cupId={this.props.cupId} />
 
-            <div className="inner-row">
-              <h4 className="typo-c inline-headline">Deposited</h4>
-              <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.lock.active } data-method="lock" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Deposit</button>
-              </div>
-              <div className="right align-right" style={ {marginRight: "1rem"} }>
-                {
-                  cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
-                  ?
-                    <React.Fragment>
-                      <div className="value block typo-cl">
-                        { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit">ETH</span>
-                      </div>
-                      <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                        { printNumber(cup.ink) }<span className="unit">PETH</span>
-                        <span className="separator">&nbsp;|&nbsp;</span>
-                        { printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
-                      </div>
-                    </React.Fragment>
-                  :
-                    "Loading..."
-                }
-              </div>
-            </div>
-            <div className="inner-row">
-              <h4 className="typo-c inline-headline" style={ {maxWidth: "8rem" } }>
-                Max. available to withdraw
-                <TooltipHint tipKey="max-available-to-withdraw" />
-              </h4>
-              <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.free.active } data-method="free" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Withdraw</button>
-              </div>
-              {
-                this.props.system.tub.off === false
-                ?
-                  cup.avail_skr.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
-                  ?
-                    <div className="right align-right" style={ {marginRight: "1rem"} }>
-                      <div className="value block typo-cl">
-                        { printNumber(wmul(cup.avail_skr, this.props.system.tub.per)) }<span className="unit">ETH</span>
-                      </div>
-                      <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
-                        { printNumber(cup.avail_skr) }<span className="unit">PETH</span>
-                        <span className="separator">&nbsp;|&nbsp;</span>
-                        { printNumber(wmul(wmul(cup.avail_skr, this.props.system.tub.per), this.props.system.pip.val)) }<span className="unit">USD</span>
-                      </div>
-                    </div>
-                  :
-                    "Loading..."
-                :
-                  "-"
-              }
-            </div>
+          <div className="col">
+            {this.ethSection(actions, cup)}
           </div>
           <div className="col">
             <h3 className="typo-cl inline-headline">DAI position</h3>

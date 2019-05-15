@@ -72,7 +72,7 @@ export default class CupInfoMobile extends Component {
             marginBottom: '5px',
             marginLeft: '7px',
             marginTop: '2px',
-            width: '70px',
+            width: '75px',
             textTransform: 'none'
           }}
         >
@@ -91,7 +91,7 @@ export default class CupInfoMobile extends Component {
             height: '30px',
             marginBottom: '5px',
             marginTop: '2px',
-            width: '70px',
+            width: '75px',
             textTransform: 'none'
           }}
         >
