@@ -18,12 +18,18 @@ prepare:
     - npm install yarn --no-progress --global
     - yarn add now --cache-folder .yarn
     - yarn install --cache-folder .yarn
+  only:
+    - master
+    - develop
 
 test:
   stage: test
   script:
     - echo "Running unit tests"
     # - npm run test
+  only:
+    - master
+    - develop
 
 build development:
   stage: build
