@@ -16,6 +16,7 @@
     "start": "npm-run-all -p watch-css start-js",
     "build-js": "node scripts/build.js",
     "build": "npm-run-all build-css build-js",
+    "now-build": "yarn build",
     "test": "node scripts/test.js --env=jsdom",
     "build-staging": "DEPLOY_ENV=staging PUBLIC_URL=https://staging.cdp.makerdao.com npm run build",
     "build-production": "DEPLOY_ENV=production PUBLIC_URL=https://cdp.makerdao.com GENERATE_SOURCEMAP=false npm run build",
