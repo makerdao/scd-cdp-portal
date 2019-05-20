@@ -127,10 +127,10 @@ export default class CupMobile extends React.Component {
               active: this.props.system.tub.off === false && this.props.system.eth.myBalance && this.props.system.eth.myBalance.gt(0),
             },
       free: {
-              active: this.props.system.pip.val.gt(0) && cup.ink.gt(0) && cup.safe && (this.props.system.tub.off === false || cup.art.eq(0)),
+              active: this.props.system.pip.val.gt(0) && cup && cup.ink.gt(0) && cup.safe && (this.props.system.tub.off === false || cup.art.eq(0)),
             },
       draw: {
-              active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup.ink.gt(0) && cup.safe,
+              active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup && cup.ink.gt(0) && cup.safe,
             },
       wipe: {
               active: this.props.system.tub.off === false && cup.art.gt(0),
