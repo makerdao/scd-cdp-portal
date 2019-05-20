@@ -47,7 +47,7 @@ export default class CupMobile extends React.Component {
         <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>ETH Collateral</div>
         <div>
           {
-            cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
+            cup && cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
             ?
               <React.Fragment>
                 <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
