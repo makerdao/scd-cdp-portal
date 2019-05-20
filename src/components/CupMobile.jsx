@@ -44,22 +44,24 @@ export default class CupMobile extends React.Component {
         >
           Deposit
         </a>
-        <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>ETH Collateral</div>
-        <div>
-          {
-            cup && cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
-            ?
-              <React.Fragment>
-                <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
-                  { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit" style={{color: "#ffffff"}}>ETH</span>
-                </div>
-                <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
-                  ${ printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }
-                </div>
-              </React.Fragment>
-            :
-              "Loading..."
-          }
+        <div style={{maxWidth: "fit-content"}}>
+          <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>ETH Collateral</div>
+          <div>
+            {
+              cup && cup.ink.gte(0) && this.props.system.tub.per.gte(0) && this.props.system.pip.val.gte(0)
+              ?
+                <React.Fragment>
+                  <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
+                    { printNumber(wmul(cup.ink, this.props.system.tub.per)) }<span className="unit" style={{color: "#ffffff"}}>ETH</span>
+                  </div>
+                  <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
+                    ${ printNumber(wmul(wmul(cup.ink, this.props.system.tub.per), this.props.system.pip.val)) }
+                  </div>
+                </React.Fragment>
+              :
+                "Loading..."
+            }
+          </div>
         </div>
       </div>
     );
@@ -90,22 +92,24 @@ export default class CupMobile extends React.Component {
         >
           Pay Back
         </a>
-        <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>DAI Position</div>
-        <div>
-          {
-            this.props.system.tab(cup).gte(0) && this.props.system.vox.par.gte(0)
-              ?
-                <React.Fragment>
-                  <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
-                    { printNumber(this.props.system.tab(cup)) }<span className="unit" style={{color: "#ffffff"}}>DAI</span>
-                  </div>
-                  <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
-                    ${ printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }
-                  </div>
-                </React.Fragment>
-              :
-                "Loading..."
-            }
+        <div style={{maxWidth: "fit-content"}}>
+          <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>DAI Position</div>
+          <div>
+            {
+              this.props.system.tab(cup).gte(0) && this.props.system.vox.par.gte(0)
+                ?
+                  <React.Fragment>
+                    <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
+                      { printNumber(this.props.system.tab(cup)) }<span className="unit" style={{color: "#ffffff"}}>DAI</span>
+                    </div>
+                    <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
+                      ${ printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }
+                    </div>
+                  </React.Fragment>
+                :
+                  "Loading..."
+              }
+          </div>
         </div>
       </div>
     );

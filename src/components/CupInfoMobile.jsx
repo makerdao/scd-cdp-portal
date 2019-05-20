@@ -57,7 +57,7 @@ export default class CupInfoMobile extends Component {
   cupHeader = () => {
     return (
       <div>
-        <h2 className="inline-headline" style={{color: "#ffffff"}}>CDP #{this.props.cupId}</h2>
+        <h2 className="inline-headline" style={{color: "#ffffff", maxWidth: "fit-content"}}>CDP #{this.props.cupId}</h2>
         <a
           className="text-btn right mobile-a-button"
           href="#action"
