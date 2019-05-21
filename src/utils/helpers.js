@@ -1,9 +1,10 @@
 // Libraries
 import React from "react";
 import jazzicon from "jazzicon";
+import checkIsMobile from "ismobilejs";
 
 // Utils
-import web3 from "./web3";
+import web3, { getWebClientProviderName } from "./web3";
 
 export const WAD = web3.toBigNumber(web3.toWei(1));
 
@@ -79,6 +80,12 @@ const addZero = value => {
 export const fromRaytoWad = x => {
   const y = toBigNumber(x).div(toBigNumber(10).pow(9))
   return y;
+}
+
+export const mobileToggle = className => {
+  return checkIsMobile.any
+    ? className + '-mobile'
+    : className
 }
 
 export const copyToClipboard = e => {
@@ -168,3 +175,23 @@ export const getJazziconIcon = (address, size) => {
 }
 
 export const {toBigNumber , toWei, fromWei, isAddress, toAscii, toHex, toChecksumAddress} = web3;
+
+export const formatClientName = name => {
+  switch (name) {
+    case "imtoken":
+      return "imToken";
+    case "ledger":
+      return "Ledger Nano S";
+    case "alphawallet":
+      return "AlphaWallet";
+    case "metamask":
+      return "MetaMask";
+    case "coinbase":
+      return "Coinbase Wallet";
+    case "web":
+      let webClientName = getWebClientProviderName();
+      return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);
+    default:
+      return capitalize(name);
+  }
+}

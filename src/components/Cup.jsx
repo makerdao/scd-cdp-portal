@@ -44,10 +44,13 @@ class Cup extends React.Component {
       give: {
               active: this.props.system.tub.off === false,
               helper: "Transfer CDP ownership"
-            },
+            }
     };
     return (
       <React.Fragment>
+        <header className="col">
+          <h1 className="typo-h1 inline-headline dashboard-headline">CDP Portal <span className="typo-c">My collateralized debt position #{ this.props.cupId }</span></h1>
+        </header>
         <div className="cup-top-right-buttons">
           <a href="#action" data-method="give" data-cup={ this.props.cupId } disabled={ !actions.free.give } onClick={ this.props.dialog.handleOpenDialog }>
             <svg height="18" viewBox="0 0 18 18" width="18" xmlns="http://www.w3.org/2000/svg">
@@ -227,7 +230,7 @@ class Cup extends React.Component {
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Generated</h4>
               <div className="right">
-                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Payback</button>
+                <button className="text-btn disable-on-dialog" style={ {minWidth: "8rem" } } disabled={ !actions.wipe.active } data-method="wipe" data-cup={ this.props.cupId } onClick={ this.props.dialog.handleOpenDialog }>Pay Back</button>
               </div>
               <div className="right align-right" style={ {marginRight: "1rem"} }>
                 {

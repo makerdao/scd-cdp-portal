@@ -137,6 +137,9 @@
 .typo-bold, bold, b {
 	 @include fontweight(bold);
 }
+.typo-bolder {
+	font-weight: bolder;
+}
 
 
 // Generic styles for HTML-Elements -------------------------------

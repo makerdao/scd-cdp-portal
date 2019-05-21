@@ -3,7 +3,7 @@
 // Base slick slider styles
 .slick-slider {
   margin-bottom: 3rem;
-  max-width: 90%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   position: relative;
@@ -21,9 +21,9 @@
 }
 .slick-list {
   position: relative;
-  overflow: hidden;
   display: block;
-  margin: 0;
+  margin-left: 15px;
+  margin-right: 15px;
   padding: 0;
 
   &:focus {
@@ -191,13 +191,15 @@ $slick-opacity-not-active: 1 !default;
 }
 
 .slick-prev {
-  left: -25px;
+  z-index: 1000;
+  left: 15px;
   @include respond-to(s) {
-    left: -15px;
+    left: -1px;
+    top: 30% !important;
   }
   [dir="rtl"] & {
     left: auto;
-    right: -25px;
+    right: 15px;
   }
   &:before {
     content: $slick-prev-character;
@@ -208,12 +210,14 @@ $slick-opacity-not-active: 1 !default;
 }
 
 .slick-next {
-  right: -25px;
+  z-index: 1000;
+  right: 15px;
   @include respond-to(s) {
-    right: -15px;
+    right: -1px;
+    top: 30% !important;
   }
   [dir="rtl"] & {
-    left: -25px;
+    left: 15px;
     right: auto;
   }
   &:before {

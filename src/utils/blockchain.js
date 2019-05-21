@@ -323,3 +323,8 @@ export async function getStabilityFee() {
     .minus(1)
     .multipliedBy(100);
 }
+
+export const isMobileWallet = () => {
+  const mobileWallets = ['coinbase', 'imtoken', 'alphawallet', 'trust',  'cipher'];
+  return mobileWallets.includes(getWebClientProviderName());
+};
