@@ -67,7 +67,7 @@ deploy to development:
     url: $DEPLOYMENT_URL_DEVELOPMENT
   script:
     - echo "Deploying to development at $DEPLOYMENT_URL_DEVELOPMENT"
-    - node_modules/.bin/now ./build --token $NOW_TOKEN -A ../now.json
+    - node_modules/.bin/now ./build --token $NOW_TOKEN -A ../now.gitlab.json
     - node_modules/.bin/now alias --token $NOW_TOKEN $DEPLOYMENT_URL_DEVELOPMENT
   only:
     - develop

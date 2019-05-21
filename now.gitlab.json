@@ -3,9 +3,7 @@
   "name": "scd-cdp-portal",
   "builds": [
     {
-      "src": "package.json",
-      "use": "@now/static-build",
-      "config": { "distDir": "build" }
+      "src": "**/*", "use": "@now/static"
     }
   ],
   "routes": [
