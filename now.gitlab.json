@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "name": "scd-cdp-portal",
+  "builds": [
+    {
+      "src": "**/*", "use": "@now/static"
+    }
+  ],
+  "routes": [
+    { "src": "^/static/(.*)", "dest": "/static/$1" },
+    { "src": "^/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "^/manifest.json", "dest": "/manifest.json" },
+    { "src": "^/asset-manifest.json", "dest": "/asset-manifest.json" },
+    { "src": "^/service-worker.js", "dest": "/service-worker.js" },
+    { "src": "^/(.*)", "dest": "/index.html" }
+  ]
+}
