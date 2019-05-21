@@ -45,9 +45,19 @@
   }
 }
 
+.modal.create-cdp {
+  @include respond-to('s+') {
+    position: absolute;
+  }
+}
+
 .modal.create-cdp .modal-inner {
   width: 54rem;
+  max-width: 90%;
   margin-top: 10vh;
+  @include respond-to('s+') {
+    margin-top: 2rem;
+  }
   h2 {
     color: #fff;
     text-align: center;
@@ -64,6 +74,7 @@
     margin-top: 4rem;
     width: 488px;
     height: 176px;
+    max-width: 100%;
   }
   p {
     color: #879099;
@@ -85,6 +96,10 @@
     li {
       display: inline-block;
       margin: 1rem 3rem 0;
+      @include respond-to('s+') {
+        margin: 1rem 0.5rem 0;
+        min-width: 5rem;
+      }
       min-width: 10rem;
       &:first-child {
         margin-left: 0;

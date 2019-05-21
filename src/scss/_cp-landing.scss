@@ -89,6 +89,9 @@
     }
 
     .landing-slider {
+      .slick-arrow {
+        transition: opacity 0.3s;
+      }
       .slick-slide[data-index="4"] .info-slide p {
         font-size: 1.3rem;
       }
@@ -147,6 +150,7 @@
           margin: 2rem auto 6rem;
           @include respond-to(s) {
             margin-top: 4rem;
+            margin-bottom: 4rem;
           }
         }
         p {
@@ -181,7 +185,20 @@
     }
   }
 
-
+  button.connect-wallet-mobile {
+    min-width: 200px;
+    min-height: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: #1ABC9C;
+    color: #000;
+    text-transform: uppercase;
+    padding: 0.85rem 1rem;
+    letter-spacing: 0.02rem;
+    line-height: 1;
+    border-radius: 2px;
+    font-family: 'Cairo', 'Arial', sans-serif;
+  }
 }
 
   .landing-footer {

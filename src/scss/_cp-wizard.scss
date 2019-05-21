@@ -10,14 +10,19 @@ svg.wizard.expand-section-btn {
     }
     @include respond-to('s+') {
       input.number-input {
-        max-width: 80%;
+        font-size: 1.5em;
+        max-width: 77%;
         min-width: unset;
-        width: 15rem;
+        width: 29.25rem;
+        height: 39px;
         & + .unit {
+          font-size: 1.2em;
           width: 20%;
           max-width: 4em;
           min-width: unset;
           padding: 0;
+          height: 39px;
+          line-height: 3.1em;
         }
       }
     }
