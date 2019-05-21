@@ -21,6 +21,7 @@ prepare:
   only:
     - master
     - develop
+    - test-multiple-now-builds
 
 test:
   stage: test
@@ -38,6 +39,7 @@ build development:
     - PUBLIC_URL=$DEPLOYMENT_URL_DEVELOPMENT yarn build
   only:
     - develop
+    - test-multiple-now-builds
   artifacts:
     name: "artifacts-$CI_JOB_ID-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -69,6 +71,7 @@ deploy to development:
     - node_modules/.bin/now alias --token $NOW_TOKEN $DEPLOYMENT_URL_DEVELOPMENT
   only:
     - develop
+    - test-multiple-now-builds
 
 deploy to staging:
   stage: deploy
