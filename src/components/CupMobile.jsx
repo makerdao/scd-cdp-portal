@@ -124,8 +124,7 @@ export default class CupMobile extends React.Component {
       marginBottom: '5px',
       marginTop: '2px',
       width: '75px',
-      textTransform: 'none',
-      touchAction: 'manipulation'
+      textTransform: 'none'
     }
     const actions = {
       lock: {
