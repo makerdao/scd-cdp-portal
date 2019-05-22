@@ -220,6 +220,7 @@ class Wizard extends Component {
       eth: this.state.eth,
       execute: this.execute,
       stabilityFee: stabilityFee,
+      steps: this.steps,
       stepsExpanded: this.state.stepsExpanded,
       toggleExpand: this.toggleExpand
     };
