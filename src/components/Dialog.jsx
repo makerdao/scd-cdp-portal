@@ -4,6 +4,7 @@ import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import ReactGA from 'react-ga';
+import checkIsMobile from "ismobilejs";
 
 // Components
 import InlineNotification from "./InlineNotification";
@@ -190,13 +191,20 @@ class Dialog extends React.Component {
   }
 
   renderNumberInput = currencyUnit => {
-    return (
-      <React.Fragment>
-        <input autoFocus ref={ input => this.updateVal = input } type="number" id="inputValue" className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
-        { currencyUnit && <span className="unit">{ currencyUnit }</span> }
-        <div className="clearfix"></div>
-      </React.Fragment>
-    )
+    return checkIsMobile.any
+      ? (
+        <React.Fragment>
+          <input ref={ input => this.updateVal = input } type="number" id="inputValue" className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
+          { currencyUnit && <span className="unit">{ currencyUnit }</span> }
+          <div className="clearfix"></div>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <input autoFocus ref={ input => this.updateVal = input } type="number" id="inputValue" className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
+          { currencyUnit && <span className="unit">{ currencyUnit }</span> }
+          <div className="clearfix"></div>
+        </React.Fragment>
+      );
   }
 
   renderFeeTypeSelector = () => {
