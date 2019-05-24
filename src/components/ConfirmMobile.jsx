@@ -53,16 +53,28 @@ export default class ConfirmMobile extends Component {
           <div className="row">
             <div className="col">
               <div>
-                <h3 className="typo-cl inline-headline" style={{color: '#ffffff'}}>Collateral at risk</h3>
-                <div className="value typo-h3 typo-bold right">{ printNumber(eth) } ETH</div><br />
-                <div className="value typo-cm right" style ={{color: '#9aa3ad'}}>${ printNumber(this.usdValue(eth)) }</div>
+                <h3 className="typo-cl inline-headline" style={{color: '#ffffff'}}>
+                  Collateral at risk
+                </h3>
+                <div className="value typo-h3 typo-bold right">
+                  { printNumber(eth) } ETH
+                </div><br />
+                <div className="value typo-cm right" style ={{color: '#9aa3ad'}}>
+                  ${ printNumber(this.usdValue(eth)) }
+                </div>
               </div>
             </div>
             <div className="col">
               <div style={{marginBottom: '40px'}}>
-                <h3 className="typo-cl inline-headline" style={{color: '#ffffff'}}>Generate</h3>
-                <div className="value typo-h3 typo-bold right">{ printNumber(dai) } DAI</div><br />
-                <div className="value typo-cm right" style ={{color: '#9aa3ad'}}>${ printNumber(dai) }</div>
+                <h3 className="typo-cl inline-headline" style={{color: '#ffffff'}}>
+                  Generate
+                </h3>
+                <div className="value typo-h3 typo-bold right">
+                  { printNumber(dai) } DAI
+                </div><br />
+                <div className="value typo-cm right" style ={{color: '#9aa3ad'}}>
+                  ${ printNumber(dai) }
+                </div>
               </div>
             </div>
           </div>
@@ -72,24 +84,57 @@ export default class ConfirmMobile extends Component {
               <div className="typo-cl no-select clear-left">
                 {
                   stepsExpanded ?
-                  <svg className="wizard expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => toggleExpand() }>
-                    <path d="m1022.95113 481.269219-4.95267-4.953847-4.95267 4.953847-1.50733-1.507693 6.46-6.461538 6.46 6.461538zm-4.95113 10.730781c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" fill="#9aa3ad" transform="translate(-1004 -464)"/>
+                  <svg
+                    className="wizard expand-section-btn"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={ () => toggleExpand() }
+                  >
+                    <path
+                      d="m1022.95113 481.269219-4.95267-4.953847-4.95267 4.953847-1.50733-1.507693 6.46-6.461538 6.46 6.461538zm-4.95113 10.730781c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z"
+                      fill="#9aa3ad"
+                      transform="translate(-1004 -464)"
+                    />
                   </svg>
                   :
-                  <svg className="wizard expand-section-btn" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" onClick={ () => toggleExpand() }>
-                    <path d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z" transform="translate(-1062 -464)"/>
+                  <svg
+                    className="wizard expand-section-btn"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={ () => toggleExpand() }
+                  >
+                    <path
+                      d="m1080.95385 474.769231-4.95385 4.953846-4.95385-4.953846-1.50769 1.507692 6.46154 6.461539 6.46154-6.461539zm-4.95385 17.230769c-7.73199 0-14-6.268014-14-14s6.26801-14 14-14 14 6.268014 14 14-6.26801 14-14 14zm0-2.153846c6.54245 0 11.84615-5.303704 11.84615-11.846154s-5.3037-11.846154-11.84615-11.846154-11.84615 5.303704-11.84615 11.846154 5.3037 11.846154 11.84615 11.846154z"
+                      transform="translate(-1062 -464)"
+                    />
                   </svg>
                 }
                 Transaction details
               </div>
 
-              <div className={"typo-cm wizard-automated-transactions" + (stepsExpanded ? " expanded" : "") }>
-                <div className="typo-cm no-select clear-left" style={{marginTop: "10px", marginBottom: "20px"}}>There are { this.steps().length } steps needed to complete the creation of your CDP.&nbsp;&nbsp;These will be automated for your convenience.</div>
+              <div
+                className={"typo-cm wizard-automated-transactions" + (stepsExpanded ? " expanded" : "") }
+              >
+                <div
+                  className="typo-cm no-select clear-left"
+                  style={{marginTop: "10px", marginBottom: "20px"}}
+                >
+                  There are { this.steps().length } steps needed to complete the creation of your CDP.&nbsp;&nbsp;
+                  These will be automated for your convenience.
+                </div>
                 {
                   this.steps().map((s, key) => (
                     <div className="step-cointainer" key={ key }>
                       <div className="step-icon">
-                        <div className="steps-item"><div className="steps-item-inner">{ key + 1 }</div></div>
+                        <div className="steps-item">
+                          <div className="steps-item-inner">
+                            { key + 1 }
+                          </div>
+                        </div>
                         <div className="vertical-line"></div>
                       </div>
                       <div className="step-message right">
@@ -101,7 +146,10 @@ export default class ConfirmMobile extends Component {
               </div>
             </div>
 
-            <div className="inline-notification is-stability-fee-warning" style={{marginTop: "10px", marginBottom: "30px"}}>
+            <div
+              className="inline-notification is-stability-fee-warning"
+              style={{marginTop: "10px", marginBottom: "30px"}}
+            >
               <p style={ { color: '#B42B00', fontWeight: 500, fontSize: "13px" } }>
                 When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
                 <a
@@ -120,13 +168,25 @@ export default class ConfirmMobile extends Component {
               <div className="col">
                 <div style={ {marginBottom: "2rem"} }>
                   <label className="checkbox-container" style={{marginTop: "10px"}}>
-                    <input type="checkbox" checked={ checkTerms } value="1" onChange={e => check(e.target.checked, "checkTerms")}/>
+                    <input
+                      type="checkbox"
+                      checked={ checkTerms }
+                      value="1"
+                      onChange={e => check(e.target.checked, "checkTerms")}
+                    />
                     <span className="checkmark"></span>
                     I have read and accept the <Link to="/terms" target="_blank">Terms of Service</Link>
                   </label>
                 </div>
                 <div>
-                  <button className="bright-style text-btn text-btn-primary-mobile" style={{marginTop: "5px", marginBottom: "15px"}} onClick={ execute } disabled={ !checkTerms }>CREATE CDP</button>
+                  <button
+                    className="bright-style text-btn text-btn-primary-mobile"
+                    style={{marginTop: "5px", marginBottom: "15px"}}
+                    onClick={ execute }
+                    disabled={ !checkTerms }
+                  >
+                    CREATE CDP
+                  </button>
                 </div>
               </div>
             </div>
