@@ -97,6 +97,7 @@ export default class CupInfoMobile extends Component {
       ? this.props.ratio
       : this.ratio(cup);
     const ratioColor = this.ratioColor(ratio);
+    console.log(ratio);
 
     return (
       <div id="CupInfoMobile">
@@ -106,7 +107,7 @@ export default class CupInfoMobile extends Component {
         <div className="col" style={{marginBottom: "30px"}}>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Collateralization</h3>
-            <div className="typo-cm right"><span style={{...ratioColor}}>{ ratio ? printNumber(ratio.times(100)) : "--" }%</span></div>
+            <div className="typo-cm right"><span style={{...ratioColor}}>{ ratio && typeof ratio !== "string" ? printNumber(ratio.times(100)) : "--" }%</span></div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Minimum ratio</h3>
@@ -114,7 +115,7 @@ export default class CupInfoMobile extends Component {
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Liquidation price (ETH/USD)</h3>
-            <div className="typo-cm right">{ liqPrice ? printNumber(liqPrice) : "--" } USD</div>
+            <div className="typo-cm right">{ liqPrice && typeof liqPrice !== "string" ? printNumber(liqPrice) : "--" } USD</div>
           </div>
           <div>
             <h3 className="typo-cm typo-bold inline-headline">Current price (ETH/USD)</h3>
