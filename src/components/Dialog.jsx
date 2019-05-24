@@ -13,11 +13,20 @@ import TooltipHint from "./TooltipHint";
 // Utils
 import {BIGGESTUINT256, WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber, isAddress} from "../utils/helpers";
 import * as blockchain from "../utils/blockchain";
+import web3 from "../utils/web3";
 
 class DialogContent extends React.Component {
+  bottomPadding = () => {
+    if (web3.currentProvider && web3.currentProvider.isToshi) {
+      return {
+        paddingBottom: "60px"
+      }
+    }
+  }
+
   render() {
     return (
-      <div id="dialog" className="dialog bright-style">
+      <div id="dialog" className="dialog bright-style" style={this.bottomPadding()}>
         <button id="dialog-close-caller" className="close-box" onClick={ this.props.dialog.handleCloseDialog }></button>
         <div className="dialog-content">
           <h2 className="typo-h1">{ this.props.title }</h2>
