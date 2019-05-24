@@ -101,7 +101,7 @@ export default class ConfirmMobile extends Component {
               </div>
             </div>
 
-            <div className="inline-notification is-stability-fee-warning" style={{marginTop: "85px"}}>
+            <div className="inline-notification is-stability-fee-warning" style={{marginTop: "10px", marginBottom: "30px"}}>
               <p style={ { color: '#B42B00', fontWeight: 500, fontSize: "13px" } }>
                 When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
                 <a

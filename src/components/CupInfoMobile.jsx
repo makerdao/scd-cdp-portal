@@ -97,7 +97,6 @@ export default class CupInfoMobile extends Component {
       ? this.props.ratio
       : this.ratio(cup);
     const ratioColor = this.ratioColor(ratio);
-    console.log(ratio);
 
     return (
       <div id="CupInfoMobile">
