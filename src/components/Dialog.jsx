@@ -11,18 +11,60 @@ import InlineNotification from "./InlineNotification";
 import TooltipHint from "./TooltipHint";
 
 // Utils
-import {BIGGESTUINT256, WAD, wmul, wdiv, formatNumber, toBigNumber, fromWei, toWei, min, printNumber, isAddress} from "../utils/helpers";
+import {
+  BIGGESTUINT256,
+  WAD,
+  wmul,
+  wdiv,
+  formatNumber,
+  toBigNumber,
+  fromWei,
+  toWei,
+  min,
+  printNumber,
+  isAddress
+} from "../utils/helpers";
 import * as blockchain from "../utils/blockchain";
+import web3 from "../utils/web3";
 
 class DialogContent extends React.Component {
+  bottomPadding = () => {
+    if (web3.currentProvider && web3.currentProvider.isToshi) {
+      return {
+        paddingBottom: "60px"
+      }
+    }
+  }
+
   render() {
     return (
-      <div id="dialog" className="dialog bright-style">
-        <button id="dialog-close-caller" className="close-box" onClick={ this.props.dialog.handleCloseDialog }></button>
+      <div
+        id="dialog"
+        className="dialog bright-style"
+        style={this.bottomPadding()}
+      >
+        <button
+          id="dialog-close-caller"
+          className="close-box"
+          onClick={ this.props.dialog.handleCloseDialog }
+        />
         <div className="dialog-content">
           <h2 className="typo-h1">{ this.props.title }</h2>
-          { this.props.indentedText && <p className="indented-text" dangerouslySetInnerHTML={ {__html: this.props.indentedText} }></p> }
-          { this.props.text && <p className="main-text" dangerouslySetInnerHTML={ {__html: this.props.text} }></p> }
+          {
+            this.props.indentedText &&
+            <p
+              className="indented-text"
+              dangerouslySetInnerHTML={ {__html: this.props.indentedText} }>
+            </p>
+          }
+          {
+            this.props.text &&
+            <p
+              className="main-text"
+              dangerouslySetInnerHTML={ {__html: this.props.text} }
+            >
+            </p>
+          }
           { this.props.form ? this.props.form : "" }
         </div>
       </div>
@@ -72,7 +114,11 @@ class Dialog extends React.Component {
           giveHasProxy: false,
           giveToProxy: true
         });
-        if (this.props.dialog.method === "wipe" && this.props.system.dai.myBalance.gt(0) && !this.props.system.gov.myBalance.gt(0)) {
+        if (
+          this.props.dialog.method === "wipe"
+          && this.props.system.dai.myBalance.gt(0)
+          && !this.props.system.gov.myBalance.gt(0)
+        ) {
           console.debug('Reporting 0 MKR balance on pay back DAI dialog');
           ReactGA.event({
             category: 'UX',
@@ -86,7 +132,11 @@ class Dialog extends React.Component {
 
   submitForm = e => {
     e.preventDefault();
-    if (this.props.dialog.method === "shut" || this.props.dialog.method === "migrate" || this.state.submitEnabled) {
+    if (
+      this.props.dialog.method === "shut"
+      || this.props.dialog.method === "migrate"
+      || this.state.submitEnabled
+    ) {
       const value = this.updateVal && typeof this.updateVal.value !== "undefined"
                     ?
                       this.props.dialog.method !== "give"
@@ -108,10 +158,54 @@ class Dialog extends React.Component {
     }
   }
 
+  moveInput = () => {
+    return checkIsMobile.any
+      ? (
+        <input
+          ref={ input => this.updateVal = input }
+          type="text"
+          id="inputValue"
+          className={
+            "address-input" + (
+              this.props.dialog.warning ? " has-warning" : ""
+            ) + (this.props.dialog.error ? " has-error" : "")
+          }
+          required
+          onChange={ e => { this.cond(e.target.value) } }
+          onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } }
+          maxLength="42"
+          placeholder="0x01234..."
+          autoComplete="off"
+        />
+      ) : (
+        <input
+          autoFocus
+          ref={ input => this.updateVal = input }
+          type="text"
+          id="inputValue"
+          className={
+            "address-input" + (
+              this.props.dialog.warning ? " has-warning" : ""
+            ) + (this.props.dialog.error ? " has-error" : "")
+          }
+          required
+          onChange={ e => { this.cond(e.target.value) } }
+          onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } }
+          maxLength="42"
+          placeholder="0x01234..."
+          autoComplete="off"
+        />
+      );
+  }
+
   selectGovFeeType = e => {
     this.setState({govFeeType: e.target.value}, () => {
       this.props.dialog.error = this.props.dialog.warning = "";
-      if (this.updateVal !== "undefined" && this.updateVal && typeof this.updateVal.value !== "undefined") {
+      if (
+        this.updateVal !== "undefined"
+        && this.updateVal
+        && typeof this.updateVal.value !== "undefined"
+      ) {
         this.cond(this.updateVal.value);
       }
     });
@@ -185,7 +279,30 @@ class Dialog extends React.Component {
         <div className="info-heading">Projected liquidation price (ETH/USD)</div>
         <div className="info-value">{ this.state.liqPrice.gt(0) ? printNumber(this.state.liqPrice, 2) : "--" } USD</div>
         <div className="info-heading">Projected collateralization ratio</div>
-        <div className={ "info-value" + (this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? " text-green" : "") + (this.props.dialog.warning ? " text-yellow" : "") + (this.props.dialog.error ? " text-red" : "") }>{ this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity ? printNumber(this.state.ratio.times(100), 2) : "--" } %</div>
+        <div className=
+          {
+            "info-value" + (
+              this.state.ratio.gt(0)
+              && this.state.ratio.toNumber() !== Infinity
+                ? " text-green"
+                : ""
+            ) + (
+              this.props.dialog.warning
+                ? " text-yellow"
+                : ""
+            ) + (
+              this.props.dialog.error
+                ? " text-red"
+                : ""
+            )
+          }
+        >
+          { 
+            this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity
+              ? printNumber(this.state.ratio.times(100), 2)
+              : "--"
+          } %
+      </div>
       </React.Fragment>
     )
   }
@@ -194,14 +311,34 @@ class Dialog extends React.Component {
     return checkIsMobile.any
       ? (
         <React.Fragment>
-          <input ref={ input => this.updateVal = input } type="number" id="inputValue" className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
+          <input
+            ref={ input => this.updateVal = input }
+            type="number"
+            id="inputValue"
+            className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") }
+            required
+            step="0.000000000000000001"
+            onChange={ e => { this.cond(e.target.value) } }
+            onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } 
+            autoComplete="off"
+          />
           { currencyUnit && <span className="unit">{ currencyUnit }</span> }
           <div className="clearfix"></div>
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <input autoFocus ref={ input => this.updateVal = input } type="number" id="inputValue" className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required step="0.000000000000000001" onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } autoComplete="off" />
-          { currencyUnit && <span className="unit">{ currencyUnit }</span> }
+          <input
+            autoFocus
+            ref={ input => this.updateVal = input }
+            type="number" id="inputValue"
+            className={ "number-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") }
+            required
+            step="0.000000000000000001"
+            onChange={ e => { this.cond(e.target.value) } }
+            onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } }
+            autoComplete="off"
+          />
+            { currencyUnit && <span className="unit">{ currencyUnit }</span> }
           <div className="clearfix"></div>
         </React.Fragment>
       );
@@ -211,12 +348,51 @@ class Dialog extends React.Component {
     return (
       this.props.system.pep.val.gte(0) &&
       <React.Fragment>
-        <div className="info-heading">Stability fee @{ printNumber(toWei(fromWei(this.props.system.tub.fee).pow(60 * 60 * 24 * 365)).times(100).minus(toWei(100)), 1, true, true) }%/year in MKR <TooltipHint tipKey="stability-fee" /></div>
-        <div className="info-value" style={ { marginBottom: "0"} }>{ printNumber(wdiv(this.props.system.futureRap(this.props.system.tub.cups[this.props.dialog.cupId], 1200), this.props.system.pep.val)) } MKR</div>
-        <div className="info-value-smaller">Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR <Link to="/help/how-do-i-get-mkr-tokens" style={ {marginLeft: "5px"} }>Get MKR</Link></div>
+        <div className="info-heading">
+          Stability fee @
+            {
+              printNumber(toWei(fromWei(this.props.system.tub.fee)
+                .pow(60 * 60 * 24 * 365))
+                .times(100)
+                .minus(toWei(100)), 1, true, true)
+            }
+            %/year in MKR <TooltipHint tipKey="stability-fee" />
+        </div>
+        <div className="info-value" style={ { marginBottom: "0"} }>
+          {
+            printNumber(wdiv(
+              this.props.system.futureRap(this.props.system.tub.cups[this.props.dialog.cupId], 1200),
+              this.props.system.pep.val
+            ))
+          } MKR
+        </div>
+        <div className="info-value-smaller">
+          Your MKR balance: { printNumber(this.props.system.gov.myBalance, 3) } MKR
+          <Link
+            to="/help/how-do-i-get-mkr-tokens"
+            style={ {marginLeft: "5px"} }
+          >
+            Get MKR
+          </Link>
+        </div>
         <div className="fee-type-selector">
-          <input type="radio" id="govFeeMkr" name="govFeeMkr" value="mkr" checked={ this.state.govFeeType === "mkr" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeMkr">Pay stability fee with MKR</label><br />
-          <input type="radio" id="govFeeDai" name="govFeeDai" value="dai" checked={ this.state.govFeeType === "dai" } onChange={ this.selectGovFeeType } /><label htmlFor="govFeeDai">Pay stability fee with DAI</label>
+          <input
+            type="radio"
+            id="govFeeMkr"
+            name="govFeeMkr"
+            value="mkr"
+            checked={ this.state.govFeeType === "mkr" }
+            onChange={ this.selectGovFeeType }
+          />
+          <label htmlFor="govFeeMkr">Pay stability fee with MKR</label><br />
+          <input
+            type="radio"
+            id="govFeeDai"
+            name="govFeeDai"
+            value="dai"
+            checked={ this.state.govFeeType === "dai" }
+            onChange={ this.selectGovFeeType } />
+            <label htmlFor="govFeeDai">Pay stability fee with DAI</label>
         </div>
       </React.Fragment>
     )
@@ -294,7 +470,7 @@ class Dialog extends React.Component {
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  <input autoFocus ref={ input => this.updateVal = input } type="text" id="inputValue" className={ "address-input" + (this.props.dialog.warning ? " has-warning" : "") + (this.props.dialog.error ? " has-error" : "") } required onChange={ e => { this.cond(e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault() } } maxLength="42" placeholder="0x01234..." autoComplete="off" />
+                  {this.moveInput()}
                   <div className="clearfix"></div>
                 </div>
                 <div style={ {marginTop: "0.75rem"} }>
