@@ -97,7 +97,7 @@
       }
       .info-slide {
         display: block;
-        margin: 8rem auto;
+        margin: 3rem auto 4rem auto;
         width: 75%;
         h1 {
           font-size: 1.35rem;
@@ -185,6 +185,12 @@
     }
   }
 
+  .connect-wallet-mobile-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
   button.connect-wallet-mobile {
     min-width: 200px;
     min-height: 50px;
@@ -198,8 +204,10 @@
     line-height: 1;
     border-radius: 2px;
     font-family: 'Cairo', 'Arial', sans-serif;
+    margin: 2rem auto;
   }
 }
+
 
   .landing-footer {
     position: relative;

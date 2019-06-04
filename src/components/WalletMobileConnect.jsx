@@ -6,15 +6,18 @@ import { inject } from 'mobx-react';
 class WalletMobileConnect extends React.Component {
   render() {
     return (
-      <button
-        className="connect-wallet-mobile"
-        onClick={e => {
-          e.preventDefault();
-          this.props.network.setWeb3WebClient();
-        }}
-      >
-        CONNECT
-      </button>
+      <div className="connect-wallet-mobile-container">
+        <button
+          className="connect-wallet-mobile"
+          style={{}}
+          onClick={e => {
+            e.preventDefault();
+            this.props.network.setWeb3WebClient();
+          }}
+        >
+          CONNECT
+        </button>
+      </div>
     );
   }
 }
