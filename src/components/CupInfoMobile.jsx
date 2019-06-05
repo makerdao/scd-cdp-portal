@@ -16,15 +16,15 @@ export default class CupInfoMobile extends Component {
         ?
           cup.ratio.lt(0)
           ?
-            "-"
+            null
           :
             cup.ratio.gt(0) && cup.ratio.toNumber() !== Infinity
             ?
               toWei(cup.ratio)
             :
-              "-"
+            null
         :
-          "-"
+        null
       );
     }
   }
@@ -32,9 +32,9 @@ export default class CupInfoMobile extends Component {
   ratioColor = ratio => {
     const adjustedRatio = parseFloat(ratio) / 10000000000000000;
     if (adjustedRatio && this.props.cupId) {
-      return adjustedRatio < 200 
+      return adjustedRatio < 200
         ? ((adjustedRatio < 150) ? {color: "#C0392B"} : {color: "#FBAE17"})
-        : "" 
+        : ""
     }
   }
 
@@ -43,13 +43,13 @@ export default class CupInfoMobile extends Component {
       return (
         this.props.system.tub.off === true || (cup.liq_price && cup.liq_price.eq(0))
         ?
-          "-"
+        null
         :
           cup.liq_price && cup.liq_price.gte(0)
           ?
             cup.liq_price
           :
-            "-"
+          null
       );
     }
   }
