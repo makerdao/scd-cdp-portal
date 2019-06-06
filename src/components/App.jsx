@@ -10,7 +10,7 @@ import Notify from "./Notify";
 import NotifySetUp from "./NotifySetUp";
 import PriceModal from "./PriceModal";
 import Routes from "./Routes";
-import { mixpanelInit } from '../utils/analytics';
+import { gaInit, mixpanelInit } from '../utils/analytics';
 
 // Stores
 import rootStore from "../stores/Root";
@@ -31,7 +31,7 @@ window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
 // Google Analytics
-ReactGA.initialize('UA-128164213-1');
+gaInit();
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer
