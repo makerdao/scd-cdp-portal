@@ -10,6 +10,7 @@ import Notify from "./Notify";
 import NotifySetUp from "./NotifySetUp";
 import PriceModal from "./PriceModal";
 import Routes from "./Routes";
+import { mixpanelInit } from '../utils/analytics';
 
 // Stores
 import rootStore from "../stores/Root";
@@ -35,12 +36,17 @@ ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer
 class App extends React.Component {
+  constructor () {
+    super()
+    this.mixpanel = mixpanelInit();
+  }
+
   render() {
     return (
       <Provider network={rootStore.network} profile={rootStore.profile} transactions={rootStore.transactions} system={rootStore.system} dialog={rootStore.dialog} content={rootStore.content}>
         <BrowserRouter>
           <React.Fragment>
-            <Routes />
+            <Routes mixpanel={this.mixpanel} />
             <Notify ref="notificator" />
             <NotifySetUp />
             <Modal show={rootStore.transactions.priceModal.open} close={rootStore.transactions.closePriceModal}>
