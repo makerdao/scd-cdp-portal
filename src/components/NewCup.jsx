@@ -9,6 +9,9 @@ import TooltipHint from "./TooltipHint";
 //Utils
 import {WAD, printNumber} from "../utils/helpers";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 @inject("system")
 @observer
 export default class NewCup extends Component {
@@ -58,7 +61,7 @@ export default class NewCup extends Component {
             </div>
           </div>
         </div>
-        
+
         <div className="row">
           <div className="col col-2">
             <div style={ {marginBottom: "1rem"}}>
@@ -105,7 +108,7 @@ export default class NewCup extends Component {
 
         <div className="row" style={ {borderBottom: "none"} }>
           <div className="col">
-            <button className="bright-style text-btn text-btn-primary" type="submit" disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate' })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
           </div>
         </div>
       </div>

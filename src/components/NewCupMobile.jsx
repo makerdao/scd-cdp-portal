@@ -9,6 +9,9 @@ import InlineNotification from "./InlineNotification";
 import {printNumber} from "../utils/helpers";
 import CupInfoMobile from "./CupInfoMobile";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 @inject("system")
 @observer
 export default class NewCupMobile extends Component {
@@ -59,7 +62,7 @@ export default class NewCupMobile extends Component {
             </div>
           </div>
         </div>
-        
+
         <CupInfoMobile liqPrice={liqPrice} ratio={ratio}/>
 
         <div className="row" style={ {borderBottom: "none"} }>
@@ -69,7 +72,7 @@ export default class NewCupMobile extends Component {
 
         <div className="row" style={ {borderBottom: "none", marginBottom: "40px"}}>
           <div className="col">
-            <button className={"bright-style text-btn text-btn-primary-mobile"} type="submit" disabled={ !submitEnabled }>continue</button>
+            <button className={"bright-style text-btn text-btn-primary-mobile"} onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', mobile: true })} type="submit" disabled={ !submitEnabled }>continue</button>
           </div>
         </div>
       </div>
