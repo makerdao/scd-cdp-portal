@@ -22,6 +22,9 @@ import StabilityFeeAlert from "./StabilityFeeAlert";
 import {getCurrentProviderName} from "../utils/blockchain";
 import {capitalize} from "../utils/helpers";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 @inject("network")
 @inject("system")
 @inject("dialog")
@@ -37,12 +40,14 @@ class Home extends React.Component {
   }
 
   setOpenCDPWizard = () => {
+    mixpanel.track('btn-click', { id: 'OpenCDP' })
     this.setState({wizardOpenCDP: true}, () => {
       ReactTooltip.rebuild()
     });
   }
 
   setOpenMigrate = migrateCDP => {
+    mixpanel.track('btn-click', { id: 'migrateCDP' })
     this.setState({migrateCDP}, () => {
       ReactTooltip.rebuild()
     });

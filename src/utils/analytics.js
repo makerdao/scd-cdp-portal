@@ -35,7 +35,7 @@ const config = {
   }
 }[env];
 
-export const mixpanelInit = () => {
+const mixpanelInit = () => {
   console.debug(
     `[Mixpanel] Tracking initialized for ${env} env using ${
       config.mixpanel.token
@@ -79,3 +79,6 @@ export const gaInit = () => {
   ReactGA.initialize(config.gaTrackingId);
   return ReactGA;
 };
+
+gaInit()
+export const mixpanelInstance = mixpanelInit()

@@ -23,6 +23,9 @@ import menuIconLedger from "images/menu-icon-ledger.svg";
 import menuIconTrezor from "images/menu-icon-trezor.svg";
 import menuIconWeb from "images/menu-icon-web.svg";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 const menuIcons = {
   ledger: menuIconLedger,
   trezor: menuIconTrezor,

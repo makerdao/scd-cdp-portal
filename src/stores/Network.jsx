@@ -5,6 +5,9 @@ import checkIsMobile from 'ismobilejs'
 // Utils
 import * as blockchain from "../utils/blockchain";
 
+// Analytics
+import { mixpanelIdentify } from '../utils/analytics';
+
 export default class NetworkStore {
   @observable stopIntervals = false;
   @observable loadingAddress = false;
@@ -64,11 +67,13 @@ export default class NetworkStore {
         const account = await blockchain.getDefaultAccountByIndex(0);
         if (!this.stopIntervals) { // To avoid race condition
           blockchain.setDefaultAccount(account);
+          mixpanelIdentify(account, 'web-wallet')
         }
       }
       if (!this.stopIntervals) { // To avoid race condition
         const oldDefaultAccount = this.defaultAccount;
         this.defaultAccount = blockchain.getDefaultAccount();
+        mixpanelIdentify(this.defaultAccount, 'hw-wallet')
         if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
           this.rootStore.loadContracts();
         }
