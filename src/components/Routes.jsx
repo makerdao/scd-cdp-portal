@@ -13,12 +13,14 @@ import Terms from "./Terms";
 
 @withRouter
 @observer
-class App extends React.Component {
+class Routes extends React.Component {
   componentDidUpdate = prevProps => {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       window.scrollTo(0, 0);
     }
+    console.debug(`Tracked: ${this.props.location.pathname}`);
     ReactGA.pageview(this.props.location.pathname);
+    prevProps.mixpanel.track(this.props.location.pathname, { scd: true })
   }
 
   render() {
@@ -34,4 +36,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default Routes;

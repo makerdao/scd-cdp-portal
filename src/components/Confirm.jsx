@@ -6,6 +6,9 @@ import {Link} from "react-router-dom";
 // Utils
 import {printNumber} from "../utils/helpers";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 @observer
 export default class Confirm extends Component {
   render() {
@@ -89,7 +92,7 @@ export default class Confirm extends Component {
 
           <div className="inline-notification is-stability-fee-warning">
             <p style={ { color: '#B42B00', fontWeight: 500 } }>
-              When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
+              When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp;
               <a
                 href="https://www.reddit.com/r/MakerDAO/comments/93adqj/faq_stability_fee_raise/"
                 rel="noopener noreferrer"
@@ -113,7 +116,7 @@ export default class Confirm extends Component {
               </div>
               <div>
                 <button className="bright-style text-btn" onClick={ () => goToStep(1) }>GO BACK</button>
-                <button className="bright-style text-btn text-btn-primary" onClick={ execute } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
+                <button className="bright-style text-btn text-btn-primary" onClick={ () => {execute(); mixpanel.track('btn-click', { id: 'confirmCDP', collateral: eth, debt: dai, scd: true });} } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
               </div>
             </div>
           </div>

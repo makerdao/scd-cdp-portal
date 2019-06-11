@@ -6,6 +6,9 @@ import {Link} from "react-router-dom";
 // Utils
 import {printNumber} from "../utils/helpers";
 
+// Analytics
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
+
 @inject("profile")
 @inject("system")
 @observer
@@ -151,7 +154,7 @@ export default class ConfirmMobile extends Component {
               style={{marginTop: "10px", marginBottom: "30px"}}
             >
               <p style={ { color: '#B42B00', fontWeight: 500, fontSize: "13px" } }>
-                When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp; 
+                When you open a CDP, the Stability Fee might vary due to changing market conditions.&nbsp;
                 <a
                   href="https://www.reddit.com/r/MakerDAO/comments/93adqj/faq_stability_fee_raise/"
                   rel="noopener noreferrer"
@@ -182,7 +185,7 @@ export default class ConfirmMobile extends Component {
                   <button
                     className="bright-style text-btn text-btn-primary-mobile"
                     style={{marginTop: "5px", marginBottom: "15px"}}
-                    onClick={ execute }
+                    onClick={() => { execute(); mixpanel.track('btn-click', { id: 'confirmCDP', mobile: true, collateral: eth, debt: dai, scd: true });  }}
                     disabled={ !checkTerms }
                   >
                     CREATE CDP

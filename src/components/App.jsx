@@ -10,6 +10,7 @@ import Notify from "./Notify";
 import NotifySetUp from "./NotifySetUp";
 import PriceModal from "./PriceModal";
 import Routes from "./Routes";
+import { mixpanelInstance as mixpanel } from '../utils/analytics';
 
 // Stores
 import rootStore from "../stores/Root";
@@ -30,7 +31,6 @@ window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
 // Google Analytics
-ReactGA.initialize('UA-128164213-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer
@@ -40,7 +40,7 @@ class App extends React.Component {
       <Provider network={rootStore.network} profile={rootStore.profile} transactions={rootStore.transactions} system={rootStore.system} dialog={rootStore.dialog} content={rootStore.content}>
         <BrowserRouter>
           <React.Fragment>
-            <Routes />
+            <Routes mixpanel={mixpanel} />
             <Notify ref="notificator" />
             <NotifySetUp />
             <Modal show={rootStore.transactions.priceModal.open} close={rootStore.transactions.closePriceModal}>
