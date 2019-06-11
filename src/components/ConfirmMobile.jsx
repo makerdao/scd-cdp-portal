@@ -185,7 +185,7 @@ export default class ConfirmMobile extends Component {
                   <button
                     className="bright-style text-btn text-btn-primary-mobile"
                     style={{marginTop: "5px", marginBottom: "15px"}}
-                    onClick={() => { execute(); mixpanel.track('btn-click', { id: 'confirmCDP', mobile: true, collateral: eth, debt: dai });  }}
+                    onClick={() => { execute(); mixpanel.track('btn-click', { id: 'confirmCDP', mobile: true, collateral: eth, debt: dai, scd: true });  }}
                     disabled={ !checkTerms }
                   >
                     CREATE CDP
