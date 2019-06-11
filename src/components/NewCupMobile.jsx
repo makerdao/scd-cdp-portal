@@ -72,7 +72,7 @@ export default class NewCupMobile extends Component {
 
         <div className="row" style={ {borderBottom: "none", marginBottom: "40px"}}>
           <div className="col">
-            <button className={"bright-style text-btn text-btn-primary-mobile"} onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', mobile: true })} type="submit" disabled={ !submitEnabled }>continue</button>
+            <button className={"bright-style text-btn text-btn-primary-mobile"} onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', mobile: true, scd: true })} type="submit" disabled={ !submitEnabled }>continue</button>
           </div>
         </div>
       </div>
