@@ -505,7 +505,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled || !this.state.ownThisWallet } onClick={() => mixpanel.track('btn-click', { id: 'move' })}>Move</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled || !this.state.ownThisWallet } onClick={() => mixpanel.track('btn-click', { id: 'move', scd: true })}>Move</button>
                 </div>
               </form>
             }
@@ -531,7 +531,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'close' })}>Close</button>
+                  <button className="text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'close', scd: true })}>Close</button>
                 </div>
               </form>
             }
@@ -579,7 +579,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'deposit' })}>Deposit</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'deposit', scd: true })}>Deposit</button>
                 </div>
               </form>
             }
@@ -640,7 +640,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'withdraw' })}>Withdraw</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'withdraw', scd: true })}>Withdraw</button>
                 </div>
               </form>
             }
@@ -688,7 +688,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'generate'}) }>Generate</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'generate', scd: true }) }>Generate</button>
                 </div>
               </form>
             }
@@ -759,7 +759,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'payback' })}>Payback</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'payback', scd: true })}>Payback</button>
                 </div>
               </form>
             }
