@@ -47,7 +47,7 @@ class Home extends React.Component {
   }
 
   setOpenMigrate = migrateCDP => {
-    mixpanel.track('btn-click', { id: 'migrateCDP', product: 'scd-cdp-portal'scd-cdp-portal, page: dashboard })
+    mixpanel.track('btn-click', { id: 'migrateCDP', product: 'scd-cdp-portal', page: dashboard })
     this.setState({migrateCDP}, () => {
       ReactTooltip.rebuild()
     });
