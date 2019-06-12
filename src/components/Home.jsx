@@ -151,7 +151,11 @@ class Home extends React.Component {
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
                     {
                       !this.props.network.loadingAddress &&
-                      <Link to="/terms" target="_blank">Terms of Service</Link>
+                        <React.Fragment>
+                          <Link to="/terms" target="_blank">Terms of Service</Link>
+                          <br/>
+                          <a href="https://makerdao.com/en/privacy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                        </React.Fragment>
                     }
                   </div>
                 </div>
