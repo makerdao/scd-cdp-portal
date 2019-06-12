@@ -40,14 +40,14 @@ class Home extends React.Component {
   }
 
   setOpenCDPWizard = () => {
-    mixpanel.track('btn-click', { id: 'openCDP', product: scd-cdp-portal, page: dashboard })
+    mixpanel.track('btn-click', { id: 'openCDP', product: 'scd-cdp-portal', page: dashboard })
     this.setState({wizardOpenCDP: true}, () => {
       ReactTooltip.rebuild()
     });
   }
 
   setOpenMigrate = migrateCDP => {
-    mixpanel.track('btn-click', { id: 'migrateCDP', product: scd-cdp-portalscd-cdp-portal, page: dashboard })
+    mixpanel.track('btn-click', { id: 'migrateCDP', product: 'scd-cdp-portal'scd-cdp-portal, page: dashboard })
     this.setState({migrateCDP}, () => {
       ReactTooltip.rebuild()
     });

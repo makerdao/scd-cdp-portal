@@ -20,7 +20,7 @@ class Routes extends React.Component {
     }
     console.debug(`Tracked: ${this.props.location.pathname}`);
     ReactGA.pageview(this.props.location.pathname);
-    prevProps.mixpanel.track(this.props.location.pathname, { product: scd-cdp-portal })
+    prevProps.mixpanel.track(this.props.location.pathname, { product: 'scd-cdp-portal' })
   }
 
   render() {

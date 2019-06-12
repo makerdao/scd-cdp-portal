@@ -116,7 +116,7 @@ export default class Confirm extends Component {
               </div>
               <div>
                 <button className="bright-style text-btn" onClick={ () => goToStep(1) }>GO BACK</button>
-                <button className="bright-style text-btn text-btn-primary" onClick={ () => {execute(); mixpanel.track('btn-click', { id: 'confirmCDP', collateral: eth, debt: dai, product: scd-cdp-portal, page: createCDP, section: confirmCDP });} } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
+                <button className="bright-style text-btn text-btn-primary" onClick={ () => {execute(); mixpanel.track('btn-click', { id: 'confirmCDP', collateral: eth, debt: dai, product: 'scd-cdp-portal', page: createCDP, section: confirmCDP });} } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
               </div>
             </div>
           </div>
