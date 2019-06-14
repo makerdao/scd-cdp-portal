@@ -67,13 +67,13 @@ export default class NetworkStore {
         const account = await blockchain.getDefaultAccountByIndex(0);
         if (!this.stopIntervals) { // To avoid race condition
           blockchain.setDefaultAccount(account);
-          mixpanelIdentify(account, 'web-wallet')
+          mixpanelIdentify(account, {wallet: 'web-wallet'})
         }
       }
       if (!this.stopIntervals) { // To avoid race condition
         const oldDefaultAccount = this.defaultAccount;
         this.defaultAccount = blockchain.getDefaultAccount();
-        mixpanelIdentify(this.defaultAccount, 'web-wallet')
+        mixpanelIdentify(this.defaultAccount, {wallet: 'web-wallet'})
         if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
           this.rootStore.loadContracts();
         }
@@ -148,7 +148,7 @@ export default class NetworkStore {
                                     );
       const accounts = await blockchain.getAccounts();
       this.hw.addresses = accounts;
-      mixpanelIdentify(accounts[0], {walletType: type})
+      mixpanelIdentify(accounts[0], {wallet: type})
     } catch(e) {
       blockchain.stopProvider();
       this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
