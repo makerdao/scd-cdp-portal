@@ -108,7 +108,7 @@ export default class NewCup extends Component {
 
         <div className="row" style={ {borderBottom: "none"} }>
           <div className="col">
-            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', scd: true })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', product: 'scd-cdp-portal' })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
           </div>
         </div>
       </div>
