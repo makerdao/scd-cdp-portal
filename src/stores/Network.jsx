@@ -6,7 +6,7 @@ import checkIsMobile from 'ismobilejs'
 import * as blockchain from "../utils/blockchain";
 
 // Analytics
-import { mixpanelIdentify } from '../utils/analytics';
+import { mixpanelIdentify } from "../utils/analytics";
 
 export default class NetworkStore {
   @observable stopIntervals = false;
@@ -67,13 +67,13 @@ export default class NetworkStore {
         const account = await blockchain.getDefaultAccountByIndex(0);
         if (!this.stopIntervals) { // To avoid race condition
           blockchain.setDefaultAccount(account);
-          mixpanelIdentify(account, 'web-wallet')
+          mixpanelIdentify(account, {wallet: 'web-wallet'})
         }
       }
       if (!this.stopIntervals) { // To avoid race condition
         const oldDefaultAccount = this.defaultAccount;
         this.defaultAccount = blockchain.getDefaultAccount();
-        mixpanelIdentify(this.defaultAccount, 'hw-wallet')
+        mixpanelIdentify(this.defaultAccount, {wallet: 'web-wallet'})
         if (this.defaultAccount && oldDefaultAccount !== this.defaultAccount) {
           this.rootStore.loadContracts();
         }
@@ -107,12 +107,14 @@ export default class NetworkStore {
 
   // Hardwallets
   showHW = option => {
+    let type = option
     if (option === "ledger") {
       option = `ledger-${localStorage.getItem("loadLedgerLegacy") === "true" ? "legacy" : "live"}`;
+
     }
     this.hw.option = option;
     this.hw.showSelector = true;
-    this.loadHWAddresses();
+    this.loadHWAddresses(type);
   }
 
   hideHw = () => {
@@ -124,7 +126,7 @@ export default class NetworkStore {
     this.hw.network = "";
   }
 
-  loadHWAddresses = async () => {
+  loadHWAddresses = async (type) => {
     this.hw.loading = true;
     this.hw.active = true;
     this.hw.error = false;
@@ -146,6 +148,7 @@ export default class NetworkStore {
                                     );
       const accounts = await blockchain.getAccounts();
       this.hw.addresses = accounts;
+      mixpanelIdentify(accounts[0], {wallet: type})
     } catch(e) {
       blockchain.stopProvider();
       this.hw.error = `Error connecting ${this.hw.option}: ${e.message}`;
