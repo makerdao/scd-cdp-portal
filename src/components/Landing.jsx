@@ -76,7 +76,7 @@ class Landing extends React.Component {
         <div className="landing-body">
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
           {
-            this.props.network.isMobileWallet && <WalletConnectMobile />
+            this.props.network.isMobileWeb3Wallet && <WalletConnectMobile />
           }
           <Slider ref={this.sliderRef} {...settings} className="landing-slider">
             <div className="first-slide">

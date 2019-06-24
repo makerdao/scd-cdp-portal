@@ -21,7 +21,7 @@ export default class NetworkStore {
   @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
   @observable downloadClient = false;
   isMobile = checkIsMobile.any;
-  isMobileWallet = blockchain.isMobileWallet();
+  isMobileWeb3Wallet = blockchain.isMobileWeb3Wallet();
   constructor(rootStore) {
     this.rootStore = rootStore;
   }

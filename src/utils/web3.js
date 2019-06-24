@@ -27,6 +27,9 @@ export const getWebClientProviderName = () => {
   if (window.web3.currentProvider.isTrust)
     return "trust";
 
+  if (window.web3.currentProvider.isQbao)
+    return 'qbao';
+
   if (typeof window.SOFA !== "undefined")
     return "coinbase";
 
