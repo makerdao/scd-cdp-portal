@@ -29,7 +29,6 @@ import web3 from "../utils/web3";
 
 // Analytics
 import { mixpanelInstance as mixpanel } from '../utils/analytics';
-import Dashboard from "./Dashboard";
 
 class DialogContent extends React.Component {
   bottomPadding = () => {
