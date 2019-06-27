@@ -30,6 +30,9 @@ export const getWebClientProviderName = () => {
   if (window.web3.currentProvider.isQbao)
     return 'qbao';
 
+  if (window.web3.currentProvider.isBitpie)
+    return 'bitpie';
+
   if (typeof window.SOFA !== "undefined")
     return "coinbase";
 
