@@ -3,6 +3,7 @@ import React from "react";
 import {observer} from "mobx-react";
 import {Route, Switch, withRouter} from "react-router-dom";
 import ReactGA from 'react-ga';
+import mixpanel from 'mixpanel-browser';
 
 // Components
 import Help from "./Help";
@@ -13,12 +14,14 @@ import Terms from "./Terms";
 
 @withRouter
 @observer
-class App extends React.Component {
+class Routes extends React.Component {
   componentDidUpdate = prevProps => {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       window.scrollTo(0, 0);
     }
+    console.debug(`[Analytics] Tracked: ${this.props.location.pathname}`);
     ReactGA.pageview(this.props.location.pathname);
+    mixpanel.track('Pageview', { product: 'scd-cdp-portal' });
   }
 
   render() {
@@ -34,4 +37,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default Routes;

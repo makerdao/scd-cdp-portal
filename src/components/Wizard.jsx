@@ -133,7 +133,6 @@ class Wizard extends Component {
   }
 
   execute = e => {
-    e.preventDefault();
     this.props.system.lockAndDraw(false, fromWei(this.state.eth), fromWei(this.state.dai));
   }
 
@@ -195,6 +194,7 @@ class Wizard extends Component {
       checkValues: this.checkValues,
       daiText: this.state.daiText,
       error: this.state.error,
+      dai: this.state.dai,
       eth: this.state.eth,
       ethText: this.state.ethText,
       liqPrice: this.state.liqPrice,
@@ -208,7 +208,7 @@ class Wizard extends Component {
     }
 
     return checkIsMobile.any
-      ? <NewCupMobile newCupProps={newCupProps}/>        
+      ? <NewCupMobile newCupProps={newCupProps}/>
       : <NewCup newCupProps={newCupProps}/>;
   }
 
@@ -222,7 +222,8 @@ class Wizard extends Component {
       stabilityFee: stabilityFee,
       steps: this.steps,
       stepsExpanded: this.state.stepsExpanded,
-      toggleExpand: this.toggleExpand
+      toggleExpand: this.toggleExpand,
+      goToStep: this.goToStep
     };
 
     return checkIsMobile.any

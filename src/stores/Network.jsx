@@ -1,9 +1,11 @@
 // Libraries
 import {observable} from "mobx";
 import checkIsMobile from 'ismobilejs'
+import mixpanel from 'mixpanel-browser';
 
 // Utils
 import * as blockchain from "../utils/blockchain";
+import { mixpanelIdentify } from "../utils/analytics";
 
 export default class NetworkStore {
   @observable stopIntervals = false;
@@ -18,7 +20,7 @@ export default class NetworkStore {
   @observable hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
   @observable downloadClient = false;
   isMobile = checkIsMobile.any;
-  isMobileWallet = blockchain.isMobileWallet();
+  isMobileWeb3Wallet = blockchain.isMobileWeb3Wallet();
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -63,7 +65,7 @@ export default class NetworkStore {
       if (this.network && !this.hw.active && accounts && accounts[0] !== blockchain.getDefaultAccount()) {
         const account = await blockchain.getDefaultAccountByIndex(0);
         if (!this.stopIntervals) { // To avoid race condition
-          blockchain.setDefaultAccount(account);
+          this.setDefaultAccount(account);
         }
       }
       if (!this.stopIntervals) { // To avoid race condition
@@ -77,6 +79,28 @@ export default class NetworkStore {
         }
       }
     }, () => {});
+  }
+
+  setDefaultAccount = account => {
+    account = account.toLowerCase();
+    blockchain.setDefaultAccount(account);
+
+    const wallet = this.hw.active && this.hw.option ? this.hw.option.replace(/-(live|legacy)$/i, '') : blockchain.getWebClientProviderName();
+    const mixpanelProps = { wallet };
+    if (wallet === 'ledger') mixpanelProps['ledgerAccountType'] = this.hw.option;
+    mixpanelIdentify(account, mixpanelProps);
+
+    let network = this.network || this.hw.network;
+    if (network === 'main') network = 'mainnet';
+
+    const trackProps = {
+      product: 'scd-cdp-portal',
+      account,
+      network,
+      wallet
+    };
+    if (wallet === 'ledger') trackProps['ledgerAccountType'] = this.hw.option;
+    mixpanel.track('account-change', trackProps);
   }
 
   // Web3 web client
@@ -104,6 +128,7 @@ export default class NetworkStore {
   showHW = option => {
     if (option === "ledger") {
       option = `ledger-${localStorage.getItem("loadLedgerLegacy") === "true" ? "legacy" : "live"}`;
+
     }
     this.hw.option = option;
     this.hw.showSelector = true;
@@ -154,7 +179,7 @@ export default class NetworkStore {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.hw.showSelector = false;
-      blockchain.setDefaultAccount(account.toLowerCase());
+      this.setDefaultAccount(account);
       this.setNetwork();
       this.setNetworkInterval = setInterval(this.setNetwork, 10000);
     } catch(e) {

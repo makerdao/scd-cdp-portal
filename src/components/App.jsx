@@ -16,6 +16,7 @@ import rootStore from "../stores/Root";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
+import { gaInit, mixpanelInit } from '../utils/analytics';
 
 // Styles
 import "../scss/styles.css";
@@ -29,8 +30,9 @@ window.system = rootStore.system;
 window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
-// Google Analytics
-ReactGA.initialize('UA-128164213-1');
+// Analytics
+mixpanelInit();
+gaInit();
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer

@@ -4,6 +4,7 @@ import ReactTooltip from "react-tooltip";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import DocumentTitle from "react-document-title";
+import mixpanel from 'mixpanel-browser';
 
 // Components
 import Dashboard from "./Dashboard";
@@ -37,12 +38,14 @@ class Home extends React.Component {
   }
 
   setOpenCDPWizard = () => {
+    mixpanel.track('btn-click', { id: 'openCDP', product: 'scd-cdp-portal', page: 'dashboard' })
     this.setState({wizardOpenCDP: true}, () => {
       ReactTooltip.rebuild()
     });
   }
 
   setOpenMigrate = migrateCDP => {
+    mixpanel.track('btn-click', { id: 'migrateCDP', product: 'scd-cdp-portal', page: 'dashboard' })
     this.setState({migrateCDP}, () => {
       ReactTooltip.rebuild()
     });
@@ -146,7 +149,11 @@ class Home extends React.Component {
                   <div className="footer col col-no-border typo-cs typo-grid-grey">
                     {
                       !this.props.network.loadingAddress &&
-                      <Link to="/terms" target="_blank">Terms of Service</Link>
+                        <React.Fragment>
+                          <Link to="/terms" target="_blank">Terms of Service</Link>
+                          <br/>
+                          <a href="https://makerdao.com/en/privacy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                        </React.Fragment>
                     }
                   </div>
                 </div>

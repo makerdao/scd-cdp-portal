@@ -75,6 +75,9 @@ class Landing extends React.Component {
 
         <div className="landing-body">
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
+          {
+            this.props.network.isMobileWeb3Wallet && <WalletConnectMobile />
+          }
           <Slider ref={this.sliderRef} {...settings} className="landing-slider">
             <div className="first-slide">
               <div style={{ textAlign: "center" }}>
@@ -84,9 +87,6 @@ class Landing extends React.Component {
                   depositing of collateral and generation of Dai.
                 </p>
                 <img className="preview" src={welcomeHero} alt="CDP Portal" />
-                {
-                  this.props.network.isMobileWallet && <WalletConnectMobile />
-                }
               </div>
             </div>
             <div>

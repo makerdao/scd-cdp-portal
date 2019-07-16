@@ -1,12 +1,13 @@
 // Libraries
 import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
+import mixpanel from 'mixpanel-browser';
 
 // Components
 import InlineNotification from "./InlineNotification";
 
 //Utils
-import {printNumber} from "../utils/helpers";
+import {printNumber, formatAmount} from "../utils/helpers";
 import CupInfoMobile from "./CupInfoMobile";
 
 @inject("system")
@@ -22,6 +23,7 @@ export default class NewCupMobile extends Component {
       checkValues,
       daiText,
       error,
+      dai,
       eth,
       ethText,
       liqPrice,
@@ -59,7 +61,7 @@ export default class NewCupMobile extends Component {
             </div>
           </div>
         </div>
-        
+
         <CupInfoMobile liqPrice={liqPrice} ratio={ratio}/>
 
         <div className="row" style={ {borderBottom: "none"} }>
@@ -69,7 +71,7 @@ export default class NewCupMobile extends Component {
 
         <div className="row" style={ {borderBottom: "none", marginBottom: "40px"}}>
           <div className="col">
-            <button className={"bright-style text-btn text-btn-primary-mobile"} type="submit" disabled={ !submitEnabled }>continue</button>
+            <button className={"bright-style text-btn text-btn-primary-mobile"} onClick={() => mixpanel.track('btn-click', { id: 'collateralize-generate', mobile: true, product: 'scd-cdp-portal', collateral: formatAmount(eth), debt: formatAmount(dai) })} type="submit" disabled={ !submitEnabled }>continue</button>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import {inject, observer} from "mobx-react";
 
 // Utils
 import {getWebClientProviderName} from "../utils/blockchain";
-import walletIcons from './WalletIcons';
+import walletIcons from "./WalletIcons";
 
 @inject("network")
 @observer

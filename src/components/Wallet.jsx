@@ -97,7 +97,7 @@ class Wallet extends React.Component {
             :
               !this.props.network.isConnected
               ?
-                !this.props.network.isMobileWallet && <WalletClientSelector formatClientName={ formatClientName } />
+                !this.props.network.isMobileWeb3Wallet && <WalletClientSelector formatClientName={ formatClientName } />
               :
                 <React.Fragment>
                   {

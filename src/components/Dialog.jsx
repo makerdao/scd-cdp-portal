@@ -4,6 +4,7 @@ import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import ReactGA from 'react-ga';
+import mixpanel from 'mixpanel-browser';
 import checkIsMobile from "ismobilejs";
 
 // Components
@@ -17,6 +18,7 @@ import {
   wmul,
   wdiv,
   formatNumber,
+  formatAmount,
   toBigNumber,
   fromWei,
   toWei,
@@ -297,7 +299,7 @@ class Dialog extends React.Component {
             )
           }
         >
-          { 
+          {
             this.state.ratio.gt(0) && this.state.ratio.toNumber() !== Infinity
               ? printNumber(this.state.ratio.times(100), 2)
               : "--"
@@ -319,7 +321,7 @@ class Dialog extends React.Component {
             required
             step="0.000000000000000001"
             onChange={ e => { this.cond(e.target.value) } }
-            onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } 
+            onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } }
             autoComplete="off"
           />
           { currencyUnit && <span className="unit">{ currencyUnit }</span> }
@@ -502,7 +504,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled || !this.state.ownThisWallet }>Move</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled || !this.state.ownThisWallet } onClick={() => mixpanel.track('btn-click', { id: 'move', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' })}>Move</button>
                 </div>
               </form>
             }
@@ -528,7 +530,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit">Close</button>
+                  <button className="text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'close', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar', payFeeUsing: this.state.govFeeType, collateral: formatAmount(cup.ink), debt: formatAmount(this.props.system.tab(cup)) })}>Close</button>
                 </div>
               </form>
             }
@@ -576,7 +578,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Deposit</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'deposit', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' })}>Deposit</button>
                 </div>
               </form>
             }
@@ -637,7 +639,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Withdraw</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'withdraw', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' })}>Withdraw</button>
                 </div>
               </form>
             }
@@ -685,7 +687,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Generate</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'generate', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' }) }>Generate</button>
                 </div>
               </form>
             }
@@ -756,7 +758,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled }>Payback</button>
+                  <button className="text-btn text-btn-primary" type="submit" disabled={ !this.state.submitEnabled } onClick={() => mixpanel.track('btn-click', { id: 'payback', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' })}>Payback</button>
                 </div>
               </form>
             }
