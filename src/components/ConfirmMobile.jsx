@@ -2,12 +2,10 @@
 import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
+import mixpanel from 'mixpanel-browser';
 
 // Utils
-import {printNumber} from "../utils/helpers";
-
-// Analytics
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
+import {printNumber, formatAmount} from "../utils/helpers";
 
 @inject("profile")
 @inject("system")
@@ -185,7 +183,7 @@ export default class ConfirmMobile extends Component {
                   <button
                     className="bright-style text-btn text-btn-primary-mobile"
                     style={{marginTop: "5px", marginBottom: "15px"}}
-                    onClick={() => { execute(); mixpanel.track('btn-click', { id: 'confirmCDP', mobile: true, collateral: eth, debt: dai, product: 'scd-cdp-portal', page: 'createCDP', section: 'confirmCDP' });  }}
+                    onClick={() => { execute(); mixpanel.track('btn-click', { id: 'confirmCDP', mobile: true, collateral: formatAmount(eth), debt: formatAmount(dai), product: 'scd-cdp-portal', page: 'createCDP', section: 'confirmCDP' });  }}
                     disabled={ !checkTerms }
                   >
                     CREATE CDP

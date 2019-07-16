@@ -4,6 +4,7 @@ import ReactTooltip from "react-tooltip";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import DocumentTitle from "react-document-title";
+import mixpanel from 'mixpanel-browser';
 
 // Components
 import Dashboard from "./Dashboard";
@@ -21,9 +22,6 @@ import StabilityFeeAlert from "./StabilityFeeAlert";
 // Utils
 import {getCurrentProviderName} from "../utils/blockchain";
 import {capitalize} from "../utils/helpers";
-
-// Analytics
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
 
 @inject("network")
 @inject("system")

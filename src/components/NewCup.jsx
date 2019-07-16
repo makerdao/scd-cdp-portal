@@ -1,16 +1,14 @@
 // Libraries
 import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
+import mixpanel from 'mixpanel-browser';
 
 // Components
 import InlineNotification from "./InlineNotification";
 import TooltipHint from "./TooltipHint";
 
 //Utils
-import {WAD, printNumber} from "../utils/helpers";
-
-// Analytics
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
+import {WAD, printNumber, formatAmount} from "../utils/helpers";
 
 @inject("system")
 @observer
@@ -20,6 +18,8 @@ export default class NewCup extends Component {
       checkValues,
       daiText,
       error,
+      dai,
+      eth,
       ethText,
       liqPrice,
       maxDaiAvail,
@@ -108,7 +108,7 @@ export default class NewCup extends Component {
 
         <div className="row" style={ {borderBottom: "none"} }>
           <div className="col">
-            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize_generate', product: 'scd-cdp-portal' })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize-generate', product: 'scd-cdp-portal', collateral: formatAmount(eth), debt: formatAmount(dai) })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
           </div>
         </div>
       </div>

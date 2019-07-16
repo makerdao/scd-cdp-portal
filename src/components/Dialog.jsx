@@ -4,6 +4,7 @@ import {intercept} from "mobx";
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 import ReactGA from 'react-ga';
+import mixpanel from 'mixpanel-browser';
 import checkIsMobile from "ismobilejs";
 
 // Components
@@ -17,6 +18,7 @@ import {
   wmul,
   wdiv,
   formatNumber,
+  formatAmount,
   toBigNumber,
   fromWei,
   toWei,
@@ -26,9 +28,6 @@ import {
 } from "../utils/helpers";
 import * as blockchain from "../utils/blockchain";
 import web3 from "../utils/web3";
-
-// Analytics
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
 
 class DialogContent extends React.Component {
   bottomPadding = () => {
@@ -531,7 +530,7 @@ class Dialog extends React.Component {
                 </div>
                 <div>
                   <button className="text-btn" type="submit" onClick={ this.props.dialog.handleCloseDialog }>Cancel</button>
-                  <button className="text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'close', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar' })}>Close</button>
+                  <button className="text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'close', product: 'scd-cdp-portal', page: 'Dashboard', section: 'sidebar', payFeeUsing: this.state.govFeeType, collateral: formatAmount(cup.ink), debt: formatAmount(this.props.system.tab(cup)) })}>Close</button>
                 </div>
               </form>
             }

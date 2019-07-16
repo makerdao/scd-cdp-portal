@@ -35,21 +35,23 @@ const config = {
   }
 }[env];
 
-const mixpanelInit = () => {
+export const mixpanelInit = () => {
   console.debug(
     `[Mixpanel] Tracking initialized for ${env} env using ${
       config.mixpanel.token
     }`
   );
   mixpanel.init(config.mixpanel.token, config.mixpanel.config);
-  mixpanel.track('Pageview');
-  return mixpanel;
+  mixpanel.track('Pageview', { product: 'scd-cdp-portal' });
 };
 
-export const mixpanelIdentify = (id, walletType) => {
+export const mixpanelIdentify = (id, props = null) => {
   if (typeof mixpanel.config === 'undefined') return;
+  console.debug(
+    `[Mixpanel] Identifying as ${id} ${props && props.wallet ? `using wallet ${props.wallet}` : ''}`
+  );
   mixpanel.identify(id);
-  mixpanel.people.set({ walletType });
+  if (props) mixpanel.people.set(props);
 };
 
 export const userSnapInit = () => {
@@ -77,8 +79,4 @@ export const gaInit = () => {
     `[GA] Tracking initialized for ${env} env using ${config.gaTrackingId}`
   );
   ReactGA.initialize(config.gaTrackingId);
-  return ReactGA;
 };
-
-gaInit()
-export const mixpanelInstance = mixpanelInit()
