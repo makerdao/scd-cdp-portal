@@ -10,13 +10,13 @@ import Notify from "./Notify";
 import NotifySetUp from "./NotifySetUp";
 import PriceModal from "./PriceModal";
 import Routes from "./Routes";
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
 
 // Stores
 import rootStore from "../stores/Root";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
+import { gaInit, mixpanelInit } from '../utils/analytics';
 
 // Styles
 import "../scss/styles.css";
@@ -30,7 +30,9 @@ window.system = rootStore.system;
 window.transactions = rootStore.transactions;
 window.content = rootStore.content;
 
-// Google Analytics
+// Analytics
+mixpanelInit();
+gaInit();
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 @observer
@@ -40,7 +42,7 @@ class App extends React.Component {
       <Provider network={rootStore.network} profile={rootStore.profile} transactions={rootStore.transactions} system={rootStore.system} dialog={rootStore.dialog} content={rootStore.content}>
         <BrowserRouter>
           <React.Fragment>
-            <Routes mixpanel={mixpanel} />
+            <Routes />
             <Notify ref="notificator" />
             <NotifySetUp />
             <Modal show={rootStore.transactions.priceModal.open} close={rootStore.transactions.closePriceModal}>

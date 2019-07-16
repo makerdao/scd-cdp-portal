@@ -2,12 +2,10 @@
 import React, {Component} from "react";
 import {observer} from "mobx-react";
 import {Link} from "react-router-dom";
+import mixpanel from 'mixpanel-browser';
 
 // Utils
-import {printNumber} from "../utils/helpers";
-
-// Analytics
-import { mixpanelInstance as mixpanel } from '../utils/analytics';
+import {printNumber, formatAmount} from "../utils/helpers";
 
 @observer
 export default class Confirm extends Component {
@@ -116,7 +114,7 @@ export default class Confirm extends Component {
               </div>
               <div>
                 <button className="bright-style text-btn" onClick={ () => goToStep(1) }>GO BACK</button>
-                <button className="bright-style text-btn text-btn-primary" onClick={ () => {execute(); mixpanel.track('btn-click', { id: 'confirmCDP', collateral: eth, debt: dai, product: 'scd-cdp-portal', page: 'createCDP', section: 'confirmCDP' });} } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
+                <button className="bright-style text-btn text-btn-primary" onClick={ () => {execute(); mixpanel.track('btn-click', { id: 'confirmCDP', collateral: formatAmount(eth), debt: formatAmount(dai), product: 'scd-cdp-portal', page: 'createCDP', section: 'confirmCDP' });} } disabled={ !checkTerms }>FINALIZE AND CREATE CDP</button>
               </div>
             </div>
           </div>

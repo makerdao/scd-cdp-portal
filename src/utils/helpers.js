@@ -37,6 +37,8 @@ export const addressToBytes32 = (x, prefix = true) => {
   return y;
 }
 
+export const formatAmount = amount => amount ? web3.fromWei(toBigNumber(amount).round(0)).valueOf() : '';
+
 export const formatNumber = (number, decimals = false, isWei = true, round = false) => {
   web3.BigNumber.config({
     ROUNDING_MODE: web3.BigNumber.ROUND_HALF_UP,
