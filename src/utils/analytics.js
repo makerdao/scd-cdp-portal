@@ -1,7 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import ReactGA from 'react-ga';
 
-const env = process.env.NODE_ENV === 'production' ? 'prod' : 'test';
+const env = process.env.DEPLOY_ENV === 'production' ? 'prod' : 'test';
 const config = {
   test: {
     userSnap: {
