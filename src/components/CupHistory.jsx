@@ -51,7 +51,7 @@ class CupHistory extends React.Component {
                 !this.props.history
                 ?
                   <div className="col-md-12 system-status">
-                    <div>History is not available at this moment</div>
+                    <div>History information is currently not available</div>
                   </div>
                 :
                 <React.Fragment>

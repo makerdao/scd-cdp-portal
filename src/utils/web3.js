@@ -3,6 +3,7 @@ import Web3 from "web3";
 import * as Web3ProviderEngine from "web3-provider-engine/dist/es5";
 import * as RpcSource from "web3-provider-engine/dist/es5/subproviders/rpc";
 import Transport from "@ledgerhq/hw-transport-u2f";
+import checkIsMobile from "ismobilejs";
 
 // Utils
 import LedgerSubProvider from "./ledger-subprovider";
@@ -13,13 +14,19 @@ import * as settings from "../settings";
 
 export const getWebClientProviderName = () => {
   if (window.imToken)
-    return 'imtoken';
+    return "imtoken";
+
+  if (window.ethereum && window.ethereum.isStatus)
+    return "status";
 
   if (!window.web3 || typeof window.web3.currentProvider === "undefined")
     return "";
 
   if (window.web3.currentProvider.isAlphaWallet)
     return "alphawallet";
+
+  if (window.web3.currentProvider.isMetaMask && checkIsMobile.any)
+    return "metamask-mobile";
 
   if (window.web3.currentProvider.isMetaMask)
     return "metamask";
@@ -28,10 +35,10 @@ export const getWebClientProviderName = () => {
     return "trust";
 
   if (window.web3.currentProvider.isQbao)
-    return 'qbao';
+    return "qbao";
 
   if (window.web3.currentProvider.isBitpie)
-    return 'bitpie';
+    return "bitpie";
 
   if (typeof window.SOFA !== "undefined")
     return "coinbase";

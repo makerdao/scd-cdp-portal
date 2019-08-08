@@ -53,6 +53,7 @@ export const getCup = id => {
 export const getFromService = (network, query) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    xhr.timeout = settings.chain[network].serviceTimeout;
     xhr.open("POST", settings.chain[network].service, true);
     xhr.setRequestHeader("Content-type", "application/graphql");
     xhr.onreadystatechange = () => {
