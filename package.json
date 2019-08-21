@@ -40,8 +40,10 @@
     "web3-provider-engine": "^14.0.4"
   },
   "scripts": {
+    "build-css": "node-sass-chokidar src/scss/ -o src/scss/ --recursive",
+    "watch-css": "npm run build-css && node-sass-chokidar src/scss/ -o src/scss/ --recursive --watch",
     "start": "craco start",
-    "build": "craco build",
+    "build": "yarn build-css && craco build",
     "test": "craco test"
   },
   "eslintConfig": {
@@ -64,6 +66,7 @@
     "fancy-log": "^1.3.3",
     "gulp": "^4.0.2",
     "gulp-cloudfront-invalidate": "^0.1.5",
-    "gulp-s3-upload": "^1.7.3"
+    "gulp-s3-upload": "^1.7.3",
+    "node-sass-chokidar": "^1.3.5"
   }
 }
