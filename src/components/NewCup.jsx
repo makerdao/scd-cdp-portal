@@ -12,7 +12,7 @@ import {WAD, printNumber, formatAmount} from "../utils/helpers";
 
 @inject("system")
 @observer
-export default class NewCup extends Component {
+class NewCup extends Component {
   render() {
     const {
       checkValues,
@@ -115,3 +115,5 @@ export default class NewCup extends Component {
     );
   }
 }
+
+export default NewCup;

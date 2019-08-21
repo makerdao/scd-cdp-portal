@@ -10,7 +10,7 @@ import {printNumber, formatAmount} from "../utils/helpers";
 @inject("profile")
 @inject("system")
 @observer
-export default class ConfirmMobile extends Component {
+class ConfirmMobile extends Component {
   usdValue = eth => {
     const ethPrice = this.props.system.pip.val / 1000000000000000000;
     return eth * ethPrice;
@@ -196,3 +196,5 @@ export default class ConfirmMobile extends Component {
     );
   }
 }
+
+export default ConfirmMobile;

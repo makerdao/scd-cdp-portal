@@ -8,7 +8,7 @@ import {printNumber, WAD, fromWei, toWei} from "../utils/helpers";
 @inject("system")
 @inject("dialog")
 @observer
-export default class CupInfoMobile extends Component {
+class CupInfoMobile extends Component {
   ratio = cup => {
     if (cup && cup.ratio) {
       return (
@@ -175,3 +175,5 @@ export default class CupInfoMobile extends Component {
     );
   }
 }
+
+export default CupInfoMobile;

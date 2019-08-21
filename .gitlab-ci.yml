@@ -47,9 +47,9 @@ build:
   stage: build
   script:
     - echo "Building project for staging environment at $DEPLOYMENT_URL_STAGING"
-    - DEPLOY_ENV=staging PUBLIC_URL=$DEPLOYMENT_URL_STAGING npm run build
+    - DEPLOY_ENV=staging PUBLIC_URL=$DEPLOYMENT_URL_STAGING yarn build && mv build build-staging
     - echo "Building project for production environment at $DEPLOYMENT_URL_PRODUCTION"
-    - DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false npm run build
+    - DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false yarn build && mv build build-production
   only:
     - master
   artifacts:

@@ -1,7 +1,6 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
 const gulp = require('gulp');
-const surge = require('gulp-surge');
 const s3 = require('gulp-s3-upload')({ useIAM: false }, { maxRetries: 5 });
 const cloudfront = require('gulp-cloudfront-invalidate');
 const log = require('fancy-log');
@@ -54,20 +53,3 @@ gulp.task(
   'deploy-aws',
   gulp.series('aws-s3-upload', 'aws-cloudfront-invalidate')
 );
-
-gulp.task('deploy-surge-kovan', () => {
-  require('fs')
-    .createReadStream('./build/index.html')
-    .pipe(fs.createWriteStream('./build/200.html'));
-  return surge({ project: './build', domain: 'https://cdp-portal.surge.sh' });
-});
-
-gulp.task('deploy-surge-main', () => {
-  require('fs')
-    .createReadStream('./build/index.html')
-    .pipe(fs.createWriteStream('./build/200.html'));
-  return surge({
-    project: './build',
-    domain: 'https://cdp-portal-mainnet.surge.sh'
-  });
-});
