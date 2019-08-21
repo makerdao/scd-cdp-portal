@@ -12,7 +12,7 @@ import CupInfoMobile from "./CupInfoMobile";
 
 @inject("system")
 @observer
-export default class NewCupMobile extends Component {
+class NewCupMobile extends Component {
   usdValue = eth => {
     const ethPrice = this.props.system.pip.val / 1000000000000000000;
     return eth * ethPrice;
@@ -78,3 +78,5 @@ export default class NewCupMobile extends Component {
     );
   }
 }
+
+export default NewCupMobile;

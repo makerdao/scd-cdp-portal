@@ -43,6 +43,10 @@ class WalletClientSelector extends React.Component {
             <div className="provider-icon">{ walletIcons["trezor"] }</div>
             Trezor
           </a>
+          <a href="#action" onClick={ e => { e.preventDefault(); this.props.network.startWalletLink() } }>
+            <div className="provider-icon">{ walletIcons["walletlink"] }</div>
+            Coinbase Wallet
+          </a>
         </section>
       </div>
     )

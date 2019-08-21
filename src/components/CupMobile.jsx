@@ -1,5 +1,5 @@
 // Libraries
-import React from "react";
+import React, {Component} from "react";
 import {inject, observer} from "mobx-react";
 
 // Components
@@ -14,7 +14,7 @@ import {printNumber, wmul} from "../utils/helpers";
 @inject("system")
 @inject("dialog")
 @observer
-export default class CupMobile extends React.Component {
+class CupMobile extends Component {
   componentDidMount() {
     TooltipHint.rebuildTooltips();
   }
@@ -166,3 +166,5 @@ export default class CupMobile extends React.Component {
     )
   }
 }
+
+export default CupMobile;

@@ -190,6 +190,8 @@ export const formatClientName = name => {
       return "MetaMask";
     case "coinbase":
       return "Coinbase Wallet";
+    case "walletlink":
+      return "Coinbase Wallet";
     case "web":
       let webClientName = getWebClientProviderName();
       return webClientName === "metamask" ? "MetaMask" : capitalize(webClientName);

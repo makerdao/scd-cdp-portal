@@ -8,7 +8,7 @@ import mixpanel from 'mixpanel-browser';
 import {printNumber, formatAmount} from "../utils/helpers";
 
 @observer
-export default class Confirm extends Component {
+class Confirm extends Component {
   render() {
     const {
       check,
@@ -122,3 +122,5 @@ export default class Confirm extends Component {
     );
   }
 }
+
+export default Confirm;

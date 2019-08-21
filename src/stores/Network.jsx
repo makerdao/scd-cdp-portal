@@ -2,10 +2,14 @@
 import {observable} from "mobx";
 import checkIsMobile from 'ismobilejs'
 import mixpanel from 'mixpanel-browser';
+import WalletLink from "walletlink";
 
 // Utils
 import * as blockchain from "../utils/blockchain";
 import { mixpanelIdentify } from "../utils/analytics";
+
+// Settings
+import * as settings from "../settings";
 
 export default class NetworkStore {
   @observable stopIntervals = false;
@@ -21,6 +25,7 @@ export default class NetworkStore {
   @observable downloadClient = false;
   isMobile = checkIsMobile.any;
   isMobileWeb3Wallet = blockchain.isMobileWeb3Wallet();
+  walletLinkProvider = null;
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -41,6 +46,7 @@ export default class NetworkStore {
   }
 
   stopNetwork = () => {
+    window.actualCurrentProvider = null;
     this.stopIntervals = true;
     blockchain.stopProvider();
     clearInterval(this.rootStore.interval);
@@ -49,7 +55,7 @@ export default class NetworkStore {
     this.rootStore.intervalAggregatedValues = null;
     clearInterval(this.setAccountInterval);
     this.setAccountInterval = null;
-    clearInterval(this.setNetworkInterval);
+    // clearInterval(this.setNetworkInterval);
     this.setNetworkInterval = null;
     this.network = "";
     this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
@@ -101,19 +107,21 @@ export default class NetworkStore {
     };
     if (wallet === 'ledger') trackProps['ledgerAccountType'] = this.hw.option;
     mixpanel.track('account-change', trackProps);
+
+    console.debug(`Detected wallet: ${wallet}`);
   }
 
   // Web3 web client
-  setWeb3WebClient = async () => {
+  setWeb3WebClient = async (specificProvider = null) => {
     try {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.waitingForAccessApproval = typeof window.ethereum !== "undefined";
-      const provider = await blockchain.setWebClientWeb3();
+      const provider = await blockchain.setWebClientWeb3(specificProvider);
       this.waitingForAccessApproval = false;
       await blockchain.setWebClientProvider(provider);
       this.setNetwork();
-      this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+      // this.setNetworkInterval = setInterval(this.setNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
       this.waitingForAccessApproval = false;
@@ -122,6 +130,31 @@ export default class NetworkStore {
       }
       console.debug(e);
     }
+  }
+
+  startWalletLink = async () => {
+    const chainId = 1;
+    const network = (chainId === 1 ? "main" : "kovan");
+    const rpcUrl = settings.chain[network].nodeURL;
+
+    if (!this.walletLinkProvider) {
+      console.log('[WalletLink] Creating new provider instance');
+      console.log(`[WalletLink] Using RPC URL: ${rpcUrl}`);
+      console.log(`[WalletLink] Using chain id: ${chainId}`);
+      const walletLink = new WalletLink({
+        appName: "CDP Portal",
+        appLogoUrl: `${window.location.protocol}//${window.location.hostname}/static/dai-400px.png`
+      });
+      this.walletLinkProvider = walletLink.makeWeb3Provider(rpcUrl, chainId);
+
+      this.walletLinkProvider.on('accountsChanged', accounts => {
+        console.debug('[WalletLink] accountsChanged:', accounts);
+        this.setDefaultAccount(accounts[0]);
+      });
+    }
+
+    this.network = network;
+    this.setWeb3WebClient(this.walletLinkProvider);
   }
 
   // Hardwallets
@@ -181,7 +214,7 @@ export default class NetworkStore {
       this.hw.showSelector = false;
       this.setDefaultAccount(account);
       this.setNetwork();
-      this.setNetworkInterval = setInterval(this.setNetwork, 10000);
+      // this.setNetworkInterval = setInterval(this.setNetwork, 10000);
     } catch(e) {
       this.loadingAddress = false;
       this.hw.showSelector = true;
