@@ -205,8 +205,8 @@ export const setHWProvider = (device, network, path, accountsOffset = 0, account
   return web3.setHWProvider(device, network, path, accountsOffset = 0, accountsLength);
 }
 
-export const setWebClientWeb3 = () => {
-  return web3.setWebClientWeb3();
+export const setWebClientWeb3 = (specificProvider = null) => {
+  return web3.setWebClientWeb3(specificProvider);
 }
 
 export const setWebClientProvider = provider => {
@@ -253,7 +253,7 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
                 console.debug("res.hash:", res.hash);
                 network = "private";
             }
-            if (actualNetwork !== network) {
+            // if (actualNetwork !== network) {
               resolve({
                 status: 1,
                 data: {
@@ -262,7 +262,7 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
                   latestBlock: 0
                 }
               });
-            }
+            // }
           }, () => {
             if (actualNetwork !== network) {
               resolve({

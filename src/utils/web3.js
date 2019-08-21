@@ -25,6 +25,9 @@ export const getWebClientProviderName = () => {
   if (window.web3.currentProvider.isAlphaWallet)
     return "alphawallet";
 
+  if (window.actualCurrentProvider && window.actualCurrentProvider.isWalletLink)
+    return "walletlink";
+
   if (window.web3.currentProvider.isMetaMask && checkIsMobile.any)
     return "metamask-mobile";
 
@@ -90,11 +93,20 @@ class Web3Extended extends Web3 {
     });
   }
 
-  setWebClientWeb3 = () => {
+  setWebClientWeb3 = (specificProvider = null) => {
     this.stop();
     return new Promise(async (resolve, reject) => {
       try {
-        if (window.web3 || window.ethereum) {
+        if (specificProvider) {
+          try {
+            if (typeof specificProvider.enable === 'function') {
+              await specificProvider.enable();
+            }
+            resolve(specificProvider);
+          } catch (error) {
+            reject(new Error("User denied account access"));
+          }
+        } else if (window.web3 || window.ethereum) {
           try {
             let provider;
             if (window.ethereum) {
@@ -121,6 +133,7 @@ class Web3Extended extends Web3 {
       try {
         this.setProvider(provider);
         this.useLogs = true;
+        window.actualCurrentProvider = provider;
         this.currentProvider.name = getWebClientProviderName();
         resolve(true);
       } catch (error) {
