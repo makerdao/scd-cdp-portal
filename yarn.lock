@@ -6906,10 +6906,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-ismobilejs@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ismobilejs/-/ismobilejs-1.0.2.tgz#ad31e7fe8ac49e2a9b841fbaa769ade63f7345b2"
-  integrity sha512-8bbp9XCpgQ3rgfTU1heQfEvoPrg5Qq3MwGEHn88m/tWIbW3DdE00tqSEGgyrF8QMdM82SvjK7JVD+wDvFWJ01Q==
+ismobilejs@^0.5.1:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/ismobilejs/-/ismobilejs-0.5.2.tgz#e81bacf6187c532ad8348355f4fecd6e6adfdce1"
+  integrity sha512-ta9UdV60xVZk/ZafFtSFslQaE76SvNkcs1r73d2PVR21zVzx9xuYv9tNe4MxA1NN7WoeCc2RjGot3Bz1eHDx3Q==
 
 isobject@^2.0.0:
   version "2.1.0"
