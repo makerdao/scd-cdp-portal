@@ -47,6 +47,13 @@ class Wallet extends React.Component {
     this.setState({ sendToken: null });
   }
 
+  logOut = e => {
+    e.preventDefault();
+    localStorage.removeItem("__WalletLink__:https://www.walletlink.org:SessionId");
+    localStorage.removeItem("__WalletLink__:https://www.walletlink.org:Addresses");
+    window.location = '/';
+  }
+
   tokenName = token => token.replace("gov", "mkr").toUpperCase();
 
   renderWalletOptions = () => {
@@ -134,7 +141,7 @@ class Wallet extends React.Component {
                                 <Link to="/help">
                                   Help
                                 </Link>
-                                <a href="#action" onClick={ e => { e.preventDefault(); window.location = '/'; } }>Log Out</a>
+                                <a href="#action" onClick={ this.logOut }>Log Out</a>
                               </MenuFooter>
                             </DropdownMenu>
                             <span className="wallet-id">{ etherscanAddress(this.props.network.network, `${this.props.network.defaultAccount.substring(0, 8)}...${this.props.network.defaultAccount.substring(36, 42)}`, this.props.network.defaultAccount)}</span>
