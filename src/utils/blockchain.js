@@ -220,20 +220,6 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
     let isConnected = null;
     getNode().then(r => {
       isConnected = true;
-      getBlock("latest").then(res => {
-        if (res.number >= this.latestBlock) {
-          resolve({
-            status: 0,
-            data: {
-              latestBlock: res.number,
-              outOfSync: ((new Date().getTime() / 1000) - res.timestamp) > 600
-            }
-          });
-        }
-      });
-      // because you have another then after this.
-      // The best way to handle is to return isConnect;
-      return null;
     }, () => {
       isConnected = false;
     }).then(() => {
