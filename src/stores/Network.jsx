@@ -147,7 +147,7 @@ export default class NetworkStore {
 
       this.walletLinkProvider.on('accountsChanged', accounts => {
         console.debug('[WalletLink] accountsChanged:', accounts);
-        this.setDefaultAccount(accounts[0]);
+        setTimeout(() => this.setDefaultAccount(accounts[0]), 1000);
       });
     }
 
