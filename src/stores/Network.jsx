@@ -54,7 +54,7 @@ export default class NetworkStore {
     this.rootStore.intervalAggregatedValues = null;
     clearInterval(this.setAccountInterval);
     this.setAccountInterval = null;
-    // clearInterval(this.setNetworkInterval);
+    clearInterval(this.setNetworkInterval);
     this.setNetworkInterval = null;
     this.network = "";
     this.hw = {active: false, showSelector: false, option: null, derivationPath: null, addresses: [], loading: false, error: null, network: ""};
@@ -110,16 +110,16 @@ export default class NetworkStore {
   }
 
   // Web3 web client
-  setWeb3WebClient = async (specificProvider = null) => {
+  setWeb3WebClient = async () => {
     try {
       this.stopIntervals = false;
       this.loadingAddress = true;
       this.waitingForAccessApproval = typeof window.ethereum !== "undefined";
-      const provider = await blockchain.setWebClientWeb3(specificProvider);
+      const provider = await blockchain.setWebClientWeb3();
       this.waitingForAccessApproval = false;
       await blockchain.setWebClientProvider(provider);
       this.setNetwork();
-      // this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+      this.setNetworkInterval = setInterval(this.setNetwork, 3000);
     } catch (e) {
       this.loadingAddress = false;
       this.waitingForAccessApproval = false;
@@ -151,8 +151,20 @@ export default class NetworkStore {
       });
     }
 
-    this.network = network;
-    this.setWeb3WebClient(this.walletLinkProvider);
+    try {
+      this.stopIntervals = false;
+      this.loadingAddress = true;
+      this.waitingForAccessApproval = true;
+      const provider = await blockchain.setWebClientWeb3(this.walletLinkProvider);
+      this.waitingForAccessApproval = false;
+      await blockchain.setWebClientProvider(provider);
+      this.setNetwork();
+      this.setNetworkInterval = setInterval(this.setNetwork, 3000);
+    } catch (e) {
+      this.loadingAddress = false;
+      this.waitingForAccessApproval = false;
+      console.debug('[WalletLink] Error:', e);
+    }
   }
 
   // Hardwallets
@@ -212,7 +224,7 @@ export default class NetworkStore {
       this.hw.showSelector = false;
       this.setDefaultAccount(account);
       this.setNetwork();
-      // this.setNetworkInterval = setInterval(this.setNetwork, 10000);
+      this.setNetworkInterval = setInterval(this.setNetwork, 10000);
     } catch(e) {
       this.loadingAddress = false;
       this.hw.showSelector = true;

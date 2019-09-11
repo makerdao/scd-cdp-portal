@@ -239,7 +239,7 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
                 console.debug("res.hash:", res.hash);
                 network = "private";
             }
-            // if (actualNetwork !== network) {
+            if (actualNetwork !== network) {
               resolve({
                 status: 1,
                 data: {
@@ -248,7 +248,7 @@ export const checkNetwork = (actualIsConnected, actualNetwork) => {
                   latestBlock: 0
                 }
               });
-            // }
+            }
           }, () => {
             if (actualNetwork !== network) {
               resolve({
