@@ -45,7 +45,7 @@ export default class NetworkStore {
   }
 
   stopNetwork = () => {
-    window.actualCurrentProvider = null;
+    window.activeProvider = null;
     this.stopIntervals = true;
     blockchain.stopProvider();
     clearInterval(this.rootStore.interval);

@@ -25,7 +25,7 @@ export const getWebClientProviderName = () => {
   if (window.web3.currentProvider.isAlphaWallet)
     return "alphawallet";
 
-  if (window.actualCurrentProvider && window.actualCurrentProvider.isWalletLink)
+  if (window.activeProvider && window.activeProvider.isWalletLink)
     return "walletlink";
 
   if (window.web3.currentProvider.isMetaMask && checkIsMobile.any)
@@ -133,7 +133,7 @@ class Web3Extended extends Web3 {
       try {
         this.setProvider(provider);
         this.useLogs = false;
-        window.actualCurrentProvider = provider;
+        window.activeProvider = provider;
         this.currentProvider.name = getWebClientProviderName();
         resolve(true);
       } catch (error) {
