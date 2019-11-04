@@ -98,3 +98,12 @@
     padding-right: 15px !important;
   }
 }
+
+// General notifications
+.general-notifications .inline-notification {
+  margin: 0.5rem 0 0.7rem;
+  min-width: 100%;
+}
+.main-column > div.row.general-notifications {
+  padding: 1.7em 3.4em 1.5em;
+}

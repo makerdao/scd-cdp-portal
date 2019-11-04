@@ -17,7 +17,7 @@ import Wallet from "./Wallet";
 import Welcome from "./Welcome";
 import Wizard from "./Wizard";
 import Footer from "./Footer";
-import StabilityFeeAlert from "./StabilityFeeAlert";
+import GeneralNotifications from "./GeneralNotifications";
 
 // Utils
 import {getCurrentProviderName} from "../utils/blockchain";
@@ -62,7 +62,7 @@ class Home extends React.Component {
             }
             <main className="main-column">
               {
-                <StabilityFeeAlert />
+                <GeneralNotifications />
               }
               {
                 !this.props.network.isConnected || !this.props.network.defaultAccount
