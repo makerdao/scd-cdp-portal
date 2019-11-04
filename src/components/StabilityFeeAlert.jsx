@@ -14,12 +14,10 @@ class StabilityFeeAlert extends React.Component {
       this.props.content.shouldShowStabilityFeeAlert() &&
         (this.props.network.isConnected ||
          this.props.network.defaultAccount) &&
-        <div className="row">
           <InlineNotification
             message={this.props.content.stabilityFeeContent()}
             onCloseButtonClick={ () => this.props.content.hideStabilityFeeContent()}
           />
-        </div>
     )
   }
 }

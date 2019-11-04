@@ -14,7 +14,7 @@ import * as settings from "../settings";
 import contentTerms from "../assets/json/terms.json";
 
 export default class ContentStore {
-  @observable content = { faq: {}, tooltips: {} }
+  @observable content = { faq: {}, tooltips: {}, notifications: {} }
   @observable contentLoaded = false
   @observable showNotification = false
 
@@ -25,6 +25,18 @@ export default class ContentStore {
         this.content = res.data || null;
         this.contentLoaded = true;
         this.showNotification = !localStorage.getItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`);
+
+        // General notifications
+        this.content.notifications = {};
+        for (let key in this.content.faq) {
+          if (key.substr(0, 13) === 'notification-' && key.substr(-3) === '-en')
+            this.content.notifications[key] = {
+              markdown: this.content.faq[key].markdown,
+              content: compiler(this.content.faq[key].markdown),
+              show: !localStorage.getItem(`NotificationClosed-${key}-${this.content.faq[key].markdown}`)
+            };
+        }
+
         ReactTooltip.rebuild();
       });
   }
@@ -67,16 +79,25 @@ export default class ContentStore {
   }
 
   stabilityFeeMarkdown = () => (this.getHelpItem('stability-fee-information') || {}).markdown
-
   stabilityFeeContent = () => this.stabilityFeeMarkdown() && compiler(this.stabilityFeeMarkdown());
-
   shouldShowStabilityFeeAlert = () => {
     return this.showNotification && !!this.stabilityFeeMarkdown
   }
-
   hideStabilityFeeContent = () => {
     localStorage.setItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`, true);
     this.showNotification = false;
+  }
+
+  getGeneralNotifications = () => this.content.notifications;
+  hideGeneralNotification = key => {
+    localStorage.setItem(`NotificationClosed-${key}-${this.content.notifications[key].markdown}`, true);
+    this.content.notifications[key].show = false;
+  }
+  shouldShowGeneralNotifications = () => {
+    for(let key in this.content.notifications) {
+      if (this.content.notifications[key].show) return true;
+    }
+    return false;
   }
 
   getHelpItem = helpId => {
