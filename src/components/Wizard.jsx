@@ -57,8 +57,8 @@ class Wizard extends Component {
                       tip: <TooltipHint tipKey="wizard-convert-weth-to-peth" />
                     },
                     { text: "CDP collateralized with PETH - Your converted ETH is locked" },
-                    { text: "DAI generated -  Your requested DAI is generated" },
-                    { text: "DAI transferred - Your requested DAI is transferred to your wallet" }
+                    { text: "SAI generated -  Your requested SAI is generated" },
+                    { text: "SAI transferred - Your requested SAI is transferred to your wallet" }
                   ];
     if (this.props.profile.proxy && this.props.profile.proxy !== -1) {
       steps.shift();
@@ -105,14 +105,14 @@ class Wizard extends Component {
 
         if (state.eth.gt(0) && state.dai.gt(0)) {
           if (this.props.system.sin.totalSupply.add(state.dai).gt(this.props.system.tub.cap)) {
-            state.error = "The amount of DAI you are trying to generate exceeds the current system debt ceiling.";
+            state.error = "The amount of SAI you are trying to generate exceeds the current system debt ceiling.";
           } else if (state.dai.gt(state.maxDaiAvail)) {
-            state.error = "The amount of ETH to be deposited is not enough to draw this amount of DAI.";
+            state.error = "The amount of ETH to be deposited is not enough to draw this amount of SAI.";
           } else {
             state.liqPrice = this.props.system.calculateLiquidationPrice(state.skr, state.dai);
             state.ratio = this.props.system.calculateRatio(state.skr, state.dai);
             if (state.ratio.lt(WAD.times(2))) {
-              state.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
+              state.warning = "The amount of SAI you are trying to generate against the collateral is putting your CDP at risk.";
             }
             state.submitEnabled = true;
           }
@@ -182,7 +182,7 @@ class Wizard extends Component {
       : (
         <header className="col" style={ {borderBottom: "none"} }>
           <Steps current={this.state.step - 1}>
-            <Step title="Collateralize &amp; generate DAI" icon={<StepIcon step="1" />} />
+            <Step title="Collateralize &amp; generate SAI" icon={<StepIcon step="1" />} />
             <Step title="Confirm details" icon={<StepIcon step="2" />} />
           </Steps>
         </header>

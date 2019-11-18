@@ -15,7 +15,7 @@ class Footer extends React.Component {
             <div className="logo-center"><img src={ makerLogoFooter } alt="Maker" />Maker</div>
           </div>
           <p>
-            The Dai Credit System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />
+            The Sai Credit System was developed by <a href="https://www.makerdao.com">Maker</a>.<br />
             Our team consists of developers, economists and designers from all over the world. Our decentralized autonomous organization is governed by our token holders.
           </p>
           <ul>
