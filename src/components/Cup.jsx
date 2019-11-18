@@ -31,11 +31,11 @@ class Cup extends React.Component {
             },
       draw: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false && cup.ink.gt(0) && cup.safe,
-              helper: "Create Dai against a CDP"
+              helper: "Create Sai against a CDP"
             },
       wipe: {
               active: this.props.system.tub.off === false && cup.art.gt(0),
-              helper: "Use Dai to cancel CDP debt"
+              helper: "Use Sai to cancel CDP debt"
             },
       shut: {
               active: this.props.system.pip.val.gt(0) && this.props.system.tub.off === false,
@@ -226,7 +226,7 @@ class Cup extends React.Component {
             </div>
           </div>
           <div className="col col-2">
-            <h3 className="typo-cl inline-headline">DAI position</h3>
+            <h3 className="typo-cl inline-headline">SAI position</h3>
             <div className="inner-row">
               <h4 className="typo-c inline-headline">Generated</h4>
               <div className="right">
@@ -238,7 +238,7 @@ class Cup extends React.Component {
                   ?
                     <React.Fragment>
                       <div className="value block typo-cl">
-                        { printNumber(this.props.system.tab(cup)) }<span className="unit">DAI</span>
+                        { printNumber(this.props.system.tab(cup)) }<span className="unit">SAI</span>
                       </div>
                       <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                         { printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }<span className="unit">USD</span>
@@ -266,7 +266,7 @@ class Cup extends React.Component {
                       ?
                         <React.Fragment>
                           <div className="value block typo-cl">
-                            { printNumber(cup.avail_dai) }<span className="unit">DAI</span>
+                            { printNumber(cup.avail_dai) }<span className="unit">SAI</span>
                           </div>
                           <div className="value block typo-c" style={ {lineHeight: "1rem"} }>
                             { printNumber(wmul(cup.avail_dai, this.props.system.vox.par)) }<span className="unit">USD</span>

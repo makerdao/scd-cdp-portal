@@ -92,7 +92,7 @@ class NotifySetUp extends React.Component {
                   </li>
                   <li>
                     <div className="icon"><img src={ cdpCreatedIcon3 } alt="*" style={ {height: "30px"} } /></div>
-                    Generate or pay<br />back DAI
+                    Generate or pay<br />back SAI
                   </li>
                 </ul>
                 <div className="align-center" style={ {paddingBottom: "3.7rem", userSelect: "none"} }>

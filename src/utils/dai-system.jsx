@@ -99,7 +99,7 @@ export const getBiteNotification = (cupId, history, alreadyClosed) => {
     const pip = toWei(latestAction.pip);
     return <React.Fragment>
               <div className="grouped-section">
-                Your CDP #{cupId} was liquidated on { date } to pay back { printNumber(art) } DAI.
+                Your CDP #{cupId} was liquidated on { date } to pay back { printNumber(art) } SAI.
               </div>
               <div className="grouped-section">
                 <div className="dark-text">Total ETH (PETH) liquidated</div>

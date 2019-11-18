@@ -27,7 +27,7 @@ class Confirm extends Component {
       <div id="confirm">
         <div className="row">
           <div className="col">
-            <h3 className="typo-cl">Collateralize &amp; generate Dai</h3>
+            <h3 className="typo-cl">Collateralize &amp; generate Sai</h3>
             </div>
           </div>
 
@@ -41,7 +41,7 @@ class Confirm extends Component {
             <div className="col col-2">
               <div>
                 <h3 className="typo-cl inline-headline">Generate:</h3>
-                <div className="value typo-cl typo-bold right">{ printNumber(dai) } DAI</div>
+                <div className="value typo-cl typo-bold right">{ printNumber(dai) } SAI</div>
               </div>
             </div>
           </div>

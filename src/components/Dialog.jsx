@@ -121,10 +121,10 @@ class Dialog extends React.Component {
           && this.props.system.dai.myBalance.gt(0)
           && !this.props.system.gov.myBalance.gt(0)
         ) {
-          console.debug('Reporting 0 MKR balance on pay back DAI dialog');
+          console.debug('Reporting 0 MKR balance on pay back SAI dialog');
           ReactGA.event({
             category: 'UX',
-            action: 'Zero MKR balance on pay back DAI dialog'
+            action: 'Zero MKR balance on pay back SAI dialog'
           });
         }
       }
@@ -394,7 +394,7 @@ class Dialog extends React.Component {
             value="dai"
             checked={ this.state.govFeeType === "dai" }
             onChange={ this.selectGovFeeType } />
-            <label htmlFor="govFeeDai">Pay stability fee with DAI</label>
+            <label htmlFor="govFeeDai">Pay stability fee with SAI</label>
         </div>
       </React.Fragment>
     )
@@ -516,13 +516,13 @@ class Dialog extends React.Component {
         return (
           <DialogContent
             title={ `Close CDP #${dialog.cupId}` }
-            text="Closing your CDP requires paying back your outstanding Dai debt, as well as the accumulated stability fee. The stability fee can be paid in either DAI or MKR."
+            text="Closing your CDP requires paying back your outstanding Sai debt, as well as the accumulated stability fee. The stability fee can be paid in either SAI or MKR."
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="info-section">
-                  <div className="info-heading">Outstanding Dai generated</div>
-                  <div className="info-value">{ printNumber(this.props.system.tab(cup), 3) } DAI</div>
+                  <div className="info-heading">Outstanding Sai generated</div>
+                  <div className="info-value">{ printNumber(this.props.system.tab(cup), 3) } SAI</div>
                   { cup && cup.art.gt(0) && this.renderFeeTypeSelector() }
                   {/* <div className="info-heading">Total Closing Payment</div>
                   <div className="info-value">{ printNumber(this.props.system.tab(cup), 3) } + 0.00 MKR</div> */}
@@ -657,11 +657,11 @@ class Dialog extends React.Component {
             this.props.dialog.error = this.props.dialog.warning = "";
             if (valueWei.gt(0)) {
               if (this.props.system.sin.totalSupply.add(valueWei).gt(this.props.system.tub.cap)) {
-                this.props.dialog.error = "This amount of DAI exceeds the system debt ceiling.";
+                this.props.dialog.error = "This amount of SAI exceeds the system debt ceiling.";
               } else if (cup.avail_dai.lt(valueWei)) {
-                this.props.dialog.error = "You have insufficient collateral deposited to generate this amount of DAI. Deposit more collateral first.";
+                this.props.dialog.error = "You have insufficient collateral deposited to generate this amount of SAI. Deposit more collateral first.";
               } else if (this.state.ratio.lt(WAD.times(2))) {
-                this.props.dialog.warning = "The amount of DAI you are trying to generate against the collateral is putting your CDP at risk.";
+                this.props.dialog.warning = "The amount of SAI you are trying to generate against the collateral is putting your CDP at risk.";
                 this.setState({submitEnabled: true});
               } else {
                 this.setState({submitEnabled: true});
@@ -671,17 +671,17 @@ class Dialog extends React.Component {
         }
         return (
           <DialogContent
-            title="Generate DAI"
-            text="How much DAI would you like to generate?"
+            title="Generate SAI"
+            text="How much SAI would you like to generate?"
             dialog={ this.props.dialog }
             form={
               <form ref={ input => this.updateValueForm = input } onSubmit={ this.submitForm }>
                 <div className="input-section">
-                  { this.renderNumberInput("DAI") }
+                  { this.renderNumberInput("SAI") }
                 </div>
                 <div className="info-section">
                   <div className="info-heading">Max. available to generate</div>
-                  <div className="info-value">{ printNumber(this.props.system.tub.cups[this.props.dialog.cupId].avail_dai, 2) } DAI</div>
+                  <div className="info-value">{ printNumber(this.props.system.tub.cups[this.props.dialog.cupId].avail_dai, 2) } SAI</div>
                   { this.renderDetails() }
                   { this.renderErrors() }
                 </div>
@@ -717,16 +717,16 @@ class Dialog extends React.Component {
                                         ).round(0);
               const valuePlusGovFee = this.state.govFeeType === "dai" ? valueWei.add(futureGovDebtSai.times(1.25)) : valueWei; // If fee is paid in DAI we add an extra 25% (spread)
               if (this.props.system.dai.myBalance.lt(valuePlusGovFee)) {
-                this.props.dialog.error = "You don't have enough DAI in your wallet to wipe this amount.";
+                this.props.dialog.error = "You don't have enough SAI in your wallet to wipe this amount.";
               } else if (this.props.system.tab(cup).lt(valueWei)) {
-                this.props.dialog.error = "You are trying to payback more DAI than the amount of DAI outstanding in your CDP.";
+                this.props.dialog.error = "You are trying to payback more SAI than the amount of SAI outstanding in your CDP.";
               } else if (this.state.govFeeType === "mkr" && futureGovDebtMKR.gt(this.props.system.gov.myBalance)) {
                 this.props.dialog.error = "You don't have enough MKR in your wallet to wipe this amount.";
               } else if (this.state.ratio.lt(WAD.times(1.5))) {
-                this.props.dialog.warning = "Your CDP is below the minimum collateralization ratio and currently at risk. You should payback DAI or deposit more collateral immediately.";
+                this.props.dialog.warning = "Your CDP is below the minimum collateralization ratio and currently at risk. You should payback SAI or deposit more collateral immediately.";
                 this.setState({submitEnabled: true});
               } else if (this.state.ratio.lt(WAD.times(2))) {
-                this.props.dialog.warning = "Even if you payback this amount of DAI, your CDP will still be at risk.";
+                this.props.dialog.warning = "Even if you payback this amount of SAI, your CDP will still be at risk.";
                 this.setState({submitEnabled: true});
               } else {
                 this.setState({submitEnabled: true});
@@ -735,12 +735,12 @@ class Dialog extends React.Component {
           });
         }
         const indentedText = (!this.props.system.dai.allowance.eq(BIGGESTUINT256) || !this.props.system.gov.allowance.eq(BIGGESTUINT256))
-          ? "You might be requested to sign up to three transactions if there is not enough allowance in DAI and/or MKR to complete this transaction."
+          ? "You might be requested to sign up to three transactions if there is not enough allowance in SAI and/or MKR to complete this transaction."
           : "";
         return (
           <DialogContent
-            title="Payback DAI"
-            text="How much DAI would you like to pay back?"
+            title="Payback SAI"
+            text="How much SAI would you like to pay back?"
             indentedText={ indentedText }
             dialog={ this.props.dialog }
             form={
@@ -750,8 +750,8 @@ class Dialog extends React.Component {
                   <div className="set-max"><a href="#action" onClick={ this.setMax }>Set max</a></div>
                 </div>
                 <div className="info-section" style={ { marginTop: "2rem"} }>
-                  <div className="info-heading">Outstanding Dai generated</div>
-                  <div className="info-value">{ printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } DAI</div>
+                  <div className="info-heading">Outstanding Sai generated</div>
+                  <div className="info-value">{ printNumber(this.props.system.tab(this.props.system.tub.cups[this.props.dialog.cupId])) } SAI</div>
                   { this.renderFeeTypeSelector() }
                   { this.renderDetails() }
                   { this.renderErrors() }
