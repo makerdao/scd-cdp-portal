@@ -50,13 +50,13 @@ class NewCupMobile extends Component {
 
         <div className="row">
           <div className="col">
-            <label className="typo-cm no-select typo-bolder" style={{color: "#ffffff"}}>How much DAI would you like to generate?</label>
+            <label className="typo-cm no-select typo-bolder" style={{color: "#ffffff"}}>How much SAI would you like to generate?</label>
             <div className="input-values-container" style={{marginBottom: "10px"}}>
               <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ daiText } style={{marginBottom: "5px"}} onChange={ e => { checkValues("dai", e.target.value) } } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
               <span className="unit">DAI</span>
               {
                 maxDaiAvail &&
-                <p className="typo-cm align-left clearfix">Max DAI available to generate: { printNumber(maxDaiAvail) } DAI</p>
+                <p className="typo-cm align-left clearfix">Max SAI available to generate: { printNumber(maxDaiAvail) } SAI</p>
               }
             </div>
           </div>

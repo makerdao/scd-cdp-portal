@@ -665,11 +665,11 @@ export default class SystemStore {
         ];
 
         if (this.rootStore.profile.proxy) {
-          title = `Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
+          title = `Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} SAI`;
           action = `${methodSig(`lockAndDraw(address,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(toWei(dai), false)}`;
           gasLimit = 800000;
         } else {
-          title = `Create Proxy + Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
+          title = `Create Proxy + Create CDP + Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} SAI`;
           const params = {value: toWei(eth)};
           if (this.shouldSetGasLimit()) {
             params.gas = 1500000;
@@ -692,11 +692,11 @@ export default class SystemStore {
           action = `${methodSig(`lock(address,bytes32)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}`;
           gasLimit = 300000;
         } else if (eth.equals(0)) {
-          title = `Generate ${dai.valueOf()} DAI`;
+          title = `Generate ${dai.valueOf()} SAI`;
           action = `${methodSig(`draw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
           gasLimit = 300000;
         } else {
-          title = `Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} DAI`;
+          title = `Deposit ${eth.valueOf()} ETH + Generate ${dai.valueOf()} SAI`;
           action = `${methodSig(`lockAndDraw(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}`;
           gasLimit = 600000; // This was not checked, not being used in the UI for now
         }
@@ -722,11 +722,11 @@ export default class SystemStore {
         action = `${methodSig(`free(address,bytes32,uint256)`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}`;
         gasLimit = 400000;
       } else if (eth.equals(0)) {
-        title = `Payback ${dai.valueOf()} DAI`;
+        title = `Payback ${dai.valueOf()} SAI`;
         action = `${methodSig(`wipe(address,bytes32,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
         gasLimit = 500000;
       } else {
-        title = `Payback ${dai.valueOf()} DAI + Withdraw ${eth.valueOf()} ETH`;
+        title = `Payback ${dai.valueOf()} SAI + Withdraw ${eth.valueOf()} ETH`;
         action = `${methodSig(`wipeAndFree(address,bytes32,uint256,uint256${useOTC ? ",address" : ""})`)}${addressToBytes32(this.tub.address, false)}${toBytes32(cupId, false)}${toBytes32(toWei(eth), false)}${toBytes32(toWei(dai), false)}${useOTC ? addressToBytes32(settings.chain[this.rootStore.network.network].otc, false) : ""}`;
         gasLimit = 700000; // This was not checked, not being used in the UI for now
       }
@@ -797,7 +797,7 @@ export default class SystemStore {
                                     ).round(0);
           const valuePlusGovFee = params.govFeeType === "dai" ? this.tab(this.tub.cups[this.rootStore.dialog.cupId]).add(futureGovDebtSai.times(1.25)) : this.tab(this.tub.cups[this.rootStore.dialog.cupId]); // If fee is paid in DAI we add an extra 25% (spread)
           if (valuePlusGovFee.gt(this.dai.myBalance)) {
-            error = "Not enough DAI to close this CDP";
+            error = "Not enough SAI to close this CDP";
           } else if (params.govFeeType === "mkr" && futureGovDebtMKR.gt(this.gov.myBalance)) {
             error = "Not enough MKR to close this CDP";
           }

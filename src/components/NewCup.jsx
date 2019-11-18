@@ -50,13 +50,13 @@ class NewCup extends Component {
           </div>
 
           <div className="col col-2">
-            <label className="typo-cl no-select">How much DAI would you like to generate?</label>
+            <label className="typo-cl no-select">How much SAI would you like to generate?</label>
             <div className="input-values-container">
               <input ref={ input => this.dai = input } type="number" id="inputDAI" className="number-input" required step="0.000000000000000001" placeholder="0.000" value={ daiText } onChange={ e => { checkValues("dai", e.target.value)} } onKeyDown={ e => { if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 189) e.preventDefault() } } />
-              <span className="unit" style={ {marginBottom: "0.35rem" } }>DAI</span>
+              <span className="unit" style={ {marginBottom: "0.35rem" } }>SAI</span>
               {
                 maxDaiAvail &&
-                <p className="typo-cs align-right">Max DAI available to generate: { printNumber(maxDaiAvail) } DAI</p>
+                <p className="typo-cs align-right">Max SAI available to generate: { printNumber(maxDaiAvail) } SAI</p>
               }
             </div>
           </div>
@@ -108,7 +108,7 @@ class NewCup extends Component {
 
         <div className="row" style={ {borderBottom: "none"} }>
           <div className="col">
-            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize-generate', product: 'scd-cdp-portal', collateral: formatAmount(eth), debt: formatAmount(dai) })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Dai</button>
+            <button className="bright-style text-btn text-btn-primary" type="submit" onClick={() => mixpanel.track('btn-click', { id: 'collateralize-generate', product: 'scd-cdp-portal', collateral: formatAmount(eth), debt: formatAmount(dai) })} disabled={ !submitEnabled }>COLLATERALIZE &amp; generate Sai</button>
           </div>
         </div>
       </div>

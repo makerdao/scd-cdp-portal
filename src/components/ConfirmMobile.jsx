@@ -27,8 +27,8 @@ class ConfirmMobile extends Component {
                       text: "Convert your WETH to PETH",
                     },
                     { text: "CDP collateralized with PETH" },
-                    { text: "DAI generated" },
-                    { text: "DAI transferred to wallet" }
+                    { text: "SAI generated" },
+                    { text: "SAI transferred to wallet" }
                   ];
     if (this.props.profile.proxy && this.props.profile.proxy !== -1) {
       steps.shift();
@@ -71,7 +71,7 @@ class ConfirmMobile extends Component {
                   Generate
                 </h3>
                 <div className="value typo-h3 typo-bold right">
-                  { printNumber(dai) } DAI
+                  { printNumber(dai) } SAI
                 </div><br />
                 <div className="value typo-cm right" style ={{color: '#9aa3ad'}}>
                   ${ printNumber(dai) }

@@ -93,14 +93,14 @@ class CupMobile extends Component {
           Pay Back
         </a>
         <div style={{maxWidth: "fit-content"}}>
-          <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>DAI Position</div>
+          <div className="block typo-c" style={{fontSize: "1.3em", lineHeight: "1"}}>SAI Position</div>
           <div>
             {
               this.props.system.tab(cup).gte(0) && this.props.system.vox.par.gte(0)
                 ?
                   <React.Fragment>
                     <div className="value block typo-cxl" style={ {fontSize: "1.7em", lineHeight: "1.5"} }>
-                      { printNumber(this.props.system.tab(cup)) }<span className="unit" style={{color: "#ffffff"}}>DAI</span>
+                      { printNumber(this.props.system.tab(cup)) }<span className="unit" style={{color: "#ffffff"}}>SAI</span>
                     </div>
                     <div className="block typo-c" style={ {fontSize: "1.3em", lineHeight: "0.7"} }>
                       ${ printNumber(wmul(this.props.system.tab(cup), this.props.system.vox.par)) }

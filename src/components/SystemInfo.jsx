@@ -38,7 +38,7 @@ class SystemInfo extends React.Component {
                   <span>Loading...</span>
               }
             </div>
-            <h3 className="typo-c">DAI/USD</h3>
+            <h3 className="typo-c">SAI/USD</h3>
             <div className="value">
               {
                 this.props.system.vox.par.gte(0)
@@ -81,7 +81,7 @@ class SystemInfo extends React.Component {
                   "Loading..."
               }
             </div>
-            <h3 className="typo-c">Maximum Global DAI Available</h3>
+            <h3 className="typo-c">Maximum Global SAI Available</h3>
             <div className="value">
               {
                 this.props.system.dai.totalSupply && this.props.system.dai.totalSupply.gt(0)
