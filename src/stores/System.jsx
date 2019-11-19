@@ -597,7 +597,7 @@ export default class SystemStore {
   }
 
   transferToken = (token, to, amount) => {
-    const title = `Transfer ${amount} ${token.replace("gov", "mkr").toUpperCase()} to ${truncateAddress(to)}`;
+    const title = `Transfer ${amount} ${token.replace("gov", "mkr").toUpperCase().replace("DAI", "SAI")} to ${truncateAddress(to)}`;
     if (token === "eth") {
       const params = {to, value: toWei(amount)};
       if (this.shouldSetGasLimit()) {
