@@ -54,8 +54,7 @@ class Wallet extends React.Component {
     window.location = '/';
   }
 
-  tokenName = token => token.replace("gov", "mkr").toUpperCase();
-  tokenName = token => token.replace("dai", "sai").toUpperCase();
+  tokenName = token => token.replace("gov", "mkr").replace("dai", "sai").toUpperCase();
 
   renderWalletOptions = () => {
     const options = [];
