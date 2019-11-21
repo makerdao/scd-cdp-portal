@@ -107,3 +107,12 @@
 .main-column > div.row.general-notifications {
   padding: 1.7em 3.4em 1.5em;
 }
+
+// Customized inline notification
+.inline-notification.alert-notification {
+  background-color: #FBAE17;
+  padding: 1rem 1.5rem 1.1rem !important;
+  .message {
+    font-weight: 300;
+  }
+}
