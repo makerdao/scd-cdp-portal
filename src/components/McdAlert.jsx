@@ -18,7 +18,7 @@ class McdAlert extends React.Component {
       <InlineNotification
         class="mcd-alert"
         caption="Multi-Collateral Dai and Oasis"
-        message="Multi-Collateral Dai launched on 19-11-2019. In order to access MCD and Maker Vaults, please use Oasis.app where you can Trade, Borrow and Save Multi-Collateral Dai. This CDP Portal can only be used to generate Single-Collateral Sai."
+        message="Multi-Collateral Dai launched on 18-11-2019. In order to access MCD and Maker Vaults, please use Oasis.app where you can Trade, Borrow and Save Multi-Collateral Dai. This CDP Portal can only be used to generate Single-Collateral Sai."
         buttonText="Go to Oasis"
         onCloseButtonClick={ () => { localStorage.setItem('McdAlertClosed', true); this.setState({show: false}); } }
         onButtonClick={ () => window.open("https://oasis.app", "_blank") }
