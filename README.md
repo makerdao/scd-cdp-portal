@@ -5,7 +5,7 @@
 Have installed:
 
 - [Git](https://git-scm.com/downloads)
-- [Node](https://nodejs.org/en/download/) version 6 or higher
+- [Node](https://nodejs.org/en/download/) version 8 or higher
 - [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 
 ### Installation

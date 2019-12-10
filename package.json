@@ -41,8 +41,9 @@
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/scss/ -o src/scss/ --recursive",
-    "watch-css": "npm run build-css && node-sass-chokidar src/scss/ -o src/scss/ --recursive --watch",
-    "start": "craco start",
+    "watch-css": "yarn build-css && node-sass-chokidar src/scss/ -o src/scss/ --recursive --watch",
+    "start-js": "craco start",
+    "start": "npm-run-all -p watch-css start-js",
     "build": "yarn build-css && craco build",
     "test": "craco test",
     "postinstall": "patch-package"
@@ -69,6 +70,7 @@
     "gulp-cloudfront-invalidate": "^0.1.5",
     "gulp-s3-upload": "^1.7.3",
     "node-sass-chokidar": "^1.3.5",
+    "npm-run-all": "^4.1.5",
     "patch-package": "^6.1.4",
     "postinstall-postinstall": "^2.0.0"
   }
