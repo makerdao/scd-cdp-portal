@@ -3,7 +3,7 @@
   "chain": {
     "kovan": {
       "nodeURL": "https://kovan.infura.io/v3/078596535bf243c6996d2ac196563d49",
-      "saiValuesAggregator": "0x040abcb09a5b46f9a5ebed320abe074e6e626cc5",
+      "saiValuesAggregator": "0x3562E463EEa111e1044629C29e68d733805a8A98",
       "otc": "0xe325acb9765b02b8b418199bf9650972299235f4",
       "fromBlock": 5216602,
       "service": "https://sai-kovan.makerfoundation.com/v1",
@@ -11,7 +11,7 @@
       "chart": false,
       "proxyRegistry": "0x64a436ae831c1672ae81f674cab8b6775df3475c",
       "saiProxyCreateAndExecute": "0x96fc005a8ba82b84b11e0ff211a2a1362f107ef0",
-      "tub": "0xa71937147b55deb8a530c7229c442fd3f31b7db2"
+      "tub": "0x81c3dD4873Fb724D1bc6b562d3fe573Eeb5b9f64"
     },
     "main": {
       "nodeURL": "https://mainnet.infura.io/v3/078596535bf243c6996d2ac196563d49",
