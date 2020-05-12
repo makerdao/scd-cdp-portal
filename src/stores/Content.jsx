@@ -24,7 +24,7 @@ export default class ContentStore {
       .then(res => {
         this.content = res.data || null;
         this.contentLoaded = true;
-        this.showNotification = !localStorage.getItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`);
+        this.showNotification = false;//!localStorage.getItem(`StabilityFeeChangeAlertClosed-${this.stabilityFeeMarkdown()}`);
 
         // General notifications
         this.content.notifications = {};

@@ -14,14 +14,14 @@ class McdAlert extends React.Component {
 
   render() {
     return (
-      this.state.show && !localStorage.getItem('McdAlertClosed') &&
+      this.state.show &&
       <InlineNotification
         class="mcd-alert"
-        caption="Multi-Collateral Dai and Oasis"
-        message="Multi-Collateral Dai launched on 18-11-2019. In order to access MCD and Maker Vaults, please use Oasis.app where you can Trade, Borrow and Save Multi-Collateral Dai. This CDP Portal can only be used to generate Single-Collateral Sai."
-        buttonText="Go to Oasis"
-        onCloseButtonClick={ () => { localStorage.setItem('McdAlertClosed', true); this.setState({show: false}); } }
-        onButtonClick={ () => window.open("https://oasis.app", "_blank") }
+        caption="Single-Collateral Dai (SCD) has been shutdown"
+        message="Single Collateral Dai (SCD) was shutdown at 16:00 UTC on Tuesday, May 12, 2020. From now on, it will only be possible to redeem Sai and CDPs from the official MakerDAO Migration Portal at migrate.makerdao.com. For more information please visit our Forum at forum.makerdao.com or our Chat at chat.makerdao.com."
+        buttonText="Go to Migration App"
+        onCloseButtonClick={ () => { localStorage.setItem('ScdAlertClosed', true); this.setState({show: false}); } }
+        onButtonClick={ () => window.open("https://migrate.makerdao.com", "_blank") }
       />
     )
   }
