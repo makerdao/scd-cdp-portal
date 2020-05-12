@@ -12,10 +12,10 @@ class InlineNotification extends React.Component {
     return (
       <div className={ "inline-notification " + (this.props.type === "error" ? "is-error" : "") + (this.props.type === "warning" ? "is-warning" : "") + (this.props.class ? " " + this.props.class : "") }>
         {
-          this.props.onCloseButtonClick &&
-          <svg onClick={ e => { e.preventDefault(); this.props.onCloseButtonClick() } } className="close-button" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <g fill="none" fillRule="evenodd"><path d="m-935-11h970v123h-970z"/><g><g strokeLinecap="round" strokeLinejoin="round" transform="translate(7 7)"><path d="m6 0-6 6"/><path d="m0 0 6 6"/></g><circle cx="10" cy="10" r="9"/></g></g>
-          </svg>
+          //this.props.onCloseButtonClick &&
+          //<svg onClick={ e => { e.preventDefault(); this.props.onCloseButtonClick() } } className="close-button" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+         //   <g fill="none" fillRule="evenodd"><path d="m-935-11h970v123h-970z"/><g><g strokeLinecap="round" strokeLinejoin="round" transform="translate(7 7)"><path d="m6 0-6 6"/><path d="m0 0 6 6"/></g><circle cx="10" cy="10" r="9"/></g></g>
+         // </svg>
         }
         { this.props.caption && icon }
         {
