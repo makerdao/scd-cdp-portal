@@ -23,7 +23,7 @@
     }
     font-weight: 200;
     &.has-button {
-      padding-right: 12rem;
+      padding-right: 13rem;
       @include respond-to('s+') {
         padding-right: 0;
         padding-bottom: 4rem;

@@ -281,3 +281,16 @@
 .is-not-connected .wrapper {
   padding-left: 0 !important;
 }
+   
+.end-of-life {
+  .wrapper, .landing-footer {
+    padding-left: 170px !important;
+    padding-right: 170px !important;
+  }
+  .landing-body {
+    border-right: none;
+  }
+  .right-column, .getting-started, .landing-body h1, .first-slide p {
+    display: none !important;
+  }
+}
