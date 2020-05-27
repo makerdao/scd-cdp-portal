@@ -286,6 +286,10 @@
   .wrapper, .landing-footer {
     padding-left: 170px !important;
     padding-right: 170px !important;
+
+    @media screen and (max-width: 1024px) {
+      padding: 0 !important;
+    }
   }
   .landing-body {
     border-right: none;
