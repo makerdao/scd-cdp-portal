@@ -24,9 +24,10 @@ class McdAlert extends React.Component {
       >
         Single Collateral Dai (SCD) was shutdown at 16:00 UTC on Tuesday, May 12, 2020. From now on, 
         it will only be possible to redeem Sai and CDPs from the official MakerDAO Migration Portal 
-        at <a href="https://migrate.makerdao.com">migrate.makerdao.com</a>. For more information please 
-        visit our Forum at <a href="https://forum.makerdao.com">forum.makerdao.com</a> or our Chat
-        at <a href="https://chat.makerdao.com">chat.makerdao.com</a>.
+        at <a href="https://migrate.makerdao.com">migrate.makerdao.com</a>. New Multi Collateral Dai (MCD)
+        CDPs can be created from the Oasis App at <a href="https://oasis.app/borrow">oasis.app</a>.
+        For more information please visit our Forum at <a href="https://forum.makerdao.com">forum.makerdao.com</a> 
+        or our Chat at <a href="https://chat.makerdao.com">chat.makerdao.com</a>.
       </InlineNotification>
     )
   }
