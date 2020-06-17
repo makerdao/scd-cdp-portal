@@ -22,10 +22,10 @@ class OasisAlert extends React.Component {
         onCloseButtonClick={ () => { localStorage.setItem('OasisAlertClosed', true); this.setState({show: false}); } }
         onButtonClick={ () => window.open("https://oasis.app/borrow", "_blank") }
       >
-        New Multi Collateral Dai (MCD) Vaults can be created from the Oasis App at 
-        <a href="https://oasis.app/borrow">oasis.app</a>. For more information please visit 
-        our Forum at <a href="https://forum.makerdao.com">forum.makerdao.com</a> 
-        or our Chat at <a href="https://chat.makerdao.com">chat.makerdao.com</a>.
+        New Multi Collateral Dai (MCD) Vaults can be created from the Oasis App 
+        at <a href="https://oasis.app/borrow">oasis.app</a>. For more information please visit 
+        our Forum at <a href="https://forum.makerdao.com">forum.makerdao.com</a> or
+         our Chat at <a href="https://chat.makerdao.com">chat.makerdao.com</a>.
       </InlineNotification>
     )
   }
