@@ -7,7 +7,7 @@ import {inject} from "mobx-react";
 // Components
 import WalletConnectMobile from "./WalletMobileConnect";
 import McdAlert from "./McdAlert";
-import OasisAlert from "./OasisAlert"
+import OasisAlert from "./OasisAlert";
 
 // Images
 import welcomeHero from 'images/welcome-hero.svg';
