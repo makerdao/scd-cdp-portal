@@ -7,6 +7,7 @@ import {inject} from "mobx-react";
 // Components
 import WalletConnectMobile from "./WalletMobileConnect";
 import McdAlert from "./McdAlert";
+import OasisAlert from "./OasisAlert";
 
 // Images
 import welcomeHero from 'images/welcome-hero.svg';
@@ -76,6 +77,7 @@ class Landing extends React.Component {
 
         <div className="landing-body">
           <McdAlert />
+          <OasisAlert />
           <h1>Welcome to the<br />Collateralized Debt Position Portal</h1>
           {
             this.props.network.isMobileWeb3Wallet && <WalletConnectMobile />
