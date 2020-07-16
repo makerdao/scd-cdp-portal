@@ -33,7 +33,7 @@ jobs:
             DEPLOY_ENV=production PUBLIC_URL=$DEPLOYMENT_URL_PRODUCTION GENERATE_SOURCEMAP=false npm run build
 
       - run:
-          name: Deploy to AWS staging
+          name: Deploy to AWS prod
           command: |
             sudo apt update
             sudo apt install python-pip
