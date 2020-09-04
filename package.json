@@ -19,7 +19,7 @@
     "hdkey": "^0.8.0",
     "ismobilejs": "^0.5.1",
     "jazzicon": "^1.5.0",
-    "markdown-to-jsx": "^6.10.3",
+    "markdown-to-jsx": "^6.11.4",
     "mixpanel-browser": "^2.29.0",
     "mobx": "^5.13.0",
     "mobx-react": "^6.1.3",
